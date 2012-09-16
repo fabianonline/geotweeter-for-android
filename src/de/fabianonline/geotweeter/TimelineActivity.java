@@ -4,10 +4,16 @@ import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class TimelineActivity extends Activity {
+	private final String LOG = "TimelineActivity";
 	
 	private TimelineElementAdapter ta;
 	private ArrayList<TimelineElement> elements;
@@ -20,6 +26,13 @@ public class TimelineActivity extends Activity {
         ta = new TimelineElementAdapter(this, R.layout.timeline_element, elements);
         ListView l = (ListView) findViewById(R.id.timeline);
         l.setAdapter(ta);
+        l.setOnItemClickListener(new OnItemClickListener() {
+        	@Override
+        	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        		Log.d(LOG, "In onItemClick");
+        		view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC}));
+        	}
+        });
         
         addItems();
     }
