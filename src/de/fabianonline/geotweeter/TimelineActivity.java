@@ -32,7 +32,7 @@ public class TimelineActivity extends Activity {
     
     private void addItems() {
     	elements.add(new TimelineElement("fabianonline", "Longcat<br /><br />is<br /><br />long."));
-    	elements.add(new TimelineElement("fabianonline", "Schau mal, mit<br />Zeilenumbrüchen."));
+    	elements.add(new TimelineElement("fabianonline", "Schau mal, mit<br />Zeilenumbr√ºchen."));
     	elements.add(new TimelineElement("fabianonline", "Und ein Dritter."));
     	elements.add(new TimelineElement("fabianonline", "Und noch einer."));
     	elements.add(new TimelineElement("fabianonline", "Hallo Welt. Dies ist ein Test."));
