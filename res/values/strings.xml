@@ -6,5 +6,8 @@
     <string name="title_activity_timeline">Geotweeter</string>
     <string name="button_reply">Reply</string>
     <string name="button_retweet">Retweet</string>
+    <string name="settings_accounts">Kontoeinstellungen</string>
+    <string name="accounts">Konten</string>
+    <string name="settings_display">Anzeige</string>
 
 </resources>
