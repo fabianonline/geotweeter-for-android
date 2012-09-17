@@ -22,7 +22,7 @@ import android.util.Log;
 
 public class Account {
 	protected final String LOG = "Account";
-	private Token token = new Token("15006408-kZLGHgmKwptQDHp0Bl9daS0iCCViJnLXHUSlJ4lhM", "AaulxYnnw2WHdxxWaSlmcupM9Uoo2jpuJDEqLFkpiJY");
+	private Token token = new Token("15006408-Ylfd9Uw5QB7k6BqqXZc8PwKlf5WelTM2msyvtKDYN", "v9dXakehxl1NzakSqdrUDvhomQzyPM9c8mGG3YU");
 	private OAuthService service = new ServiceBuilder().provider(TwitterApi.class).apiKey("7tbUmgasX8QXazkxGMNw").apiSecret("F22QSxchkczthiUQomREXEu4zDA15mxiENNttkkA").debug().build();
 	private TimelineElementAdapter elements;
 	private Handler handler;

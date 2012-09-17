@@ -52,7 +52,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
 			if (img!=null) {
-				img.setImageBitmap(t.getAvatarImage());
+				img.setImageDrawable(t.getAvatarDrawable());
 			}
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
