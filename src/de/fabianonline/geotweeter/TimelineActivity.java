@@ -10,15 +10,19 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import de.fabianonline.geotweeter.activities.NewTweetActivity;
+
 import android.os.Bundle;
 import android.os.Debug;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -44,7 +48,12 @@ public class TimelineActivity extends Activity {
         		view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC}));
         	}
         });
+        
         new Account(ta);
+    }
+    
+    public void newTweetClickHandler(View v) {
+    	startActivity(new Intent(this, NewTweetActivity.class));
     }
 
     @Override
