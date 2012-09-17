@@ -30,8 +30,8 @@ public class Account {
 	public Account(TimelineElementAdapter elements) {
 		handler = new Handler();
 		this.elements = elements;
-		TimelineRefreshThread t = new TimelineRefreshThread(this);
-		new Thread(t).start();
+//		TimelineRefreshThread t = new TimelineRefreshThread(this);
+//		new Thread(t).start();
 	}
     
 	private class TimelineRefreshThread implements Runnable {
