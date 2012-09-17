@@ -3,21 +3,6 @@ package de.fabianonline.geotweeter;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
-<<<<<<< HEAD
-=======
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.TwitterApi;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
-
-import de.fabianonline.geotweeter.activities.NewTweetActivity;
-
-import android.os.Bundle;
-import android.os.Debug;
->>>>>>> 8efe2c95e3df38e5b15f7229fc0237eb0cfb4f50
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
@@ -28,9 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import de.fabianonline.geotweeter.activities.NewTweetActivity;
 
 public class TimelineActivity extends Activity {
 	private final String LOG = "TimelineActivity";
