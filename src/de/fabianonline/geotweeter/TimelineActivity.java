@@ -1,7 +1,6 @@
 package de.fabianonline.geotweeter;
 
 import java.util.ArrayList;
-import java.util.prefs.Preferences;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -57,7 +56,7 @@ public class TimelineActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
-			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
+			Intent settingsActivity = new Intent(this, GeneralPrefsActivity.class);
 			startActivity(settingsActivity);
 			return true;
 		}

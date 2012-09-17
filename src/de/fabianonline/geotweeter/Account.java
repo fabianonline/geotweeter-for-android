@@ -1,24 +1,20 @@
 package de.fabianonline.geotweeter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
 import org.scribe.model.Token;
-import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
+
+import android.os.Handler;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import android.os.Handler;
-import android.util.Log;
 
 public class Account {
 	protected final String LOG = "Account";
@@ -30,8 +26,8 @@ public class Account {
 	public Account(TimelineElementAdapter elements) {
 		handler = new Handler();
 		this.elements = elements;
-//		TimelineRefreshThread t = new TimelineRefreshThread(this);
-//		new Thread(t).start();
+		TimelineRefreshThread t = new TimelineRefreshThread(this);
+		new Thread(t).start();
 	}
     
 	private class TimelineRefreshThread implements Runnable {
