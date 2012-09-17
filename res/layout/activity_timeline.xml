@@ -31,11 +31,12 @@
             android:text="Button" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/btnNewTweet"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:onClick="newTweetClickHandler"
+            android:text="@string/btn_new_tweet" />
 
     </LinearLayout>
 

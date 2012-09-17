@@ -40,14 +40,19 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		}
 		TimelineElement t = (TimelineElement)items.get(position);
 		if (t!=null) {
-			TextView text = (TextView) v.findViewById(R.id.textView1);
+			TextView text = (TextView) v.findViewById(R.id.tweet_content);
 			if (text!=null) { 
 				text.setText(Html.fromHtml(t.getTextForDisplay()));
 			}
 			
+			text = (TextView) v.findViewById(R.id.source_text);
+			if (text!=null) {
+				text.setText(t.getSourceText());
+			}
+			
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
 			if (img!=null) {
-				img.setImageBitmap(t.getAvatarImage());
+				img.setImageDrawable(t.getAvatarDrawable());
 			}
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());

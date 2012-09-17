@@ -8,15 +8,21 @@ import java.util.Map;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class User {
 	public static HashMap<Long, User> all_users = new HashMap<Long, User>();
-	public Bitmap avatar = null;
+	public Drawable avatar = null;
 	public long id;
 	public String name, screen_name, url, description, profile_image_url_https;
+	public View[] views = new View[] {};
 	
 	public User postProcess() {
 		if (User.all_users.containsKey(id)) return User.all_users.get(id);
@@ -37,7 +43,8 @@ public class User {
 				return;
 			}
 			try {
-				avatar = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+				avatar = new BitmapDrawable(BitmapFactory.decodeStream(url.openConnection().getInputStream()));
+				avatar.invalidateSelf();
 			} catch (IOException e) { e.printStackTrace(); }
 		}
 	}

@@ -18,5 +18,9 @@
     <string name="pref_desc">Biographie</string>
     <string name="pref_loc">Ort</string>
     <string name="pref_cat_accounts">Konten</string>
+    <string name="btn_geo">GPS</string>
+    <string name="btn_send">Senden</string>
+    <string name="btn_new_tweet">Neuer Tweet</string>
+
 
 </resources>
