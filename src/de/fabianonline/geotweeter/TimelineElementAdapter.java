@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -42,7 +43,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			TextView text = (TextView) v.findViewById(R.id.textView1);
 			if (text!=null) { 
 				text.setText(Html.fromHtml(t.getTextForDisplay()));
-				text.setMovementMethod(LinkMovementMethod.getInstance());
+			}
+			
+			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
+			if (img!=null) {
+				img.setImageBitmap(t.getAvatarImage());
 			}
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
