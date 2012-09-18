@@ -21,6 +21,6 @@
     <string name="btn_geo">GPS</string>
     <string name="btn_send">Senden</string>
     <string name="btn_new_tweet">Neuer Tweet</string>
-
-
+    <string name="settings_accounts_title">Konten</string>
+    <string name="add_account">Konto hinzufügen</string>
 </resources>

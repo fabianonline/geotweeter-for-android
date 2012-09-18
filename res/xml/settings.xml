@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="pref_main" android:title="@string/settings">
     <PreferenceCategory android:title="@string/pref_cat_accounts" android:key="pref_cat_accounts">
-        <ListPreference android:title="@string/settings_accounts" android:key="pref_account_settings"/>
+        <Preference android:title="@string/settings_accounts" android:key="pref_account_settings">
+            <intent android:action=".activities.SettingsAccounts" />
+        </Preference>
         
     </PreferenceCategory>
     <PreferenceCategory android:key="pref_cat_display" android:title="@string/settings_display">
