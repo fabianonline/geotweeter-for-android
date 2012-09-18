@@ -42,6 +42,12 @@ public class NewTweetActivity extends Activity {
 		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener(this));
 	}
 	
+	protected void onPause() {
+		super.onPause();
+		/* Remove all GPSListeners. */
+		lm.removeUpdates(gpslistener);
+	}
+	
 	protected class RemainingCharUpdater implements TextWatcher {
 		private Activity activity;
 		public RemainingCharUpdater(Activity a) { activity = a; }
@@ -126,7 +132,6 @@ public class NewTweetActivity extends Activity {
 						dialog.dismiss();
 					}
 					activity.finish();
-					if (gpslistener!=null && activity.lm!=null) activity.lm.removeUpdates(gpslistener);
 				}
 			}).start();
 		}
