@@ -19,7 +19,7 @@ public class Tweet extends TimelineElement{
 	public long id;
 	public User user;
 	public View view;
-	public Date created_at;
+	public String created_at;
 	public String source;
 	
 	//public void setUser(User u) { user = u; }
@@ -31,21 +31,5 @@ public class Tweet extends TimelineElement{
 	
 	public Drawable getAvatarDrawable() { return user.avatar; }
 
-	public CharSequence getSourceText() { return new SimpleDateFormat("dd.MM. HH:mm").format(created_at) + " from " + source; }
-
-	public static Tweet fromJSONObject(JSONObject jsonObject) {
-		Tweet t = new Tweet();
-		try {
-			t.text = jsonObject.getString("text");
-			t.id = jsonObject.getLong("id");
-			t.created_at = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy").parse(jsonObject.getString("created_at"));
-			t.source = jsonObject.getString("source");
-			t.user = User.fromJSONObject(jsonObject.getJSONObject("user"));
-		} catch(JSONException ex) {
-			return null;
-		} catch(ParseException ex) {
-			return null;
-		}
-		return t;
-	}
+	public CharSequence getSourceText() { return /*new SimpleDateFormat("dd.MM. HH:mm").format(created_at)*/ created_at + " from " + source; }
 }

@@ -42,23 +42,5 @@ public class User {
 		}
 	}
 
-	public static User fromJSONObject(JSONObject jsonObject) throws JSONException {
-		long id = jsonObject.getLong("id");
-		User u;
-		if (User.all_users.containsKey(id)) {
-			u = User.all_users.get(id);
-		} else {
-			u = new User();
-			User.all_users.put(id, u);
-		}
-		u.name = jsonObject.getString("name");
-		u.screen_name = jsonObject.getString("screen_name");
-		u.url = jsonObject.getString("url");
-		u.description = jsonObject.getString("description");
-		u.profile_image_url_https = jsonObject.getString("profile_image_url_https");
-		if (u.avatar==null) u.start_avatar_download();
-		return u;
-	}
-
 	private void start_avatar_download() { new Thread(new UpdateBitmapThread()).start(); }
 }
