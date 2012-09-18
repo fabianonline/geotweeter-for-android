@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.OAuthRequest;
@@ -70,33 +73,29 @@ public class Account {
 					//"{\"created_at\":\"Mon Sep 17 21:00:02 +0000 2012\",\"id\":247802112673718272,\"id_str\":\"247802112673718272\",\"text\":\"Es ist jetzt 23 Uhr.\",\"source\":\"<a href=\\\"http://leumund.ch/dienstleistungsboter-in-twitter-001129\\\" rel=\\\"nofollow\\\">zurvollenstunde</a>\",\"truncated\":false,\"in_reply_to_status_id\":null,\"in_reply_to_status_id_str\":null,\"in_reply_to_user_id\":null,\"in_reply_to_user_id_str\":null,\"in_reply_to_screen_name\":null,\"user\":{\"id\":14383393,\"id_str\":\"14383393\",\"name\":\"zurvollenstunde\",\"screen_name\":\"zurvollenstunde\",\"location\":\"GMT+1\",\"url\":\"http://leumund.ch/2008/technologiebloggen/dienstleistungsboter-in-twitter/\",\"description\":\"Immer auf die volle Stunde eine Nachricht mit der Zeit. \",\"protected\":false,\"followers_count\":7347,\"friends_count\":0,\"listed_count\":333,\"created_at\":\"Mon Apr 14 10:11:30 +0000 2008\",\"favourites_count\":2,\"utc_offset\":3600,\"time_zone\":\"Bern\",\"geo_enabled\":false,\"verified\":false,\"statuses_count\":38481,\"lang\":\"en\",\"contributors_enabled\":false,\"is_translator\":false,\"profile_background_color\":\"C0DEED\",\"profile_background_image_url\":\"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profile_background_image_url_https\":\"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profile_background_tile\":false,\"profile_image_url\":\"http://a0.twimg.com/profile_images/1200663831/10_normal.jpg\",\"profile_image_url_https\":\"https://si0.twimg.com/profile_images/1200663831/10_normal.jpg\",\"profile_link_color\":\"0084B4\",\"profile_sidebar_border_color\":\"C0DEED\",\"profile_sidebar_fill_color\":\"DDEEF6\",\"profile_text_color\":\"333333\",\"profile_use_background_image\":true,\"default_profile\":true,\"default_profile_image\":false,\"following\":true,\"follow_request_sent\":null,\"notifications\":null},\"geo\":null,\"coordinates\":null,\"place\":null,\"contributors\":null,\"retweet_count\":1,\"favorited\":false,\"retweeted\":false}," +
 					//"{\"created_at\":\"Mon Sep 17 20:58:43 +0000 2012\",\"id\":247801783303409664,\"id_str\":\"247801783303409664\",\"text\":\"Hat jemand sowas wie ein female XLR/Male 3,5mm Klinke Kabel?\",\"source\":\"<a href=\\\"http://mobile.twitter.com\\\" rel=\\\"nofollow\\\">Mobile Web</a>\",\"truncated\":false,\"in_reply_to_status_id\":null,\"in_reply_to_status_id_str\":null,\"in_reply_to_user_id\":null,\"in_reply_to_user_id_str\":null,\"in_reply_to_screen_name\":null,\"user\":{\"id\":44625441,\"id_str\":\"44625441\",\"name\":\"Juri\",\"screen_name\":\"tuxwurf\",\"location\":\"Münster\",\"url\":\"http://tuxwurf.de\",\"description\":\"<<du alter Poet mit einem Hang zum magischen Realismus...>>\",\"protected\":true,\"followers_count\":715,\"friends_count\":311,\"listed_count\":104,\"created_at\":\"Thu Jun 04 14:20:20 +0000 2009\",\"favourites_count\":73,\"utc_offset\":3600,\"time_zone\":\"Berlin\",\"geo_enabled\":true,\"verified\":false,\"statuses_count\":35932,\"lang\":\"de\",\"contributors_enabled\":false,\"is_translator\":false,\"profile_background_color\":\"131516\",\"profile_background_image_url\":\"http://a0.twimg.com/images/themes/theme14/bg.gif\",\"profile_background_image_url_https\":\"https://si0.twimg.com/images/themes/theme14/bg.gif\",\"profile_background_tile\":true,\"profile_image_url\":\"http://a0.twimg.com/profile_images/2461094497/qihbrcfdbx7ank016xju_normal.jpeg\",\"profile_image_url_https\":\"https://si0.twimg.com/profile_images/2461094497/qihbrcfdbx7ank016xju_normal.jpeg\",\"profile_link_color\":\"009999\",\"profile_sidebar_border_color\":\"EEEEEE\",\"profile_sidebar_fill_color\":\"EFEFEF\",\"profile_text_color\":\"333333\",\"profile_use_background_image\":true,\"default_profile\":false,\"default_profile_image\":false,\"following\":true,\"follow_request_sent\":null,\"notifications\":null},\"geo\":null,\"coordinates\":null,\"place\":null,\"contributors\":null,\"retweet_count\":0,\"favorited\":false,\"retweeted\":false}," +
 					"{\"created_at\":\"Mon Sep 17 20:58:40 +0000 2012\",\"id\":247801771207061504,\"id_str\":\"247801771207061504\",\"text\":\"#SFGiants Matt Cain hosted a @patxispizza party for the Petaluma little league team. Check out the video.  https://t.co/4lPqZ7PZ\",\"source\":\"<a href=\\\"http://twitter.com/download/iphone\\\" rel=\\\"nofollow\\\">Twitter for iPhone</a>\",\"truncated\":false,\"in_reply_to_status_id\":null,\"in_reply_to_status_id_str\":null,\"in_reply_to_user_id\":null,\"in_reply_to_user_id_str\":null,\"in_reply_to_screen_name\":null,\"user\":{\"id\":60101131,\"id_str\":\"60101131\",\"name\":\"Tory Belleci\",\"screen_name\":\"ToryBelleci\",\"location\":\"San Francisco\",\"url\":\"http://www.facebook.com/pages/Tory-Belleci/151737058228942\",\"description\":\"Mythbuster, ninja assassin, and a guy who just likes to blow stuff up.\",\"protected\":false,\"followers_count\":165606,\"friends_count\":122,\"listed_count\":3373,\"created_at\":\"Sat Jul 25 17:13:26 +0000 2009\",\"favourites_count\":0,\"utc_offset\":-28800,\"time_zone\":\"Pacific Time (US & Canada)\",\"geo_enabled\":false,\"verified\":true,\"statuses_count\":607,\"lang\":\"en\",\"contributors_enabled\":false,\"is_translator\":false,\"profile_background_color\":\"C0DEED\",\"profile_background_image_url\":\"http://a0.twimg.com/profile_background_images/240060197/Twitter_background.jpg\",\"profile_background_image_url_https\":\"https://si0.twimg.com/profile_background_images/240060197/Twitter_background.jpg\",\"profile_background_tile\":true,\"profile_image_url\":\"http://a0.twimg.com/profile_images/1372346118/Hi-ResMYTHBUSTERStory_normal.jpg\",\"profile_image_url_https\":\"https://si0.twimg.com/profile_images/1372346118/Hi-ResMYTHBUSTERStory_normal.jpg\",\"profile_link_color\":\"0084B4\",\"profile_sidebar_border_color\":\"C0DEED\",\"profile_sidebar_fill_color\":\"DDEEF6\",\"profile_text_color\":\"333333\",\"profile_use_background_image\":true,\"default_profile\":false,\"default_profile_image\":false,\"following\":true,\"follow_request_sent\":null,\"notifications\":null},\"geo\":null,\"coordinates\":null,\"place\":null,\"contributors\":null,\"retweet_count\":4,\"favorited\":false,\"retweeted\":false,\"possibly_sensitive\":false}]";
-		    ObjectMapper mapper = new ObjectMapper();
-		    Collection<Tweet> tweets = null;
+		    JSONArray everything = new JSONArray();
+		    Log.d(LOG, "Starting parsing JSON...");
 		    try {
-				tweets = mapper.readValue(result, new TypeReference<Collection<Tweet>>() {});
-			} catch (JsonParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JsonMappingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
+				everything = new JSONArray(result);
+				for (int i=0; i<everything.length(); i++) {
+					JSONObject obj = everything.getJSONObject(i);
+					account.addTweet(Tweet.fromJSONObject(obj));
+			    }
+				Log.d(LOG, "Finishes parsing JSON.");
+			    
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		    for(Tweet t : tweets) {
-		    	t.user.postProcess();
-		    }
-		    account.addTweets(tweets);
+		    
 		}
 	}
 
-	public void addTweets(final Collection<Tweet> tweets) {
+	public void addTweet(final Tweet tweet) {
 		// TODO Auto-generated method stub
-		Log.d(LOG, String.valueOf(tweets.size()));
 		handler.post(new Runnable() {
 			public void run() {
-				elements.addAll(tweets);
+				elements.add(tweet);
 			}
 		});
 	}
