@@ -1,15 +1,13 @@
 package de.fabianonline.geotweeter.activities;
 
-import de.fabianonline.geotweeter.R;
-import de.fabianonline.geotweeter.TimelineActivity;
-import de.fabianonline.geotweeter.exceptions.TweetSendException;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -24,8 +22,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.TimelineActivity;
+import de.fabianonline.geotweeter.Utils;
+import de.fabianonline.geotweeter.exceptions.TweetSendException;
 
 public class NewTweetActivity extends Activity {
+	private static final String LOG = "NewTweetActivity";
 	protected LocationManager lm = null;
 	protected Location location = null;
 	protected GPSCoordsListener gpslistener = null;
@@ -46,7 +49,7 @@ public class NewTweetActivity extends Activity {
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 		public void afterTextChanged(Editable s) {
 			TextView t = (TextView) activity.findViewById(R.id.textCharsRemaining);
-			int remaining = 140-s.length();
+			int remaining = 140 - Utils.countChars(s.toString());
 			t.setText(String.valueOf(remaining));
 			if (remaining<0) {
 				t.setTextColor(0xFFFF0000);
@@ -94,15 +97,9 @@ public class NewTweetActivity extends Activity {
 			}
 		}
 		
-		public void onProviderDisabled(String arg0) {
-			currentProvider = null;
-		}
-		
-		public void onProviderEnabled(String prov) {
-			currentProvider = prov;
-		}
-
-		public void onStatusChanged(String arg0, int arg1, Bundle arg2) {}
+		public void onProviderDisabled(String provider) {}
+		public void onProviderEnabled(String provider) {}
+		public void onStatusChanged(String provider, int new_status, Bundle extra) {}
 
 	}
 	
