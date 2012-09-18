@@ -17,6 +17,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.fabianonline.geotweeter.exceptions.TweetSendException;
+
+import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
 
@@ -96,5 +99,17 @@ public class Account {
 				elements.addAll(tweets);
 			}
 		});
+	}
+
+	public void sendTweet(String text, Location location) throws TweetSendException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.twitter.com/1/statuses/update.json");
+		request.addBodyParameter("status", text);
+		if (location!=null) {
+			request.addBodyParameter("lat", String.valueOf(location.getLatitude()));
+			request.addBodyParameter("long", String.valueOf(location.getLongitude()));
+		}
+	    service.signRequest(token, request);
+	    Response response = request.send();
+	    if (!response.isSuccessful()) throw new TweetSendException();
 	}
 }

@@ -31,6 +31,8 @@ public class TimelineActivity extends Activity {
 	
 	private TimelineElementAdapter ta;
 	private ArrayList<TimelineElement> elements;
+	private ArrayList<Account> accounts = new ArrayList<Account>();
+	public static Account current_account = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,12 +46,16 @@ public class TimelineActivity extends Activity {
         	@Override
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		Log.d(LOG, "In onItemClick");
-        		Toast.makeText(getBaseContext(), "onClick", Toast.LENGTH_LONG).show();
         		view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC}));
         	}
         });
         
-        new Account(ta);
+        addAccount(new Account(ta));
+    }
+    
+    public void addAccount(Account acc) {
+    	accounts.add(acc);
+    	if (current_account==null) current_account=acc;
     }
     
     public void newTweetClickHandler(View v) {
