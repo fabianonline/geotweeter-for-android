@@ -1,7 +1,6 @@
 package de.fabianonline.geotweeter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.scribe.builder.ServiceBuilder;
@@ -12,6 +11,10 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import android.location.Location;
+import android.os.Handler;
+import android.util.Log;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -19,14 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
 
-import android.location.Location;
-import android.os.Handler;
-import android.util.Log;
-
 public class Account {
 	protected final String LOG = "Account";
 	private Token token = new Token("15006408-Ylfd9Uw5QB7k6BqqXZc8PwKlf5WelTM2msyvtKDYN", "v9dXakehxl1NzakSqdrUDvhomQzyPM9c8mGG3YU");
-	private OAuthService service = new ServiceBuilder().provider(TwitterApi.class).apiKey("7tbUmgasX8QXazkxGMNw").apiSecret("F22QSxchkczthiUQomREXEu4zDA15mxiENNttkkA").debug().build();
+	private OAuthService service = new ServiceBuilder().provider(TwitterApi.class).apiKey(Constants.API_KEY).apiSecret(Constants.API_SECRET).debug().build();
 	private TimelineElementAdapter elements;
 	private Handler handler;
 	
