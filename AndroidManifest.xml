@@ -1,7 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.fabianonline.geotweeter"
+<manifest package="de.fabianonline.geotweeter"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -29,6 +28,11 @@
         <activity
             android:name=".activities.NewTweetActivity"
             android:label="@string/title_activity_timeline" >
+        </activity>
+        
+        <activity
+            android:name=".GeneralPrefsActivity"
+            android:label="@string/settings" >
         </activity>
     </application>
 

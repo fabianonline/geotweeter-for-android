@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/accounts" android:key="pref_cat_accounts">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="pref_main" android:title="@string/settings">
+    <PreferenceCategory android:title="@string/pref_cat_accounts" android:key="pref_cat_accounts">
         <ListPreference android:title="@string/settings_accounts" android:key="pref_account_settings"/>
         
     </PreferenceCategory>
-    <PreferenceCategory android:key="pref_cat_display" android:title="@string/settings_display"></PreferenceCategory>
+    <PreferenceCategory android:key="pref_cat_display" android:title="@string/settings_display">
+        <CheckBoxPreference android:key="pref_show_img_previews" android:title="@string/pref_show_img_previews"/>
+        <CheckBoxPreference android:key="pref_dark_theme" android:title="@string/pref_dark_theme"/>
+    </PreferenceCategory>
     
 
 </PreferenceScreen>

@@ -1,8 +1,6 @@
 package de.fabianonline.geotweeter;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.text.format.Time;
 import android.view.View;
 
