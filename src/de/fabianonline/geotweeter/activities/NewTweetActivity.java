@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -63,6 +64,7 @@ public class NewTweetActivity extends Activity {
 				lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 				gpslistener = new GPSCoordsListener(activity);
 				lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, gpslistener);
+				lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, gpslistener);
 			}
 		}
 	}
@@ -71,13 +73,22 @@ public class NewTweetActivity extends Activity {
 		private String currentProvider = null;
 		private NewTweetActivity activity;
 		public GPSCoordsListener(NewTweetActivity a) { activity = a; }
-		public void onLocationChanged(Location loc) {
-			activity.location = loc;
-			if (currentProvider == LocationManager.NETWORK_PROVIDER) {
-				Toast.makeText(getBaseContext(), "Grobe Position erhalten.", Toast.LENGTH_SHORT).show();
-				activity.lm.removeUpdates(this);
-				activity.lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-			} else if (loc.getAccuracy() <= 10 ) {
+		public void onLocationChanged(Location new_location) {
+			Log.d("GPSCoordsListener", "Provider: " + new_location.getProvider() + "  Accuracy: " + new_location.getAccuracy());
+			if (location!=null) Log.d("GPSCoordsListener", "New==GPS="+String.valueOf(new_location.getProvider().equals(LocationManager.GPS_PROVIDER)) + ", Old==Network="+String.valueOf(location.getProvider().equals(LocationManager.NETWORK_PROVIDER)));
+			/* Wir nehmen die aktuellen Koordinaten, wenn es
+			 *   a) die ersten Koordinaten sind,
+			 *   b) die bisherigen Koordinaten nur Netzwerk-genau waren
+			 *   c) Die Accurracy gleich oder besser ist.
+			 */
+			if (location==null || new_location.getAccuracy() <= location.getAccuracy() || (new_location.getProvider().equals(LocationManager.GPS_PROVIDER) && location.getProvider().equals(LocationManager.NETWORK_PROVIDER))) {
+						location = new_location;
+						Log.d("GPSCoordsListener", "Koordinaten sind besser.");
+			}
+			/*
+			 * Ab einer Genauigkeit von 16 Meter (Zahl auf gut Glück bestimmt) nehmen wir den Wert und hören mit GPS auf.
+			 */
+			if (new_location.getAccuracy() <= 16 ) {
 				Toast.makeText(getBaseContext(), "Genaue Position erhalten.", Toast.LENGTH_SHORT).show();
 				activity.lm.removeUpdates(this);
 			}
