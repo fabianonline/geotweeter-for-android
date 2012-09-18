@@ -34,6 +34,17 @@
             android:name=".GeneralPrefsActivity"
             android:label="@string/settings" >
         </activity>
+        
+        <activity
+            android:name=".activities.SettingsAccounts"
+            android:label="@string/settings_accounts_title">
+            <intent-filter>
+                <action android:name=".activities.SettingsAccounts" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+            
+        
     </application>
 
 </manifest>
