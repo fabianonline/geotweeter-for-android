@@ -55,7 +55,7 @@ public class AuthenticateAccount extends Activity {
 			}
 		}
 		if (!found) {
-			accountString += (" " + String.valueOf(authUser.id));
+			accountString += (String.valueOf(authUser.id) + " ");
 			ed.putString("accounts", accountString);
 		}
 		ed.commit();

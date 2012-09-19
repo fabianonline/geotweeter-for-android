@@ -45,7 +45,9 @@ public class TimelineActivity extends Activity {
     
     public void addAccount(Account acc) {
     	accounts.add(acc);
-    	if (current_account==null) current_account=acc;
+    	if (current_account == null) {
+    		current_account = acc;
+    	}
     }
     
     public void newTweetClickHandler(View v) {
