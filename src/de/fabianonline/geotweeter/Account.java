@@ -80,10 +80,17 @@ public class Account {
 		    
 			Gson gson = new Gson();
 			Type collectionType = new TypeToken<Collection<Tweet>>(){}.getType();
-		    Collection<Tweet> tweets = gson.fromJson(result, collectionType);
+		    final Collection<Tweet> tweets = gson.fromJson(result, collectionType);
 		    
 		    Log.d(LOG, "Finished parsing JSON.");
 		    Log.d(LOG, "" + tweets.size() + " Entries");
+		    
+		    handler.post(new Runnable() {
+				@Override
+				public void run() {
+					elements.addAll(tweets);
+				}
+			});
 		}
 	}
 

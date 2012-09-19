@@ -2,17 +2,12 @@ package de.fabianonline.geotweeter;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -27,36 +22,15 @@ public class User extends UserElement implements java.io.Serializable {
 	public String name, screen_name, url, description, profile_image_url_https;
 	public View[] views = new View[] {};
 	
-	public String getScreenName() { return screen_name; }
-	
-	private class UpdateBitmapThread implements Runnable {
-		
-		public void run() {
-			URL url;
-			try {
-				url = new URL(profile_image_url_https);
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-				return;
-			}
-			try {
-				avatar = new BitmapDrawable(BitmapFactory.decodeStream(url.openConnection().getInputStream()));
-				avatar.invalidateSelf();
-			} catch (IOException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		
-	}
-
-	private void start_avatar_download() { 
-		new Thread(new UpdateBitmapThread()).start(); 
+	public String getScreenName() { 
+		return screen_name; 
 	}
 
 	@Override
 	public Drawable getAvatarDrawable() {
 		return avatar;
 	}
+
 
 	public static ArrayList<User> getPersistentData(Context context, String[] accounts) {
 		ArrayList<User> result = new ArrayList<User>();
@@ -86,5 +60,6 @@ public class User extends UserElement implements java.io.Serializable {
 			e.printStackTrace();
 		}
 	}
-	
+
+
 }
