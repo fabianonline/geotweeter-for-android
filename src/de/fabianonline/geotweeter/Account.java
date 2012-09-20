@@ -16,6 +16,8 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
@@ -28,6 +30,12 @@ public class Account {
 	private TimelineElementAdapter elements;
 	private Handler handler;
 	private StreamRequest stream_request;
+	private long max_read_tweet_id = 0;
+	private long max_read_dm_id = 0;
+	private long max_known_tweet_id = 0;
+	private long min_known_tweet_id = -1;
+	private long max_known_dm_id = 0;
+	private long min_known_dm_id = -1;
 	
 	public Account(TimelineElementAdapter elements, Token token) {
 		this.token = token;
@@ -35,7 +43,7 @@ public class Account {
 		this.elements = elements;
 		TimelineRefreshThread t = new TimelineRefreshThread();
 		new Thread(t).start();
-		//stream_request = new StreamRequest(this);
+		stream_request = new StreamRequest(this);
 		//stream_request.start();
 		all_accounts.add(this);
 	}
@@ -49,8 +57,247 @@ public class Account {
 	}
     
 	private class TimelineRefreshThread implements Runnable {
+		protected boolean do_update_bottom = false;
+		protected ArrayList<ArrayList<TimelineElement>> responses = new ArrayList<ArrayList<TimelineElement>>();
+		protected ArrayList<TimelineElement> main_data = new ArrayList<TimelineElement>();
+		protected int count_running_threads = 0;
+		protected int count_errored_threads = 0;
+		
+		public TimelineRefreshThread(boolean do_update_bottom) {
+			this.do_update_bottom = do_update_bottom;
+		}
+		
 		@Override
 		public void run() {
+			
+			
+			
+		}
+		
+		private class RunnableAfterAllRequestsCompleted {
+			public void run() {
+				if (!main_data.isEmpty()) {
+					responses.add(0, main_data);
+				}
+				if (count_errored_threads==0) {
+					parseData(responses);
+					stream_request.start();
+				} else {
+					// TODO Try again after some time
+					// TODO Show info message
+				}
+			}
+		}
+		
+		private class RunnableAfterEachSuccessfulRequest {
+			private boolean is_main_data;
+			
+			public RunnableAfterEachSuccessfulRequest(boolean is_main_data) {
+				this.is_main_data = is_main_data;
+			}
+
+			public void run(ArrayList<TimelineElement> elements) {
+				if (is_main_data) {
+					main_data = elements;
+				} else {
+					responses.add(elements);
+				}
+				count_running_threads--;
+				if (count_running_threads==0) {
+					new RunnableAfterAllRequestsCompleted().run();
+				}
+			}
+		}
+		
+		private class RunnableAfterEachErroredRequest {
+			public void run() {
+				count_running_threads--;
+				count_errored_threads++;
+				// TODO Show error message
+				if (count_running_threads==0) {
+					new RunnableAfterAllRequestsCompleted().run();
+				}
+			}
+		}
+	}
+	
+	protected void parseData(ArrayList<ArrayList<TimelineElement>> responses) {
+	};
+			/*
+
+		# `error` is run whenever a request finished with an error.
+		# Set some default parameters for all request.
+		default_parameters = {
+			# We want to get RTs in the timeline
+			include_rts: true
+			count: 200
+			# Entities contain information about unshortened t.co-Links and
+			# so on. Naturally, we want those, too.
+			include_entities: true
+			page: 1
+			# If `@max_known_tweet_id` is set, we already know some tweets.
+			# So we set `since_id` to only get new tweets.
+			since_id: @max_known_tweet_id unless @max_known_tweet_id=="0" || options.fill_bottom?
+			max_id: @min_known_tweet_id.decrement() if options.fill_bottom?
+		}
+
+		# Define all the necessary requests to be made. `extra_parameters` can
+		# be set to override the `default_parameters` for this request.
+		requests = [
+			{
+				url: "statuses/home_timeline.json"
+				name: "home_timeline"
+				main_data: true
+			}
+			{
+				url: "statuses/mentions.json"
+				name: "mentions"
+			}
+			{
+				url: "direct_messages.json"
+				name: "Received DMs"
+				extra_parameters: {
+					# You (at least I) don't get soo much DMs, so 100 is
+					# enough.
+					count: 100
+					# DMs have their own IDs, so we use `@max_known_dm_id`
+					# here.
+					since_id: @max_known_dm_id if @max_known_dm_id? && !options.fill_bottom?
+					max_id: @min_known_dm_id.decrement() if @min_known_dm_id? && options.fill_bottom?
+				}
+			}
+			{
+				url: "direct_messages/sent.json"
+				name: "Sent DMs"
+				extra_parameters: {
+					count: 100
+					since_id: @max_known_dm_id if @max_known_dm_id? && !options.fill_bottom?
+					max_id: @min_known_dm_id.decrement() if @min_known_dm_id? && options.fill_bottom?
+				}
+			}
+		]
+
+		# Number of threads to be started. Will be reduced by one every time
+		# one of the threads finishes. If zero, all requests are done.
+		threads_running = requests.length
+
+		# Do the actual requests.
+		for request in requests
+			parameters = {}
+			# Construct a new parameters object with `default_parameters`
+			# extended by `extra_parameters`.
+			parameters[key] = value for key, value of default_parameters when value
+			parameters[key] = value for key, value of request.extra_parameters when value
+			additional_info = {name: request.name}
+			additional_info.main_data = true if request.main_data
+			@twitter_request(request.url, {
+				method: "GET"
+				parameters: parameters
+				dataType: "text"
+				silent: true
+				additional_info: additional_info
+				success: success
+				error: error
+			})
+
+	# `parse_data` gets an array of (arrays of) responses from the Twitter API
+	# (generated by `fill_list` and `StreamRequest`), sorts them, gets matching
+	# objects, calls `get_html` on them and outputs the HTML.
+	parse_data: (json, options={}) ->
+		# If we didn't get an array of responses, we create one.
+		json = [json] unless json.constructor==Array
+		responses = []
+		# We still have only JSON code, no real object. So we go through the
+		# array and parse all the JSON.
+		for json_data in json
+			try temp = $.parseJSON(json_data)
+			continue unless temp?
+			if temp.constructor == Array
+				# Did we get an array of messages or just one?
+				if temp.length>0
+					temp_elements = []
+					# `TwitterMessage.get_object` will determine the type of
+					# an object and return a matching "real" object.
+					# This is done for alle elements of this array.
+					temp_elements.push(TwitterMessage.get_object(data, this)) for data in temp
+					responses.push(temp_elements)
+			else
+				# Just one message... So let's try to parse it.
+				object = TwitterMessage.get_object(temp, this)
+				# We could get an `undefined` back (this happens e.g. to that
+				# friends array you get on connecting to the Streaming API).
+				# Since that would be the only object, we just go on.
+				continue unless object?
+				responses.push([object])
+		return if responses.length==0
+		return if responses.length==1 && responses[0][0]==null
+
+		# By now we have all requests in a 2-dimensional array `responses`.
+		# The first dimension comes from multiple requests in `fill_array`.
+		# Data from a `StreamRequest` will always have just one element in
+		# the first dimension.
+		# Anyway, we have to get through the multiple arrays and sort the
+		# tweets in there. Let's go.
+		all_objects = []
+		html = $('<div>')
+		last_id = ""
+		while responses.length > 0
+			# Save the Date and the index of the array holding the newest
+			# element.
+			newest_date = null
+			newest_index = null
+			for index, array of responses
+				object = array[0]
+				if newest_date==null || object.get_date()>newest_date
+					newest_date = object.get_date()
+					newest_index = index
+			# Retrieve the first object of the winning array (a.k.a. the newest
+			# element).
+			array = responses[newest_index]
+			object = array.shift()
+			# If this array has become empty, we remove it from `responses`.
+			responses.splice(newest_index, 1) if array.length==0
+
+			# Wenn `clip` aktiviert ist und das erste ("wichtigste") Array leer
+			# ist, brechen wir ab.
+			if array.length==0 && newest_index=="0" && options.clip?
+				# Vorher müssen wir jedoch zusehen, `max_known_tweet_id` und
+				# `max_known_dm_id` zu setzen (falls sie noch leer sind).
+				if @max_known_tweet_id == "0"
+					for array in responses
+						object = array[0]
+						@max_known_tweet_id = object.id if object.constructor==Tweet && object.id.is_bigger_than(@max_known_tweet_id)
+				if @max_known_dm_id == "0"
+					for array in responses
+						object = array[0]
+						@max_known_dm_id = object.id if object.constructor==DirectMessage && object.id.is_bigger_than(@max_known_dm_id)
+				# Jetzt können wir aber wirklich abbrechen.
+				break
+
+			this_id = object.id
+			# Add the html to the temporary html code. But look out for duplicate
+			# tweets (e.g. mentions from friends will be in `home_timeline` as
+			# well as in `mentions`).
+			html.append(object.get_html()) unless this_id==old_id
+			all_objects.push(object)
+			# If we have a `Tweet` or `DirectMessage`, note it's `id`, if
+			# necessary.
+			if object.constructor==Tweet
+				@max_known_tweet_id=object.id if object.id.is_bigger_than(@max_known_tweet_id)
+				@my_last_tweet_id=object.id if object.sender.id==@user.id && object.id.is_bigger_than(@my_last_tweet_id)
+				@min_known_tweet_id=object.id unless @min_known_tweet_id? && object.id.is_bigger_than(@min_known_tweet_id)
+			if object.constructor==DirectMessage
+				@max_known_dm_id=object.id if object.id.is_bigger_than(@max_known_dm_id)
+				@min_known_dm_id=object.id unless @min_known_dm_id? && object.id.is_bigger_than(@min_known_dm_id)
+			# Save this id for recognizing duplicates in the next round.
+			old_id = this_id
+		# After we are done with all tweets, add the collected html to the DOM.
+		@add_html(html, options.fill_bottom?)
+		# Update the counter to display the right number of unread tweets.
+		@update_user_counter()
+		# Call `add_to_collections` (again) in order to correctly link this tweet
+		all_objects.reverse()
+		object.add_to_collections?() for object in all_objects */
 			/*OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/home_timeline.json");
 		    signRequest(request);
 		    Response response = request.send();
@@ -92,7 +339,7 @@ public class Account {
 		    handler.post(new Runnable() {
 				@Override
 				public void run() {
-					elements.addAll(tweets);
+					//elements.addAll(tweets);
 				}
 			});
 		}
