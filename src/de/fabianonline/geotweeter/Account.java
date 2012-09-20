@@ -1,9 +1,8 @@
 package de.fabianonline.geotweeter;
 
-import java.lang.reflect.Type;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.json.JSONArray;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.OAuthRequest;
@@ -16,36 +15,44 @@ import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
 
 public class Account {
 	protected final String LOG = "Account";
-	private Token token = new Token("15006408-Ylfd9Uw5QB7k6BqqXZc8PwKlf5WelTM2msyvtKDYN", "v9dXakehxl1NzakSqdrUDvhomQzyPM9c8mGG3YU");
+	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
+	private Token token;
 	private OAuthService service = new ServiceBuilder().provider(TwitterApi.class).apiKey(Constants.API_KEY).apiSecret(Constants.API_SECRET).debug().build();
 	private TimelineElementAdapter elements;
 	private Handler handler;
+	private StreamRequest stream_request;
 	
-	public Account(TimelineElementAdapter elements) {
+	public Account(TimelineElementAdapter elements, Token token) {
+		this.token = token;
 		handler = new Handler();
 		this.elements = elements;
-		TimelineRefreshThread t = new TimelineRefreshThread(this);
+		TimelineRefreshThread t = new TimelineRefreshThread();
 		new Thread(t).start();
+		//stream_request = new StreamRequest(this);
+		//stream_request.start();
+		all_accounts.add(this);
+	}
+	
+	public void signRequest(OAuthRequest request) {
+		service.signRequest(token, request);
+	}
+	
+	public void stopStream() {
+		stream_request.stop();
 	}
     
 	private class TimelineRefreshThread implements Runnable {
-		private Account account;
-		
-		public TimelineRefreshThread(Account parent) {
-			this.account = parent;
-		}
-		
 		@Override
 		public void run() {
 			/*OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/home_timeline.json");
-		    service.signRequest(token, request);
+		    signRequest(request);
 		    Response response = request.send();
 		    Log.d(LOG,response.getBody());*/
 			String result = "{\"created_at\":\"Mon Sep 17 21:43:03 +0000 2012\",\"id\":247812938398842882,\"id_str\":\"247812938398842882\",\"text\":\"2. Fußball-Bundesliga: Köln und St. Pauli trennen sich torlos http://t.co/h9AwKCkJ\",\"source\":\"<a href=\\\"http://www.tagesschau.de\\\" rel=\\\"nofollow\\\">tagesschau.de<003c/a>\",\"truncated\":false,\"in_reply_to_status_id\":null,\"in_reply_to_status_id_str\":null,\"in_reply_to_user_id\":null,\"in_reply_to_user_id_str\":null,\"in_reply_to_screen_name\":null,\"user\":{\"id\":5734902,\"id_str\":\"5734902\",\"name\":\"tagesschau\",\"screen_name\":\"tagesschau\",\"location\":\"Hamburg\",\"url\":\"http://www.tagesschau.de\",\"description\":\"Die Nachrichten der ARD\",\"protected\":false,\"followers_count\":82720,\"friends_count\":4,\"listed_count\":3528,\"created_at\":\"Thu May 03 08:42:42 +0000 2007\",\"favourites_count\":0,\"utc_offset\":3600,\"time_zone\":\"Berlin\",\"geo_enabled\":false,\"verified\":true,\"statuses_count\":51426,\"lang\":\"de\",\"contributors_enabled\":false,\"is_translator\":false,\"profile_background_color\":\"5985DF\",\"profile_background_image_url\":\"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profile_background_image_url_https\":\"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profile_background_tile\":true,\"profile_image_url\":\"http://a0.twimg.com/profile_images/1704199445/mzl.lbaptnoh_normal.png\",\"profile_image_url_https\":\"https://si0.twimg.com/profile_images/1704199445/mzl.lbaptnoh_normal.png\",\"profile_link_color\":\"0000FF\",\"profile_sidebar_border_color\":\"00044B\",\"profile_sidebar_fill_color\":\"E2EBF7\",\"profile_text_color\":\"00044B\",\"profile_use_background_image\":true,\"default_profile\":false,\"default_profile_image\":false,\"following\":true,\"follow_request_sent\":null,\"notifications\":null},\"geo\":null,\"coordinates\":null,\"place\":null,\"contributors\":null,\"retweet_count\":0,\"favorited\":false,\"retweeted\":false,\"possibly_sensitive\":false}," +
@@ -74,13 +81,10 @@ public class Account {
 			result = result + "," + result;*/
 			result = "[" + result + "]";
 			
-		    JSONArray everything = new JSONArray();
 		    Log.d(LOG, "" + result.length() + " Bytes");
 		    Log.d(LOG, "Starting parsing JSON...");
 		    
-			Gson gson = new Gson();
-			Type collectionType = new TypeToken<Collection<Tweet>>(){}.getType();
-		    Collection<Tweet> tweets = gson.fromJson(result, collectionType);
+			List<Tweet> tweets = JSON.parseObject(result, new TypeReference<List<Tweet>>() {});
 		    
 		    Log.d(LOG, "Finished parsing JSON.");
 		    Log.d(LOG, "" + tweets.size() + " Entries");
@@ -88,10 +92,12 @@ public class Account {
 	}
 
 	public void addTweet(final Tweet tweet) {
+		Log.d(LOG, "Adding Tweet.");
+		//elements.add(tweet);
 		// TODO Auto-generated method stub
 		handler.post(new Runnable() {
 			public void run() {
-				elements.add(tweet);
+				elements.addAsFirst(tweet);
 			}
 		});
 	}
@@ -103,8 +109,14 @@ public class Account {
 			request.addBodyParameter("lat", String.valueOf(location.getLatitude()));
 			request.addBodyParameter("long", String.valueOf(location.getLongitude()));
 		}
-	    service.signRequest(token, request);
-	    Response response = request.send();
-	    if (!response.isSuccessful()) throw new TweetSendException();
+		signRequest(request);
+		Response response = request.send();
+		if (!response.isSuccessful()) throw new TweetSendException();
+	}
+
+	public void addTweetFromJSON(String json) {
+	    Tweet t = JSON.parseObject(json, Tweet.class);
+	    Log.d(LOG, "" + t.id);
+	    if (t.id % 50 == 0 && t.id>0) addTweet(t);
 	}
 }

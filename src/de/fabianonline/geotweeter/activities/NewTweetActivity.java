@@ -45,7 +45,7 @@ public class NewTweetActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		/* Remove all GPSListeners. */
-		lm.removeUpdates(gpslistener);
+		if (gpslistener!=null && lm!=null) lm.removeUpdates(gpslistener);
 	}
 	
 	protected class RemainingCharUpdater implements TextWatcher {

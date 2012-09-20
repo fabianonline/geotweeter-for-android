@@ -23,6 +23,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		this.context = context;
 	}
 	
+	public void addAsFirst(Tweet t) {
+		items.add(0, t);
+		this.notifyDataSetChanged();
+	}
+	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (v==null) {

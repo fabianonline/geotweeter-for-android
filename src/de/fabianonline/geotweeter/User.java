@@ -5,18 +5,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonParseException;
-
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class User {
 	public static HashMap<Long, User> all_users = new HashMap<Long, User>();
 	public Drawable avatar = null;

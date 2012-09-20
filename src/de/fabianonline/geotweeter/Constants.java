@@ -1,5 +1,7 @@
 package de.fabianonline.geotweeter;
 
+import java.util.regex.Pattern;
+
 import android.app.Application;
 
 public class Constants extends Application {
@@ -12,5 +14,6 @@ public class Constants extends Application {
 	public static final String OAUTH_CALLBACK = "oauth://twitter";
 	
 	public static final String URI_VERIFY_CREDENTIALS = "https://api.twitter.com/1.1/account/verify_credentials.json";
-	
+
+	public static final Pattern REGEXP_FIND_SOURCE = Pattern.compile(">(.+)</a>");
 }
