@@ -84,10 +84,17 @@ public class Account {
 		    Log.d(LOG, "" + result.length() + " Bytes");
 		    Log.d(LOG, "Starting parsing JSON...");
 		    
-			List<Tweet> tweets = JSON.parseObject(result, new TypeReference<List<Tweet>>() {});
+			final List<Tweet> tweets = JSON.parseObject(result, new TypeReference<List<Tweet>>() {});
 		    
 		    Log.d(LOG, "Finished parsing JSON.");
 		    Log.d(LOG, "" + tweets.size() + " Entries");
+		    
+		    handler.post(new Runnable() {
+				@Override
+				public void run() {
+					elements.addAll(tweets);
+				}
+			});
 		}
 	}
 

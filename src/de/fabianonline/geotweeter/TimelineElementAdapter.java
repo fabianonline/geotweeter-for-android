@@ -14,13 +14,14 @@ import android.widget.TextView;
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private ArrayList<TimelineElement> items;
 	private Context context;
-	private View last_opened_view = null;
+	public BackgroundImageLoader image_loader;
 
 	public TimelineElementAdapter(Context context, 
 			int textViewResourceId, ArrayList<TimelineElement> objects) {
 		super(context, textViewResourceId, objects);
 		this.items = objects;
 		this.context = context;
+		this.image_loader = new BackgroundImageLoader(context.getApplicationContext());
 	}
 	
 	public void addAsFirst(Tweet t) {
@@ -48,7 +49,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
 			if (img!=null) {
-				img.setImageDrawable(t.getAvatarDrawable());
+				image_loader.displayImage(t.getAvatarSource(), img);
 			}
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());

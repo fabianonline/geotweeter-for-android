@@ -23,4 +23,6 @@
     <string name="btn_new_tweet">Neuer Tweet</string>
     <string name="settings_accounts_title">Konten</string>
     <string name="add_account">Konto hinzufügen</string>
+    <string name="authenticate_account">Konto authentifizieren</string>
+    <string name="tap_for_settings">Dieses Konto bearbeiten</string>
 </resources>

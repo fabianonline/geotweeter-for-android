@@ -1,20 +1,21 @@
 package de.fabianonline.geotweeter.activities;
 
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.TwitterApi;
-import org.scribe.model.Token;
-import org.scribe.oauth.OAuthService;
+import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import de.fabianonline.geotweeter.AccountListElementAdapter;
+import de.fabianonline.geotweeter.AuthenticateAccount;
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.User;
+import de.fabianonline.geotweeter.UserElement;
 
 public class SettingsAccounts extends Activity {
 
@@ -28,9 +29,14 @@ public class SettingsAccounts extends Activity {
 		String accountSet = sp.getString("accounts", null);
 		
 		if (accountSet != null) {
-			String[] accounts = accountSet.split(",");
+			String[] accounts = accountSet.split(" ");
+			ArrayList<User> accountArray = User.getPersistentData(getApplicationContext(), accounts);
+			ArrayList<UserElement> userElements = new ArrayList<UserElement>();
+			for (User u : accountArray) {
+				userElements.add(u);
+			}
 			ListView lv = (ListView)findViewById(R.id.lvAccounts);
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.pref_accounts, accounts);
+			AccountListElementAdapter adapter = new AccountListElementAdapter(this, R.layout.account_list_element, userElements);
 			lv.setAdapter(adapter);
 		}
 		
@@ -46,15 +52,9 @@ public class SettingsAccounts extends Activity {
 	}
 
 	protected void addAccount() {
-		final OAuthService os = new ServiceBuilder()
-		        .provider(TwitterApi.class)
-		        .apiKey(Constants.API_KEY)
-		        .apiSecret(Constants.API_SECRET)
-		        .callback(Constants.OAUTH_CALLBACK)
-		        .build();
-		
-		final Token requestToken = os.getRequestToken();
-		
+
+		Intent intent = new Intent().setClass(this, AuthenticateAccount.class);
+		startActivity(intent);
 
 	}
 }

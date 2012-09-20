@@ -44,6 +44,10 @@ public class Tweet extends TimelineElement{
 		try { created_at = parseableDateFormat.parse(str); } catch (ParseException e) {}
 	}
 	
+	public String getAvatarSource() {
+		return user.profile_image_url_https;
+	}
+	
 	public void setSource(String str) {
 		Matcher m = Constants.REGEXP_FIND_SOURCE.matcher(str);
 		if (m.find()) {
