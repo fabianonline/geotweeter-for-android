@@ -39,7 +39,7 @@ public class AccountListElementAdapter extends ArrayAdapter<UserElement> {
 			}
 			ImageView ivAvatar = (ImageView) v.findViewById(R.id.ivAccountAvatar);
 			if (ivAvatar != null) {
-				ivAvatar.setImageDrawable(ale.getAvatarDrawable());
+				TimelineActivity.background_image_loader.displayImage(ale.getAvatarSource(), ivAvatar);
 			}
 		}
 		

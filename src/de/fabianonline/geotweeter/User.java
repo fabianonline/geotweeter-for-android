@@ -24,6 +24,10 @@ public class User extends UserElement implements java.io.Serializable {
 	public String getScreenName() { 
 		return screen_name; 
 	}
+	
+	public String getAvatarSource() {
+		return profile_image_url_https;
+	}
 
 	@Override
 	public Drawable getAvatarDrawable() {

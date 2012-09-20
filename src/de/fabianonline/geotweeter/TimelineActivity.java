@@ -25,6 +25,7 @@ public class TimelineActivity extends Activity {
 	private ArrayList<TimelineElement> elements;
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	public static Account current_account = null;
+	public static BackgroundImageLoader background_image_loader = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class TimelineActivity extends Activity {
 		setContentView(R.layout.activity_timeline);
 		elements = new ArrayList<TimelineElement>();
 		ta = new TimelineElementAdapter(this, R.layout.timeline_element, elements);
+		background_image_loader = new BackgroundImageLoader(getApplicationContext());
 		ListView l = (ListView) findViewById(R.id.timeline);
 		l.setAdapter(ta);
 		l.setOnItemClickListener(new OnItemClickListener() {

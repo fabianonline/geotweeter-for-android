@@ -45,7 +45,7 @@ public class Tweet extends TimelineElement{
 	}
 	
 	public String getAvatarSource() {
-		return user.profile_image_url_https;
+		return user.getAvatarSource();
 	}
 	
 	public void setSource(String str) {
