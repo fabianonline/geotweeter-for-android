@@ -66,7 +66,7 @@ public class Account {
 	private class TimelineRefreshThread implements Runnable {
 		private static final String LOG = "TimelineRefreshThread";
 		protected boolean do_update_bottom = false;
-		protected ArrayList<ArrayList<TimelineElement>> responses = new ArrayList<ArrayList<TimelineElement>>();
+		protected ArrayList<ArrayList<TimelineElement>> responses = new ArrayList<ArrayList<TimelineElement>>(4);
 		protected ArrayList<TimelineElement> main_data = new ArrayList<TimelineElement>();
 		protected int count_running_threads = 0;
 		protected int count_errored_threads = 0;
@@ -108,22 +108,20 @@ public class Account {
 			
 			/* Start all the requests */
 			count_running_threads = 4;
-			new Thread(new RunnableRequestExecutor(req_timeline, true, new TypeReference<ArrayList<Tweet>>(){})).start();
-			new Thread(new RunnableRequestExecutor(req_mentions, false, new TypeReference<ArrayList<Tweet>>(){})).start();
-			new Thread(new RunnableRequestExecutor(req_dms_sent, false, new TypeReference<ArrayList<DirectMessage>>(){})).start();
-			new Thread(new RunnableRequestExecutor(req_dms_received, false, new TypeReference<ArrayList<DirectMessage>>(){})).start();
+			new Thread(new RunnableRequestTweetsExecutor(req_timeline, true), "FetchTimelineThread").start();
+			new Thread(new RunnableRequestTweetsExecutor(req_mentions, false), "FetchMentionsThread").start();
+			new Thread(new RunnableRequestDMsExecutor(req_dms_sent, false), "FetchSentDMThread").start();
+			new Thread(new RunnableRequestDMsExecutor(req_dms_received, false), "FetchReceivedDMThread").start();
 		}
 		
-		private class RunnableRequestExecutor implements Runnable {
+		private class RunnableRequestTweetsExecutor implements Runnable {
 			private final static String LOG = "RunnableRequestExecutor";
 			private boolean is_main_data;
 			private OAuthRequest request;
-			TypeReference type;
 			
-			public RunnableRequestExecutor(OAuthRequest request, boolean is_main_data, TypeReference type) {
+			public RunnableRequestTweetsExecutor(OAuthRequest request, boolean is_main_data) {
 				this.is_main_data = is_main_data;
 				this.request = request;
-				this.type = type;
 			}
 			
 			@Override
@@ -132,20 +130,39 @@ public class Account {
 				signRequest(request);
 				Response response;
 				try {
+					long start_time = System.currentTimeMillis();
 					response = request.send();
+					Log.d(LOG, "Download finished: " + (System.currentTimeMillis()-start_time) + "ms");
 				} catch (OAuthException e) {
 					new RunnableAfterEachErroredRequest().run();
 					return;
 				}
 				if (response.isSuccessful()) {
 					Log.d(LOG, "Started parsing JSON...");
-					@SuppressWarnings("unchecked")
-					ArrayList<TimelineElement> elements = JSON.parseObject(response.getBody(), type);
-					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements.");
+					long start_time = System.currentTimeMillis();
+					ArrayList<TimelineElement> elements = parse(response.getBody());
+					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time)/1000 + "s");
 					new RunnableAfterEachSuccessfulRequest().run(elements, is_main_data);
 				} else {
 					new RunnableAfterEachErroredRequest().run();
 				}
+			}
+			
+			@SuppressWarnings("unchecked")
+			protected ArrayList<TimelineElement> parse(String json) {
+				return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<Tweet>>(){});
+			}
+		}
+		
+		private class RunnableRequestDMsExecutor extends RunnableRequestTweetsExecutor {
+			public RunnableRequestDMsExecutor(OAuthRequest request, boolean is_main_data) {
+				super(request, is_main_data);
+			}
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			protected ArrayList<TimelineElement> parse(String json) {
+				return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<DirectMessage>>(){});
 			}
 		}
 		
