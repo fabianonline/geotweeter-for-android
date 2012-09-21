@@ -2,6 +2,9 @@ package de.fabianonline.geotweeter;
 
 import java.util.ArrayList;
 
+import de.fabianonline.geotweeter.timelineelements.TimelineElement;
+import de.fabianonline.geotweeter.timelineelements.Tweet;
+
 import android.content.Context;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -22,8 +25,13 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		this.context = context;
 	}
 	
-	public void addAsFirst(Tweet t) {
+	public void addAsFirst(TimelineElement t) {
 		items.add(0, t);
+		this.notifyDataSetChanged();
+	}
+	
+	public void addAllAsFirst(ArrayList<TimelineElement> elements) {
+		items.addAll(0, elements);
 		this.notifyDataSetChanged();
 	}
 	

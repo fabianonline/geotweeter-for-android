@@ -17,6 +17,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
+import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
 public class TimelineActivity extends Activity {
 	private final String LOG = "TimelineActivity";
