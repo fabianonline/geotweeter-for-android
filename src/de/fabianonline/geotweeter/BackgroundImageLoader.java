@@ -57,6 +57,15 @@ public class BackgroundImageLoader {
 		@SuppressWarnings("deprecation")
 		@Override
 		public void run() {
+			if (bitmap_cache.containsKey(url)) {
+				((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						image_view.setImageBitmap(bitmap_cache.get(url));
+					}
+				});
+				return;
+			}
 			Log.d("ImageLoader", "Loading "+url);
 			if (imageViewReused(url, image_view)) return;
 			try {
