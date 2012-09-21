@@ -140,7 +140,10 @@ public class Account {
 				if (response.isSuccessful()) {
 					Log.d(LOG, "Started parsing JSON...");
 					long start_time = System.currentTimeMillis();
-					ArrayList<TimelineElement> elements = parse(response.getBody());
+					ArrayList<TimelineElement> elements = null;
+					synchronized(this) {
+						elements = parse(response.getBody());
+					}
 					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time)/1000 + "s");
 					new RunnableAfterEachSuccessfulRequest().run(elements, is_main_data);
 				} else {
@@ -229,26 +232,27 @@ public class Account {
 			TimelineElement element = responses.get(newest_index).remove(0);
 			if (responses.get(newest_index).size()==0) {
 				responses.remove(newest_index);
-			}
-			
-			if (do_clip && newest_index==0 && responses.get(0).size()==0) {
-				if (max_known_tweet_id==0) {
-					for(ArrayList<TimelineElement> array : responses) {
-						TimelineElement first_element = array.get(0);
-						if (first_element instanceof Tweet && ((Tweet) first_element).id>max_known_tweet_id) {
-							max_known_tweet_id = ((Tweet)first_element).id;
+
+				if (newest_index==0) {
+					if (max_known_tweet_id==0) {
+						for(ArrayList<TimelineElement> array : responses) {
+							TimelineElement first_element = array.get(0);
+							if (first_element instanceof Tweet && ((Tweet) first_element).id>max_known_tweet_id) {
+								max_known_tweet_id = ((Tweet)first_element).id;
+							}
 						}
 					}
-				}
-				if (max_known_dm_id==0) {
-					for(ArrayList<TimelineElement> array : responses) {
-						TimelineElement first_element = array.get(0);
-						if (first_element instanceof DirectMessage && first_element.getID()>max_known_dm_id) {
-							max_known_dm_id = first_element.getID();
+					if (max_known_dm_id==0) {
+						for(ArrayList<TimelineElement> array : responses) {
+							TimelineElement first_element = array.get(0);
+							if (first_element instanceof DirectMessage && first_element.getID()>max_known_dm_id) {
+								max_known_dm_id = first_element.getID();
+							}
 						}
 					}
+					Log.d(LOG, "Breaking!");
+					break;
 				}
-				break;
 			}
 			
 			long element_id = element.getID();
