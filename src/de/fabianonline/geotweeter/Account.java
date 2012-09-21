@@ -70,6 +70,7 @@ public class Account {
 		protected ArrayList<TimelineElement> main_data = new ArrayList<TimelineElement>();
 		protected int count_running_threads = 0;
 		protected int count_errored_threads = 0;
+		protected final Object parse_lock = new Object();
 		
 		public TimelineRefreshThread(boolean do_update_bottom) {
 			this.do_update_bottom = do_update_bottom;
@@ -141,7 +142,7 @@ public class Account {
 					Log.d(LOG, "Started parsing JSON...");
 					long start_time = System.currentTimeMillis();
 					ArrayList<TimelineElement> elements = null;
-					synchronized(this) {
+					synchronized(parse_lock) {
 						elements = parse(response.getBody());
 					}
 					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time)/1000 + "s");
