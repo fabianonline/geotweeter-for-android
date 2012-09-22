@@ -43,4 +43,7 @@ public class DirectMessage extends Tweet {
 		return recipient.getAvatarSource();
 	}
 	
+	public String getSenderScreenName() {
+		return sender.getScreenName();
+	}
 }

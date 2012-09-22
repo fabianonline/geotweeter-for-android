@@ -287,12 +287,15 @@ public class Account {
 		});
 	}
 
-	public void sendTweet(String text, Location location) throws TweetSendException {
+	public void sendTweet(String text, Location location, long reply_to_id) throws TweetSendException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.twitter.com/1/statuses/update.json");
 		request.addBodyParameter("status", text);
 		if (location!=null) {
 			request.addBodyParameter("lat", String.valueOf(location.getLatitude()));
 			request.addBodyParameter("long", String.valueOf(location.getLongitude()));
+		}
+		if (reply_to_id > 0) {
+			request.addBodyParameter("in_reply_to_status_id", String.valueOf(reply_to_id));
 		}
 		signRequest(request);
 		Response response = request.send();

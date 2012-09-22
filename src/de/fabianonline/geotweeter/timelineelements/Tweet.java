@@ -52,4 +52,12 @@ public class Tweet extends TimelineElement{
 	public Drawable getAvatarDrawable() { return user.avatar; }
 
 	public CharSequence getSourceText() { return new SimpleDateFormat("dd.MM. HH:mm").format(created_at) + " from " + source; }
+	public String getSenderScreenName() {
+		return user.getScreenName();
+	}
+	
+	@Override
+	public boolean isReplyable() {
+		return true;
+	}
 }

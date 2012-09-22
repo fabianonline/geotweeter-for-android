@@ -16,10 +16,16 @@ public abstract class TimelineElement {
 	abstract public CharSequence getSourceText();
 	abstract public String getAvatarSource();
 	abstract public long getID();
+	abstract public String getSenderScreenName();
 	public Date getDate() {
 		if (created_at != null) {
 			return created_at;
 		}
 		return new Date();
 	}
+
+	public boolean isReplyable() {
+		return false;
+	}
+	
 }

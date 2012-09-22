@@ -22,4 +22,8 @@ public abstract class Event extends TimelineElement {
 	public Date getDate() {
 		return new Date();
 	}
+	
+	public String getSenderScreenName() {
+		return null;
+	}
 }

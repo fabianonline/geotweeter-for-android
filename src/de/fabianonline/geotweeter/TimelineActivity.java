@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
@@ -41,11 +42,25 @@ public class TimelineActivity extends Activity {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Log.d(LOG, "In onItemClick");
 				view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
 			}
 		});
 		addAccount(new Account(ta, new Token("aa", "aa")));
+		l.setOnItemLongClickListener(new OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if (elements.get(position).isReplyable()) {
+					Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
+					replyIntent.putExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_tweet_id", elements.get(position).getID());
+					replyIntent.putExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_user", elements.get(position).getSenderScreenName());
+					startActivity(replyIntent);
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
+		
 	}
 
 	public void onDestroy() {
