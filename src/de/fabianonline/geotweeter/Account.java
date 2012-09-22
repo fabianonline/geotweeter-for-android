@@ -35,7 +35,7 @@ public class Account {
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	private Token token;
 	private OAuthService service = new ServiceBuilder().provider(TwitterApi.class).apiKey(Constants.API_KEY).apiSecret(Constants.API_SECRET).debug().build();
-	private TimelineElementAdapter elements;
+	public TimelineElementAdapter elements;
 	private Handler handler;
 	private StreamRequest stream_request;
 	private long max_read_tweet_id = 0;
@@ -146,7 +146,7 @@ public class Account {
 			}
 			if (count_errored_threads==0) {
 				parseData(responses, do_update_bottom);
-				//stream_request.start();
+				stream_request.start();
 			} else {
 				// TODO Try again after some time
 				// TODO Show info message
@@ -183,7 +183,7 @@ public class Account {
 					synchronized(parse_lock) {
 						elements = parse(response.getBody());
 					}
-					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time)/1000 + "s");
+					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements at " + (System.currentTimeMillis()-start_time)/elements.size() + "ms/element");
 					runAfterEachSuccesfullRequest(elements, is_main_data);
 				} else {
 					runAfterEachFailedRequest();
@@ -303,11 +303,5 @@ public class Account {
 		signRequest(request);
 		Response response = request.send();
 		if (!response.isSuccessful()) throw new TweetSendException();
-	}
-
-	public void addTweetFromJSON(String json) {
-	    Tweet t = JSON.parseObject(json, Tweet.class);
-	    Log.d(LOG, "" + t.id);
-	    if (t.id % 50 == 0 && t.id>0) addTweet(t);
 	}
 }

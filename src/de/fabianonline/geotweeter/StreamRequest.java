@@ -52,7 +52,7 @@ public class StreamRequest {
 		public void startRequest() {
 			buffer = "";
 			String line;
-			OAuthRequest request = new OAuthRequest(Verb.GET, "https://stream.twitter.com/1/statuses/sample.json");
+			OAuthRequest request = new OAuthRequest(Verb.GET, "https://userstream.twitter.com/1.1/user.json");
 			request.addQuerystringParameter("delimited", "length");
 			account.signRequest(request);
 			Response response = request.send();
@@ -90,7 +90,7 @@ public class StreamRequest {
 					int bytes = Integer.parseInt(m.group(1)) - 1;
 					if (text.length()>=bytes) {
 						buffer = text.substring(bytes);
-						account.addTweetFromJSON(text.substring(0, bytes));
+						account.elements.addAsFirst(Utils.jsonToNativeObject(text.substring(0, bytes)));
 					}
 				} else {
 					return;

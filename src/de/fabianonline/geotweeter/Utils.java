@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.FavoriteEvent;
@@ -35,33 +36,34 @@ public class Utils {
 		return length;
 	}
 	
-	public static TimelineElement jsonObjectToNativeObject(JSONObject obj) {
+	public static TimelineElement jsonToNativeObject(String json) {
+		JSONObject obj = JSON.parseObject(json, Feature.DisableCircularReferenceDetect);
 		try {
 			if (obj.containsKey("text") && obj.containsKey("recipient")) {
-				return JSON.toJavaObject(obj, DirectMessage.class);
+				return JSON.parseObject(json, DirectMessage.class);
 			}
 			if (obj.containsKey("direct_message")) {
-				return JSON.toJavaObject(obj.getJSONObject("direct_message"), DirectMessage.class);
+				return JSON.parseObject(obj.getJSONObject("direct_message").toJSONString(), DirectMessage.class);
 			}
 			if (obj.containsKey("text")) {
-				return JSON.parseObject(obj.toJSONString(), Tweet.class);
+				return JSON.parseObject(json, Tweet.class);
 			}
 			if (obj.containsKey("event")) {
 				String event_type = obj.getString("event");
 				if (event_type.equals("follow")) {
-					return JSON.toJavaObject(obj, FollowEvent.class);
+					return JSON.parseObject(json, FollowEvent.class);
 				}
 				if (event_type.equals("favorite")) {
-					return JSON.toJavaObject(obj, FavoriteEvent.class);
+					return JSON.parseObject(json, FavoriteEvent.class);
 				}
 				if (event_type.equals("list_member_added")) {
-					return JSON.toJavaObject(obj, ListMemberAddedEvent.class);
+					return JSON.parseObject(json, ListMemberAddedEvent.class);
 				}
 				if (event_type.equals("list_member_removed")) {
-					return JSON.toJavaObject(obj, ListMemberRemovedEvent.class);
+					return JSON.parseObject(json, ListMemberRemovedEvent.class);
 				}
 				if (event_type.equals("block") || event_type.equals("user_update") || event_type.equals("unfavorite")) {
-					return JSON.toJavaObject(obj, NotShownEvent.class);
+					return JSON.parseObject(json, NotShownEvent.class);
 				}
 			}
 			throw new JSONException("blubb");
