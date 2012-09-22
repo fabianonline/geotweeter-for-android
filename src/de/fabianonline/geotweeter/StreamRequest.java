@@ -6,9 +6,12 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
+
+import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
 
 import android.util.Log;
 
@@ -80,7 +83,13 @@ public class StreamRequest {
 					int bytes = Integer.parseInt(m.group(1));
 					if (text.length()>=bytes) {
 						buffer = text.substring(bytes);
-						account.addTweet(Utils.jsonToNativeObject(text.substring(0, bytes)));
+						try {
+							account.addTweet(Utils.jsonToNativeObject(text.substring(0, bytes)));
+						} catch (UnknownJSONObjectException ex) {
+							// Ignore it.
+						} catch (JSONException ex) {
+							// Ignore it.
+						}
 					} else {
 						return;
 					}
