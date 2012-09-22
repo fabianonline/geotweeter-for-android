@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.Feature;
 
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
@@ -191,7 +192,7 @@ public class Account {
 			
 			@SuppressWarnings("unchecked")
 			protected ArrayList<TimelineElement> parse(String json) {
-				return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<Tweet>>(){});
+				return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<Tweet>>(){}, Feature.DisableCircularReferenceDetect);
 			}
 		}
 		
