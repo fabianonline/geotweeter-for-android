@@ -23,11 +23,13 @@ public class BackgroundImageLoader {
 	
 	private Map<String, Bitmap> bitmap_cache = Collections.synchronizedMap(new WeakHashMap<String, Bitmap>());
 	private Map<ImageView, String> image_views = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-	ExecutorService executor_service;
+	static ExecutorService executor_service = null;
 	final int loading_image_id = R.drawable.ic_launcher;
 	
 	public BackgroundImageLoader(Context applicationContext) {
-		executor_service = Executors.newFixedThreadPool(5);
+		if (executor_service == null) {
+			executor_service = Executors.newFixedThreadPool(5);
+		}
 	}
 
 	
