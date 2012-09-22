@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public abstract class TimelineElement {
-	protected Date created_at;
+	protected Date created_at = new Date();
 	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
 	
 	public void setCreated_at(String str) {

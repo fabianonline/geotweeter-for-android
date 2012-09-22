@@ -1,9 +1,7 @@
 package de.fabianonline.geotweeter;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
@@ -14,14 +12,11 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
-import android.graphics.Path.FillType;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.Feature;
 
@@ -49,8 +44,7 @@ public class Account {
 		this.token = token;
 		handler = new Handler();
 		this.elements = elements;
-		TimelineRefreshThread t = new TimelineRefreshThread(false);
-		new Thread(t).start();
+		new Thread(new TimelineRefreshThread(false)).start();
 		stream_request = new StreamRequest(this);
 		//stream_request.start();
 		all_accounts.add(this);
@@ -282,13 +276,13 @@ public class Account {
 		});
 	}
 
-	public void addTweet(final Tweet tweet) {
+	public void addTweet(final TimelineElement elm) {
 		Log.d(LOG, "Adding Tweet.");
 		//elements.add(tweet);
 		// TODO Auto-generated method stub
 		handler.post(new Runnable() {
 			public void run() {
-				elements.addAsFirst(tweet);
+				elements.addAsFirst(elm);
 			}
 		});
 	}
