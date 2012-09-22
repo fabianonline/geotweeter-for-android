@@ -115,6 +115,43 @@ public class Account {
 			new Thread(new RunnableRequestDMsExecutor(req_dms_received, false), "FetchReceivedDMThread").start();
 		}
 		
+		private void runAfterEachSuccesfullRequest(ArrayList<TimelineElement> elements, boolean is_main_data) {
+			Log.d(LOG, "Started...");
+			if (is_main_data) {
+				main_data = elements;
+			} else {
+				responses.add(elements);
+			}
+			count_running_threads--;
+			Log.d(LOG, "Remaining running threads: " + count_running_threads);
+			if (count_running_threads==0) {
+				runAfterAllRequestsCompleted();
+			}
+		}
+		
+		private void runAfterEachFailedRequest() {
+			count_running_threads--;
+			count_errored_threads++;
+			// TODO Show error message
+			if (count_running_threads==0) {
+				runAfterAllRequestsCompleted();
+			}
+		}
+		
+		private void runAfterAllRequestsCompleted() {
+			Log.d(LOG, "All Requests completed.");
+			if (!main_data.isEmpty()) {
+				responses.add(0, main_data);
+			}
+			if (count_errored_threads==0) {
+				parseData(responses, do_update_bottom);
+				//stream_request.start();
+			} else {
+				// TODO Try again after some time
+				// TODO Show info message
+			}
+		}
+		
 		private class RunnableRequestTweetsExecutor implements Runnable {
 			private final static String LOG = "RunnableRequestExecutor";
 			private boolean is_main_data;
@@ -135,7 +172,7 @@ public class Account {
 					response = request.send();
 					Log.d(LOG, "Download finished: " + (System.currentTimeMillis()-start_time) + "ms");
 				} catch (OAuthException e) {
-					new RunnableAfterEachErroredRequest().run();
+					runAfterEachFailedRequest();
 					return;
 				}
 				if (response.isSuccessful()) {
@@ -146,9 +183,9 @@ public class Account {
 						elements = parse(response.getBody());
 					}
 					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time)/1000 + "s");
-					new RunnableAfterEachSuccessfulRequest().run(elements, is_main_data);
+					runAfterEachSuccesfullRequest(elements, is_main_data);
 				} else {
-					new RunnableAfterEachErroredRequest().run();
+					runAfterEachFailedRequest();
 				}
 			}
 			
@@ -167,51 +204,6 @@ public class Account {
 			@Override
 			protected ArrayList<TimelineElement> parse(String json) {
 				return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<DirectMessage>>(){});
-			}
-		}
-		
-		private class RunnableAfterAllRequestsCompleted {
-			private static final String LOG = "RunnableAfterAllRequestsCompleted";
-			public void run() {
-				Log.d(LOG, "Started.");
-				if (!main_data.isEmpty()) {
-					responses.add(0, main_data);
-				}
-				if (count_errored_threads==0) {
-					parseData(responses, do_update_bottom);
-					//stream_request.start();
-				} else {
-					// TODO Try again after some time
-					// TODO Show info message
-				}
-			}
-		}
-		
-		private class RunnableAfterEachSuccessfulRequest {
-			private static final String LOG = "RunnableAfterEachSuccessfulRequest";
-			public void run(ArrayList<TimelineElement> elements, boolean is_main_data) {
-				Log.d(LOG, "Started...");
-				if (is_main_data) {
-					main_data = elements;
-				} else {
-					responses.add(elements);
-				}
-				count_running_threads--;
-				Log.d(LOG, "Remaining running threads: " + count_running_threads);
-				if (count_running_threads==0) {
-					new RunnableAfterAllRequestsCompleted().run();
-				}
-			}
-		}
-		
-		private class RunnableAfterEachErroredRequest {
-			public void run() {
-				count_running_threads--;
-				count_errored_threads++;
-				// TODO Show error message
-				if (count_running_threads==0) {
-					new RunnableAfterAllRequestsCompleted().run();
-				}
 			}
 		}
 	}
