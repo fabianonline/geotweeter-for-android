@@ -62,6 +62,8 @@ public class AuthenticateAccount extends Activity {
 		
 		authUser.storeUser(getApplicationContext());
 		
+		
+		
 	}
 	
 	private class AuthenticationTask extends AsyncTask<Void, Boolean, Boolean> {
@@ -113,7 +115,6 @@ public class AuthenticateAccount extends Activity {
 			if (uri.getHost().equals("twitter")) {
 				OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS);
 				req.addHeader("skip_status", "true");
-//				req.addBodyParameter("skip_status", "true");
 				os.signRequest(accessToken, req);
 				Response response = req.send();
 				if (response.getCode() == 200) {

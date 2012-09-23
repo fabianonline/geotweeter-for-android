@@ -21,16 +21,25 @@ import com.alibaba.fastjson.TypeReference;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
 
 public class Account {
+	
 	protected final String LOG = "Account";
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	private Token token;
-	private OAuthService service = new ServiceBuilder().provider(TwitterApi.class).apiKey(Constants.API_KEY).apiSecret(Constants.API_SECRET).debug().build();
+	private OAuthService service = new ServiceBuilder()
+											.provider(TwitterApi.class)
+											.apiKey(Constants.API_KEY)
+											.apiSecret(Constants.API_SECRET)
+											.debug()
+											.build();
 	private TimelineElementAdapter elements;
 	private Handler handler;
 	private StreamRequest stream_request;
 	
-	public Account(TimelineElementAdapter elements, Token token) {
+	private User user;
+	
+	public Account(TimelineElementAdapter elements, Token token, User user) {
 		this.token = token;
+		this.user = user;
 		handler = new Handler();
 		this.elements = elements;
 		TimelineRefreshThread t = new TimelineRefreshThread();
@@ -101,7 +110,6 @@ public class Account {
 	public void addTweet(final Tweet tweet) {
 		Log.d(LOG, "Adding Tweet.");
 		//elements.add(tweet);
-		// TODO Auto-generated method stub
 		handler.post(new Runnable() {
 			public void run() {
 				elements.addAsFirst(tweet);
@@ -112,18 +120,25 @@ public class Account {
 	public void sendTweet(String text, Location location) throws TweetSendException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.twitter.com/1/statuses/update.json");
 		request.addBodyParameter("status", text);
-		if (location!=null) {
+		
+		if (location != null) {
 			request.addBodyParameter("lat", String.valueOf(location.getLatitude()));
 			request.addBodyParameter("long", String.valueOf(location.getLongitude()));
 		}
+		
 		signRequest(request);
 		Response response = request.send();
-		if (!response.isSuccessful()) throw new TweetSendException();
+		
+		if (!response.isSuccessful()) { 
+			throw new TweetSendException();
+		}
 	}
 
 	public void addTweetFromJSON(String json) {
 	    Tweet t = JSON.parseObject(json, Tweet.class);
 	    Log.d(LOG, "" + t.id);
-	    if (t.id % 50 == 0 && t.id>0) addTweet(t);
+	    if (t.id % 50 == 0 && t.id > 0) { 
+	    	addTweet(t);
+	    }
 	}
 }
