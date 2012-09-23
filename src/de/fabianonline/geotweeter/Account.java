@@ -41,11 +41,16 @@ import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class Account {
+	
 	protected final String LOG = "Account";
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	private Token token;
-	private OAuthService service = new ServiceBuilder().provider(TwitterApi.class).apiKey(Constants.API_KEY).apiSecret(Constants.API_SECRET).debug().build();
-	public TimelineElementAdapter elements;
+	private OAuthService service = new ServiceBuilder()
+											.provider(TwitterApi.class)
+											.apiKey(Constants.API_KEY)
+											.apiSecret(Constants.API_SECRET)
+											.debug()
+											.build();
 	private Handler handler;
 	private StreamRequest stream_request;
 	private long max_read_tweet_id = 0;
@@ -56,8 +61,11 @@ public class Account {
 	private long min_known_dm_id = -1;
 	private User user;
 	
-	public Account(TimelineElementAdapter elements, Token token) {
+	private User user;
+	
+	public Account(TimelineElementAdapter elements, Token token, User user) {
 		this.token = token;
+		this.user = user;
 		handler = new Handler();
 		this.elements = elements;
 		new Thread(new TimelineRefreshThread(false)).start();
@@ -295,7 +303,6 @@ public class Account {
 	public void addTweet(final TimelineElement elm) {
 		Log.d(LOG, "Adding Tweet.");
 		//elements.add(tweet);
-		// TODO Auto-generated method stub
 		handler.post(new Runnable() {
 			public void run() {
 				elements.addAsFirst(elm);
@@ -306,16 +313,21 @@ public class Account {
 	public void sendTweet(String text, Location location, long reply_to_id) throws TweetSendException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.twitter.com/1/statuses/update.json");
 		request.addBodyParameter("status", text);
-		if (location!=null) {
+		
+		if (location != null) {
 			request.addBodyParameter("lat", String.valueOf(location.getLatitude()));
 			request.addBodyParameter("long", String.valueOf(location.getLongitude()));
 		}
+		
 		if (reply_to_id > 0) {
 			request.addBodyParameter("in_reply_to_status_id", String.valueOf(reply_to_id));
 		}
 		signRequest(request);
 		Response response = request.send();
-		if (!response.isSuccessful()) throw new TweetSendException();
+		
+		if (!response.isSuccessful()) { 
+			throw new TweetSendException();
+		}
 	}
 
 	public void registerForGCMMessages() {

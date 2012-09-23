@@ -8,6 +8,7 @@ import com.google.android.gcm.GCMRegistrar;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
@@ -47,7 +47,16 @@ public class TimelineActivity extends Activity {
 				view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
 			}
 		});
-		addAccount(new Account(ta, new Token("aa", "aa")));
+		
+		ArrayList<User> auth_users = getAuthUsers();
+		
+		if (auth_users != null) {
+			for (User u : auth_users) {
+				addAccount(new Account(ta, getUserToken(u), u));
+			}
+		}
+		
+//		addAccount(new Account(ta, new Token("aa", "aa")));
 		l.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -81,6 +90,26 @@ public class TimelineActivity extends Activity {
 		}
 	}
 
+	private Token getUserToken(User u) {
+		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
+		return new Token(sp.getString("access_token."+String.valueOf(u.id), null), 
+						  sp.getString("access_secret."+String.valueOf(u.id), null));
+	}
+
+	private ArrayList<User> getAuthUsers() {
+		ArrayList<User> result = null;
+		
+		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
+		String accountString = sp.getString("accounts", null);
+		
+		if (accountString != null) {
+			String[] accounts = accountString.split(" ");
+			result = User.getPersistentData(getApplicationContext(), accounts);
+		}
+
+		return result;
+	}
+	
 	public void addAccount(Account acc) {
 		accounts.add(acc);
 		if (current_account == null) {

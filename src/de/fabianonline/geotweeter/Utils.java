@@ -31,7 +31,9 @@ public class Utils {
 			/* Original-Link-Länge abziehen und die gekürzten-20-Zeichen hinzuaddieren. */
 			length = length - m.group(1).length() + 20;
 			/* War es ein https-Link, packen wir noch ein Zeichen für den gekürzten https-Link dazu. */
-			if (m.group(2).equalsIgnoreCase("https")) length++;
+			if (m.group(2).equalsIgnoreCase("https")) { 
+				length++;
+			}
 		}
 		
 		return length;
