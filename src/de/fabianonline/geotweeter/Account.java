@@ -1,10 +1,6 @@
 package de.fabianonline.geotweeter;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,9 +22,7 @@ import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
 import android.location.Location;
-import android.net.wifi.WifiConfiguration.Protocol;
 import android.os.Handler;
-import android.text.style.EasyEditSpan;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
