@@ -1,8 +1,21 @@
 package de.fabianonline.geotweeter;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.exceptions.OAuthException;
@@ -13,7 +26,9 @@ import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
 import android.location.Location;
+import android.net.wifi.WifiConfiguration.Protocol;
 import android.os.Handler;
+import android.text.style.EasyEditSpan;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -39,6 +54,7 @@ public class Account {
 	private long min_known_tweet_id = -1;
 	private long max_known_dm_id = 0;
 	private long min_known_dm_id = -1;
+	private User user;
 	
 	public Account(TimelineElementAdapter elements, Token token) {
 		this.token = token;
@@ -140,7 +156,7 @@ public class Account {
 			}
 			if (count_errored_threads==0) {
 				parseData(responses, do_update_bottom);
-				stream_request.start();
+				//stream_request.start();
 			} else {
 				// TODO Try again after some time
 				// TODO Show info message
@@ -300,5 +316,27 @@ public class Account {
 		signRequest(request);
 		Response response = request.send();
 		if (!response.isSuccessful()) throw new TweetSendException();
+	}
+
+	public void registerForGCMMessages() {
+		Log.d(LOG, "Registering...");
+		new Thread(new Runnable() {
+			public void run() {
+				HttpClient http_client = new DefaultHttpClient();
+				HttpPost http_post = new HttpPost(Constants.GCM_SERVER_URL);
+				try {
+					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(3);
+					name_value_pair.add(new BasicNameValuePair("reg_id", TimelineActivity.reg_id));
+					name_value_pair.add(new BasicNameValuePair("token", token.getToken()));
+					name_value_pair.add(new BasicNameValuePair("secret", token.getSecret()));
+					http_post.setEntity(new UrlEncodedFormEntity(name_value_pair));
+					http_client.execute(http_post);
+				} catch(ClientProtocolException e) {
+					e.printStackTrace();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}, "register").start();
 	}
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.scribe.model.Token;
 
+import com.google.android.gcm.GCMRegistrar;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
@@ -22,12 +24,12 @@ import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
 public class TimelineActivity extends Activity {
 	private final String LOG = "TimelineActivity";
-
 	private TimelineElementAdapter ta;
 	private ArrayList<TimelineElement> elements;
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
+	public static String reg_id;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,15 @@ public class TimelineActivity extends Activity {
 			}
 		});
 		
+		GCMRegistrar.checkDevice(this);
+		GCMRegistrar.checkManifest(this);
+		reg_id = GCMRegistrar.getRegistrationId(this);
+		if (reg_id.equals("")) {
+			GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
+		} else {
+			Log.d(LOG, "Already registered.");
+		}
+		Log.d(LOG, ""+reg_id);
 	}
 
 	public void onDestroy() {
@@ -72,8 +83,10 @@ public class TimelineActivity extends Activity {
 
 	public void addAccount(Account acc) {
 		accounts.add(acc);
-		if (current_account == null)
+		if (current_account == null) {
 			current_account = acc;
+		}
+		acc.registerForGCMMessages();
 	}
 
 	public void newTweetClickHandler(View v) {
