@@ -328,7 +328,7 @@ public class Account {
 		new Thread(new Runnable() {
 			public void run() {
 				HttpClient http_client = new DefaultHttpClient();
-				HttpPost http_post = new HttpPost(Constants.GCM_SERVER_URL);
+				HttpPost http_post = new HttpPost(Constants.GCM_SERVER_URL + "register");
 				try {
 					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(3);
 					name_value_pair.add(new BasicNameValuePair("reg_id", TimelineActivity.reg_id));
