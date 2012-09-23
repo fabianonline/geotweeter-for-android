@@ -1,0 +1,4 @@
+PassengerEnabled on
+PassengerAppRoot /var/www/geotweeter-gcm
+RackBaseURI /geotweeter-gcm
+
