@@ -28,6 +28,7 @@ public class SettingsAccounts extends Activity {
 		
 		String accountSet = sp.getString("accounts", null);
 		
+		
 		if (accountSet != null) {
 			String[] accounts = accountSet.split(" ");
 			ArrayList<User> accountArray = User.getPersistentData(getApplicationContext(), accounts);

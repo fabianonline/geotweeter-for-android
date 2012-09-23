@@ -60,8 +60,7 @@ public class Account {
 	private long max_known_dm_id = 0;
 	private long min_known_dm_id = -1;
 	private User user;
-	
-	private User user;
+	private TimelineElementAdapter elements;
 	
 	public Account(TimelineElementAdapter elements, Token token, User user) {
 		this.token = token;
