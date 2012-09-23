@@ -1,19 +1,17 @@
 package de.fabianonline.geotweeter;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.TwitterApi;
+import org.json.JSONException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
-import org.scribe.model.Token;
 import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
+
+import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
 
 import android.util.Log;
 
@@ -28,7 +26,7 @@ public class StreamRequest {
 	
 	public void start() {
 		thread = new StreamRequestThread();
-		new Thread(thread).start();
+		new Thread(thread, "StreamRequestThred").start();
 	}
 	
 	public void stop() {
@@ -42,7 +40,7 @@ public class StreamRequest {
 	
 	private class StreamRequestThread implements Runnable {
 		private static final String LOG = "StreamRequestThread";
-		private final Pattern part_finder_pattern = Pattern.compile("([0-9]+)([\n\r]+.+)$");
+		private final Pattern part_finder_pattern = Pattern.compile("([0-9]+)([\n\r]+.+)$", Pattern.DOTALL);
 		public InputStream stream;
 		String buffer = "";
 		public void run() {
@@ -50,51 +48,51 @@ public class StreamRequest {
 		}
 		
 		public void startRequest() {
+			Log.d(LOG, "Starting Stream.");
 			buffer = "";
+			char ch[] = new char[1]; 
 			String line;
-			OAuthRequest request = new OAuthRequest(Verb.GET, "https://stream.twitter.com/1/statuses/sample.json");
+			OAuthRequest request = new OAuthRequest(Verb.GET, "https://userstream.twitter.com/1.1/user.json");
 			request.addQuerystringParameter("delimited", "length");
 			account.signRequest(request);
 			Response response = request.send();
 			stream = response.getStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			InputStreamReader reader = new InputStreamReader(stream);
+			Log.d(LOG, "Waiting for first data.");
 			try {
-				while ((line = reader.readLine()) != null) {
-					buffer += "\n" + line;
-					processBuffer();
-					try {
-						/* Kurze Pause, um den anderen Threads etwas Zeit zu verschaffen.
-						 * Im normalen Betrieb sollte über den Stream eh nicht so viel
-						 * Traffic kommen, dass es Probleme gibt.
-						 * Beim Sample-Stream dagegen ist das was anderes... */
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				while (reader.read(ch) > 0) {
+					//Log.d(LOG, "Got line: " + String.valueOf(small_buffer));
+					buffer += ch[0]; // String.valueOf(small_buffer) + "\n";
+					if (ch[0]=='\n' || ch[0]=='\r') {
+						processBuffer();
 					}
 				}
 			} catch (IOException e) {
 				// TODO: Connection was killed. If necessary, restart it.
 			}
-		    Log.d(LOG, "Ende");
+			Log.d(LOG, "Stream beendet");
 		}
 		
 		/**
 		 * Processes the stream's buffer (as in "looks for seperate JSON objects and parses them").
 		 */
 		public void processBuffer() {
-			buffer = buffer.trim();
-			while (buffer.length()>16) {
-				Matcher m = part_finder_pattern.matcher(buffer);
-				if (m.find()) {
+			Matcher m;
+			while ((m = part_finder_pattern.matcher(buffer))!=null && m.find()) {
 					String text = m.group(2);
-					int bytes = Integer.parseInt(m.group(1)) - 1;
+					int bytes = Integer.parseInt(m.group(1));
 					if (text.length()>=bytes) {
 						buffer = text.substring(bytes);
-						account.addTweetFromJSON(text.substring(0, bytes));
+						try {
+							account.addTweet(Utils.jsonToNativeObject(text.substring(0, bytes)));
+						} catch (UnknownJSONObjectException ex) {
+							// Ignore it.
+						} catch (JSONException ex) {
+							// Ignore it.
+						}
+					} else {
+						return;
 					}
-				} else {
-					return;
-				}
 			}
 		}
 	}

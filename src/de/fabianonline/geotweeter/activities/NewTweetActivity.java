@@ -5,6 +5,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -26,20 +27,32 @@ import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.TimelineActivity;
 import de.fabianonline.geotweeter.Utils;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
+import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";
 	protected LocationManager lm = null;
 	protected Location location = null;
 	protected GPSCoordsListener gpslistener = null;
+	private long reply_to_id;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_tweet);
 		
-		((EditText)findViewById(R.id.tweet_text)).addTextChangedListener(new RemainingCharUpdater(this));
+		EditText editTweetText = ((EditText)findViewById(R.id.tweet_text));
+		
+		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
 		((ToggleButton)findViewById(R.id.btnGeo)).setOnCheckedChangeListener(new GPSToggleListener(this));
 		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener(this));
+		
+		Intent i = getIntent();
+		reply_to_id = i.getLongExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_tweet_id", 0);
+		String reply_string = i.getStringExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_user");
+		if (reply_string != null) {
+			editTweetText.setText("@" + reply_string + " ");
+			editTweetText.setSelection(reply_string.length() + 2);
+		}
 	}
 	
 	protected void onPause() {
@@ -133,7 +146,7 @@ public class NewTweetActivity extends Activity {
 				@Override
 				public void run() {
 					try {
-						TimelineActivity.current_account.sendTweet(text, location);
+						TimelineActivity.current_account.sendTweet(text, location, reply_to_id);
 					} catch (TweetSendException e) {
 						e.printStackTrace();
 						return;

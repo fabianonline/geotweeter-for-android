@@ -1,9 +1,12 @@
-package de.fabianonline.geotweeter;
+package de.fabianonline.geotweeter.timelineelements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
+
+import de.fabianonline.geotweeter.Constants;
+import de.fabianonline.geotweeter.User;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -14,20 +17,13 @@ public class Tweet extends TimelineElement{
 	public long id;
 	public User user;
 	public View view;
-	public Date created_at;
 	public String source;
 	
-	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
-
-	
-	//public void setUser(User u) { user = u; }
-	//public void setText(String t) { text = t; }
+	public long getID() {
+		return id;
+	}
 	
 	public String getTextForDisplay() {
-		if (user == null) {
-			int a = 17;
-			if (a==17) {}
-		}
 		return "<strong>" + user.getScreenName() + "</strong> " + text;
 	}
 	
@@ -38,10 +34,6 @@ public class Tweet extends TimelineElement{
 			User.all_users.put(u.id, u);
 			user = u;
 		}
-	}
-	
-	public void setCreated_at(String str) {
-		try { created_at = parseableDateFormat.parse(str); } catch (ParseException e) {}
 	}
 	
 	public String getAvatarSource() {
@@ -60,4 +52,12 @@ public class Tweet extends TimelineElement{
 	public Drawable getAvatarDrawable() { return user.avatar; }
 
 	public CharSequence getSourceText() { return new SimpleDateFormat("dd.MM. HH:mm").format(created_at) + " from " + source; }
+	public String getSenderScreenName() {
+		return user.getScreenName();
+	}
+	
+	@Override
+	public boolean isReplyable() {
+		return true;
+	}
 }
