@@ -1,10 +1,8 @@
-package de.fabianonline.geotweeter;
+package de.fabianonline.geotweeter.activities;
 
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import de.fabianonline.geotweeter.R;
 
 public class GeneralPrefsActivity extends PreferenceActivity {
 

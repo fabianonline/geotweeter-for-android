@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.google.android.gcm.GCMRegistrar;
 
+import de.fabianonline.geotweeter.activities.GeneralPrefsActivity;
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;

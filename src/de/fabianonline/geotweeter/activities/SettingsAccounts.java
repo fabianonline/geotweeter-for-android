@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import de.fabianonline.geotweeter.AccountListElementAdapter;
@@ -28,7 +30,6 @@ public class SettingsAccounts extends Activity {
 		
 		String accountSet = sp.getString("accounts", null);
 		
-		
 		if (accountSet != null) {
 			String[] accounts = accountSet.split(" ");
 			ArrayList<User> accountArray = User.getPersistentData(getApplicationContext(), accounts);
@@ -39,6 +40,15 @@ public class SettingsAccounts extends Activity {
 			ListView lv = (ListView)findViewById(R.id.lvAccounts);
 			AccountListElementAdapter adapter = new AccountListElementAdapter(this, R.layout.account_list_element, userElements);
 			lv.setAdapter(adapter);
+			lv.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					User user = (User)parent.getItemAtPosition(position);
+					editUserSettings(user);
+				}
+			});
+			
 		}
 		
 		Button btnAddAccount = (Button)findViewById(R.id.btnAddAccount);
@@ -49,6 +59,13 @@ public class SettingsAccounts extends Activity {
 				addAccount();
 			}
 		});
+		
+	}
+
+	protected void editUserSettings(User user) {
+		Intent accountPrefs = new Intent(this, AccountPrefsActivity.class);
+		accountPrefs.putExtra("user", user);
+		startActivity(accountPrefs);
 		
 	}
 
