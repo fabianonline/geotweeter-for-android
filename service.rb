@@ -21,10 +21,12 @@ def update()
 		if command=="add"
 			next unless reg_id && reg_id.length>5
 			if $settings.has_key? hash_value
-				next if $settings[hash_value].has_key?(:reg_ids) && $settings[hash_value][:reg_ids].include?(reg_id)
+				if $settings[hash_value].has_key?(:reg_ids) && $settings[hash_value][:reg_ids].include?(reg_id)
+					log "Not adding client: Already known."
+					next
+				end
 				$settings[hash_value][:reg_ids] << reg_id
-				$settings[hash_value][:client].stop if $settings[hash_value][:client]
-				$settings[hash_value][:thread].kill if $settings[hash_value][:thread]
+				$settings[hash_value][:client].connection.stop if $settings[hash_value][:client]
 				log("Adding new reg_id to #{hash_value}")
 			else
 				hash = {:token=>token, :secret=>secret, :reg_ids=>[reg_id]}
@@ -32,19 +34,17 @@ def update()
 				$settings[hash_value] = hash
 				log("Adding stream for #{hash_value}")
 			end
-			start_thread(hash_value)
+			stream(hash_value)
 		elsif command=="del"
-			puts "Del. #{hash_value}"
 			next unless $settings.has_key? hash_value
-			$settings[hash_value][:client].stop if $settings[hash_value][:client]
-			$settings[hash_value][:thread].kill if $settings[hash_value][:thread]
+			$settings[hash_value][:client].connection.stop if $settings[hash_value][:client]
 			$settings[hash_value][:reg_ids].delete reg_id
 			if $settings[hash_value][:reg_ids].empty?
 				$settings.delete hash_value
 				log("Stream for #{hash_value} has no more reg_ids left.")
 			else
 				log("Removed reg_id from #{hash_value}")
-				start_thread(hash_value)
+				stream(hash_value)
 			end
 		end
 	end
@@ -55,7 +55,6 @@ def save_settings
 	clone = $settings.clone
 	copy = {}
 	clone.each do |key, hash|
-		hash.delete :thread
 		hash.delete :client
 		copy[key] = hash
 	end
@@ -70,7 +69,7 @@ end
 
 def stream(hash)
 	config = $settings[hash]
-	log hash, "New thread is running. Settings: " + config.inspect
+	log hash, "Adding new thread. Settings: " + config.inspect
 	opts = {
 		:path=>"/1.1/user.json",
 		:host=>"userstream.twitter.com",
@@ -82,7 +81,7 @@ def stream(hash)
 		}
 	}
 	
-	EM.run do
+	machine = EM.run do
 		client = EM::Twitter::Client.connect(opts)
 		$settings[hash][:client] = client
 		
@@ -116,15 +115,11 @@ def stream(hash)
 		client.on_reconnect do
 			log hash, "Reconnected."
 		end
+		
+		client.on_close do
+			log hash, "Stopped."
+		end
 	end
-	log hash, "End of thread reached."
-end
-
-def start_thread(hash)
-	t = Thread.new do 
-		stream(hash)
-	end
-	$settings[hash][:thread] = t
 end
 
 def log(hash, string=nil)
@@ -132,13 +127,17 @@ def log(hash, string=nil)
 	puts "%s   %-10s %s" % [Time.now, hash, string]
 end
 
-$settings.each do |key, hash|
-	start_thread(key)
+Thread.new do
+	EM.run do
+	end
 end
 
+$settings.each do |key, hash|
+	stream(key)
+end
 
 Listen.to(File.dirname(__FILE__), :filter=>/^command\.txt$/) do |modified, added, removed|
-	log "New command found."
+	log "New command(s) found."
 	if removed.empty?
 		update()
 		#FileUtils.rm(File.join(File.dirname(__FILE__), "command.txt"))
