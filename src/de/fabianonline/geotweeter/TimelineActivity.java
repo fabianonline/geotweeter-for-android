@@ -4,14 +4,10 @@ import java.util.ArrayList;
 
 import org.scribe.model.Token;
 
-import com.google.android.gcm.GCMRegistrar;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +15,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
+
+import com.google.android.gcm.GCMRegistrar;
+
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;

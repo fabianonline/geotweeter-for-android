@@ -30,9 +30,12 @@ public class AuthenticateAccount extends Activity {
 		.callback(Constants.OAUTH_CALLBACK)
 		.build();
 	
+	private Activity self;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		self = this;
 		setContentView(R.layout.authenticate_account);
 
 		AuthenticationTask task = new AuthenticationTask();
@@ -121,11 +124,17 @@ public class AuthenticateAccount extends Activity {
 					User authUser = JSON.parseObject(response.getBody(), User.class);
 					storeAccessData(authUser, accessToken);
 				}
+				
 
 			}
 
 			return true;
 			
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			self.finish();
 		}
 		
 	}
