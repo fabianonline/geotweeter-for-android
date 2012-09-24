@@ -60,4 +60,34 @@ public class Tweet extends TimelineElement{
 	public boolean isReplyable() {
 		return true;
 	}
+	
+	@Override
+	public boolean showNotification() {
+		return true;
+	}
+	
+	@Override
+	public String getNotificationText(String type) {
+		if (type.equals("mention")) {
+			return "Mention von " + user.screen_name + ": " + text;
+		} else if (type.equals("retweet")) {
+			return user.screen_name + " retweetete: " + text;
+		}
+		return "";
+	}
+	
+	@Override
+	public String getNotificationContentTitle(String type) {
+		if (type.equals("mention")) {
+			return "Mention von " + user.screen_name;
+		} else if(type.equals("retweet")) {
+			return "Retweet von " + user.screen_name;
+		}
+		return "";
+	}
+	
+	@Override
+	public String getNotificationContentText(String type) {
+		return text;
+	}
 }

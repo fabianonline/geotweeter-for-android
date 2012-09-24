@@ -46,4 +46,24 @@ public class DirectMessage extends Tweet {
 	public String getSenderScreenName() {
 		return sender.getScreenName();
 	}
+	
+	@Override
+	public boolean showNotification() {
+		return true;
+	}
+	
+	@Override
+	public String getNotificationText(String type) {
+		return "DM von " + sender.screen_name;
+	}
+	
+	@Override
+	public String getNotificationContentTitle(String type) {
+		return "DM von " + sender.screen_name;
+	}
+	
+	@Override
+	public String getNotificationContentText(String type) {
+		return text;
+	}
 }

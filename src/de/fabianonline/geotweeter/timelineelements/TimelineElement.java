@@ -27,5 +27,17 @@ public abstract class TimelineElement {
 	public boolean isReplyable() {
 		return false;
 	}
+	public boolean showNotification() {
+		return false;
+	}
+	public String getNotificationText(String type) {
+		return "";
+	}
+	public String getNotificationContentTitle(String type) {
+		return "";
+	}
+	public String getNotificationContentText(String type) {
+		return "";
+	}
 	
 }
