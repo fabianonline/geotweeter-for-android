@@ -53,6 +53,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Intent notificationIntent = new Intent(this, NewTweetActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+		notification.defaults |= Notification.DEFAULT_SOUND;
+		notification.defaults |= Notification.DEFAULT_VIBRATE;
 		notificationManager.notify(id, notification);
 	}
 
