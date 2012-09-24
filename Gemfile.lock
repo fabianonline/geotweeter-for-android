@@ -1,14 +1,21 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    em-twitter (0.1.4)
+      eventmachine (>= 1.0.0.beta.4)
+      http_parser.rb (~> 0.5)
+      simple_oauth (~> 0.1)
+    eventmachine (1.0.0)
     higcm (0.0.5)
       typhoeus (~> 0.3.3)
+    http_parser.rb (0.5.3)
     json (1.7.5)
     listen (0.5.2)
     mime-types (1.19)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
+    simple_oauth (0.1.9)
     sinatra (1.3.2)
       rack (~> 1.3, >= 1.3.6)
       rack-protection (~> 1.2)
@@ -21,6 +28,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  em-twitter
   higcm
   json
   listen

@@ -10,6 +10,8 @@ $settings = YAML::load_file("settings.yml") rescue {}
 $digest = Digest::SHA256.new
 
 $gcm_sender = HiGCM::Sender.new("AIzaSyCkOw9l2iZhjytnKNmL8EiWmZZtcco6lik")
+CONSUMER_TOKEN  = "7tbUmgasX8QXazkxGMNw"
+CONSUMER_SECRET = "F22QSxchkczthiUQomREXEu4zDA15mxiENNttkkA"
 
 def update()
 	lines = IO.readlines("command.txt")
@@ -21,10 +23,12 @@ def update()
 			if $settings.has_key? hash_value
 				next if $settings[hash_value].has_key?(:reg_ids) && $settings[hash_value][:reg_ids].include?(reg_id)
 				$settings[hash_value][:reg_ids] << reg_id
+				$settings[hash_value][:client].stop if $settings[hash_value][:client]
 				$settings[hash_value][:thread].kill if $settings[hash_value][:thread]
 				log("Adding new reg_id to #{hash_value}")
 			else
 				hash = {:token=>token, :secret=>secret, :reg_ids=>[reg_id]}
+				hash[:user_id] = /^([0-9]+)-/.match(token)[1].to_i
 				$settings[hash_value] = hash
 				log("Adding stream for #{hash_value}")
 			end
@@ -32,6 +36,7 @@ def update()
 		elsif command=="del"
 			puts "Del. #{hash_value}"
 			next unless $settings.has_key? hash_value
+			$settings[hash_value][:client].stop if $settings[hash_value][:client]
 			$settings[hash_value][:thread].kill if $settings[hash_value][:thread]
 			$settings[hash_value][:reg_ids].delete reg_id
 			if $settings[hash_value][:reg_ids].empty?
@@ -51,20 +56,66 @@ def save_settings
 	copy = {}
 	clone.each do |key, hash|
 		hash.delete :thread
+		hash.delete :client
 		copy[key] = hash
 	end
 	File.open(File.join(File.dirname(__FILE__), "settings.yml"), "w") {|f| f.write YAML.dump(copy)}
 end
 
+def send_gcm(config, data, type)
+	$gcm_sender.send(config[:reg_ids], {:data=>{:type=>type, :data=>data.to_json, :user_id=>config[:user_id]}})
+end
+
 def stream(hash)
-	data = $settings[hash]
-	log hash, "New thread is running. Settings: " + data.inspect
-	#result = $gcm_sender.send(data[:reg_ids], {:data=>{:msg=>"Hallo Welt"}})
-	while true
-		log hash, "ich lebe noch."
-		sleep (10)
+	config = $settings[hash]
+	log hash, "New thread is running. Settings: " + config.inspect
+	opts = {
+		:path=>"/1.1/user.json",
+		:host=>"userstream.twitter.com",
+		:oauth=>{
+			:consumer_key=>CONSUMER_TOKEN,
+			:consumer_secret=>CONSUMER_SECRET,
+			:token=>config[:token],
+			:token_secret=>config[:secret]
+		}
+	}
+	
+	EM.run do
+		client = EM::Twitter::Client.connect(opts)
+		$settings[hash][:client] = client
+		
+		client.each do |result|
+			data = JSON.parse(result)
+			if data.has_key?("direct_message")
+				data = data["direct_message"]
+			end
+			
+			if data.has_key?("text") && data.has_key?("recipient") && data["recipient_id"]==config[:user_id]
+				log hash, "DM."
+				send_gcm(config, data, "dm")
+			elsif data.has_key?("text")
+				if data["entities"]["user_mentions"].any?{|mention| mention["id"]==config[:user_id]}
+					log hash, "Mention. #{data["text"]}"
+					send_gcm(config, data, "mention")
+				elsif data.has_key?("rewteeted_status") && data["retweeted_status"]["user"]["id"]==config[:user_id]
+					log hash, "Retweet"
+					send_gcm(config, data, "retweet")
+				end
+			elsif data.has_key?("event") && data["event"]=="favorite" && data["source"]["id"]!=config[:user_id]
+				log hash, "Favorited"
+				send_gcm(config, data, "favorite")
+			end
+		end
+		
+		client.on_forbidden do
+			log hash, "Forbidden. o_O"
+		end
+		
+		client.on_reconnect do
+			log hash, "Reconnected."
+		end
 	end
-	p result
+	log hash, "End of thread reached."
 end
 
 def start_thread(hash)
@@ -76,7 +127,7 @@ end
 
 def log(hash, string=nil)
 	hash, string = "", hash unless string
-	puts "%-10s %s" % [hash, string]
+	puts "%s   %-10s %s" % [Time.now, hash, string]
 end
 
 $settings.each do |key, hash|
