@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.google.android.gcm.GCMBaseIntentService;
 
@@ -29,8 +30,6 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onMessage(Context context, Intent intent) {
-		Log.d(LOG, "Type: " + intent.getExtras().getString("type"));
-		Log.d(LOG, "Data: " + intent.getExtras().getString("data"));
 		Log.d(LOG, "onMessage");
 		TimelineElement t;
 		try {
@@ -52,7 +51,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 		CharSequence contentText = t.getNotificationContentText(type);
 		Intent notificationIntent = new Intent(this, NewTweetActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+		
+		RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_with_small_text);
+		contentView.setTextViewText(R.id.txtTitle, contentTitle);
+		contentView.setTextViewText(R.id.txtText, contentText);
+		notification.contentView = contentView;
+		//notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+		notification.contentIntent = contentIntent;
 		notification.defaults |= Notification.DEFAULT_SOUND;
 		notification.defaults |= Notification.DEFAULT_VIBRATE;
 		notificationManager.notify(id, notification);
