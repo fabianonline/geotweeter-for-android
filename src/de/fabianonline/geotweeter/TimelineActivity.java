@@ -155,6 +155,22 @@ public class TimelineActivity extends Activity {
 		}
 		current_account.setMaxReadIDs(new_max_read_tweet_id, new_max_read_mention_id, new_max_read_dm_id);
 	}
+	
+	public void scrollDownHandler(View v) {
+		ListView lvList = (ListView)findViewById(R.id.timeline);
+		TimelineElementAdapter elements = (TimelineElementAdapter) lvList.getAdapter();
+		int pos = 0;
+		while (pos < elements.getCount()) {
+			TimelineElement element = elements.getItem(pos);
+			if (element instanceof Tweet && !(element instanceof DirectMessage)) {
+				if (element.getID() < current_account.getMaxReadTweetID()) {
+					break;
+				}
+			}
+			pos++;
+		}
+		lvList.smoothScrollToPosition(pos);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
