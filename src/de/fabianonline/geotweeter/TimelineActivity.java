@@ -72,21 +72,15 @@ public class TimelineActivity extends Activity {
 			}
 		});
 		
-		GCMRegistrar.checkDevice(this);
-		GCMRegistrar.checkManifest(this);
-		reg_id = GCMRegistrar.getRegistrationId(this);
-		if (reg_id.equals("")) {
-			GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
-		} else {
-			Log.d(LOG, "Already registered.");
-		}
-		Log.d(LOG, ""+reg_id);
+		
 	}
 
 	public void onDestroy() {
 		super.onDestroy();
 		for (Account acct : Account.all_accounts) {
-			acct.stopStream();
+			try {
+				acct.stopStream();
+			} catch (Exception ex) {}
 		}
 	}
 
