@@ -17,7 +17,9 @@ import com.google.android.gcm.GCMBaseIntentService;
 
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
 import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
+import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
+import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class GCMIntentService extends GCMBaseIntentService {
 	private static final String LOG = "GCMIntentService";
@@ -49,8 +51,15 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Notification notification = new Notification(R.drawable.ic_launcher, notificationText, System.currentTimeMillis());
 		CharSequence contentTitle = t.getNotificationContentTitle(type);
 		CharSequence contentText = t.getNotificationContentText(type);
-		Intent notificationIntent = new Intent(this, NewTweetActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		Intent notificationIntent;
+		if (t instanceof Tweet || t instanceof DirectMessage) {
+			notificationIntent = new Intent(this, NewTweetActivity.class);
+			notificationIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", t);
+		} else {
+			notificationIntent = new Intent(this, TimelineActivity.class);
+		}
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), notificationIntent, 0);
 		
 		RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_with_small_text);
 		contentView.setTextViewText(R.id.txtTitle, contentTitle);

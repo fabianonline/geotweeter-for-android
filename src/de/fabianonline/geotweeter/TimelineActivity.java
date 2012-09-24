@@ -69,8 +69,7 @@ public class TimelineActivity extends Activity {
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				if (elements.get(position).isReplyable()) {
 					Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
-					replyIntent.putExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_tweet_id", elements.get(position).getID());
-					replyIntent.putExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_user", elements.get(position).getSenderScreenName());
+					replyIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", elements.get(position));
 					startActivity(replyIntent);
 					return true;
 				} else {

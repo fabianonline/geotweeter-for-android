@@ -1,10 +1,12 @@
 package de.fabianonline.geotweeter.timelineelements;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public abstract class TimelineElement {
+public abstract class TimelineElement implements Serializable {
+	private static final long serialVersionUID = -4794489823636370071L;
 	protected Date created_at = new Date();
 	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
 	

@@ -11,9 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 public class User extends UserElement implements java.io.Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2231080355596825396L;
 	public static HashMap<Long, User> all_users = new HashMap<Long, User>();
 	public Drawable avatar = null;

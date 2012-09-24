@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 
+import com.alibaba.fastjson.JSONObject;
+
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.User;
 
@@ -12,12 +14,14 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 public class Tweet extends TimelineElement{
+	private static final long serialVersionUID = -6610449879010917836L;
 	private static final String LOG = "Tweet";
 	public String text;
 	public long id;
 	public User user;
 	public View view;
 	public String source;
+	public JSONObject entities;
 	
 	public long getID() {
 		return id;
