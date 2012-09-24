@@ -311,6 +311,7 @@ public class Account {
 				elements.addAllAsFirst(all_elements);
 			}
 		});
+		stream_request.start();
 	}
 
 	public void addTweet(final TimelineElement elm) {
