@@ -356,4 +356,12 @@ public class Account {
 			}
 		}, "register").start();
 	}
+	
+	public User getUser() {
+		return user;
+	}
+	
+	public long getMaxReadTweetID() {
+		return max_read_tweet_id;
+	}
 }

@@ -19,6 +19,7 @@ public abstract class TimelineElement implements Serializable {
 	abstract public String getAvatarSource();
 	abstract public long getID();
 	abstract public String getSenderScreenName();
+	abstract public int getBackgroundDrawableID();
 	public Date getDate() {
 		if (created_at != null) {
 			return created_at;

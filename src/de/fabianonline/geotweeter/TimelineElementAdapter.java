@@ -59,6 +59,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			}
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
+		v.setBackgroundResource(t.getBackgroundDrawableID());
 		return v;	
 	}
 

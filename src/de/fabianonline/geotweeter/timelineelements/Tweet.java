@@ -2,12 +2,16 @@ package de.fabianonline.geotweeter.timelineelements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Currency;
 import java.util.Date;
 import java.util.regex.Matcher;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import de.fabianonline.geotweeter.Constants;
+import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.TimelineActivity;
 import de.fabianonline.geotweeter.User;
 
 import android.graphics.drawable.Drawable;
@@ -93,5 +97,31 @@ public class Tweet extends TimelineElement{
 	@Override
 	public String getNotificationContentText(String type) {
 		return text;
+	}
+	
+	@Override
+	public int getBackgroundDrawableID() {
+		User current_user = TimelineActivity.current_account.getUser();
+		if (user.id == current_user.id) {
+			return R.drawable.listelement_background_my;
+		} else if(this.mentionsUser(current_user)) {
+			return R.drawable.listelement_background_mention;
+		} else if(this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
+			return R.drawable.listelement_background_unread;
+		} else {
+			return R.drawable.listelement_background_normal;
+		}
+	}
+
+	private boolean mentionsUser(User user) {
+		if (entities!=null) {
+			JSONArray mentions = entities.getJSONArray("user_mentions");
+			for(int i=0; i<mentions.size(); i++) {
+				if (mentions.getJSONObject(i).getLong("id").equals(user.id)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

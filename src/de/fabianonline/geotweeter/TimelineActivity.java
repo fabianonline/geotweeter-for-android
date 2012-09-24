@@ -44,7 +44,7 @@ public class TimelineActivity extends Activity {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
+				//view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
 			}
 		});
 		
