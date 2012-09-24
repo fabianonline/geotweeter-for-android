@@ -226,6 +226,13 @@ public class Account {
 		Log.d(LOG, "parseData started.");
 		final ArrayList<TimelineElement> all_elements = new ArrayList<TimelineElement>();
 		long last_id = 0;
+		// remove empty arrays
+		for (int i=responses.size()-1; i>=0; i--) {
+			if (responses.get(i).size()==0) {
+				responses.remove(i);
+			}
+		}
+		
 		while(responses.size()>0) {
 			Date newest_date = null;
 			int newest_index = -1;
