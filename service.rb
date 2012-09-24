@@ -63,7 +63,9 @@ def save_settings
 end
 
 def send_gcm(config, data, type)
-	$gcm_sender.send(config[:reg_ids], {:data=>{:type=>type, :data=>data.to_json, :user_id=>config[:user_id]}})
+	result = $gcm_sender.send(config[:reg_ids], {:data=>{:type=>type, :data=>data.to_json, :user_id=>config[:user_id]}})
+	data = JSON.parse(result.body)
+	log data.inspect unless data["success"]==1
 end
 
 def stream(hash)
