@@ -137,10 +137,9 @@ $settings.each do |key, hash|
 end
 
 Listen.to(File.dirname(__FILE__), :filter=>/^command\.txt$/) do |modified, added, removed|
-	log "New command(s) found."
 	if removed.empty?
 		update()
-		#FileUtils.rm(File.join(File.dirname(__FILE__), "command.txt"))
+		FileUtils.rm(File.join(File.dirname(__FILE__), "command.txt"))
 	end
 end
 
