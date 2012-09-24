@@ -18,4 +18,5 @@ public class Constants extends Application {
 	public static final Pattern REGEXP_FIND_SOURCE = Pattern.compile(">(.+)</a>");
 	public static final String GCM_SENDER_ID = "540800208547";
 	public static final String GCM_SERVER_URL = "https://home.fabianonline.de/geotweeter-gcm/";
+	public static final String TWEETMARKER_KEY = "GT-F181AC70B051";
 }

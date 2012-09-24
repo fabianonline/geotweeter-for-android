@@ -20,7 +20,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
+import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
+import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class TimelineActivity extends Activity {
 	private final String LOG = "TimelineActivity";
@@ -77,8 +79,6 @@ public class TimelineActivity extends Activity {
 				}
 			}
 		});
-		
-		
 	}
 
 	public void onDestroy() {
@@ -122,6 +122,38 @@ public class TimelineActivity extends Activity {
 
 	public void newTweetClickHandler(View v) {
 		startActivity(new Intent(this, NewTweetActivity.class));
+	}
+	
+	public void markReadClickHandler(View v) {
+		ListView list = (ListView)findViewById(R.id.timeline);
+		TimelineElementAdapter elements = (TimelineElementAdapter)list.getAdapter();
+		int pos = list.getFirstVisiblePosition()+1;
+		TimelineElement current;
+		long new_max_read_tweet_id = 0;
+		long new_max_read_dm_id = 0;
+		long new_max_read_mention_id = 0;
+		while(pos < elements.getCount()) {
+			current = elements.getItem(pos);
+			if (current instanceof DirectMessage) {
+				if (new_max_read_dm_id != 0) {
+					continue;
+				} else {
+					new_max_read_dm_id = current.getID();
+				}
+			} else if (current instanceof Tweet) {
+				if (new_max_read_mention_id == 0 && ((Tweet)current).mentionsUser(current_account.getUser())) {
+					new_max_read_mention_id = current.getID();
+				}
+				if (new_max_read_tweet_id == 0) {
+					new_max_read_tweet_id = current.getID();
+				}
+			}
+			if (new_max_read_mention_id>0 && new_max_read_dm_id>0 && new_max_read_tweet_id>0) {
+				break;
+			}
+			pos++;
+		}
+		current_account.setMaxReadIDs(new_max_read_tweet_id, new_max_read_mention_id, new_max_read_dm_id);
 	}
 
 	@Override

@@ -113,7 +113,7 @@ public class Tweet extends TimelineElement{
 		}
 	}
 
-	private boolean mentionsUser(User user) {
+	public boolean mentionsUser(User user) {
 		if (entities!=null) {
 			JSONArray mentions = entities.getJSONArray("user_mentions");
 			for(int i=0; i<mentions.size(); i++) {

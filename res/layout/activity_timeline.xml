@@ -10,11 +10,12 @@
         android:layout_height="wrap_content" >
         
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/btnMarkAsRead"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:onClick="markReadClickHandler"
+            android:text="Gelesen markieren" />
 
         <Button
             android:id="@+id/button2"

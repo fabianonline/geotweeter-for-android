@@ -1,19 +1,27 @@
 package de.fabianonline.geotweeter;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.exceptions.OAuthException;
@@ -23,6 +31,7 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import android.content.Entity;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
@@ -57,6 +66,7 @@ public class Account {
 	private long min_known_dm_id = -1;
 	private User user;
 	private TimelineElementAdapter elements;
+	private long max_read_mention_id = 0;
 	
 	public Account(TimelineElementAdapter elements, Token token, User user) {
 		this.token = token;
@@ -67,6 +77,7 @@ public class Account {
 		stream_request = new StreamRequest(this);
 		//stream_request.start();
 		all_accounts.add(this);
+		getMaxReadIDs();
 	}
 	
 	public void signRequest(OAuthRequest request) {
@@ -357,11 +368,91 @@ public class Account {
 		}, "register").start();
 	}
 	
+	public void getMaxReadIDs() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/account/verify_credentials.json");
+				signRequest(oauth_request);
+				
+				try {
+					HttpClient http_client = new DefaultHttpClient();
+					HttpGet http_get = new HttpGet("https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=" + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
+					http_get.addHeader("X-Auth-Service-Provider", "https://api.twitter.com/1/account/verify_credentials.json");
+					http_get.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
+					HttpResponse response = http_client.execute(http_get);
+					if (response.getEntity() == null) {
+						return;
+					}
+					String[] parts = EntityUtils.toString(response.getEntity()).split(",");
+					max_read_tweet_id = Long.parseLong(parts[0]);
+					max_read_mention_id = Long.parseLong(parts[1]);
+					max_read_dm_id = Long.parseLong(parts[2]);
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							elements.notifyDataSetChanged();
+						}
+					});
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}, "GetMaxReadIDs").start();
+		
+		elements.notifyDataSetChanged();
+	}
+	
+	public void setMaxReadIDs(long tweet_id, long mention_id, long dm_id) {
+		if (tweet_id > this.max_read_tweet_id) {
+			this.max_read_tweet_id = tweet_id;
+		}
+		if (mention_id > this.max_read_mention_id ) {
+			this.max_read_mention_id = mention_id;
+		}
+		if (dm_id > this.max_read_dm_id) {
+			this.max_read_dm_id = dm_id;
+		}
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/account/verify_credentials.json");
+				signRequest(oauth_request);
+				
+				try {
+					HttpClient http_client = new DefaultHttpClient();
+					HttpPost http_post = new HttpPost("https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=" + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
+					http_post.addHeader("X-Auth-Service-Provider", "https://api.twitter.com/1/account/verify_credentials.json");
+					http_post.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
+					http_post.setEntity(new StringEntity(""+max_read_tweet_id+","+max_read_mention_id+","+max_read_dm_id));
+					http_client.execute(http_post);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}, "SetMaxReadIDs").start();
+		
+		elements.notifyDataSetChanged();
+	}
+	
 	public User getUser() {
 		return user;
 	}
 	
 	public long getMaxReadTweetID() {
 		return max_read_tweet_id;
+	}
+	
+	public TimelineElementAdapter getElements() {
+		return elements;
 	}
 }
