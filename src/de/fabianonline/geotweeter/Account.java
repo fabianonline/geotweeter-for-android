@@ -196,7 +196,7 @@ public class Account {
 					synchronized(parse_lock) {
 						elements = parse(response.getBody());
 					}
-					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements at " + (System.currentTimeMillis()-start_time)/elements.size() + "ms/element");
+					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time) + " ms");
 					runAfterEachSuccesfullRequest(elements, is_main_data);
 				} else {
 					runAfterEachFailedRequest();
