@@ -29,7 +29,7 @@ public class TimelineActivity extends Activity {
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
-	public static String reg_id;
+	public static String reg_id = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +47,13 @@ public class TimelineActivity extends Activity {
 				view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
 			}
 		});
+		
+		GCMRegistrar.checkDevice(this);
+		GCMRegistrar.checkManifest(this);
+		reg_id = GCMRegistrar.getRegistrationId(this);
+		if (reg_id.equals("")) {
+			GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
+		}
 		
 		ArrayList<User> auth_users = getAuthUsers();
 		
@@ -109,7 +116,9 @@ public class TimelineActivity extends Activity {
 		if (current_account == null) {
 			current_account = acc;
 		}
-		acc.registerForGCMMessages();
+		if (!reg_id.equals("")) {
+			acc.registerForGCMMessages();
+		}
 	}
 
 	public void newTweetClickHandler(View v) {
