@@ -442,10 +442,6 @@ public class Account {
 		elements.notifyDataSetChanged();
 	}
 	
-	public User getUser() {
-		return user;
-	}
-	
 	public long getMaxReadTweetID() {
 		return max_read_tweet_id;
 	}
