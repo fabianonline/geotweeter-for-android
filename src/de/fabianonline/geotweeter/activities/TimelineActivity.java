@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,9 +31,9 @@ import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class TimelineActivity extends Activity {
 	private final String LOG = "TimelineActivity";
-	private TimelineElementAdapter ta;
-	private ArrayList<TimelineElement> elements;
+//	private ArrayList<TimelineElement> elements;
 	private ArrayList<Account> accounts = new ArrayList<Account>();
+	private int acc;
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
@@ -41,13 +42,20 @@ public class TimelineActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		elements = new ArrayList<TimelineElement>();
-		ta = new TimelineElementAdapter(this, R.layout.timeline_element, elements);
 		background_image_loader = new BackgroundImageLoader(getApplicationContext());
+		
+		acc=0;
+		ArrayList<User> auth_users = getAuthUsers();
+		if (auth_users != null) {
+			for (User u : auth_users) {
+				TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, new ArrayList<TimelineElement>());
+				addAccount(new Account(ta, getUserToken(u), u));
+			}
+		}
+		
 		ListView l = (ListView) findViewById(R.id.timeline);
-		l.setAdapter(ta);
+		l.setAdapter(current_account.getElements());
 		l.setOnItemClickListener(new OnItemClickListener() {
-			@SuppressWarnings("deprecation")
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				//view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
@@ -61,21 +69,13 @@ public class TimelineActivity extends Activity {
 			GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
 		}
 		
-		ArrayList<User> auth_users = getAuthUsers();
-		
-		if (auth_users != null) {
-			for (User u : auth_users) {
-				addAccount(new Account(ta, getUserToken(u), u));
-			}
-		}
-		
 //		addAccount(new Account(ta, new Token("aa", "aa")));
 		l.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if (elements.get(position).isReplyable()) {
+				if (current_account.getElements().getItem(position).isReplyable()) {
 					Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
-					replyIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", elements.get(position));
+					replyIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", current_account.getElements().getItem(position));
 					startActivity(replyIntent);
 					return true;
 				} else {
@@ -92,6 +92,15 @@ public class TimelineActivity extends Activity {
 				acct.stopStream();
 			} catch (Exception ex) {}
 		}
+	}
+	
+	public void nextAccountHandler(View v) {
+		acc = (acc + 1)%accounts.size();
+		current_account = accounts.get(acc);
+//		elements = current_account.getElements().getItems();
+		ListView l = (ListView) findViewById(R.id.timeline);
+		l.setAdapter(current_account.getElements());
+		Log.d(LOG, "Changed Account: " + current_account.getUser().screen_name);
 	}
 
 	private Token getUserToken(User u) {
@@ -118,6 +127,7 @@ public class TimelineActivity extends Activity {
 		accounts.add(acc);
 		if (current_account == null) {
 			current_account = acc;
+//			elements = acc.getElements().getItems();
 		}
 		if (!reg_id.equals("")) {
 			acc.registerForGCMMessages();

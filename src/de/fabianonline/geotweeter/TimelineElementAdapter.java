@@ -61,6 +61,10 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		v.setBackgroundResource(t.getBackgroundDrawableID());
 		return v;	
 	}
+	
+	public ArrayList<TimelineElement> getItems() {
+		return items;
+	}
 
 
 }
