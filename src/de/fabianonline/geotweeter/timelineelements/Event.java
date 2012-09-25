@@ -2,6 +2,7 @@ package de.fabianonline.geotweeter.timelineelements;
 
 import java.util.Date;
 
+import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;
 
 public abstract class Event extends TimelineElement {
@@ -38,5 +39,10 @@ public abstract class Event extends TimelineElement {
 			User.all_users.put(u.id, u);
 			source = u;
 		}
+	}
+	
+	@Override
+	public int getBackgroundDrawableID() {
+		return R.drawable.listelement_background_status;
 	}
 }

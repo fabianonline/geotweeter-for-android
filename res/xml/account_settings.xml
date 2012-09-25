@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="pref_account" android:title="@string/pref_account">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
+    			  android:key="pref_account" 
+    			  android:title="@string/pref_account">
+    			  
     <EditTextPreference android:title="@string/pref_name" android:key="pref_name"/>
     <EditTextPreference android:title="@string/pref_url" android:key="pref_url"/>
-    <EditTextPreference android:title="@string/pref_loc" android:key="pref_loc"/><EditTextPreference android:title="@string/pref_desc" android:key="pref_desc"/>
-    
-    
+    <EditTextPreference android:title="@string/pref_loc" android:key="pref_loc"/>
+    <EditTextPreference android:title="@string/pref_desc" android:key="pref_desc"/>
 
 </PreferenceScreen>

@@ -25,4 +25,5 @@
     <string name="add_account">Konto hinzufügen</string>
     <string name="authenticate_account">Konto authentifizieren</string>
     <string name="tap_for_settings">Dieses Konto bearbeiten</string>
+    <string name="account_prefs">Account-Einstellungen</string>
 </resources>

@@ -9,19 +9,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
         
-        <Button
-            android:id="@+id/button1"
+        <ImageButton
+            android:id="@+id/btnMarkAsRead"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:onClick="markReadClickHandler"
+            android:src="@drawable/tick" />
 
-        <Button
-            android:id="@+id/button2"
+        <ImageButton
+            android:id="@+id/ImageButton1"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:onClick="scrollDownHandler"
+            android:src="@drawable/arrow_down" />
 
         <Button
             android:id="@+id/button3"
@@ -30,13 +32,13 @@
             android:layout_height="wrap_content"
             android:text="Button" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnNewTweet"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="newTweetClickHandler"
-            android:text="@string/btn_new_tweet" />
+            android:src="@drawable/comments" />
 
     </LinearLayout>
 
@@ -44,7 +46,8 @@
         android:id="@+id/timeline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:descendantFocusability="blocksDescendants" >
+        android:descendantFocusability="blocksDescendants"
+        android:divider="@drawable/listelement_divider" >
 
     </ListView>
 

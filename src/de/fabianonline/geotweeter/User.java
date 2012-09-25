@@ -11,14 +11,11 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 public class User extends UserElement implements java.io.Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2231080355596825396L;
 	public static HashMap<Long, User> all_users = new HashMap<Long, User>();
 	public Drawable avatar = null;
 	public long id;
-	public String name, screen_name, url, description, profile_image_url_https;
+	public String name, screen_name, url, description, profile_image_url_https, location;
 	public View[] views = new View[] {};
 	
 	public String getScreenName() { 

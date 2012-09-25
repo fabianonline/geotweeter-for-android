@@ -1,4 +1,4 @@
-package de.fabianonline.geotweeter;
+package de.fabianonline.geotweeter.activities;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
@@ -8,8 +8,6 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
-
-import com.alibaba.fastjson.JSON;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -21,7 +19,13 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class AuthenticateAccount extends Activity {
+import com.alibaba.fastjson.JSON;
+
+import de.fabianonline.geotweeter.Constants;
+import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.User;
+
+public class AuthenticateAccountActivity extends Activity {
 
 	final OAuthService os = new ServiceBuilder()
 		.provider(TwitterApi.class)
@@ -30,9 +34,12 @@ public class AuthenticateAccount extends Activity {
 		.callback(Constants.OAUTH_CALLBACK)
 		.build();
 	
+	private Activity self;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		self = this;
 		setContentView(R.layout.authenticate_account);
 
 		AuthenticationTask task = new AuthenticationTask();
@@ -121,11 +128,17 @@ public class AuthenticateAccount extends Activity {
 					User authUser = JSON.parseObject(response.getBody(), User.class);
 					storeAccessData(authUser, accessToken);
 				}
+				
 
 			}
 
 			return true;
 			
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			self.finish();
 		}
 		
 	}

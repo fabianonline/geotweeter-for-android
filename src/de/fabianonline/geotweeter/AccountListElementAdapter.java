@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import de.fabianonline.geotweeter.activities.TimelineActivity;
 
 public class AccountListElementAdapter extends ArrayAdapter<UserElement> {
 
@@ -30,16 +31,16 @@ public class AccountListElementAdapter extends ArrayAdapter<UserElement> {
 			v = vi.inflate(R.layout.account_list_element, null);
 		}
 		
-		UserElement ale = (UserElement)items.get(position);
+		UserElement listElement = (UserElement)items.get(position);
 		
-		if (ale != null) {
+		if (listElement != null) {
 			TextView tvScreenName = (TextView) v.findViewById(R.id.tvScreenName);
 			if (tvScreenName != null) {
-				tvScreenName.setText(ale.getScreenName());
+				tvScreenName.setText(listElement.getScreenName());
 			}
 			ImageView ivAvatar = (ImageView) v.findViewById(R.id.ivAccountAvatar);
 			if (ivAvatar != null) {
-				TimelineActivity.background_image_loader.displayImage(ale.getAvatarSource(), ivAvatar);
+				TimelineActivity.background_image_loader.displayImage(listElement.getAvatarSource(), ivAvatar);
 			}
 		}
 		

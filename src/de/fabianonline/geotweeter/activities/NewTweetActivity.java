@@ -37,11 +37,12 @@ import android.widget.ToggleButton;
 import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.BackgroundImageLoader;
 import de.fabianonline.geotweeter.R;
-import de.fabianonline.geotweeter.TimelineActivity;
 import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.Utils;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
+import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
+import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";
@@ -64,12 +65,16 @@ public class NewTweetActivity extends Activity {
 		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener(this));
 		
 		Intent i = getIntent();
-		reply_to_id = i.getLongExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_tweet_id", 0);
-		String reply_string = i.getStringExtra("de.fabianonline.geotweeter.NewTweetActivity.reply_to_user");
-		if (reply_string != null) {
-			editTweetText.setText("@" + reply_string + " ");
-			editTweetText.setSelection(reply_string.length() + 2);
+		TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.fabianonline.geotweeter.reply_to_tweet");
+		String reply_string = "";
+		if (elm instanceof DirectMessage) {
+			reply_string = "d " + elm.getSenderScreenName() + " ";
+		} else if (elm instanceof Tweet) {
+			reply_to_id = elm.getID();
+			reply_string = "@" + elm.getSenderScreenName() + " ";
 		}
+		editTweetText.setText(reply_string);
+		editTweetText.setSelection(reply_string.length());
 		
 		/* Accountauswahl */
 		List<Account> accounts = Account.all_accounts;

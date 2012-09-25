@@ -2,9 +2,6 @@ package de.fabianonline.geotweeter;
 
 import java.util.ArrayList;
 
-import de.fabianonline.geotweeter.timelineelements.TimelineElement;
-import de.fabianonline.geotweeter.timelineelements.Tweet;
-
 import android.content.Context;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -13,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import de.fabianonline.geotweeter.activities.TimelineActivity;
+import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private ArrayList<TimelineElement> items;
@@ -59,6 +58,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			}
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
+		v.setBackgroundResource(t.getBackgroundDrawableID());
 		return v;	
 	}
 

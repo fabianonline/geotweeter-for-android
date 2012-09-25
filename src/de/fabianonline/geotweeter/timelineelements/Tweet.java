@@ -1,23 +1,28 @@
 package de.fabianonline.geotweeter.timelineelements;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
-
-import de.fabianonline.geotweeter.Constants;
-import de.fabianonline.geotweeter.User;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import de.fabianonline.geotweeter.Constants;
+import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.User;
+import de.fabianonline.geotweeter.activities.TimelineActivity;
+
 public class Tweet extends TimelineElement{
+	private static final long serialVersionUID = -6610449879010917836L;
 	private static final String LOG = "Tweet";
 	public String text;
 	public long id;
 	public User user;
 	public View view;
 	public String source;
+	public JSONObject entities;
 	
 	public long getID() {
 		return id;
@@ -89,5 +94,31 @@ public class Tweet extends TimelineElement{
 	@Override
 	public String getNotificationContentText(String type) {
 		return text;
+	}
+	
+	@Override
+	public int getBackgroundDrawableID() {
+		User current_user = TimelineActivity.current_account.getUser();
+		if (user.id == current_user.id) {
+			return R.drawable.listelement_background_my;
+		} else if(this.mentionsUser(current_user)) {
+			return R.drawable.listelement_background_mention;
+		} else if(this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
+			return R.drawable.listelement_background_unread;
+		} else {
+			return R.drawable.listelement_background_normal;
+		}
+	}
+
+	public boolean mentionsUser(User user) {
+		if (entities!=null) {
+			JSONArray mentions = entities.getJSONArray("user_mentions");
+			for(int i=0; i<mentions.size(); i++) {
+				if (mentions.getJSONObject(i).getLong("id").equals(user.id)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

@@ -2,6 +2,7 @@ package de.fabianonline.geotweeter.timelineelements;
 
 import java.util.Date;
 
+import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;
 
 public class DirectMessage extends Tweet {
@@ -65,5 +66,10 @@ public class DirectMessage extends Tweet {
 	@Override
 	public String getNotificationContentText(String type) {
 		return text;
+	}
+	
+	@Override
+	public int getBackgroundDrawableID() {
+		return R.drawable.listelement_background_dm;
 	}
 }
