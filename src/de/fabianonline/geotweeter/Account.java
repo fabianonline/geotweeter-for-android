@@ -409,9 +409,15 @@ public class Account {
 						return;
 					}
 					String[] parts = EntityUtils.toString(response.getEntity()).split(",");
-					max_read_tweet_id = Long.parseLong(parts[0]);
-					max_read_mention_id = Long.parseLong(parts[1]);
-					max_read_dm_id = Long.parseLong(parts[2]);
+					try {
+						max_read_tweet_id = Long.parseLong(parts[0]);
+					} catch (NumberFormatException ex) {}
+					try {
+						max_read_mention_id = Long.parseLong(parts[1]);
+					} catch (NumberFormatException ex) {}
+					try {
+						max_read_dm_id = Long.parseLong(parts[2]);
+					} catch (NumberFormatException ex) {}
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
