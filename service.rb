@@ -22,29 +22,27 @@ def update()
 			next unless reg_id && reg_id.length>5
 			if $settings.has_key? hash_value
 				if $settings[hash_value].has_key?(:reg_ids) && $settings[hash_value][:reg_ids].include?(reg_id)
-					log "Not adding client: Already known."
+					log hash_value, "Not adding client: Already known."
 					next
 				end
 				$settings[hash_value][:reg_ids] << reg_id
-				$settings[hash_value][:client].connection.stop if $settings[hash_value][:client]
-				log("Adding new reg_id to #{hash_value}")
+				log(hash_value, "Adding new reg_id")
 			else
 				hash = {:token=>token, :secret=>secret, :reg_ids=>[reg_id]}
 				hash[:user_id] = /^([0-9]+)-/.match(token)[1].to_i
 				$settings[hash_value] = hash
-				log("Adding stream for #{hash_value}")
+				log(hash_value, "Adding stream")
+				stream(hash_value)
 			end
-			stream(hash_value)
 		elsif command=="del"
 			next unless $settings.has_key? hash_value
-			$settings[hash_value][:client].connection.stop if $settings[hash_value][:client]
 			$settings[hash_value][:reg_ids].delete reg_id
 			if $settings[hash_value][:reg_ids].empty?
 				$settings.delete hash_value
-				log("Stream for #{hash_value} has no more reg_ids left.")
+				log(hash_value, "Stream fhas no more reg_ids left.")
+				$settings[hash_value][:client].connection.stop if $settings[hash_value][:client]
 			else
-				log("Removed reg_id from #{hash_value}")
-				stream(hash_value)
+				log(hash_value, "Removed reg_id from #{hash_value}")
 			end
 		end
 	end
@@ -69,7 +67,7 @@ end
 
 def stream(hash)
 	config = $settings[hash]
-	log hash, "Adding new thread. Settings: " + config.inspect
+	log hash, "Adding new thread."
 	opts = {
 		:path=>"/1.1/user.json",
 		:host=>"userstream.twitter.com",
