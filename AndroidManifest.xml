@@ -46,7 +46,7 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name=".AuthenticateAccount"
+			android:name=".activites.AuthenticateAccountActivity"
 			android:label="@string/authenticate_account" >
 		</activity>
 		

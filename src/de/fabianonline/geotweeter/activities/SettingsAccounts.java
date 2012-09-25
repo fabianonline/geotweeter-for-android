@@ -13,7 +13,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import de.fabianonline.geotweeter.AccountListElementAdapter;
-import de.fabianonline.geotweeter.AuthenticateAccount;
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;
@@ -71,7 +70,7 @@ public class SettingsAccounts extends Activity {
 
 	protected void addAccount() {
 
-		Intent intent = new Intent().setClass(this, AuthenticateAccount.class);
+		Intent intent = new Intent().setClass(this, AuthenticateAccountActivity.class);
 		startActivity(intent);
 
 	}
