@@ -356,4 +356,8 @@ public class Account {
 			}
 		}, "register").start();
 	}
+	
+	public User getUser() {
+		return user;
+	}
 }
