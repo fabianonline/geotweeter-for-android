@@ -4,14 +4,18 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+
+import android.util.Log;
 
 public abstract class TimelineElement implements Serializable {
 	private static final long serialVersionUID = -4794489823636370071L;
+	private static final String LOG = "TimelineElement";
 	protected Date created_at = new Date();
-	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
+	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
 	
 	public void setCreated_at(String str) {
-		try { created_at = parseableDateFormat.parse(str); } catch (ParseException e) {}
+		try { created_at = parseableDateFormat.parse(str); } catch (ParseException e) {Log.e(LOG, "Unparseable Date: " + str);}
 	}
 	
 	abstract public String getTextForDisplay();
