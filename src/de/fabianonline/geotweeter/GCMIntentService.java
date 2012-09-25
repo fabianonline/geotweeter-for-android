@@ -66,7 +66,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		//notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 		notification.contentIntent = contentIntent;
 		notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.defaults |= Notification.DEFAULT_VIBRATE;
+		notification.vibrate = new long[] {0, 200, 500, 200};
 		notificationManager.notify(id, notification);
 	}
 
