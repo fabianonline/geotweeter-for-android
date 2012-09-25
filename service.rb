@@ -64,7 +64,7 @@ end
 def send_gcm(config, data, type)
 	result = $gcm_sender.send(config[:reg_ids], {:data=>{:type=>type, :data=>data.to_json, :user_id=>config[:user_id]}})
 	data = JSON.parse(result.body)
-	log data.inspect unless data["success"]==1
+	log data.inspect unless data["success"]==config[:reg_ids].count
 end
 
 def stream(hash)
