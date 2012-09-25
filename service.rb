@@ -62,7 +62,10 @@ end
 def send_gcm(config, data, type)
 	result = $gcm_sender.send(config[:reg_ids], {:data=>{:type=>type, :data=>data.to_json, :user_id=>config[:user_id]}})
 	data = JSON.parse(result.body)
-	log data.inspect unless data["success"]==config[:reg_ids].count
+	unless data["success"]==config[:reg_ids].count
+		log "ERROR! Success was #{data['success']}, expected #{config[:reg_ids].count}"
+		log "ERROR: data.inspect"
+	end
 end
 
 def stream(hash)
@@ -140,4 +143,3 @@ Listen.to(File.dirname(__FILE__), :filter=>/^command\.txt$/) do |modified, added
 		FileUtils.rm(File.join(File.dirname(__FILE__), "command.txt"))
 	end
 end
-
