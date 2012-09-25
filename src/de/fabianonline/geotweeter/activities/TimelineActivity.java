@@ -1,4 +1,4 @@
-package de.fabianonline.geotweeter;
+package de.fabianonline.geotweeter.activities;
 
 import java.util.ArrayList;
 
@@ -18,8 +18,12 @@ import android.widget.ListView;
 
 import com.google.android.gcm.GCMRegistrar;
 
-import de.fabianonline.geotweeter.activities.GeneralPrefsActivity;
-import de.fabianonline.geotweeter.activities.NewTweetActivity;
+import de.fabianonline.geotweeter.Account;
+import de.fabianonline.geotweeter.BackgroundImageLoader;
+import de.fabianonline.geotweeter.Constants;
+import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.TimelineElementAdapter;
+import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;

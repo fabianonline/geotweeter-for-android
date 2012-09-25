@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import de.fabianonline.geotweeter.activities.TimelineActivity;
 
 public class AccountListElementAdapter extends ArrayAdapter<UserElement> {
 

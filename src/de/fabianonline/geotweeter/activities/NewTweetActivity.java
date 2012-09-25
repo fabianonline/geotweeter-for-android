@@ -24,12 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.fabianonline.geotweeter.R;
-import de.fabianonline.geotweeter.TimelineActivity;
 import de.fabianonline.geotweeter.Utils;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
+import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
-import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";

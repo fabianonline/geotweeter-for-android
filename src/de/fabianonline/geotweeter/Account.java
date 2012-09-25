@@ -3,11 +3,8 @@ package de.fabianonline.geotweeter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 
@@ -31,7 +28,6 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
-import android.content.Entity;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
@@ -40,6 +36,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.Feature;
 
+import de.fabianonline.geotweeter.activities.TimelineActivity;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;

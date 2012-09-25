@@ -1,8 +1,5 @@
 package de.fabianonline.geotweeter;
 
-import java.util.HashMap;
-import java.util.Random;
-
 import org.json.JSONException;
 
 import android.app.Notification;
@@ -16,6 +13,7 @@ import android.widget.RemoteViews;
 import com.google.android.gcm.GCMBaseIntentService;
 
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
+import de.fabianonline.geotweeter.activities.TimelineActivity;
 import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;

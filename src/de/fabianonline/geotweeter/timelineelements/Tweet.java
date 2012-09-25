@@ -1,21 +1,18 @@
 package de.fabianonline.geotweeter.timelineelements;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Currency;
-import java.util.Date;
 import java.util.regex.Matcher;
+
+import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.R;
-import de.fabianonline.geotweeter.TimelineActivity;
 import de.fabianonline.geotweeter.User;
-
-import android.graphics.drawable.Drawable;
-import android.view.View;
+import de.fabianonline.geotweeter.activities.TimelineActivity;
 
 public class Tweet extends TimelineElement{
 	private static final long serialVersionUID = -6610449879010917836L;
