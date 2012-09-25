@@ -1,11 +1,18 @@
 package de.fabianonline.geotweeter.activities;
 
+import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,14 +23,21 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import de.fabianonline.geotweeter.Account;
+import de.fabianonline.geotweeter.BackgroundImageLoader;
 import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.Utils;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
@@ -36,6 +50,9 @@ public class NewTweetActivity extends Activity {
 	protected Location location = null;
 	protected GPSCoordsListener gpslistener = null;
 	private long reply_to_id;
+	
+	private Account currentAccount;
+	private HashMap<View, Account> viewToAccounts;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,12 +75,60 @@ public class NewTweetActivity extends Activity {
 		}
 		editTweetText.setText(reply_string);
 		editTweetText.setSelection(reply_string.length());
+		
+		/* Accountauswahl */
+		List<Account> accounts = Account.all_accounts;
+		LinearLayout lin = (LinearLayout) findViewById(R.id.linLayAccounts);
+		
+		int bgColor = Color.LTGRAY;
+		currentAccount = TimelineActivity.current_account;
+		
+		viewToAccounts = new HashMap<View, Account>();
+		for (Account account : accounts) {
+			User user = account.getUser();
+			ImageButton img = new ImageButton(this);
+			img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			TimelineActivity.background_image_loader.displayImage(user.getAvatarSource(), img);
+			img.setPadding(5, 5, 5, 5);
+			img.setBackgroundColor(bgColor);
+			if(currentAccount != account) {
+				img.setAlpha(50);
+			}
+			img.setOnClickListener(new AccountChangerListener());
+			lin.addView(img);
+			viewToAccounts.put(img, account);
+		}
+		
 	}
 	
 	protected void onPause() {
 		super.onPause();
 		/* Remove all GPSListeners. */
 		if (gpslistener!=null && lm!=null) lm.removeUpdates(gpslistener);
+	}
+	
+	protected class AccountChangerListener implements OnClickListener {
+		public void onClick(View v) {
+			Account acc = viewToAccounts.get(v);
+			if(acc != currentAccount) {
+				Log.d(LOG, "Account clicked: " + acc.getUser().screen_name);
+				/* TODO: Hole oldView auf anderem Weg. Map, die in 2 Richtungen funktioniert */
+				ImageButton oldView = (ImageButton) getViewFromAccount(currentAccount);
+				oldView.setAlpha(50);
+				((ImageButton) v).setAlpha(255);
+				currentAccount = acc;
+				Log.d(LOG, "Current Account: " + currentAccount.getUser().getScreenName());
+			}
+		}
+	}
+	
+	private View getViewFromAccount(Account acc) {
+		for (View v : viewToAccounts.keySet()) {
+			if(viewToAccounts.get(v).equals(acc)) {
+				return v;
+			}
+		}
+		return null;
 	}
 	
 	protected class RemainingCharUpdater implements TextWatcher {
@@ -151,7 +216,7 @@ public class NewTweetActivity extends Activity {
 				@Override
 				public void run() {
 					try {
-						TimelineActivity.current_account.sendTweet(text, location, reply_to_id);
+						currentAccount.sendTweet(text, location, reply_to_id);
 					} catch (TweetSendException e) {
 						e.printStackTrace();
 						return;

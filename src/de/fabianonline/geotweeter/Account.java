@@ -468,15 +468,15 @@ public class Account {
 		elements.notifyDataSetChanged();
 	}
 	
-	public User getUser() {
-		return user;
-	}
-	
 	public long getMaxReadTweetID() {
 		return max_read_tweet_id;
 	}
 	
 	public TimelineElementAdapter getElements() {
 		return elements;
+	}
+	
+	public User getUser() {
+		return user;
 	}
 }

@@ -39,5 +39,12 @@
 
         <requestFocus />
     </EditText>
-
+    
+    <LinearLayout 
+        android:id="@+id/linLayAccounts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5px">
+    </LinearLayout>
+    
 </LinearLayout>
