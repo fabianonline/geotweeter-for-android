@@ -58,16 +58,18 @@ public class NewTweetActivity extends Activity {
 		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener(this));
 		
 		Intent i = getIntent();
-		TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.fabianonline.geotweeter.reply_to_tweet");
-		String reply_string = "";
-		if (elm instanceof DirectMessage) {
-			reply_string = "d " + elm.getSenderScreenName() + " ";
-		} else if (elm instanceof Tweet) {
-			reply_to_id = elm.getID();
-			reply_string = "@" + elm.getSenderScreenName() + " ";
+		if (i != null && i.getExtras() != null) {
+			TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.fabianonline.geotweeter.reply_to_tweet");
+			String reply_string = "";
+			if (elm instanceof DirectMessage) {
+				reply_string = "d " + elm.getSenderScreenName() + " ";
+			} else if (elm instanceof Tweet) {
+				reply_to_id = elm.getID();
+				reply_string = "@" + elm.getSenderScreenName() + " ";
+			}
+			editTweetText.setText(reply_string);
+			editTweetText.setSelection(reply_string.length());
 		}
-		editTweetText.setText(reply_string);
-		editTweetText.setSelection(reply_string.length());
 		
 		/* Accountauswahl */
 		List<Account> accounts = Account.all_accounts;
