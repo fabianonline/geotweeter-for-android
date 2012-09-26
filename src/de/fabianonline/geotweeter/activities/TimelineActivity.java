@@ -45,7 +45,7 @@ public class TimelineActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		map = new MapView(this, "0rSU2R8cwncwINNWuOQ4nOC3CxWFEUTEkYMiApA");
+		map = new MapView(this, Constants.MAPS_API_KEY);
 		setContentView(R.layout.activity_timeline);
 		background_image_loader = new BackgroundImageLoader(getApplicationContext());
 		

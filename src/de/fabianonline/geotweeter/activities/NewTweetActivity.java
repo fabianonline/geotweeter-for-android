@@ -76,7 +76,8 @@ public class NewTweetActivity extends Activity {
 			editTweetText.setSelection(reply_string.length());
 			
 			ListView l = (ListView) findViewById(R.id.timeline);
-			TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, new ArrayList<TimelineElement>());
+			TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, 
+																    new ArrayList<TimelineElement>());
 			l.setAdapter(ta);
 			ta.add(elm);
 		}
@@ -133,7 +134,8 @@ public class NewTweetActivity extends Activity {
 //		int highlightColor = 0xFFFFFF00;
 		if(chosen) {
 			v.setAlpha(255);
-			GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {highlightColor, bgColor});
+			GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, 
+															 new int[] {highlightColor, bgColor});
 			gradDraw.setGradientType(GradientDrawable.RADIAL_GRADIENT);
 			gradDraw.setGradientRadius(40);
 			v.setBackgroundDrawable(gradDraw);

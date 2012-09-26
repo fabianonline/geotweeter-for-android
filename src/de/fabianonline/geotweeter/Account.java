@@ -130,10 +130,10 @@ public class Account implements Serializable {
 				parseData(outer, false);
 				return;
 			}
-			OAuthRequest req_timeline     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/home_timeline.json");
-			OAuthRequest req_mentions     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/mentions.json");
-			OAuthRequest req_dms_received = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/direct_messages.json");
-			OAuthRequest req_dms_sent     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/direct_messages/sent.json");
+			OAuthRequest req_timeline     = new OAuthRequest(Verb.GET, Constants.URI_HOME_TIMELINE);
+			OAuthRequest req_mentions     = new OAuthRequest(Verb.GET, Constants.URI_MENTIONS);
+			OAuthRequest req_dms_received = new OAuthRequest(Verb.GET, Constants.URI_DIRECT_MESSAGES);
+			OAuthRequest req_dms_sent     = new OAuthRequest(Verb.GET, Constants.URI_DIRECT_MESSAGES_SENT);
 			
 			req_timeline.addQuerystringParameter("count", "100");
 			req_mentions.addQuerystringParameter("count", "100");
@@ -292,7 +292,7 @@ public class Account implements Serializable {
 					if (max_known_tweet_id == 0) {
 						for(ArrayList<TimelineElement> array : responses) {
 							TimelineElement first_element = array.get(0);
-							if (first_element instanceof Tweet && ((Tweet) first_element).id>max_known_tweet_id) {
+							if (first_element instanceof Tweet && ((Tweet) first_element).id > max_known_tweet_id) {
 								max_known_tweet_id = ((Tweet)first_element).id;
 							}
 						}
@@ -300,7 +300,7 @@ public class Account implements Serializable {
 					if (max_known_dm_id==0) {
 						for(ArrayList<TimelineElement> array : responses) {
 							TimelineElement first_element = array.get(0);
-							if (first_element instanceof DirectMessage && first_element.getID()>max_known_dm_id) {
+							if (first_element instanceof DirectMessage && first_element.getID() > max_known_dm_id) {
 								max_known_dm_id = first_element.getID();
 							}
 						}
@@ -354,7 +354,7 @@ public class Account implements Serializable {
 	}
 
 	public void sendTweet(String text, Location location, long reply_to_id) throws TweetSendException {
-		OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.twitter.com/1/statuses/update.json");
+		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
 		request.addBodyParameter("status", text);
 		
 		if (location != null) {
@@ -402,13 +402,13 @@ public class Account implements Serializable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/account/verify_credentials.json");
+				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS);
 				signRequest(oauth_request);
 				
 				try {
 					HttpClient http_client = new DefaultHttpClient();
-					HttpGet http_get = new HttpGet("https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=" + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
-					http_get.addHeader("X-Auth-Service-Provider", "https://api.twitter.com/1/account/verify_credentials.json");
+					HttpGet http_get = new HttpGet(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
+					http_get.addHeader("X-Auth-Service-Provider", Constants.URI_VERIFY_CREDENTIALS);
 					http_get.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
 					HttpResponse response = http_client.execute(http_get);
 					if (response.getEntity() == null) {
@@ -457,13 +457,13 @@ public class Account implements Serializable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/account/verify_credentials.json");
+				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS);
 				signRequest(oauth_request);
 				
 				try {
 					HttpClient http_client = new DefaultHttpClient();
-					HttpPost http_post = new HttpPost("https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=" + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
-					http_post.addHeader("X-Auth-Service-Provider", "https://api.twitter.com/1/account/verify_credentials.json");
+					HttpPost http_post = new HttpPost(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
+					http_post.addHeader("X-Auth-Service-Provider", Constants.URI_VERIFY_CREDENTIALS);
 					http_post.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
 					http_post.setEntity(new StringEntity(""+max_read_tweet_id+","+max_read_mention_id+","+max_read_dm_id));
 					http_client.execute(http_post);

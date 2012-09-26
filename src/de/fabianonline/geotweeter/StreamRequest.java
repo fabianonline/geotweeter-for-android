@@ -52,7 +52,7 @@ public class StreamRequest {
 			buffer = "";
 			char ch[] = new char[1]; 
 			String line;
-			OAuthRequest request = new OAuthRequest(Verb.GET, "https://userstream.twitter.com/1.1/user.json");
+			OAuthRequest request = new OAuthRequest(Verb.GET, Constants.URI_USER_STREAM);
 			request.addQuerystringParameter("delimited", "length");
 			account.signRequest(request);
 			Response response = request.send();
