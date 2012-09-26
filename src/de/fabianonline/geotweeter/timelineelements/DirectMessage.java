@@ -1,9 +1,11 @@
 package de.fabianonline.geotweeter.timelineelements;
 
+import java.util.Currency;
 import java.util.Date;
 
 import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;
+import de.fabianonline.geotweeter.activities.TimelineActivity;
 
 public class DirectMessage extends Tweet {
 	private User sender;
@@ -11,8 +13,11 @@ public class DirectMessage extends Tweet {
 
 	@Override
 	public String getTextForDisplay() {
-		// TODO Auto-generated method stub
-		return "DM";
+		if (sender.id == TimelineActivity.current_account.getUser().id) {
+			return "<strong>an " + recipient.getScreenName() + "</strong> " + text;
+		} else {
+			return "<strong>von " + sender.getScreenName() + "</strong> " + text;
+		}
 	}
 
 	@Override

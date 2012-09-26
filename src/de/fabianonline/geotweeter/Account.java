@@ -20,6 +20,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.exceptions.OAuthException;
@@ -39,6 +40,7 @@ import com.alibaba.fastjson.parser.Feature;
 
 import de.fabianonline.geotweeter.activities.TimelineActivity;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
+import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
@@ -75,7 +77,11 @@ public class Account implements Serializable {
 		this.user = user;
 		handler = new Handler();
 		this.elements = elements;
-		new Thread(new TimelineRefreshThread(false)).start();
+		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
+			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
+		} else {
+			new Thread(new TimelineRefreshThread(false)).start();
+		}
 		stream_request = new StreamRequest(this);
 		//stream_request.start();
 		all_accounts.add(this);
@@ -106,6 +112,23 @@ public class Account implements Serializable {
 		@Override
 		public void run() {
 			Log.d(LOG, "Starting run()...");
+			if (Debug.ENABLED && Debug.FAKE_FILL_TIMELINE && Debug.FAKE_FILL_TIMELINE_JSON!=null) {
+				Log.d(LOG, "Fake Timeline Data given (Debug.FAKE_TIMELINE)");
+				ArrayList<TimelineElement> inner = new ArrayList<TimelineElement>();
+				for (String s : Debug.FAKE_FILL_TIMELINE_JSON) {
+					try {
+						inner.add(Utils.jsonToNativeObject(s));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					} catch (UnknownJSONObjectException e) {
+						e.printStackTrace();
+					}
+				}
+				ArrayList<ArrayList<TimelineElement>> outer = new ArrayList<ArrayList<TimelineElement>>();
+				outer.add(inner);
+				parseData(outer, false);
+				return;
+			}
 			OAuthRequest req_timeline     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/home_timeline.json");
 			OAuthRequest req_mentions     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/mentions.json");
 			OAuthRequest req_dms_received = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/direct_messages.json");
@@ -172,7 +195,11 @@ public class Account implements Serializable {
 			}
 			if (count_errored_threads==0) {
 				parseData(responses, do_update_bottom);
-				//stream_request.start();
+				if (Debug.ENABLED && Debug.SKIP_START_STREAM) {
+					Log.d(LOG, "Not starting stream - Debug.SKIP_START_STREAM is true.");
+				} else {
+					stream_request.start();
+				}
 			} else {
 				// TODO Try again after some time
 				// TODO Show info message
@@ -313,7 +340,6 @@ public class Account implements Serializable {
 				elements.addAllAsFirst(all_elements);
 			}
 		});
-		stream_request.start();
 	}
 
 	public void addTweet(final TimelineElement elm) {
@@ -388,9 +414,15 @@ public class Account implements Serializable {
 						return;
 					}
 					String[] parts = EntityUtils.toString(response.getEntity()).split(",");
-					max_read_tweet_id = Long.parseLong(parts[0]);
-					max_read_mention_id = Long.parseLong(parts[1]);
-					max_read_dm_id = Long.parseLong(parts[2]);
+					try {
+						max_read_tweet_id = Long.parseLong(parts[0]);
+					} catch (NumberFormatException ex) {}
+					try {
+						max_read_mention_id = Long.parseLong(parts[1]);
+					} catch (NumberFormatException ex) {}
+					try {
+						max_read_dm_id = Long.parseLong(parts[2]);
+					} catch (NumberFormatException ex) {}
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
@@ -447,10 +479,6 @@ public class Account implements Serializable {
 		elements.notifyDataSetChanged();
 	}
 	
-	public User getUser() {
-		return user;
-	}
-	
 	public long getMaxReadTweetID() {
 		return max_read_tweet_id;
 	}
@@ -466,5 +494,8 @@ public class Account implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
-
+	
+	public User getUser() {
+		return user;
+	}
 }

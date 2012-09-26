@@ -18,6 +18,7 @@ public class Tweet extends TimelineElement{
 	private static final long serialVersionUID = -6610449879010917836L;
 	private static final String LOG = "Tweet";
 	public String text;
+	public String text_for_display = null;
 	public long id;
 	public User user;
 	public View view;
@@ -29,7 +30,30 @@ public class Tweet extends TimelineElement{
 	}
 	
 	public String getTextForDisplay() {
-		return "<strong>" + user.getScreenName() + "</strong> " + text;
+		if (text_for_display == null) {
+			if (entities == null) {
+				// TODO why?
+				text_for_display = new String(text);
+			} else {
+				StringBuilder temp_text = new StringBuilder();
+				JSONArray urls = entities.getJSONArray("urls");
+				int start_index = 0;
+				if (urls!=null) {
+					for (int i=0; i<urls.size(); i++) {
+						JSONObject url = urls.getJSONObject(i);
+						JSONArray indices = url.getJSONArray("indices");
+						temp_text.append(text.substring(start_index, indices.getIntValue(0)));
+						temp_text.append(url.getString("display_url"));
+						start_index = indices.getIntValue(1);
+					}
+					temp_text.append(text.substring(start_index, text.length()-1));
+					text_for_display = temp_text.toString();
+				} else {
+					text_for_display = new String(text);
+				}
+			}
+		}
+		return "<strong>" + user.getScreenName() + "</strong> " + text_for_display;
 	}
 	
 	public void setUser(User u) {

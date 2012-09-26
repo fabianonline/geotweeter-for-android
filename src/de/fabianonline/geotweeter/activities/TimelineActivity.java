@@ -139,9 +139,7 @@ public class TimelineActivity extends Activity {
 		while(pos < elements.getCount()) {
 			current = elements.getItem(pos);
 			if (current instanceof DirectMessage) {
-				if (new_max_read_dm_id != 0) {
-					continue;
-				} else {
+				if (new_max_read_dm_id == 0) {
 					new_max_read_dm_id = current.getID();
 				}
 			} else if (current instanceof Tweet) {
