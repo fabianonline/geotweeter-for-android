@@ -93,7 +93,7 @@ public class TimelineActivity extends MapActivity {
 
 	protected void showMapIfApplicable(AdapterView<?> parent, View view,
 			int position, long id) {
-		TimelineElement te = elements.get(position);
+		TimelineElement te = current_account.getElements().getItem(position);
 		if (map.getParent() != null) {
 			FrameLayout mapContainer = (FrameLayout) map.getParent();
 			mapContainer.removeAllViews();
