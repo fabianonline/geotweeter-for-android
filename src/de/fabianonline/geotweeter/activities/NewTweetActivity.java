@@ -1,5 +1,6 @@
 package de.fabianonline.geotweeter.activities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,11 +26,13 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.TimelineElementAdapter;
 import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.Utils;
 import de.fabianonline.geotweeter.exceptions.TweetSendException;
@@ -69,6 +72,11 @@ public class NewTweetActivity extends Activity {
 			}
 			editTweetText.setText(reply_string);
 			editTweetText.setSelection(reply_string.length());
+			
+			ListView l = (ListView) findViewById(R.id.timeline);
+			TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, new ArrayList<TimelineElement>());
+			l.setAdapter(ta);
+			ta.add(elm);
 		}
 		
 		/* Accountauswahl */
@@ -106,13 +114,11 @@ public class NewTweetActivity extends Activity {
 		public void onClick(View v) {
 			Account acc = viewToAccounts.get(v);
 			if(acc != currentAccount) {
-				Log.d(LOG, "Account clicked: " + acc.getUser().screen_name);
 				/* TODO: Hole oldView auf anderem Weg. Map, die in 2 Richtungen funktioniert */
 				ImageButton oldView = (ImageButton) getViewFromAccount(currentAccount);
 				oldView.setAlpha(50);
 				((ImageButton) v).setAlpha(255);
 				currentAccount = acc;
-				Log.d(LOG, "Current Account: " + currentAccount.getUser().getScreenName());
 			}
 		}
 	}
