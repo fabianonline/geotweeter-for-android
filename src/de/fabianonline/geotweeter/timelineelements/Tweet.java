@@ -46,7 +46,9 @@ public class Tweet extends TimelineElement{
 						temp_text.append(url.getString("display_url"));
 						start_index = indices.getIntValue(1);
 					}
-					temp_text.append(text.substring(start_index, text.length()-1));
+					if(start_index < text.length()) {
+						temp_text.append(text.substring(start_index, text.length()-1));
+					}
 					text_for_display = temp_text.toString();
 				} else {
 					text_for_display = new String(text);
