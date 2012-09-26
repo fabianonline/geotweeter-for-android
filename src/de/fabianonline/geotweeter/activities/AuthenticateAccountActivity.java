@@ -53,7 +53,7 @@ public class AuthenticateAccountActivity extends Activity {
 		ed.putString("access_token."+String.valueOf(authUser.id), accessToken.getToken());
 		ed.putString("access_secret."+String.valueOf(authUser.id), accessToken.getSecret());
 		String accountString = sp.getString("accounts", "");
-		String[] accounts = accountString.split(" ");
+		String[] accounts = accountString.trim().split(" ");
 		Boolean found = false;
 		for (String id : accounts) {
 			if (id.equals(String.valueOf(authUser.id))) {
