@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,6 +26,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -83,7 +85,6 @@ public class NewTweetActivity extends Activity {
 		List<Account> accounts = Account.all_accounts;
 		LinearLayout lin = (LinearLayout) findViewById(R.id.linLayAccounts);
 		
-		int bgColor = Color.LTGRAY;
 		currentAccount = TimelineActivity.current_account;
 		
 		viewToAccounts = new HashMap<View, Account>();
@@ -93,10 +94,18 @@ public class NewTweetActivity extends Activity {
 			img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			TimelineActivity.background_image_loader.displayImage(user.getAvatarSource(), img);
 			img.setPadding(5, 5, 5, 5);
-			img.setBackgroundColor(bgColor);
-			if(currentAccount != account) {
-				img.setAlpha(50);
-			}
+//			img.setBackgroundColor(bgColor);
+//			if(currentAccount != account) {
+//				img.setAlpha(50);
+//			} else {
+//				GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {0xFFFF0000, 0xFFCCCCCC});
+////				gradDraw.setColors(new int[] {0xFFFFFFFF, 0xFFCCCCCC});
+//				gradDraw.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+//				gradDraw.setGradientRadius(40);
+//				img.setBackgroundDrawable(gradDraw);
+////				img.setAlpha(0);
+//			}
+			fooooo(img, currentAccount == account);
 			img.setOnClickListener(new AccountChangerListener());
 			lin.addView(img);
 			viewToAccounts.put(img, account);
@@ -116,10 +125,33 @@ public class NewTweetActivity extends Activity {
 			if(acc != currentAccount) {
 				/* TODO: Hole oldView auf anderem Weg. Map, die in 2 Richtungen funktioniert */
 				ImageButton oldView = (ImageButton) getViewFromAccount(currentAccount);
-				oldView.setAlpha(50);
+//				oldView.setAlpha(50);
+				fooooo(oldView, false);
 				((ImageButton) v).setAlpha(255);
+				fooooo((ImageButton) v, true);
 				currentAccount = acc;
 			}
+		}
+	}
+	
+	private void fooooo(ImageView v, boolean chosen) {
+		int bgColor = Color.LTGRAY;
+//		int bgColor = Color.WHITE;
+//		int highlightColor = 0xFFFF0000;
+		int highlightColor = 0xFF000000;
+//		int highlightColor = 0xFFFFFFFF;
+//		int highlightColor = 0xFFFFA500;
+//		int highlightColor = 0xFF00FF00;
+//		int highlightColor = 0xFFFFFF00;
+		if(chosen) {
+			v.setAlpha(255);
+			GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {highlightColor, bgColor});
+			gradDraw.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+			gradDraw.setGradientRadius(40);
+			v.setBackgroundDrawable(gradDraw);
+		} else {
+			v.setAlpha(50);
+			v.setBackgroundColor(bgColor);
 		}
 	}
 	
