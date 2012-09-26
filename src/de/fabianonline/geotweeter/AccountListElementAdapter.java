@@ -11,13 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import de.fabianonline.geotweeter.activities.TimelineActivity;
 
-public class AccountListElementAdapter extends ArrayAdapter<UserElement> {
+public class AccountListElementAdapter extends ArrayAdapter<Account> {
 
-	private ArrayList<UserElement> items;
+	private ArrayList<Account> items;
 	private Context context;
 	
 	public AccountListElementAdapter(Context context, int textViewResourceId,
-			ArrayList<UserElement> objects) {
+			ArrayList<Account> objects) {
 		super(context, textViewResourceId, objects);
 		this.items = objects;
 		this.context = context;
@@ -31,16 +31,17 @@ public class AccountListElementAdapter extends ArrayAdapter<UserElement> {
 			v = vi.inflate(R.layout.account_list_element, null);
 		}
 		
-		UserElement listElement = (UserElement)items.get(position);
+//		UserElement listElement = (UserElement)items.get(position);
+		Account listElement = (Account)items.get(position);
 		
 		if (listElement != null) {
 			TextView tvScreenName = (TextView) v.findViewById(R.id.tvScreenName);
 			if (tvScreenName != null) {
-				tvScreenName.setText(listElement.getScreenName());
+				tvScreenName.setText(listElement.getUser().getScreenName());
 			}
 			ImageView ivAvatar = (ImageView) v.findViewById(R.id.ivAccountAvatar);
 			if (ivAvatar != null) {
-				TimelineActivity.background_image_loader.displayImage(listElement.getAvatarSource(), ivAvatar);
+				TimelineActivity.background_image_loader.displayImage(listElement.getUser().getAvatarSource(), ivAvatar);
 			}
 		}
 		

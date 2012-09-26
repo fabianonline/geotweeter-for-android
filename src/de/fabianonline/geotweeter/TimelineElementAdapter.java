@@ -36,24 +36,24 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
-		if (v==null) {
+		if (v == null) {
 			LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.timeline_element, null);
 		}
 		TimelineElement t = (TimelineElement)items.get(position);
-		if (t!=null) {
+		if (t != null) {
 			TextView text = (TextView) v.findViewById(R.id.tweet_content);
-			if (text!=null) { 
+			if (text != null) { 
 				text.setText(Html.fromHtml(t.getTextForDisplay()));
 			}
 			
 			text = (TextView) v.findViewById(R.id.source_text);
-			if (text!=null) {
+			if (text != null) {
 				text.setText(t.getSourceText());
 			}
 			
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
-			if (img!=null) {
+			if (img != null) {
 				TimelineActivity.background_image_loader.displayImage(t.getAvatarSource(), img);
 			}
 		}

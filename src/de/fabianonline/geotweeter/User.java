@@ -6,9 +6,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 
 public class User extends UserElement implements java.io.Serializable {
 	private static final long serialVersionUID = 2231080355596825396L;
@@ -16,8 +16,23 @@ public class User extends UserElement implements java.io.Serializable {
 	public Drawable avatar = null;
 	public long id;
 	public String name, screen_name, url, description, profile_image_url_https, location;
-	public View[] views = new View[] {};
+//	public View[] views = new View[] {};
 	
+	public User() {
+		
+	}
+	
+	public User(User user) {
+		avatar = user.avatar;
+		id = user.id;
+		name = user.name;
+		screen_name = user.screen_name;
+		url = user.url;
+		description = user.description;
+		profile_image_url_https = user.profile_image_url_https;
+		location = user.location;
+	}
+
 	public String getScreenName() { 
 		return screen_name; 
 	}
@@ -30,7 +45,6 @@ public class User extends UserElement implements java.io.Serializable {
 	public Drawable getAvatarDrawable() {
 		return avatar;
 	}
-
 
 	public static ArrayList<User> getPersistentData(Context context, String[] accounts) {
 		ArrayList<User> result = new ArrayList<User>();

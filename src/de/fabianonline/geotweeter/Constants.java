@@ -14,6 +14,7 @@ public class Constants extends Application {
 	public static final String OAUTH_CALLBACK = "oauth://twitter";
 	
 	public static final String URI_VERIFY_CREDENTIALS = "https://api.twitter.com/1.1/account/verify_credentials.json";
+	public static final String URI_UPDATE_PROFILE = "https://api.twitter.com/1.1/account/update_profile.json";
 
 	public static final Pattern REGEXP_FIND_SOURCE = Pattern.compile(">(.+)</a>");
 	public static final String GCM_SENDER_ID = "540800208547";

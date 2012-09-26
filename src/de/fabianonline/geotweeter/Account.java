@@ -1,6 +1,7 @@
 package de.fabianonline.geotweeter;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,19 +43,23 @@ import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
 
-public class Account {
+public class Account implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3681363869066996199L;
 	protected final String LOG = "Account";
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	private Token token;
-	private OAuthService service = new ServiceBuilder()
+	private transient OAuthService service = new ServiceBuilder()
 											.provider(TwitterApi.class)
 											.apiKey(Constants.API_KEY)
 											.apiSecret(Constants.API_SECRET)
 											.debug()
 											.build();
-	private Handler handler;
-	private StreamRequest stream_request;
+	private transient Handler handler;
+	private transient StreamRequest stream_request;
 	private long max_read_tweet_id = 0;
 	private long max_read_dm_id = 0;
 	private long max_known_tweet_id = 0;
@@ -62,7 +67,7 @@ public class Account {
 	private long max_known_dm_id = 0;
 	private long min_known_dm_id = -1;
 	private User user;
-	private TimelineElementAdapter elements;
+	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
 	
 	public Account(TimelineElementAdapter elements, Token token, User user) {
@@ -78,7 +83,7 @@ public class Account {
 	}
 	
 	public void signRequest(OAuthRequest request) {
-		service.signRequest(token, request);
+		service.signRequest(getToken(), request);
 	}
 	
 	public void stopStream() {
@@ -350,8 +355,8 @@ public class Account {
 				try {
 					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(3);
 					name_value_pair.add(new BasicNameValuePair("reg_id", TimelineActivity.reg_id));
-					name_value_pair.add(new BasicNameValuePair("token", token.getToken()));
-					name_value_pair.add(new BasicNameValuePair("secret", token.getSecret()));
+					name_value_pair.add(new BasicNameValuePair("token", getToken().getToken()));
+					name_value_pair.add(new BasicNameValuePair("secret", getToken().getSecret()));
 					http_post.setEntity(new UrlEncodedFormEntity(name_value_pair));
 					http_client.execute(http_post);
 				} catch(ClientProtocolException e) {
@@ -453,4 +458,13 @@ public class Account {
 	public TimelineElementAdapter getElements() {
 		return elements;
 	}
+
+	public Token getToken() {
+		return token;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 }
