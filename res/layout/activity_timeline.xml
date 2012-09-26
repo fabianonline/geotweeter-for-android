@@ -30,7 +30,8 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:onClick="nextAccountHandler"
+            android:text="Next" />
 
         <ImageButton
             android:id="@+id/btnNewTweet"
