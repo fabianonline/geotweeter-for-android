@@ -14,9 +14,6 @@ public abstract class TimelineElement implements Serializable {
 	protected Date created_at = new Date();
 	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
 	
-	public void setCreated_at(String str) {
-		try { created_at = parseableDateFormat.parse(str); } catch (ParseException e) {Log.e(LOG, "Unparseable Date: " + str);}
-	}
 	
 	abstract public String getTextForDisplay();
 	abstract public CharSequence getSourceText();
@@ -24,6 +21,15 @@ public abstract class TimelineElement implements Serializable {
 	abstract public long getID();
 	abstract public String getSenderScreenName();
 	abstract public int getBackgroundDrawableID();
+	
+	public void setCreated_at(String str) {
+		try { 
+			created_at = parseableDateFormat.parse(str); 
+		} catch (ParseException e) {
+			Log.e(LOG, "Unparseable Date: " + str);
+		}
+	}
+	
 	public Date getDate() {
 		if (created_at != null) {
 			return created_at;

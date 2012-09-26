@@ -21,10 +21,6 @@ public class SettingsAccounts extends Activity {
 		setContentView(R.layout.pref_accounts);
 		
 		if (!Account.all_accounts.isEmpty()) {
-//			ArrayList<UserElement> userElements = new ArrayList<UserElement>();
-//			for (Account a : Account.all_accounts) {
-//				userElements.add(a.getUser());
-//			}
 			
 			ListView lv = (ListView)findViewById(R.id.lvAccounts);
 			AccountListElementAdapter adapter = new AccountListElementAdapter(this, R.layout.account_list_element, Account.all_accounts);

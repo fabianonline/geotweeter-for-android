@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.scribe.model.Token;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,9 +13,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapView;
 
 import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.BackgroundImageLoader;
@@ -28,7 +31,7 @@ import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
 
-public class TimelineActivity extends Activity {
+public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
 	private TimelineElementAdapter ta;
 	private ArrayList<TimelineElement> elements;
@@ -36,10 +39,12 @@ public class TimelineActivity extends Activity {
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
+	private MapView map;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		map = new MapView(this, "0rSU2R8cwncwINNWuOQ4nOC3CxWFEUTEkYMiApA");
 		setContentView(R.layout.activity_timeline);
 		elements = new ArrayList<TimelineElement>();
 		ta = new TimelineElementAdapter(this, R.layout.timeline_element, elements);
@@ -51,6 +56,7 @@ public class TimelineActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				//view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
+				showMapIfApplicable(parent, view, position, id);
 			}
 		});
 		
@@ -83,6 +89,35 @@ public class TimelineActivity extends Activity {
 				}
 			}
 		});
+	}
+
+	protected void showMapIfApplicable(AdapterView<?> parent, View view,
+			int position, long id) {
+		TimelineElement te = elements.get(position);
+		if (map.getParent() != null) {
+			FrameLayout mapContainer = (FrameLayout) map.getParent();
+			mapContainer.removeAllViews();
+			mapContainer.setVisibility(View.GONE);
+		}
+		if (te instanceof Tweet) {
+			Tweet tweet = (Tweet) te;
+			if (tweet.coordinates != null) {
+				float lon = tweet.coordinates.coordinates.get(0);
+				float lat = tweet.coordinates.coordinates.get(1);
+				
+				FrameLayout mapContainer = (FrameLayout) view.findViewById(R.id.map_fragment_container);
+				
+				mapContainer.addView(map);
+				
+				map.setBuiltInZoomControls(true);
+				map.getController().setCenter(new GeoPoint((int) (lat*1e6), (int) (lon*1e6)));
+				map.getController().setZoom(16);
+				map.setVisibility(View.VISIBLE);
+				mapContainer.setVisibility(View.VISIBLE);
+			} else {
+				
+			}
+		}
 	}
 
 	public void onDestroy() {
@@ -136,7 +171,7 @@ public class TimelineActivity extends Activity {
 		long new_max_read_tweet_id = 0;
 		long new_max_read_dm_id = 0;
 		long new_max_read_mention_id = 0;
-		while(pos < elements.getCount()) {
+		while (pos < elements.getCount()) {
 			current = elements.getItem(pos);
 			if (current instanceof DirectMessage) {
 				if (new_max_read_dm_id == 0) {
@@ -190,5 +225,11 @@ public class TimelineActivity extends Activity {
 			return true;
 		}
 		return true;
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		/* Die Methode muss hier hin wegen MapActivity */
+		return false;
 	}
 }

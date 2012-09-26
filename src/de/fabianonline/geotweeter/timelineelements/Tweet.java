@@ -14,9 +14,10 @@ import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.activities.TimelineActivity;
 
-public class Tweet extends TimelineElement{
+public class Tweet extends TimelineElement {
 	private static final long serialVersionUID = -6610449879010917836L;
 	private static final String LOG = "Tweet";
+	public Coordinates coordinates;
 	public String text;
 	public String text_for_display = null;
 	public long id;
@@ -38,15 +39,15 @@ public class Tweet extends TimelineElement{
 				StringBuilder temp_text = new StringBuilder();
 				JSONArray urls = entities.getJSONArray("urls");
 				int start_index = 0;
-				if (urls!=null) {
-					for (int i=0; i<urls.size(); i++) {
+				if (urls != null) {
+					for (int i = 0; i < urls.size(); i++) {
 						JSONObject url = urls.getJSONObject(i);
 						JSONArray indices = url.getJSONArray("indices");
 						temp_text.append(text.substring(start_index, indices.getIntValue(0)));
 						temp_text.append(url.getString("display_url"));
 						start_index = indices.getIntValue(1);
 					}
-					temp_text.append(text.substring(start_index, text.length()-1));
+					temp_text.append(text.substring(start_index, text.length() - 1));
 					text_for_display = temp_text.toString();
 				} else {
 					text_for_display = new String(text);
@@ -78,9 +79,14 @@ public class Tweet extends TimelineElement{
 		}
 	}
 	
-	public Drawable getAvatarDrawable() { return user.avatar; }
+	public Drawable getAvatarDrawable() { 
+		return user.avatar; 
+	}
 
-	public CharSequence getSourceText() { return new SimpleDateFormat("dd.MM. HH:mm").format(created_at) + " from " + source; }
+	public CharSequence getSourceText() { 
+		return new SimpleDateFormat("dd.MM. HH:mm").format(created_at) + " from " + source; 
+	}
+	
 	public String getSenderScreenName() {
 		return user.getScreenName();
 	}

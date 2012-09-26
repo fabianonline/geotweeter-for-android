@@ -72,6 +72,7 @@ public class Account implements Serializable {
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
 	
+	
 	public Account(TimelineElementAdapter elements, Token token, User user) {
 		this.token = token;
 		this.user = user;
@@ -174,7 +175,7 @@ public class Account implements Serializable {
 			}
 			count_running_threads--;
 			Log.d(LOG, "Remaining running threads: " + count_running_threads);
-			if (count_running_threads==0) {
+			if (count_running_threads == 0) {
 				runAfterAllRequestsCompleted();
 			}
 		}
@@ -267,28 +268,28 @@ public class Account implements Serializable {
 		final ArrayList<TimelineElement> all_elements = new ArrayList<TimelineElement>();
 		long last_id = 0;
 		// remove empty arrays
-		for (int i=responses.size()-1; i>=0; i--) {
+		for (int i = responses.size() - 1; i >= 0; i--) {
 			if (responses.get(i).size()==0) {
 				responses.remove(i);
 			}
 		}
 		
-		while(responses.size()>0) {
+		while (responses.size() > 0) {
 			Date newest_date = null;
 			int newest_index = -1;
-			for (int i=0; i<responses.size(); i++) {
+			for (int i = 0; i < responses.size(); i++) {
 				TimelineElement element = responses.get(i).get(0);
-				if (newest_date==null || element.getDate().after(newest_date)) {
+				if (newest_date == null || element.getDate().after(newest_date)) {
 					newest_date = element.getDate();
 					newest_index = i;
 				}
 			}
 			TimelineElement element = responses.get(newest_index).remove(0);
-			if (responses.get(newest_index).size()==0) {
+			if (responses.get(newest_index).size() == 0) {
 				responses.remove(newest_index);
 
-				if (newest_index==0) {
-					if (max_known_tweet_id==0) {
+				if (newest_index == 0) {
+					if (max_known_tweet_id == 0) {
 						for(ArrayList<TimelineElement> array : responses) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof Tweet && ((Tweet) first_element).id>max_known_tweet_id) {
