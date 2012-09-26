@@ -94,17 +94,6 @@ public class NewTweetActivity extends Activity {
 			img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			TimelineActivity.background_image_loader.displayImage(user.getAvatarSource(), img);
 			img.setPadding(5, 5, 5, 5);
-//			img.setBackgroundColor(bgColor);
-//			if(currentAccount != account) {
-//				img.setAlpha(50);
-//			} else {
-//				GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {0xFFFF0000, 0xFFCCCCCC});
-////				gradDraw.setColors(new int[] {0xFFFFFFFF, 0xFFCCCCCC});
-//				gradDraw.setGradientType(GradientDrawable.RADIAL_GRADIENT);
-//				gradDraw.setGradientRadius(40);
-//				img.setBackgroundDrawable(gradDraw);
-////				img.setAlpha(0);
-//			}
 			fooooo(img, currentAccount == account);
 			img.setOnClickListener(new AccountChangerListener());
 			lin.addView(img);
@@ -125,15 +114,14 @@ public class NewTweetActivity extends Activity {
 			if(acc != currentAccount) {
 				/* TODO: Hole oldView auf anderem Weg. Map, die in 2 Richtungen funktioniert */
 				ImageButton oldView = (ImageButton) getViewFromAccount(currentAccount);
-//				oldView.setAlpha(50);
 				fooooo(oldView, false);
-				((ImageButton) v).setAlpha(255);
 				fooooo((ImageButton) v, true);
 				currentAccount = acc;
 			}
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void fooooo(ImageView v, boolean chosen) {
 		int bgColor = Color.LTGRAY;
 //		int bgColor = Color.WHITE;
