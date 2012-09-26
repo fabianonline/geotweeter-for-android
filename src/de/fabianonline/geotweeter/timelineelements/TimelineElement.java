@@ -29,6 +29,14 @@ public abstract class TimelineElement implements Serializable {
 		}
 		return new Date();
 	}
+	
+	public void setCreated_at(String str) {
+		try { 
+			created_at = parseableDateFormat.parse(str); 
+		} catch (ParseException e) {
+			Log.e(LOG, "Unparseable Date: " + str);
+		}
+	}
 
 	public boolean isReplyable() {
 		return false;
