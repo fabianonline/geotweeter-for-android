@@ -64,7 +64,7 @@ def send_gcm(config, data, type)
 	data = JSON.parse(result.body)
 	unless data["success"]==config[:reg_ids].count
 		log "ERROR! Success was #{data['success']}, expected #{config[:reg_ids].count}"
-		log "ERROR: data.inspect"
+		log "ERROR: #{data.inspect}"
 	end
 end
 
