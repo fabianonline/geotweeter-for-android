@@ -46,7 +46,7 @@ public class DirectMessage extends Tweet {
 	
 	@Override
 	public String getAvatarSource() {
-		return recipient.getAvatarSource();
+		return sender.getAvatarSource();
 	}
 	
 	public String getSenderScreenName() {

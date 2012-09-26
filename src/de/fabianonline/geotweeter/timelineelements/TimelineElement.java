@@ -21,14 +21,7 @@ public abstract class TimelineElement implements Serializable {
 	abstract public long getID();
 	abstract public String getSenderScreenName();
 	abstract public int getBackgroundDrawableID();
-	
-	public void setCreated_at(String str) {
-		try { 
-			created_at = parseableDateFormat.parse(str); 
-		} catch (ParseException e) {
-			Log.e(LOG, "Unparseable Date: " + str);
-		}
-	}
+
 	
 	public Date getDate() {
 		if (created_at != null) {
