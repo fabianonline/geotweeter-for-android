@@ -130,10 +130,10 @@ public class Account implements Serializable {
 				parseData(outer, false);
 				return;
 			}
-			OAuthRequest req_timeline     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/home_timeline.json");
-			OAuthRequest req_mentions     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/statuses/mentions.json");
-			OAuthRequest req_dms_received = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/direct_messages.json");
-			OAuthRequest req_dms_sent     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/direct_messages/sent.json");
+			OAuthRequest req_timeline     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1.1/statuses/home_timeline.json");
+			OAuthRequest req_mentions     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1.1/statuses/mentions_timeline.json");
+			OAuthRequest req_dms_received = new OAuthRequest(Verb.GET, "https://api.twitter.com/1.1/direct_messages.json");
+			OAuthRequest req_dms_sent     = new OAuthRequest(Verb.GET, "https://api.twitter.com/1.1/direct_messages/sent.json");
 			
 			req_timeline.addQuerystringParameter("count", "100");
 			req_mentions.addQuerystringParameter("count", "100");
