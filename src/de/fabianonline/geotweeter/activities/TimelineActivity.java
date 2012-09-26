@@ -34,7 +34,6 @@ import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
-	private ArrayList<TimelineElement> elements;
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private int acc;
 	public static Account current_account = null;
