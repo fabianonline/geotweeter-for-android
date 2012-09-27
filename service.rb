@@ -8,6 +8,7 @@ Bundler.require
 Thread.abort_on_exception = true
 $settings = YAML::load_file("settings.yml") rescue {}
 $digest = Digest::SHA256.new
+$stats = {:normal_tweets=>0, :mentions=>0, :dms=>0, :bytes=>0, :accounts=>0, :reg_ids=>0, :gcms_successful=>0, :gcms_failed=>0, :favorites=>0, :retweets=>0}
 
 $gcm_sender = HiGCM::Sender.new("AIzaSyCkOw9l2iZhjytnKNmL8EiWmZZtcco6lik")
 CONSUMER_TOKEN  = "7tbUmgasX8QXazkxGMNw"
@@ -28,6 +29,7 @@ def update()
 				$settings[id][:reg_ids] << reg_id
 				$settings[id][:screen_name] = screen_name
 				log(screen_name, "Adding new reg_id")
+				$stats[:reg_ids] += 1
 			else
 				hash = {:token=>token, :secret=>secret, :reg_ids=>[reg_id], :screen_name=>screen_name, :user_id=>id}
 				$settings[id] = hash
@@ -36,11 +38,12 @@ def update()
 			end
 		elsif command=="del"
 			next unless $settings.has_key? id
-			$settings[id][:reg_ids].delete reg_id
+			$stats[:reg_ids] -= 1 if $settings[id][:reg_ids].delete(reg_id)
 			if $settings[id][:reg_ids].empty?
 				$settings.delete id
 				log(screen_name, "Stream fhas no more reg_ids left.")
 				$settings[id][:client].connection.stop if $settings[id][:client]
+				$stats[:accounts] -= 1
 			else
 				log(screen_name, "Removed reg_id from #{screen_name}")
 			end
@@ -67,6 +70,8 @@ def send_gcm(config, data, type)
 		log "ERROR! Success was #{data['success']}, expected #{config[:reg_ids].count}"
 		log "ERROR: #{data.inspect}"
 	end
+	$stats[:gcms_successful] += data['success'].to_i
+	$stats[:gcms_failed] += data['failure'].to_i
 end
 
 def stream(hash)
@@ -90,6 +95,7 @@ def stream(hash)
 		$settings[hash][:client] = client
 		
 		client.each do |result|
+			$stats[:bytes] += result.length
 			data = JSON.parse(result)
 			if data.has_key?("direct_message")
 				data = data["direct_message"]
@@ -98,17 +104,23 @@ def stream(hash)
 			if data.has_key?("text") && data.has_key?("recipient") && data["recipient_id"]==config[:user_id]
 				log screen_name, "DM."
 				send_gcm(config, data, "dm")
+				$stats[:dms] += 1
 			elsif data.has_key?("text")
 				if data["entities"]["user_mentions"].any?{|mention| mention["id"]==config[:user_id]}
 					log screen_name, "Mention. #{data["text"]}"
 					send_gcm(config, data, "mention")
+					$stats[:mentions] += 1
 				elsif data.has_key?("rewteeted_status") && data["retweeted_status"]["user"]["id"]==config[:user_id]
 					log hash, "Retweet"
 					send_gcm(config, data, "retweet")
+					$stats[:mentions] += 1
+				else
+					$stats[:normal_tweets] += 1
 				end
 			elsif data.has_key?("event") && data["event"]=="favorite" && data["source"]["id"]!=config[:user_id]
 				log screen_name, "Favorited"
 				send_gcm(config, data, "favorite")
+				$stats[:favorites] += 1
 			end
 		end
 		
@@ -122,6 +134,9 @@ def stream(hash)
 		client.on_range_unacceptable { log screen_name, "Range unacceptable. o_O" }
 		client.on_rate_limited { log screen_name, "Rate limited. o_O" }
 	end
+
+	$stats[:accounts] += 1
+	$stats[:reg_ids] += config[:reg_ids].count
 end
 
 def log(screen_name, string=nil)
@@ -129,9 +144,18 @@ def log(screen_name, string=nil)
 	puts "%s   %-20s   %s" % [Time.now, screen_name, string]
 end
 
+def print_stats
+	str = $stats.collect{|key, value| "#{key}:#{value}"}.join(" ")
+	File.open(File.join(File.dirname(__FILE__), "stats.txt"), "w") {|f| f.write(str)}
+end
+
 Thread.new do
 	EM.run do
 	end
+end
+
+EventMachine::PeriodicTimer.new(60) do
+	print_stats()
 end
 
 $settings.each do |key, hash|
