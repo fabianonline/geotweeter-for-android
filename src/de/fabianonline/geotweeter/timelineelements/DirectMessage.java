@@ -1,5 +1,6 @@
 package de.fabianonline.geotweeter.timelineelements;
 
+import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
 
@@ -22,8 +23,7 @@ public class DirectMessage extends Tweet {
 
 	@Override
 	public CharSequence getSourceText() {
-		// TODO Auto-generated method stub
-		return null;
+		return new SimpleDateFormat("dd.MM. HH:mm").format(created_at);
 	}
 	
 	public void setSender(User sender) {

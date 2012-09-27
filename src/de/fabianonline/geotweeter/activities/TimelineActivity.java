@@ -63,7 +63,6 @@ public class TimelineActivity extends MapActivity {
 		}
 		
 		ListView l = (ListView) findViewById(R.id.timeline);
-		l.setAdapter(current_account.getElements());
 		l.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -72,14 +71,6 @@ public class TimelineActivity extends MapActivity {
 			}
 		});
 		
-		GCMRegistrar.checkDevice(this);
-		GCMRegistrar.checkManifest(this);
-		reg_id = GCMRegistrar.getRegistrationId(this);
-		if (reg_id.equals("")) {
-			GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
-		}
-		
-//		addAccount(new Account(ta, new Token("aa", "aa")));
 		l.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -93,6 +84,19 @@ public class TimelineActivity extends MapActivity {
 				}
 			}
 		});
+		
+		if (current_account != null) {
+			l.setAdapter(current_account.getElements());
+			GCMRegistrar.checkDevice(this);
+			GCMRegistrar.checkManifest(this);
+			reg_id = GCMRegistrar.getRegistrationId(this);
+			if (reg_id.equals("")) {
+				GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
+			}
+		} else {
+			Intent addAccountIntent = new Intent(TimelineActivity.this, SettingsAccounts.class);
+			startActivity(addAccountIntent);
+		}
 	}
 
 	protected void showMapIfApplicable(AdapterView<?> parent, View view,
