@@ -170,7 +170,7 @@ public class TimelineActivity extends MapActivity {
 			String[] accounts = accountString.split(" ");
 			result = User.getPersistentData(getApplicationContext(), accounts);
 		}
-
+		
 		return result;
 	}
 	
