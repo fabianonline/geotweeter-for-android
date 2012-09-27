@@ -14,39 +14,40 @@ CONSUMER_TOKEN  = "7tbUmgasX8QXazkxGMNw"
 CONSUMER_SECRET = "F22QSxchkczthiUQomREXEu4zDA15mxiENNttkkA"
 
 def update()
-	lines = IO.readlines("command.txt")
+	(lines = IO.readlines("command.txt")) rescue return
 	lines.each do |line|
-		command, token, secret, reg_id = *line.split(" ")
-		hash_value = $digest.hexdigest([token, secret].join).slice(0, 7)
+		command, token, secret, reg_id, screen_name = *line.split(" ")
+		(id = token.split("-")[0]) rescue next
 		if command=="add"
 			next unless reg_id && reg_id.length>5
-			if $settings.has_key? hash_value
-				if $settings[hash_value].has_key?(:reg_ids) && $settings[hash_value][:reg_ids].include?(reg_id)
-					log hash_value, "Not adding client: Already known."
+			if $settings.has_key? id
+				if $settings[id].has_key?(:reg_ids) && $settings[id][:reg_ids].include?(reg_id)
+					log screen_name, "Not adding client: Already known."
 					next
 				end
-				$settings[hash_value][:reg_ids] << reg_id
-				log(hash_value, "Adding new reg_id")
+				$settings[id][:reg_ids] << reg_id
+				$settings[id][:screen_name] = screen_name
+				log(screen_name, "Adding new reg_id")
 			else
-				hash = {:token=>token, :secret=>secret, :reg_ids=>[reg_id]}
-				hash[:user_id] = /^([0-9]+)-/.match(token)[1].to_i
-				$settings[hash_value] = hash
-				log(hash_value, "Adding stream")
-				stream(hash_value)
+				hash = {:token=>token, :secret=>secret, :reg_ids=>[reg_id], :screen_name=>screen_name, :user_id=>id}
+				$settings[id] = hash
+				log(screen_name, "Adding stream")
+				stream(id)
 			end
 		elsif command=="del"
-			next unless $settings.has_key? hash_value
-			$settings[hash_value][:reg_ids].delete reg_id
-			if $settings[hash_value][:reg_ids].empty?
-				$settings.delete hash_value
-				log(hash_value, "Stream fhas no more reg_ids left.")
-				$settings[hash_value][:client].connection.stop if $settings[hash_value][:client]
+			next unless $settings.has_key? id
+			$settings[id][:reg_ids].delete reg_id
+			if $settings[id][:reg_ids].empty?
+				$settings.delete id
+				log(screen_name, "Stream fhas no more reg_ids left.")
+				$settings[id][:client].connection.stop if $settings[id][:client]
 			else
-				log(hash_value, "Removed reg_id from #{hash_value}")
+				log(screen_name, "Removed reg_id from #{screen_name}")
 			end
 		end
 	end
 	save_settings
+	FileUtils.rm(File.join(File.dirname(__FILE__), "command.txt"))
 end
 
 def save_settings
@@ -70,7 +71,8 @@ end
 
 def stream(hash)
 	config = $settings[hash]
-	log hash, "Adding new thread."
+	screen_name = config[:screen_name]
+	log screen_name, "Adding new thread."
 	opts = {
 		:path=>"/1.1/user.json",
 		:host=>"userstream.twitter.com",
@@ -94,37 +96,37 @@ def stream(hash)
 			end
 			
 			if data.has_key?("text") && data.has_key?("recipient") && data["recipient_id"]==config[:user_id]
-				log hash, "DM."
+				log screen_name, "DM."
 				send_gcm(config, data, "dm")
 			elsif data.has_key?("text")
 				if data["entities"]["user_mentions"].any?{|mention| mention["id"]==config[:user_id]}
-					log hash, "Mention. #{data["text"]}"
+					log screen_name, "Mention. #{data["text"]}"
 					send_gcm(config, data, "mention")
 				elsif data.has_key?("rewteeted_status") && data["retweeted_status"]["user"]["id"]==config[:user_id]
 					log hash, "Retweet"
 					send_gcm(config, data, "retweet")
 				end
 			elsif data.has_key?("event") && data["event"]=="favorite" && data["source"]["id"]!=config[:user_id]
-				log hash, "Favorited"
+				log screen_name, "Favorited"
 				send_gcm(config, data, "favorite")
 			end
 		end
 		
-		client.on_forbidden { log hash, "Forbidden. o_O" }
-		client.on_unauthorized { log hash, "Unauthorized. o_O" }
-		client.on_reconnect { log hash, "Reconnect."; last_reconnect = Time.now }
-		client.on_close { log hash, "Closed." if (Time.now - last_reconnect)>1 }
-		client.on_not_found { log hash, "Not found. o_O" }
-		client.on_not_acceptable { log hash, "Not acceptable. o_O" }
-		client.on_too_long { log hash, "Too long. o_O" }
-		client.on_range_unacceptable { log hash, "Range unacceptable. o_O" }
-		client.on_rate_limited { log hash, "Rate limited. o_O" }
+		client.on_forbidden { log screen_name, "Forbidden. o_O" }
+		client.on_unauthorized { log screen_name, "Unauthorized. o_O" }
+		client.on_reconnect { log screen_name, "Reconnect."; last_reconnect = Time.now }
+		client.on_close { log screen_name, "Closed." if (Time.now - last_reconnect)>1 }
+		client.on_not_found { log screen_name, "Not found. o_O" }
+		client.on_not_acceptable { log screen_name, "Not acceptable. o_O" }
+		client.on_too_long { log screen_name, "Too long. o_O" }
+		client.on_range_unacceptable { log screen_name, "Range unacceptable. o_O" }
+		client.on_rate_limited { log screen_name, "Rate limited. o_O" }
 	end
 end
 
-def log(hash, string=nil)
-	hash, string = "", hash unless string
-	puts "%s   %-10s %s" % [Time.now, hash, string]
+def log(screen_name, string=nil)
+	screen_name, string = "", screen_name unless string
+	puts "%s   %-20s   %s" % [Time.now, screen_name, string]
 end
 
 Thread.new do
@@ -136,9 +138,10 @@ $settings.each do |key, hash|
 	stream(key)
 end
 
+update()
+
 Listen.to(File.dirname(__FILE__), :filter=>/^command\.txt$/) do |modified, added, removed|
 	if removed.empty?
 		update()
-		FileUtils.rm(File.join(File.dirname(__FILE__), "command.txt"))
 	end
 end
