@@ -71,6 +71,7 @@ public class Account implements Serializable {
 	private User user;
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
+	protected final static Object lock_object = new Object();
 	
 	
 	public Account(TimelineElementAdapter elements, Token token, User user) {
@@ -104,7 +105,6 @@ public class Account implements Serializable {
 		protected ArrayList<TimelineElement> main_data = new ArrayList<TimelineElement>();
 		protected int count_running_threads = 0;
 		protected int count_errored_threads = 0;
-		protected final Object parse_lock = new Object();
 		
 		public TimelineRefreshThread(boolean do_update_bottom) {
 			this.do_update_bottom = do_update_bottom;
@@ -234,7 +234,7 @@ public class Account implements Serializable {
 					Log.d(LOG, "Started parsing JSON...");
 					long start_time = System.currentTimeMillis();
 					ArrayList<TimelineElement> elements = null;
-					synchronized(parse_lock) {
+					synchronized(lock_object) {
 						elements = parse(response.getBody());
 					}
 					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time) + " ms");
@@ -384,6 +384,8 @@ public class Account implements Serializable {
 					name_value_pair.add(new BasicNameValuePair("reg_id", TimelineActivity.reg_id));
 					name_value_pair.add(new BasicNameValuePair("token", getToken().getToken()));
 					name_value_pair.add(new BasicNameValuePair("secret", getToken().getSecret()));
+					name_value_pair.add(new BasicNameValuePair("screen_name", getUser().getScreenName()));
+					name_value_pair.add(new BasicNameValuePair("protocol_version", "1"));
 					http_post.setEntity(new UrlEncodedFormEntity(name_value_pair));
 					http_client.execute(http_post);
 				} catch(ClientProtocolException e) {

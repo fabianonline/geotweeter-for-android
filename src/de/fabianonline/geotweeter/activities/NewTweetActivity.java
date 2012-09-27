@@ -198,23 +198,12 @@ public class NewTweetActivity extends Activity {
 		
 		public void onLocationChanged(Location new_location) {
 			/* Wir nehmen die aktuellen Koordinaten, wenn es
-			 *   a) die ersten Koordinaten sind,
+			 *   a) die ersten Koordinaten sind oder
 			 *   b) die bisherigen Koordinaten nur Netzwerk-genau waren
-			 *   c) Die Accurracy gleich oder besser ist.
 			 */
 			if (location==null || 
-					new_location.getAccuracy() <= location.getAccuracy() || 
 					(new_location.getProvider().equals(LocationManager.GPS_PROVIDER) && location.getProvider().equals(LocationManager.NETWORK_PROVIDER))) {
 						location = new_location;
-						Log.d("GPSCoordsListener", "Aktuelle Koordinaten: "+location.getLatitude()+", "+location.getLongitude()+"  Accuracy: "+location.getAccuracy());
-			}
-			/*
-			 *  Ab einer Genauigkeit von 16 Meter (Zahl auf gut Glück bestimmt)
-			 *  nehmen wir den Wert und hören mit GPS auf.
-			 */
-			if (new_location.getAccuracy() <= 16 ) {
-				Toast.makeText(getBaseContext(), "Genaue Position erhalten.", Toast.LENGTH_SHORT).show();
-				activity.lm.removeUpdates(this);
 			}
 		}
 		
@@ -246,6 +235,7 @@ public class NewTweetActivity extends Activity {
 					} finally {
 						dialog.dismiss();
 					}
+					if (gpslistener!=null && lm!=null) lm.removeUpdates(gpslistener);
 					activity.finish();
 				}
 			}).start();
