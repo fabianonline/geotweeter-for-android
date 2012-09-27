@@ -16,6 +16,13 @@
             				android:title="@string/pref_show_img_previews"/>
         <CheckBoxPreference android:key="pref_dark_theme" 
             				android:title="@string/pref_dark_theme"/>
+        
+        <ListPreference 
+            android:key="pref_tweet_time_style"
+            android:title="@string/pref_tweet_time_style_title"
+            android:entries="@array/pref_tweet_time_style_entries"
+            android:entryValues="@array/pref_tweet_time_style_entryValues"
+            android:defaultValue="dd.MM.yy HH:mm"/>
     </PreferenceCategory>
     
 
