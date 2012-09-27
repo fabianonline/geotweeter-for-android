@@ -41,7 +41,6 @@ public abstract class TimelineElement implements Serializable {
 	}
 	
 	protected String getDateString() {
-		Log.d(LOG, tweetTimeStyle);
 		if(tweetTimeStyle.equals("minutes")) {
 			long time = System.currentTimeMillis()-created_at.getTime();
 			if(time >= 0) {
@@ -66,7 +65,7 @@ public abstract class TimelineElement implements Serializable {
 		} else if(tweetTimeStyle.matches("dd\\.MM(\\.yy)? HH:mm")) {
 			return new SimpleDateFormat(tweetTimeStyle).format(created_at);
 		}
-		return "Zeit";
+		return "";
 	}
 	/*
 	 * dd.MM.yy HH:mm</item>
