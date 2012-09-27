@@ -81,6 +81,7 @@ def stream(hash)
 			:token_secret=>config[:secret]
 		}
 	}
+	last_reconnect = Time.now
 	
 	machine = EM.run do
 		client = EM::Twitter::Client.connect(opts)
@@ -109,17 +110,15 @@ def stream(hash)
 			end
 		end
 		
-		client.on_forbidden do
-			log hash, "Forbidden. o_O"
-		end
-		
-		client.on_reconnect do
-			log hash, "Reconnected."
-		end
-		
-		client.on_close do
-			log hash, "Stopped."
-		end
+		client.on_forbidden { log hash, "Forbidden. o_O" }
+		client.on_unauthorized { log hash, "Unauthorized. o_O" }
+		client.on_reconnect { log hash, "Reconnect."; last_reconnect = Time.now }
+		client.on_close { log hash, "Closed." if (Time.now - last_reconnect)>1 }
+		client.on_not_found { log hash, "Not found. o_O" }
+		client.on_not_acceptable { log hash, "Not acceptable. o_O" }
+		client.on_too_long { log hash, "Too long. o_O" }
+		client.on_range_unacceptable { log hash, "Range unacceptable. o_O" }
+		client.on_rate_limited { log hash, "Rate limited. o_O" }
 	end
 end
 
