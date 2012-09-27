@@ -3,6 +3,7 @@ package de.fabianonline.geotweeter;
 import java.util.regex.Pattern;
 
 import android.app.Application;
+import android.graphics.Path;
 
 public class Constants extends Application {
 
@@ -31,6 +32,22 @@ public class Constants extends Application {
 	
 	public static final String MAPS_API_KEY = "0rSU2R8cwncwINNWuOQ4nOC3CxWFEUTEkYMiApA";
 	
+	public static final Path LOCATION_MARKER = new LocationMarker();
 	
+	private static class LocationMarker extends Path {
+		
+		public LocationMarker() {
+			super();
+			moveTo(0, 0);
+			lineTo(50, 0);
+			lineTo(50, 50);
+			lineTo(30, 50);
+			lineTo(25, 55);
+			lineTo(20, 50);
+			lineTo(0, 50);
+			close();
+		}
+		
+	}
 	
 }

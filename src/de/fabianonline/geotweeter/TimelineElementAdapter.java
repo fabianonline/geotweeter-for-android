@@ -10,13 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-
 import de.fabianonline.geotweeter.activities.TimelineActivity;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
-import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private ArrayList<TimelineElement> items;
@@ -61,23 +56,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			if (img != null) {
 				TimelineActivity.background_image_loader.displayImage(t.getAvatarSource(), img);
 			}
-			
-//			MapView map = (MapView) v.findViewById(R.id.geotag_map);
-//			if (map != null) {
-//				if (t instanceof Tweet) {
-//					Tweet tweet = (Tweet) t;
-//					if (tweet.coordinates != null) {
-//						float lon = tweet.coordinates.coordinates.get(0);
-//						float lat = tweet.coordinates.coordinates.get(1);
-//						map.setBuiltInZoomControls(true);
-//						map.getController().setCenter(new GeoPoint((int) (lat*1e6), (int) (lon*1e6)));
-//						map.setVisibility(View.VISIBLE);
-//					} else {
-//						map.setVisibility(View.GONE);
-//					}
-//				}
-//			}
-			
+						
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
 		v.setBackgroundResource(t.getBackgroundDrawableID());

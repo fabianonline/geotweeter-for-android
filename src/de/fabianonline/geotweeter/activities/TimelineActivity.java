@@ -1,11 +1,13 @@
 package de.fabianonline.geotweeter.activities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.scribe.model.Token;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,10 +23,13 @@ import com.google.android.gcm.GCMRegistrar;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.BackgroundImageLoader;
 import de.fabianonline.geotweeter.Constants;
+import de.fabianonline.geotweeter.MapOverlay;
 import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.TimelineElementAdapter;
 import de.fabianonline.geotweeter.User;
@@ -103,13 +108,21 @@ public class TimelineActivity extends MapActivity {
 			if (tweet.coordinates != null) {
 				float lon = tweet.coordinates.coordinates.get(0);
 				float lat = tweet.coordinates.coordinates.get(1);
+				GeoPoint coords = new GeoPoint((int) (lat*1e6), (int) (lon*1e6));
 				
 				FrameLayout mapContainer = (FrameLayout) view.findViewById(R.id.map_fragment_container);
 				
 				mapContainer.addView(map);
 				
+				List<Overlay> overlays = map.getOverlays();
+				Drawable marker = MapOverlay.getLocationMarker(background_image_loader.loadBitmap(tweet.user.profile_image_url_https));
+				MapOverlay overlay = new MapOverlay(marker);
+				OverlayItem overlayItem = new OverlayItem(coords, null, null);
+				overlay.addOverlay(overlayItem);
+				overlays.add(overlay);
+				
 				map.setBuiltInZoomControls(true);
-				map.getController().setCenter(new GeoPoint((int) (lat*1e6), (int) (lon*1e6)));
+				map.getController().setCenter(coords);
 				map.getController().setZoom(16);
 				map.setVisibility(View.VISIBLE);
 				mapContainer.setVisibility(View.VISIBLE);
