@@ -127,7 +127,7 @@ public class TimelineActivity extends MapActivity {
 				
 				map.setBuiltInZoomControls(true);
 				map.getController().setCenter(coords);
-				map.getController().setZoom(16);
+				map.getController().setZoom(15);
 				map.setVisibility(View.VISIBLE);
 				mapContainer.setVisibility(View.VISIBLE);
 			} else {
