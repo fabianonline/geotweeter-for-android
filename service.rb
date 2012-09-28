@@ -18,7 +18,7 @@ def update()
 	(lines = IO.readlines("command.txt")) rescue return
 	lines.each do |line|
 		command, token, secret, reg_id, screen_name = *line.split(" ")
-		(id = token.split("-")[0]) rescue next
+		(id = token.split("-")[0].to_i) rescue next
 		if command=="add"
 			next unless reg_id && reg_id.length>5
 			if $settings.has_key? id
