@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.fabianonline.geotweeter.activities.TimelineActivity;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
@@ -42,6 +44,12 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		}
 		TimelineElement t = (TimelineElement) items.get(position);
 		if (t != null) {
+			FrameLayout mapContainer = (FrameLayout) v.findViewById(R.id.map_fragment_container);
+			mapContainer.removeAllViews();
+			
+			LinearLayout mapAndControls = (LinearLayout) v.findViewById(R.id.map_and_controls);
+			mapAndControls.setVisibility(View.GONE);
+			
 			TextView text = (TextView) v.findViewById(R.id.tweet_content);
 			if (text != null) { 
 				text.setText(Html.fromHtml(t.getTextForDisplay()));

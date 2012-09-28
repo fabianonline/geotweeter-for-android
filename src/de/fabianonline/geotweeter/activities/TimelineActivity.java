@@ -107,9 +107,9 @@ public class TimelineActivity extends MapActivity {
 			int position, long id) {
 		TimelineElement te = current_account.getElements().getItem(position);
 		if (map.getParent() != null) {
-			LinearLayout mapAndControls = (LinearLayout) view.findViewById(R.id.map_and_controls);
 			FrameLayout mapContainer = (FrameLayout) map.getParent();
 			mapContainer.removeAllViews();
+			LinearLayout mapAndControls = (LinearLayout) mapContainer.getParent();
 			mapAndControls.setVisibility(View.GONE);
 		}
 		if (te instanceof Tweet) {
