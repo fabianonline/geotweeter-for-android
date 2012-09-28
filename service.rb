@@ -8,7 +8,7 @@ Bundler.require
 Thread.abort_on_exception = true
 $settings = YAML::load_file("settings.yml") rescue {}
 $digest = Digest::SHA256.new
-$stats = {:normal_tweets=>0, :mentions=>0, :dms=>0, :bytes=>0, :accounts=>0, :reg_ids=>0, :gcms_successful=>0, :gcms_failed=>0, :favorites=>0, :retweets=>0}
+$stats = {:normal_tweets=>0, :mentions=>0, :dms=>0, :bytes=>0, :accounts=>0, :reg_ids=>0, :gcms_successful=>0, :gcms_failed=>0, :favorites=>0, :retweets=>0, :re_registrations=>0, :reconnects=>0}
 
 $gcm_sender = HiGCM::Sender.new("AIzaSyCkOw9l2iZhjytnKNmL8EiWmZZtcco6lik")
 CONSUMER_TOKEN  = "7tbUmgasX8QXazkxGMNw"
@@ -24,6 +24,7 @@ def update()
 			if $settings.has_key? id
 				if $settings[id].has_key?(:reg_ids) && $settings[id][:reg_ids].include?(reg_id)
 					log screen_name, "Not adding client: Already known."
+					$stats[:re_registrations] += 1
 					next
 				end
 				$settings[id][:reg_ids] << reg_id
@@ -126,7 +127,7 @@ def stream(hash)
 		
 		client.on_forbidden { log screen_name, "Forbidden. o_O" }
 		client.on_unauthorized { log screen_name, "Unauthorized. o_O" }
-		client.on_reconnect { log screen_name, "Reconnect."; last_reconnect = Time.now }
+		client.on_reconnect { log screen_name, "Reconnect."; last_reconnect = Time.now ; $stats[:reconnects] += 1 }
 		client.on_close { log screen_name, "Closed." if (Time.now - last_reconnect)>1 }
 		client.on_not_found { log screen_name, "Not found. o_O" }
 		client.on_not_acceptable { log screen_name, "Not acceptable. o_O" }
