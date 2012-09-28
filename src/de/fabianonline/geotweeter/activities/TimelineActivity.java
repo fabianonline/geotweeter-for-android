@@ -62,7 +62,8 @@ public class TimelineActivity extends MapActivity {
 		if (auth_users != null) {
 			for (User u : auth_users) {
 				TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, new ArrayList<TimelineElement>());
-				addAccount(new Account(ta, getUserToken(u), u));
+				Account acct = new Account(ta, getUserToken(u), u, getApplicationContext());
+				addAccount(acct);
 			}
 		}
 		
@@ -165,6 +166,13 @@ public class TimelineActivity extends MapActivity {
 			try {
 				acct.stopStream();
 			} catch (Exception ex) {}
+		}
+	}
+	
+	public void onPause() {
+		super.onPause();
+		for (Account acct : Account.all_accounts) {
+			acct.persistTweets(getApplicationContext());
 		}
 	}
 	

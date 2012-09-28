@@ -1,6 +1,11 @@
 package de.fabianonline.geotweeter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -30,6 +35,7 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
@@ -74,11 +80,12 @@ public class Account implements Serializable {
 	protected final static Object lock_object = new Object();
 	
 	
-	public Account(TimelineElementAdapter elements, Token token, User user) {
+	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
 		this.token = token;
 		this.user = user;
 		handler = new Handler();
 		this.elements = elements;
+		loadPersistedTweets(applicationContext);
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
@@ -345,6 +352,15 @@ public class Account implements Serializable {
 
 	public void addTweet(final TimelineElement elm) {
 		Log.d(LOG, "Adding Tweet.");
+		if (elm instanceof DirectMessage) {
+			if (elm.getID() > max_known_dm_id) {
+				max_known_dm_id = elm.getID();
+			}
+		} else if (elm instanceof Tweet) {
+			if (elm.getID() > max_known_tweet_id) {
+				max_known_tweet_id = elm.getID();
+			}
+		}
 		//elements.add(tweet);
 		handler.post(new Runnable() {
 			public void run() {
@@ -500,5 +516,81 @@ public class Account implements Serializable {
 	
 	public User getUser() {
 		return user;
+	}
+
+	public void persistTweets(Context context) {
+		File dir;
+		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			dir = android.os.Environment.getExternalStorageDirectory();
+		} else {
+			dir = context.getCacheDir();
+		}
+		
+		dir = new File(dir.getPath() + File.separator + "Geotweeter" + File.separator + "timelines");
+		
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		
+		ArrayList<TimelineElement> last_tweets = new ArrayList<TimelineElement>(50);
+		for (int i=0; i<elements.getCount(); i++) {
+			if (i >= 50) {
+				break;
+			}
+			last_tweets.add(elements.getItem(i));
+		}
+		
+		try {
+			FileOutputStream fout = new FileOutputStream(dir.getPath() + File.separator + String.valueOf(getUser().id));
+			ObjectOutputStream oos = new ObjectOutputStream(fout);
+			oos.writeObject(last_tweets);
+			oos.close();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public void loadPersistedTweets(Context context) {
+		String fileToLoad = null;
+		String suffix = File.separator + "Geotweeter" + File.separator + "timelines" + File.separator + String.valueOf(getUser().id);
+		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			String file = android.os.Environment.getExternalStorageDirectory().getPath() + suffix;
+			if (new File(file).exists()) {
+				fileToLoad = file;
+			}
+		}
+		
+		if (fileToLoad == null) {
+			String file = context.getCacheDir().getPath() + suffix;
+			if (new File(file).exists()) {
+				fileToLoad = file;
+			}
+		}
+		
+		if (fileToLoad == null) return;
+		
+		ArrayList<TimelineElement> tweets;
+		try {
+			FileInputStream fin = new FileInputStream(fileToLoad);
+			ObjectInputStream ois = new ObjectInputStream(fin);
+			tweets = (ArrayList<TimelineElement>) ois.readObject();
+			ois.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return;
+		}
+		
+		for (TimelineElement elm : tweets) {
+			if (elm instanceof DirectMessage) {
+				if (elm.getID() > max_known_dm_id) {
+					max_known_dm_id = elm.getID();
+				}
+			} else if (elm instanceof Tweet) {
+				if (elm.getID() > max_known_tweet_id) {
+					max_known_tweet_id = elm.getID();
+				}
+			}
+		}
+		elements.addAllAsFirst(tweets);
 	}
 }
