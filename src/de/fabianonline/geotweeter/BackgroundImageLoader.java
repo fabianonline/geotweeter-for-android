@@ -132,6 +132,7 @@ public class BackgroundImageLoader {
 			} else {
 				cache_dir = context.getCacheDir();
 			}
+			cache_dir = new File(cache_dir, "images");
 			if (!cache_dir.exists()) {
 				cache_dir.mkdirs();
 			}
