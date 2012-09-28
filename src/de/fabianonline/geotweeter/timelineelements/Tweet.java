@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import com.alibaba.fastjson.JSONArray;
@@ -88,8 +89,8 @@ public class Tweet extends TimelineElement {
 		return user.avatar; 
 	}
 
-	public CharSequence getSourceText() { 
-		return new SimpleDateFormat("dd.MM. HH:mm").format(created_at) + " from " + source; 
+	public CharSequence getSourceText() {
+		return getDateString() + " from " + source; 
 	}
 	
 	public String getSenderScreenName() {

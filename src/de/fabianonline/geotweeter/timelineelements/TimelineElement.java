@@ -11,9 +11,11 @@ import android.util.Log;
 public abstract class TimelineElement implements Serializable {
 	private static final long serialVersionUID = -4794489823636370071L;
 	private static final String LOG = "TimelineElement";
-	protected Date created_at = new Date();
-	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
 	
+	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
+	public static String tweetTimeStyle;
+	
+	protected Date created_at = new Date();
 	
 	abstract public String getTextForDisplay();
 	abstract public CharSequence getSourceText();
@@ -37,7 +39,40 @@ public abstract class TimelineElement implements Serializable {
 			Log.e(LOG, "Unparseable Date: " + str);
 		}
 	}
-
+	
+	protected String getDateString() {
+		if(tweetTimeStyle.equals("minutes")) {
+			long time = System.currentTimeMillis()-created_at.getTime();
+			if(time >= 0) {
+				time /= 1000;
+				if(time < 60) {
+					return "vor " + time + " Sekunden";
+				}
+				time /= 60;
+				if(time < 60) {
+					return "vor " + time + " Minuten";
+				}
+				time /= 60;
+				if(time < 24) {
+					return "vor " + time + " Stunden";
+				}
+				time /= 24;
+				if(time < 7) {
+					return "am " + new SimpleDateFormat("EEEE").format(created_at);
+				}
+				return new SimpleDateFormat("dd.MM.yy HH:mm").format(created_at);
+			}
+		} else if(tweetTimeStyle.matches("dd\\.MM(\\.yy)? HH:mm")) {
+			return new SimpleDateFormat(tweetTimeStyle).format(created_at);
+		}
+		return "";
+	}
+	/*
+	 * dd.MM.yy HH:mm</item>
+        <item >dd.MM HH:mm</item>
+        <item >minutes
+	 */
+	
 	public boolean isReplyable() {
 		return false;
 	}

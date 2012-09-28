@@ -26,4 +26,15 @@
     <string name="authenticate_account">Konto authentifizieren</string>
     <string name="tap_for_settings">Dieses Konto bearbeiten</string>
     <string name="account_prefs">Account-Einstellungen</string>
+    <string name="pref_tweet_time_style_title">Zeitdarstellung</string>
+    <string-array name="pref_tweet_time_style_entries">
+        <item >dd.MM.yy HH:mm</item>
+        <item >dd.MM HH:mm</item>
+        <item >vergangene Zeit</item>
+    </string-array>
+    <string-array name="pref_tweet_time_style_entryValues">
+        <item >dd.MM.yy HH:mm</item>
+        <item >dd.MM HH:mm</item>
+        <item >minutes</item>
+    </string-array>
 </resources>

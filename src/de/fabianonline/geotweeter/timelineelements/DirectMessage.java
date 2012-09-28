@@ -23,7 +23,7 @@ public class DirectMessage extends Tweet {
 
 	@Override
 	public CharSequence getSourceText() {
-		return new SimpleDateFormat("dd.MM. HH:mm").format(created_at);
+		return getDateString();
 	}
 	
 	public void setSender(User sender) {
