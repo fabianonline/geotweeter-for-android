@@ -68,6 +68,7 @@ public class TimelineActivity extends MapActivity {
 		}
 		
 		ListView l = (ListView) findViewById(R.id.timeline);
+		l.setScrollingCacheEnabled(false);
 		l.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
