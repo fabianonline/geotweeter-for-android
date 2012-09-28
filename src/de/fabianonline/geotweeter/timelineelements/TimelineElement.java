@@ -43,25 +43,27 @@ public abstract class TimelineElement implements Serializable {
 	protected String getDateString() {
 		if(tweetTimeStyle.equals("minutes")) {
 			long time = System.currentTimeMillis()-created_at.getTime();
-			if(time >= 0) {
-				time /= 1000;
-				if(time < 60) {
-					return "vor " + time + " Sekunden";
-				}
-				time /= 60;
-				if(time < 60) {
-					return "vor " + time + " Minuten";
-				}
-				time /= 60;
-				if(time < 24) {
-					return "vor " + time + " Stunden";
-				}
-				time /= 24;
-				if(time < 7) {
-					return "am " + new SimpleDateFormat("EEEE").format(created_at);
-				}
-				return new SimpleDateFormat("dd.MM.yy HH:mm").format(created_at);
+			time /= 1000;
+			if(time <= 0) {
+				return "gerade eben";
 			}
+			if(time < 60) {
+				return "vor " + time + (time==1? " Sekunde": " Sekunden");
+			}
+			time /= 60;
+			if(time < 60) {
+				return "vor " + time + (time==1? " Minute": " Minuten");
+			}
+			time /= 60;
+			if(time < 24) {
+				return "vor " + time + (time==1? " Stunde": " Stunden");
+			}
+			time /= 24;
+			if(time < 7) {
+				return "am " + new SimpleDateFormat("EEEE").format(created_at);
+			}
+			return new SimpleDateFormat("dd.MM.yy HH:mm").format(created_at);
+			
 		} else if(tweetTimeStyle.matches("dd\\.MM(\\.yy)? HH:mm")) {
 			return new SimpleDateFormat(tweetTimeStyle).format(created_at);
 		}
