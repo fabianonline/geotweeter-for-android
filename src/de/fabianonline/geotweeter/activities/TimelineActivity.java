@@ -216,6 +216,9 @@ public class TimelineActivity extends MapActivity {
 		ListView list = (ListView)findViewById(R.id.timeline);
 		TimelineElementAdapter elements = (TimelineElementAdapter)list.getAdapter();
 		int pos = list.getFirstVisiblePosition()+1;
+		if (pos == 1) {
+			pos = 0;
+		}
 		TimelineElement current;
 		long new_max_read_tweet_id = 0;
 		long new_max_read_dm_id = 0;
