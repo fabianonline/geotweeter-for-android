@@ -4,48 +4,86 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
     
-<LinearLayout
-    android:id="@+id/tweet_element"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:descendantFocusability="blocksDescendants"
-    android:focusable="false"
-    android:focusableInTouchMode="false"
-    android:orientation="horizontal" >
+	<LinearLayout
+	    android:id="@+id/tweet_element"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:descendantFocusability="blocksDescendants"
+	    android:focusable="false"
+	    android:focusableInTouchMode="false"
+	    android:orientation="horizontal" >
+	
+	    <ImageView
+	        android:id="@+id/avatar_image"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_launcher" />
+	
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+	
+	        <TextView
+	            android:id="@+id/tweet_content"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="TextView" />
+	
+	        <TextView
+	            android:id="@+id/source_text"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Small Text"
+	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	
+	    </LinearLayout>
+	
+	</LinearLayout>
 
-    <ImageView
-        android:id="@+id/avatar_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher" />
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/tweet_content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/source_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Small Text"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    </LinearLayout>
-
-</LinearLayout>
-
-	<FrameLayout
+	<LinearLayout
 	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/map_fragment_container"
+	    android:id="@+id/map_and_controls"
 	    android:layout_width="wrap_content"
 	    android:layout_height="160dp"
-	    android:visibility="gone" />
+	    android:orientation="horizontal"
+	    android:visibility="gone" >
+
+		<LinearLayout
+		    android:id="@+id/zoom_controls"
+		    android:layout_width="40dp"
+		    android:layout_height="match_parent"
+		    android:layout_gravity="center"
+		    android:orientation="vertical" >
+
+		    <TextView
+		        android:id="@+id/zoom_in"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_gravity="center_vertical|center_horizontal"
+		        android:layout_weight="1"
+		        android:gravity="center"
+		        android:text="@string/plus"
+		        android:textSize="50dp" />
+		    
+		    <TextView
+		        android:id="@+id/zoom_out"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_gravity="center_vertical|center_horizontal"
+		        android:layout_weight="1"
+		        android:gravity="center"
+		        android:text="@string/minus"
+		        android:textSize="50dp" />
+		    
+		</LinearLayout>
+	    
+    	<FrameLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/map_fragment_container"
+			android:layout_width="match_parent"
+			android:layout_height="160dp" />
+    	    
+	</LinearLayout>
 
 </LinearLayout>

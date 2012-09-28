@@ -27,6 +27,8 @@
     <string name="tap_for_settings">Dieses Konto bearbeiten</string>
     <string name="account_prefs">Account-Einstellungen</string>
     <string name="pref_tweet_time_style_title">Zeitdarstellung</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
     <string-array name="pref_tweet_time_style_entries">
         <item >dd.MM.yy HH:mm</item>
         <item >dd.MM HH:mm</item>

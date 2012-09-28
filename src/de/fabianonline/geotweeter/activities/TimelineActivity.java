@@ -13,11 +13,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.android.maps.GeoPoint;
@@ -104,9 +107,10 @@ public class TimelineActivity extends MapActivity {
 			int position, long id) {
 		TimelineElement te = current_account.getElements().getItem(position);
 		if (map.getParent() != null) {
+			LinearLayout mapAndControls = (LinearLayout) view.findViewById(R.id.map_and_controls);
 			FrameLayout mapContainer = (FrameLayout) map.getParent();
 			mapContainer.removeAllViews();
-			mapContainer.setVisibility(View.GONE);
+			mapAndControls.setVisibility(View.GONE);
 		}
 		if (te instanceof Tweet) {
 			Tweet tweet = (Tweet) te;
@@ -115,7 +119,11 @@ public class TimelineActivity extends MapActivity {
 				float lat = tweet.coordinates.coordinates.get(1);
 				GeoPoint coords = new GeoPoint((int) (lat*1e6), (int) (lon*1e6));
 				
+				LinearLayout mapAndControls = (LinearLayout) view.findViewById(R.id.map_and_controls);
 				FrameLayout mapContainer = (FrameLayout) view.findViewById(R.id.map_fragment_container);
+				
+				TextView zoomIn = (TextView) view.findViewById(R.id.zoom_in);
+				TextView zoomOut = (TextView) view.findViewById(R.id.zoom_out);
 				
 				mapContainer.addView(map);
 				
@@ -126,13 +134,27 @@ public class TimelineActivity extends MapActivity {
 				overlay.addOverlay(overlayItem);
 				overlays.add(overlay);
 				
-				map.setBuiltInZoomControls(true);
+				map.setBuiltInZoomControls(false);
 				map.getController().setCenter(coords);
 				map.getController().setZoom(15);
 				map.setVisibility(View.VISIBLE);
-				mapContainer.setVisibility(View.VISIBLE);
-			} else {
 				
+				zoomIn.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						map.getController().zoomIn();
+					}
+				});
+				zoomOut.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						map.getController().zoomOut();
+					}
+				});
+				
+				mapAndControls.setVisibility(View.VISIBLE);
 			}
 		}
 	}
@@ -147,7 +169,7 @@ public class TimelineActivity extends MapActivity {
 	}
 	
 	public void nextAccountHandler(View v) {
-		acc = (acc + 1)%accounts.size();
+		acc = (acc + 1) % accounts.size();
 		current_account = accounts.get(acc);
 //		elements = current_account.getElements().getItems();
 		ListView l = (ListView) findViewById(R.id.timeline);
