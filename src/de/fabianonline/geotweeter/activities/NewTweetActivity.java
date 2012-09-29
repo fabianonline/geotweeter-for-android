@@ -254,7 +254,7 @@ public class NewTweetActivity extends Activity {
 				@Override
 				public void run() {
 					try {
-						if(picturePath.equals("")) {
+						if(picturePath == null) {
 							currentAccount.sendTweet(text, location, reply_to_id);
 						} else {
 							currentAccount.sendTweetWithPic(text, location, reply_to_id, picturePath);

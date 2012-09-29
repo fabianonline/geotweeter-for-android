@@ -62,6 +62,7 @@ public class Account implements Serializable {
 	private static final long serialVersionUID = -3681363869066996199L;
 	protected final String LOG = "Account";
 	private static final long PIC_SIZE_TWITTER = 3145728;
+//	private static final long PIC_SIZE_TWITTER = 200000;
 	
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	private Token token;
@@ -405,13 +406,17 @@ public class Account implements Serializable {
 		if (reply_to_id > 0) {
 			entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(reply_to_id)));
 		}
+		Log.d(LOG, "Start output Stream");
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		entity.writeTo(out);
+		Log.d(LOG, "Finish output Stream");
 		request.addPayload(out.toByteArray());
 		request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
 		
 		signRequest(request);
+		Log.d(LOG, "Send Tweet");
 		Response response = request.send();
+		Log.d(LOG, "Finished Send Tweet");
 		
 		if (!response.isSuccessful()) { 
 			throw new TweetSendException();
@@ -420,10 +425,11 @@ public class Account implements Serializable {
 	
 	private byte[] resizeImage(File file) throws IOException {
 		Log.d(LOG, "Before resizeFile: " + file.length());
-		int scale = (int) (PIC_SIZE_TWITTER / file.length());
+		int scale = (int) (file.length() / PIC_SIZE_TWITTER);
 //		if(Integer.bitCount(scale) > 1) {
 			scale = 2 * Integer.highestOneBit(scale);
 //		}
+		Log.d(LOG, "scale: " + scale);
 		BitmapFactory.Options opt = new BitmapFactory.Options();
 		opt.inSampleSize = scale;
 		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, opt);
@@ -431,7 +437,7 @@ public class Account implements Serializable {
 		if(file.getName().endsWith(".png")) {
 			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
 		} else {
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 0, out);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 		}
 		byte[] bytes = out.toByteArray();
 		Log.d(LOG, "After resizeFile: " + bytes.length);
