@@ -2,6 +2,7 @@ package de.fabianonline.geotweeter;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -135,6 +136,15 @@ public class BackgroundImageLoader {
 			cache_dir = new File(cache_dir, "images");
 			if (!cache_dir.exists()) {
 				cache_dir.mkdirs();
+			}
+			
+			File nomedia_file = new File(cache_dir, ".nomedia");
+			if (!nomedia_file.exists()) {
+				try {
+					FileWriter fwriter = new FileWriter(nomedia_file);
+					fwriter.write("");
+					fwriter.close();
+				} catch (IOException e) { }
 			}
 		}
 		
