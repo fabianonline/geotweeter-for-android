@@ -437,7 +437,7 @@ public class Account implements Serializable {
 		if(file.getName().endsWith(".png")) {
 			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
 		} else {
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
 		}
 		byte[] bytes = out.toByteArray();
 		Log.d(LOG, "After resizeFile: " + bytes.length);
