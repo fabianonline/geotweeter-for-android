@@ -62,11 +62,13 @@ public class TimelineActivity extends MapActivity {
 		if (auth_users != null) {
 			for (User u : auth_users) {
 				TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, new ArrayList<TimelineElement>());
-				addAccount(new Account(ta, getUserToken(u), u));
+				Account acct = new Account(ta, getUserToken(u), u, getApplicationContext());
+				addAccount(acct);
 			}
 		}
 		
 		ListView l = (ListView) findViewById(R.id.timeline);
+		l.setScrollingCacheEnabled(false);
 		l.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -168,6 +170,13 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
+	public void onPause() {
+		super.onPause();
+		for (Account acct : Account.all_accounts) {
+			acct.persistTweets(getApplicationContext());
+		}
+	}
+	
 	public void nextAccountHandler(View v) {
 		acc = (acc + 1) % accounts.size();
 		current_account = accounts.get(acc);
@@ -216,6 +225,9 @@ public class TimelineActivity extends MapActivity {
 		ListView list = (ListView)findViewById(R.id.timeline);
 		TimelineElementAdapter elements = (TimelineElementAdapter)list.getAdapter();
 		int pos = list.getFirstVisiblePosition()+1;
+		if (pos == 1) {
+			pos = 0;
+		}
 		TimelineElement current;
 		long new_max_read_tweet_id = 0;
 		long new_max_read_dm_id = 0;
