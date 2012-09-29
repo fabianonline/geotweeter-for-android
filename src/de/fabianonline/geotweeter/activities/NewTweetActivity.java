@@ -1,5 +1,7 @@
 package de.fabianonline.geotweeter.activities;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,13 +10,16 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -44,10 +49,12 @@ import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";
+	private static final int PICTURE_REQUEST_CODE = 123;
 	protected LocationManager lm = null;
 	protected Location location = null;
 	protected GPSCoordsListener gpslistener = null;
 	private long reply_to_id;
+	private String picturePath;
 	
 	private Account currentAccount;
 	private HashMap<View, Account> viewToAccounts;
@@ -154,6 +161,25 @@ public class NewTweetActivity extends Activity {
 		return null;
 	}
 	
+	public void addImageHandler(View v) {
+		Intent intent = new Intent();
+	    intent.setType("image/*");
+	    intent.setAction(Intent.ACTION_GET_CONTENT);
+	    intent.addCategory(Intent.CATEGORY_OPENABLE);
+	    startActivityForResult(intent, PICTURE_REQUEST_CODE);
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == PICTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			
+			Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
+			cursor.moveToFirst();
+			picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+			cursor.close();
+			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
+		}
+	}
+	
 	protected class RemainingCharUpdater implements TextWatcher {
 		private Activity activity;
 		public RemainingCharUpdater(Activity a) { activity = a; }
@@ -228,8 +254,15 @@ public class NewTweetActivity extends Activity {
 				@Override
 				public void run() {
 					try {
-						currentAccount.sendTweet(text, location, reply_to_id);
+						if(picturePath.equals("")) {
+							currentAccount.sendTweet(text, location, reply_to_id);
+						} else {
+							currentAccount.sendTweetWithPic(text, location, reply_to_id, picturePath);
+						}
 					} catch (TweetSendException e) {
+						e.printStackTrace();
+						return;
+					} catch (IOException e) {
 						e.printStackTrace();
 						return;
 					} finally {

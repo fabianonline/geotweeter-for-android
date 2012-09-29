@@ -22,6 +22,7 @@ public class Constants extends Application {
 	public static final String URI_DIRECT_MESSAGES      = "https://api.twitter.com/1.1/direct_messages.json";
 	public static final String URI_DIRECT_MESSAGES_SENT = "https://api.twitter.com/1.1/direct_messages/sent.json";
 	public static final String URI_UPDATE               = "https://api.twitter.com/1.1/statuses/update.json";
+	public static final String URI_UPDATE_WITH_MEDIA    = "https://api.twitter.com/1.1/statuses/update_with_media.json";
 	
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 	public static final String TWEETMARKER_KEY = "GT-F181AC70B051";
