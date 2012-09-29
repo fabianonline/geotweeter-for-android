@@ -21,6 +21,14 @@
             android:text="140"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#FF00FF00" />
+        
+        <Button 
+            android:id="@+id/btnAddImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_add_image"
+            android:onClick="addImageHandler"
+            />
 
         <Button
             android:id="@+id/btnSend"

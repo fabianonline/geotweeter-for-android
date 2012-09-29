@@ -1,5 +1,8 @@
 package de.fabianonline.geotweeter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -17,6 +20,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -30,6 +37,8 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
@@ -52,6 +61,9 @@ public class Account implements Serializable {
 	 */
 	private static final long serialVersionUID = -3681363869066996199L;
 	protected final String LOG = "Account";
+	private static final long PIC_SIZE_TWITTER = 3145728;
+//	private static final long PIC_SIZE_TWITTER = 200000;
+	
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	private Token token;
 	private transient OAuthService service = new ServiceBuilder()
@@ -371,6 +383,65 @@ public class Account implements Serializable {
 		if (!response.isSuccessful()) { 
 			throw new TweetSendException();
 		}
+	}
+	
+	public void sendTweetWithPic(String text, Location location, long reply_to_id, String picture) throws TweetSendException, IOException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
+		
+		MultipartEntity entity = new MultipartEntity();
+		entity.addPart("status", new StringBody(text));
+		
+		File f = new File(picture);
+		if(f.length() <= PIC_SIZE_TWITTER) {
+			entity.addPart("media", new FileBody(new File(picture)));
+		} else {
+			entity.addPart("media", new ByteArrayBody(resizeImage(f), f.getName()));
+		}
+		
+		if (location != null) {
+			entity.addPart("lat", new StringBody(String.valueOf(location.getLatitude())));
+			entity.addPart("long", new StringBody(String.valueOf(location.getLongitude())));
+		}
+		
+		if (reply_to_id > 0) {
+			entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(reply_to_id)));
+		}
+		Log.d(LOG, "Start output Stream");
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		entity.writeTo(out);
+		Log.d(LOG, "Finish output Stream");
+		request.addPayload(out.toByteArray());
+		request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
+		
+		signRequest(request);
+		Log.d(LOG, "Send Tweet");
+		Response response = request.send();
+		Log.d(LOG, "Finished Send Tweet");
+		
+		if (!response.isSuccessful()) { 
+			throw new TweetSendException();
+		}
+	}
+	
+	private byte[] resizeImage(File file) throws IOException {
+		Log.d(LOG, "Before resizeFile: " + file.length());
+		int scale = (int) (file.length() / PIC_SIZE_TWITTER);
+//		if(Integer.bitCount(scale) > 1) {
+			scale = 2 * Integer.highestOneBit(scale);
+//		}
+		Log.d(LOG, "scale: " + scale);
+		BitmapFactory.Options opt = new BitmapFactory.Options();
+		opt.inSampleSize = scale;
+		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, opt);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		if(file.getName().endsWith(".png")) {
+			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
+		} else {
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+		}
+		byte[] bytes = out.toByteArray();
+		Log.d(LOG, "After resizeFile: " + bytes.length);
+		return bytes;
 	}
 
 	public void registerForGCMMessages() {

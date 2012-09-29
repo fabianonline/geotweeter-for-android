@@ -39,4 +39,5 @@
         <item >dd.MM HH:mm</item>
         <item >minutes</item>
     </string-array>
+    <string name="btn_add_image">Bild</string>
 </resources>
