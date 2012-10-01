@@ -117,7 +117,11 @@ public class TimelineActivity extends MapActivity {
 			mapContainer.removeAllViews();
 			LinearLayout mapAndControls = (LinearLayout) mapContainer.getParent();
 			mapAndControls.setVisibility(View.GONE);
+			if (mapAndControls.getParent() == view) {
+				return;
+			}
 		}
+		
 		if (te instanceof Tweet) {
 			Tweet tweet = (Tweet) te;
 			if (tweet.coordinates != null) {
