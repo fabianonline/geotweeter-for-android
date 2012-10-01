@@ -23,6 +23,13 @@
             android:entries="@array/pref_tweet_time_style_entries"
             android:entryValues="@array/pref_tweet_time_style_entryValues"
             android:defaultValue="dd.MM.yy HH:mm"/>
+        
+        <ListPreference 
+            android:key="pref_image_hoster"
+            android:title="@string/pref_image_hoster_title"
+            android:entries="@array/pref_image_hoster_entries"
+            android:entryValues="@array/pref_image_hoster_entryValues"
+            android:defaultValue="twitter"/>
     </PreferenceCategory>
     
 

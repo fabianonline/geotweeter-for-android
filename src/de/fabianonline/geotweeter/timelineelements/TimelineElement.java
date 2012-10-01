@@ -64,7 +64,7 @@ public abstract class TimelineElement implements Serializable {
 			}
 			return new SimpleDateFormat("dd.MM.yy HH:mm").format(created_at);
 			
-		} else if(tweetTimeStyle.matches("dd\\.MM(\\.yy)? HH:mm")) {
+		} else if(tweetTimeStyle.matches("dd\\.MM\\.(yy)? HH:mm")) {
 			return new SimpleDateFormat(tweetTimeStyle).format(created_at);
 		}
 		return "";

@@ -14,6 +14,7 @@ public class Constants extends Application {
 	public static final String API_SECRET = "F22QSxchkczthiUQomREXEu4zDA15mxiENNttkkA";
 	public static final String OAUTH_CALLBACK = "oauth://twitter";
 	
+	public static final String URI_VERIFY_CREDENTIALS_1	= "https://api.twitter.com/1/account/verify_credentials.json"; // API v1: wird für Twitpic benötigt
 	public static final String URI_VERIFY_CREDENTIALS   = "https://api.twitter.com/1.1/account/verify_credentials.json";
 	public static final String URI_UPDATE_PROFILE       = "https://api.twitter.com/1.1/account/update_profile.json";
 	public static final String URI_USER_STREAM          = "https://userstream.twitter.com/1.1/user.json";
@@ -30,6 +31,9 @@ public class Constants extends Application {
 	public static final Pattern REGEXP_FIND_SOURCE = Pattern.compile(">(.+)</a>");
 	public static final String GCM_SENDER_ID = "540800208547";
 	public static final String GCM_SERVER_URL = "https://home.fabianonline.de/geotweeter-gcm/";
+	
+	public static final String TWITPIC_URI = "http://api.twitpic.com/2/upload.json";
+	public static final String TWITPIC_API_KEY = "6bc6e78456ecbc2a12818722eecb3aaa";
 	
 	public static final String MAPS_API_KEY = "0rSU2R8cwncwINNWuOQ4nOC3CxWFEUTEkYMiApA";
 	

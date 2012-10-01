@@ -55,7 +55,10 @@ public class TimelineActivity extends MapActivity {
 		map = new MapView(this, Constants.MAPS_API_KEY);
 		setContentView(R.layout.activity_timeline);
 		background_image_loader = new BackgroundImageLoader(getApplicationContext());
-		TimelineElement.tweetTimeStyle = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
+		
+		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
+		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
+		Account.imageHoster = pref.getString("pref_image_hoster", "twitter");
 		
 		acc=0;
 		ArrayList<User> auth_users = getAuthUsers();

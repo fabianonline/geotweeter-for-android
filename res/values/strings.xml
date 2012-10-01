@@ -31,13 +31,22 @@
     <string name="minus">-</string>
     <string-array name="pref_tweet_time_style_entries">
         <item >dd.MM.yy HH:mm</item>
-        <item >dd.MM HH:mm</item>
+        <item >dd.MM. HH:mm</item>
         <item >vergangene Zeit</item>
     </string-array>
     <string-array name="pref_tweet_time_style_entryValues">
         <item >dd.MM.yy HH:mm</item>
-        <item >dd.MM HH:mm</item>
+        <item >dd.MM. HH:mm</item>
         <item >minutes</item>
     </string-array>
     <string name="btn_add_image">Bild</string>
+    <string name="pref_image_hoster_title">Image Hoster</string>
+    <string-array name="pref_image_hoster_entries">
+        <item >Twitter</item>
+        <item >Twitpic</item>
+    </string-array>
+    <string-array name="pref_image_hoster_entryValues">
+        <item >twitter</item>
+        <item >twitpic</item>
+    </string-array>
 </resources>
