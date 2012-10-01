@@ -26,7 +26,7 @@ public class StreamRequest {
 	
 	public void start() {
 		thread = new StreamRequestThread();
-		new Thread(thread, "StreamRequestThred").start();
+		new Thread(thread, "StreamRequestThread").start();
 	}
 	
 	public void stop() {
