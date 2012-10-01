@@ -48,7 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="blocksDescendants"
-        android:divider="@drawable/listelement_divider" >
+        android:divider="#000000"
+        android:dividerHeight="1px" >
 
     </ListView>
 
