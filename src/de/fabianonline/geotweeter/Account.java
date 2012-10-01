@@ -1,6 +1,12 @@
 package de.fabianonline.geotweeter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -17,6 +23,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -30,11 +40,15 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.content.Context;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.Feature;
 
@@ -51,8 +65,12 @@ public class Account implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3681363869066996199L;
+	private static final long PIC_SIZE_TWITTER = 3145728;
+	
 	protected final String LOG = "Account";
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
+	public static String imageHoster;
+	
 	private Token token;
 	private transient OAuthService service = new ServiceBuilder()
 											.provider(TwitterApi.class)
@@ -74,15 +92,18 @@ public class Account implements Serializable {
 	protected final static Object lock_object = new Object();
 	
 	
-	public Account(TimelineElementAdapter elements, Token token, User user) {
+	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
 		this.token = token;
 		this.user = user;
 		handler = new Handler();
 		this.elements = elements;
+		loadPersistedTweets(applicationContext);
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
-			new Thread(new TimelineRefreshThread(false)).start();
+			Thread t = new Thread(new TimelineRefreshThread(false));
+			t.setPriority(3);
+			t.start();
 		}
 		stream_request = new StreamRequest(this);
 		//stream_request.start();
@@ -345,6 +366,15 @@ public class Account implements Serializable {
 
 	public void addTweet(final TimelineElement elm) {
 		Log.d(LOG, "Adding Tweet.");
+		if (elm instanceof DirectMessage) {
+			if (elm.getID() > max_known_dm_id) {
+				max_known_dm_id = elm.getID();
+			}
+		} else if (elm instanceof Tweet) {
+			if (elm.getID() > max_known_tweet_id) {
+				max_known_tweet_id = elm.getID();
+			}
+		}
 		//elements.add(tweet);
 		handler.post(new Runnable() {
 			public void run() {
@@ -371,6 +401,111 @@ public class Account implements Serializable {
 		if (!response.isSuccessful()) { 
 			throw new TweetSendException();
 		}
+	}
+	
+
+	public void sendTweetWithPic(String text, Location location, long reply_to_id, String picture) throws TweetSendException, IOException {
+		if(imageHoster.equals("twitter")) {
+			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
+			
+			MultipartEntity entity = new MultipartEntity();
+			entity.addPart("status", new StringBody(text));
+			
+			File f = new File(picture);
+			addImageToMultipartEntity(entity, f, "media");
+			
+			if (location != null) {
+				entity.addPart("lat", new StringBody(String.valueOf(location.getLatitude())));
+				entity.addPart("long", new StringBody(String.valueOf(location.getLongitude())));
+			}
+			
+			if (reply_to_id > 0) {
+				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(reply_to_id)));
+			}
+			Log.d(LOG, "Start output Stream");
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			entity.writeTo(out);
+			Log.d(LOG, "Finish output Stream");
+			request.addPayload(out.toByteArray());
+			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
+			
+			signRequest(request);
+			Log.d(LOG, "Send Tweet");
+			Response response = request.send();
+			Log.d(LOG, "Finished Send Tweet");
+			
+			if (!response.isSuccessful()) { 
+				throw new TweetSendException();
+			}
+		} else if(imageHoster.equals("twitpic")) {
+			// Upload pic to Twitpic
+			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
+			
+			MultipartEntity entity = new MultipartEntity();
+			entity.addPart("key", new StringBody(Constants.TWITPIC_API_KEY));
+			entity.addPart("message", new StringBody(text));
+			
+			File f = new File(picture);
+			addImageToMultipartEntity(entity, f, "media");
+//			entity.addPart("media", new FileBody(new File(picture)));
+			
+			Log.d(LOG, "Start output Stream");
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			entity.writeTo(out);
+			Log.d(LOG, "Finish output Stream");
+			request.addPayload(out.toByteArray());
+			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
+			
+			OAuthRequest oauth_request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/account/verify_credentials.json");
+			signRequest(oauth_request);
+			request.addHeader("X-Auth-Service-Provider", "https://api.twitter.com/1/account/verify_credentials.json");
+			request.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
+			
+			Log.d(LOG, "Send Twitpic");
+			Response response = request.send();
+			Log.d(LOG, "Finished Send Twitpic");
+			
+			// Handle response
+			
+			if(response.isSuccessful()) {
+				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
+				Log.d(LOG, "Send Tweet with Twitpic");
+				sendTweet(text + " " + twitpicURL, location, reply_to_id);
+				Log.d(LOG, "Finished Send Tweet with Twitpic");
+			}
+			// sendTweet with pic-URL
+		} else {
+			//TODO: Exception?
+		}
+	}
+	
+	private void addImageToMultipartEntity(MultipartEntity entity, File imageFile, String key) throws IOException {
+		if(imageFile.length() <= PIC_SIZE_TWITTER) {
+			entity.addPart(key, new FileBody(imageFile));
+		} else {
+			entity.addPart(key, new ByteArrayBody(resizeImage(imageFile), imageFile.getName()));
+		}
+	}
+	
+	private byte[] resizeImage(File file) throws IOException {
+		Log.d(LOG, "Before resizeFile: " + file.length());
+		int scale = (int) (file.length() / PIC_SIZE_TWITTER);
+//		if(Integer.bitCount(scale) > 1) {
+			scale = 2 * Integer.highestOneBit(scale);
+//		}
+		Log.d(LOG, "scale: " + scale);
+		BitmapFactory.Options opt = new BitmapFactory.Options();
+		opt.inSampleSize = scale;
+		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, opt);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		if(file.getName().endsWith(".png")) {
+			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
+		} else {
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+		}
+		byte[] bytes = out.toByteArray();
+		Log.d(LOG, "After resizeFile: " + bytes.length);
+		return bytes;
 	}
 
 	public void registerForGCMMessages() {
@@ -500,5 +635,81 @@ public class Account implements Serializable {
 	
 	public User getUser() {
 		return user;
+	}
+
+	public void persistTweets(Context context) {
+		File dir;
+		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			dir = android.os.Environment.getExternalStorageDirectory();
+		} else {
+			dir = context.getCacheDir();
+		}
+		
+		dir = new File(dir.getPath() + File.separator + "Geotweeter" + File.separator + "timelines");
+		
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		
+		ArrayList<TimelineElement> last_tweets = new ArrayList<TimelineElement>(50);
+		for (int i=0; i<elements.getCount(); i++) {
+			if (i >= 50) {
+				break;
+			}
+			last_tweets.add(elements.getItem(i));
+		}
+		
+		try {
+			FileOutputStream fout = new FileOutputStream(dir.getPath() + File.separator + String.valueOf(getUser().id));
+			ObjectOutputStream oos = new ObjectOutputStream(fout);
+			oos.writeObject(last_tweets);
+			oos.close();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public void loadPersistedTweets(Context context) {
+		String fileToLoad = null;
+		String suffix = File.separator + "Geotweeter" + File.separator + "timelines" + File.separator + String.valueOf(getUser().id);
+		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			String file = android.os.Environment.getExternalStorageDirectory().getPath() + suffix;
+			if (new File(file).exists()) {
+				fileToLoad = file;
+			}
+		}
+		
+		if (fileToLoad == null) {
+			String file = context.getCacheDir().getPath() + suffix;
+			if (new File(file).exists()) {
+				fileToLoad = file;
+			}
+		}
+		
+		if (fileToLoad == null) return;
+		
+		ArrayList<TimelineElement> tweets;
+		try {
+			FileInputStream fin = new FileInputStream(fileToLoad);
+			ObjectInputStream ois = new ObjectInputStream(fin);
+			tweets = (ArrayList<TimelineElement>) ois.readObject();
+			ois.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return;
+		}
+		
+		for (TimelineElement elm : tweets) {
+			if (elm instanceof DirectMessage) {
+				if (elm.getID() > max_known_dm_id) {
+					max_known_dm_id = elm.getID();
+				}
+			} else if (elm instanceof Tweet) {
+				if (elm.getID() > max_known_tweet_id) {
+					max_known_tweet_id = elm.getID();
+				}
+			}
+		}
+		elements.addAllAsFirst(tweets);
 	}
 }
