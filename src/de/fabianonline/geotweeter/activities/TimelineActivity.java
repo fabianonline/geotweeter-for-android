@@ -102,6 +102,10 @@ public class TimelineActivity extends MapActivity {
 			reg_id = GCMRegistrar.getRegistrationId(this);
 			if (reg_id.equals("")) {
 				GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
+			} else {
+				for (Account acct : Account.all_accounts) {
+					acct.registerForGCMMessages();
+				}
 			}
 		} else {
 			Intent addAccountIntent = new Intent(TimelineActivity.this, SettingsAccounts.class);
