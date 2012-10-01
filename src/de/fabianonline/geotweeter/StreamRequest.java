@@ -43,6 +43,7 @@ public class StreamRequest {
 		private final Pattern part_finder_pattern = Pattern.compile("([0-9]+)([\n\r]+.+)$", Pattern.DOTALL);
 		public InputStream stream;
 		String buffer = "";
+		
 		public void run() {
 			startRequest();
 		}

@@ -57,7 +57,7 @@ public class TimelineActivity extends MapActivity {
 		background_image_loader = new BackgroundImageLoader(getApplicationContext());
 		TimelineElement.tweetTimeStyle = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_tweet_time_style", "pref_tweet_time_style");
 		
-		acc=0;
+		acc = 0;
 		ArrayList<User> auth_users = getAuthUsers();
 		if (auth_users != null) {
 			for (User u : auth_users) {
@@ -78,6 +78,7 @@ public class TimelineActivity extends MapActivity {
 		l.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				
 				if (current_account.getElements().getItem(position).isReplyable()) {
 					Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
 					replyIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", current_account.getElements().getItem(position));
