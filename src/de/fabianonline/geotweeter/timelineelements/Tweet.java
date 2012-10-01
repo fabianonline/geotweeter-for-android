@@ -1,10 +1,8 @@
 package de.fabianonline.geotweeter.timelineelements;
 
-import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 
 import com.alibaba.fastjson.JSONArray;

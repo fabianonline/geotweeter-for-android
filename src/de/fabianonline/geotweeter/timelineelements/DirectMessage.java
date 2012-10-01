@@ -1,14 +1,14 @@
 package de.fabianonline.geotweeter.timelineelements;
 
-import java.text.SimpleDateFormat;
-import java.util.Currency;
-import java.util.Date;
-
 import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.activities.TimelineActivity;
 
 public class DirectMessage extends Tweet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2657023974332061942L;
 	private User sender;
 	private User recipient;
 

@@ -16,7 +16,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -35,7 +34,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.R;
@@ -220,14 +218,16 @@ public class NewTweetActivity extends Activity {
 	protected class GPSCoordsListener implements LocationListener {
 		private NewTweetActivity activity;
 		
-		public GPSCoordsListener(NewTweetActivity a) { activity = a; }
+		public GPSCoordsListener(NewTweetActivity a) { 
+			activity = a; 
+		}
 		
 		public void onLocationChanged(Location new_location) {
 			/* Wir nehmen die aktuellen Koordinaten, wenn es
 			 *   a) die ersten Koordinaten sind oder
 			 *   b) die bisherigen Koordinaten nur Netzwerk-genau waren
 			 */
-			if (location==null || 
+			if (location == null || 
 					(new_location.getProvider().equals(LocationManager.GPS_PROVIDER) && location.getProvider().equals(LocationManager.NETWORK_PROVIDER))) {
 						location = new_location;
 			}
@@ -244,7 +244,10 @@ public class NewTweetActivity extends Activity {
 		private ProgressDialog dialog;
 		Handler handler;
 		
-		public SendTweetListener(NewTweetActivity act) { activity = act; }
+		public SendTweetListener(NewTweetActivity act) { 
+			activity = act; 
+		}
+		
 		public void onClick(View v) {
 			final String text = ((TextView)activity.findViewById(R.id.tweet_text)).getText().toString().trim();
 			handler = new Handler();

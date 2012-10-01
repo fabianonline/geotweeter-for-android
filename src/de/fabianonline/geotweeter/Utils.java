@@ -5,8 +5,6 @@ import java.util.regex.Pattern;
 
 import org.json.JSONException;
 
-import android.util.Log;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;

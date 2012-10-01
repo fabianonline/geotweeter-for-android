@@ -11,9 +11,8 @@ import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
 
-import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
-
 import android.util.Log;
+import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
 
 public class StreamRequest {
 	private StreamRequestThread thread;

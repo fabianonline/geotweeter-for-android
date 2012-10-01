@@ -6,6 +6,10 @@ import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;
 
 public abstract class Event extends TimelineElement {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6213231225574876527L;
 	public User source;
 	
 	@Override
