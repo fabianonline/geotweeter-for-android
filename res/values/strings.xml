@@ -49,4 +49,15 @@
         <item >twitter</item>
         <item >twitpic</item>
     </string-array>
+    <string-array name="pref_notification_sound_entries">
+        <item>Pling</item>
+        <item>Meep</item>
+        <item>Plang</item>
+    </string-array>
+    <string-array name="pref_notification_sound_entryValues">
+        <item>pling</item>
+        <item>meep</item>
+        <item>plang</item>
+    </string-array>
+        <string name="pref_notification_sound_title">Notification Sound</string>
 </resources>

@@ -1,5 +1,6 @@
 package de.fabianonline.geotweeter.activities;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -8,6 +9,7 @@ import android.preference.PreferenceActivity;
 import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.Utils;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
 public class GeneralPrefsActivity extends PreferenceActivity {
@@ -44,6 +46,23 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 				ListPreference imageHoster = (ListPreference) findPreference("pref_image_hoster");
 				preference.setSummary(imageHoster.getEntries()[imageHoster.findIndexOfValue(newValue.toString())]);
 				Account.imageHoster = newValue.toString();
+				return true;
+			}
+		});
+		
+		ListPreference notificationSoundList = (ListPreference) findPreference("pref_notification_sound");
+		notificationSoundList.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int soundID = Utils.stringToSoundResourceID(newValue.toString());
+				
+				try {
+					MediaPlayer player = MediaPlayer.create(getApplicationContext(), soundID);
+					player.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				return true;
 			}
 		});
