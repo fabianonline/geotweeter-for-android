@@ -7,11 +7,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.google.android.gcm.GCMBaseIntentService;
 
+import de.fabianonline.geotweeter.activities.GeneralPrefsActivity;
 import de.fabianonline.geotweeter.activities.NewTweetActivity;
 import de.fabianonline.geotweeter.activities.TimelineActivity;
 import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
@@ -65,7 +69,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 		notification.contentView = contentView;
 		//notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 		notification.contentIntent = contentIntent;
-		notification.defaults |= Notification.DEFAULT_SOUND;
+		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
+		int soundID = Utils.stringToSoundResourceID(pref.getString("pref_notification_sound", "plang"));
+		notification.sound = Uri.parse("android.resource://de.fabianonline.geotweeter/" + soundID);
 		notification.vibrate = new long[] {0, 200, 500, 200};
 		notificationManager.notify(id, notification);
 	}

@@ -516,7 +516,7 @@ public class Account implements Serializable {
 				HttpClient http_client = new CacertHttpClient(appContext);
 				HttpPost http_post = new HttpPost(Constants.GCM_SERVER_URL + "register");
 				try {
-					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(3);
+					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(5);
 					name_value_pair.add(new BasicNameValuePair("reg_id", TimelineActivity.reg_id));
 					name_value_pair.add(new BasicNameValuePair("token", getToken().getToken()));
 					name_value_pair.add(new BasicNameValuePair("secret", getToken().getSecret()));
