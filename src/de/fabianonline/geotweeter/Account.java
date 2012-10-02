@@ -108,7 +108,13 @@ public class Account implements Serializable {
 		}
 		stream_request = new StreamRequest(this);
 		//stream_request.start();
-		all_accounts.add(this);
+		boolean found = false;
+		for (Account a : all_accounts) {
+			found |= a.getUser().id == user.id;
+		}
+		if (!found) {
+			all_accounts.add(this);
+		}
 		getMaxReadIDs();
 	}
 	
@@ -523,7 +529,7 @@ public class Account implements Serializable {
 					name_value_pair.add(new BasicNameValuePair("screen_name", getUser().getScreenName()));
 					name_value_pair.add(new BasicNameValuePair("protocol_version", "1"));
 					http_post.setEntity(new UrlEncodedFormEntity(name_value_pair));
-					HttpResponse response = http_client.execute(http_post);
+					http_client.execute(http_post);
 				} catch(ClientProtocolException e) {
 					e.printStackTrace();
 				} catch(SSLPeerUnverifiedException e) {
