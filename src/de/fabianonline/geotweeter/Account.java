@@ -89,6 +89,7 @@ public class Account implements Serializable {
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
 	protected final static Object lock_object = new Object();
+	private transient Context appContext;
 	
 	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
@@ -97,6 +98,7 @@ public class Account implements Serializable {
 		handler = new Handler();
 		this.elements = elements;
 		loadPersistedTweets(applicationContext);
+		this.appContext = applicationContext;
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
@@ -511,7 +513,7 @@ public class Account implements Serializable {
 		Log.d(LOG, "Registering...");
 		new Thread(new Runnable() {
 			public void run() {
-				HttpClient http_client = new DefaultHttpClient();
+				HttpClient http_client = new CacertHttpClient(appContext);
 				HttpPost http_post = new HttpPost(Constants.GCM_SERVER_URL + "register");
 				try {
 					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(3);
@@ -521,7 +523,7 @@ public class Account implements Serializable {
 					name_value_pair.add(new BasicNameValuePair("screen_name", getUser().getScreenName()));
 					name_value_pair.add(new BasicNameValuePair("protocol_version", "1"));
 					http_post.setEntity(new UrlEncodedFormEntity(name_value_pair));
-					http_client.execute(http_post);
+					HttpResponse response = http_client.execute(http_post);
 				} catch(ClientProtocolException e) {
 					e.printStackTrace();
 				} catch(SSLPeerUnverifiedException e) {
