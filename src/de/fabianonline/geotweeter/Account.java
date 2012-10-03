@@ -89,6 +89,7 @@ public class Account implements Serializable {
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
 	protected final static Object lock_object = new Object();
+	private transient Context appContext;
 	
 	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
@@ -97,6 +98,7 @@ public class Account implements Serializable {
 		handler = new Handler();
 		this.elements = elements;
 		loadPersistedTweets(applicationContext);
+		this.appContext = applicationContext;
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
@@ -106,7 +108,13 @@ public class Account implements Serializable {
 		}
 		stream_request = new StreamRequest(this);
 		//stream_request.start();
-		all_accounts.add(this);
+		boolean found = false;
+		for (Account a : all_accounts) {
+			found |= a.getUser().id == user.id;
+		}
+		if (!found) {
+			all_accounts.add(this);
+		}
 		getMaxReadIDs();
 	}
 	
@@ -511,7 +519,7 @@ public class Account implements Serializable {
 		Log.d(LOG, "Registering...");
 		new Thread(new Runnable() {
 			public void run() {
-				HttpClient http_client = new DefaultHttpClient();
+				HttpClient http_client = new CacertHttpClient(appContext);
 				HttpPost http_post = new HttpPost(Constants.GCM_SERVER_URL + "register");
 				try {
 					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(5);

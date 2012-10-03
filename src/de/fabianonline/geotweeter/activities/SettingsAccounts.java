@@ -19,6 +19,21 @@ public class SettingsAccounts extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pref_accounts);
+				
+		Button btnAddAccount = (Button)findViewById(R.id.btnAddAccount);
+		btnAddAccount.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				addAccount();
+			}
+		});
+		
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 		
 		if (!Account.all_accounts.isEmpty()) {
 			
@@ -36,17 +51,8 @@ public class SettingsAccounts extends Activity {
 
 		}
 				
-		Button btnAddAccount = (Button)findViewById(R.id.btnAddAccount);
-		btnAddAccount.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				addAccount();
-			}
-		});
-		
 	}
-
+	
 	protected void editUserSettings(Account account) {
 		Intent accountPrefs = new Intent(this, AccountPrefsActivity.class);
 		accountPrefs.putExtra("account", account);
@@ -55,9 +61,8 @@ public class SettingsAccounts extends Activity {
 	}
 
 	protected void addAccount() {
-
 		Intent intent = new Intent().setClass(this, AuthenticateAccountActivity.class);
 		startActivity(intent);
-
 	}
+
 }
