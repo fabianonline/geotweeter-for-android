@@ -45,7 +45,6 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				ListPreference imageHoster = (ListPreference) findPreference("pref_image_hoster");
 				preference.setSummary(imageHoster.getEntries()[imageHoster.findIndexOfValue(newValue.toString())]);
-				Account.imageHoster = newValue.toString();
 				return true;
 			}
 		});

@@ -61,7 +61,6 @@ public class TimelineActivity extends MapActivity {
 		
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
 		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
-		Account.imageHoster = pref.getString("pref_image_hoster", "twitter");
 		
 		
 		if (!isRunning) {
