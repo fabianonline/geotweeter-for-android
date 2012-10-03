@@ -5,10 +5,15 @@ import java.util.regex.Pattern;
 
 import org.json.JSONException;
 
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebView.FindListener;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 
+import de.fabianonline.geotweeter.activities.TimelineActivity;
 import de.fabianonline.geotweeter.exceptions.UnknownJSONObjectException;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
 import de.fabianonline.geotweeter.timelineelements.FavoriteEvent;
@@ -20,6 +25,9 @@ import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class Utils {
+	private static int mainSpinnerDisplays = 0;
+	private static final String LOG = "Utils";
+	
 	public static int countChars(String str) {
 		str = str.trim();
 		int length = str.length();
@@ -78,5 +86,40 @@ public class Utils {
 			return R.raw.sound_plang;
 		}
 		return R.raw.sound_pling;
+	}
+	
+	public static void showMainSpinner() {
+		mainSpinnerDisplays++;
+		TimelineActivity ta = TimelineActivity.getInstance();
+		if (ta != null) {
+			final View spinner = ta.findViewById(R.id.spinnerMain);
+			if (spinner != null) {
+				ta.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						spinner.setVisibility(View.VISIBLE);
+					}
+				});
+			}
+		}
+	}
+	
+	public static void hideMainSpinner() {
+		mainSpinnerDisplays--;
+		if (mainSpinnerDisplays <= 0) {
+			mainSpinnerDisplays = 0;
+			TimelineActivity ta = TimelineActivity.getInstance();
+			if (ta != null) {
+				final View spinner = ta.findViewById(R.id.spinnerMain);
+				if (spinner != null) {
+					ta.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							spinner.setVisibility(View.INVISIBLE);
+						}
+					});
+				}
+			}
+		}
 	}
 }

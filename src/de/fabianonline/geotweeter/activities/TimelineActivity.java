@@ -48,10 +48,12 @@ public class TimelineActivity extends MapActivity {
 	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
 	private MapView map;
+	private static TimelineActivity instance = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		instance = this;
 		map = new MapView(this, Constants.MAPS_API_KEY);
 		setContentView(R.layout.activity_timeline);
 		background_image_loader = new BackgroundImageLoader(getApplicationContext());
@@ -184,6 +186,7 @@ public class TimelineActivity extends MapActivity {
 				e.printStackTrace();
 			}
 		}
+		instance = null;
 	}
 	
 	public void onPause() {
@@ -308,5 +311,9 @@ public class TimelineActivity extends MapActivity {
 	protected boolean isRouteDisplayed() {
 		/* Die Methode muss hier hin wegen MapActivity */
 		return false;
+	}
+	
+	public static TimelineActivity getInstance() {
+		return instance;
 	}
 }
