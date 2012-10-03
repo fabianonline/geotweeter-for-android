@@ -22,13 +22,15 @@ def update()
 		if command=="add"
 			next unless reg_id && reg_id.length>5
 			if $settings.has_key? id
+				$settings[id][:screen_name] = screen_name
+				$settings[id][:token] = token
+				$settings[id][:secret] = secret
 				if $settings[id].has_key?(:reg_ids) && $settings[id][:reg_ids].include?(reg_id)
 					log screen_name, "Not adding client: Already known."
 					$stats[:re_registrations] += 1
 					next
 				end
 				$settings[id][:reg_ids] << reg_id
-				$settings[id][:screen_name] = screen_name
 				log(screen_name, "Adding new reg_id")
 				$stats[:reg_ids] += 1
 			else
