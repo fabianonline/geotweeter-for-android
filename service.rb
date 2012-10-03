@@ -68,13 +68,15 @@ end
 
 def send_gcm(config, data, type)
 	result = $gcm_sender.send(config[:reg_ids], {:data=>{:type=>type, :data=>data.to_json, :user_id=>config[:user_id]}})
-	data = JSON.parse(result.body)
-	unless data["success"]==config[:reg_ids].count
-		log "ERROR! Success was #{data['success']}, expected #{config[:reg_ids].count}"
-		log "ERROR: #{data.inspect}"
+	result = JSON.parse(result.body)
+	unless result["success"]==config[:reg_ids].count
+		log "ERROR! Success was #{result['success']}, expected #{config[:reg_ids].count}"
+		log "ERROR: #{result.inspect}"
+		log "ERROR: Sent data packet length was: #{data.to_json.length}"
+		log "ERROR: Send data packet was: #{data.to_json}"
 	end
-	$stats[:gcms_successful] += data['success'].to_i
-	$stats[:gcms_failed] += data['failure'].to_i
+	$stats[:gcms_successful] += result['success'].to_i
+	$stats[:gcms_failed] += result['failure'].to_i
 end
 
 def stream(hash)
