@@ -49,6 +49,7 @@ public class TimelineActivity extends MapActivity {
 	public static String reg_id = "";
 	private MapView map;
 	private static TimelineActivity instance = null;
+	private static boolean isRunning = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,15 +63,18 @@ public class TimelineActivity extends MapActivity {
 		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
 		Account.imageHoster = pref.getString("pref_image_hoster", "twitter");
 		
-		acc = 0;
-		ArrayList<User> auth_users = getAuthUsers();
-		if (auth_users != null) {
-			for (User u : auth_users) {
-				TimelineElementAdapter ta = new TimelineElementAdapter(this, 
-																	   R.layout.timeline_element, 
-																	   new ArrayList<TimelineElement>());
-				Account acct = new Account(ta, getUserToken(u), u, getApplicationContext());
-				addAccount(acct);
+		
+		if (!isRunning) {
+			acc = 0;
+			ArrayList<User> auth_users = getAuthUsers();
+			if (auth_users != null) {
+				for (User u : auth_users) {
+					TimelineElementAdapter ta = new TimelineElementAdapter(this, 
+																		   R.layout.timeline_element, 
+																		   new ArrayList<TimelineElement>());
+					Account acct = new Account(ta, getUserToken(u), u, getApplicationContext());
+					addAccount(acct);
+				}
 			}
 		}
 		
@@ -99,22 +103,26 @@ public class TimelineActivity extends MapActivity {
 			}
 		});
 		
-		if (current_account != null) {
-			l.setAdapter(current_account.getElements());
-			GCMRegistrar.checkDevice(this);
-			GCMRegistrar.checkManifest(this);
-			reg_id = GCMRegistrar.getRegistrationId(this);
-			if (reg_id.equals("")) {
-				GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
-			} else {
-				for (Account acct : Account.all_accounts) {
-					acct.registerForGCMMessages();
+		if (!isRunning) {
+			if (current_account != null) {
+				l.setAdapter(current_account.getElements());
+				GCMRegistrar.checkDevice(this);
+				GCMRegistrar.checkManifest(this);
+				reg_id = GCMRegistrar.getRegistrationId(this);
+				if (reg_id.equals("")) {
+					GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
+				} else {
+					for (Account acct : Account.all_accounts) {
+						acct.registerForGCMMessages();
+					}
 				}
+			} else {
+				Intent addAccountIntent = new Intent(TimelineActivity.this, SettingsAccounts.class);
+				startActivity(addAccountIntent);
 			}
-		} else {
-			Intent addAccountIntent = new Intent(TimelineActivity.this, SettingsAccounts.class);
-			startActivity(addAccountIntent);
 		}
+		
+		isRunning = true;
 	}
 
 	protected void showMapIfApplicable(AdapterView<?> parent, View view,
