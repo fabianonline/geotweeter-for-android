@@ -30,7 +30,9 @@ public class StreamRequest {
 	
 	public void stop() {
 		try {
-			thread.stream.close();
+			if (thread != null && thread.stream != null) {
+				thread.stream.close();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
