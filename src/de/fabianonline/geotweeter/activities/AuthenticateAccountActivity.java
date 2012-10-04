@@ -1,5 +1,7 @@
 package de.fabianonline.geotweeter.activities;
 
+import java.util.ArrayList;
+
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.OAuthRequest;
@@ -21,9 +23,12 @@ import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
 
+import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.R;
+import de.fabianonline.geotweeter.TimelineElementAdapter;
 import de.fabianonline.geotweeter.User;
+import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
 public class AuthenticateAccountActivity extends Activity {
 
@@ -106,10 +111,11 @@ public class AuthenticateAccountActivity extends Activity {
 
 	}
 	
-	private class VerificationTask extends AsyncTask<Object, Void, Boolean> {
+	private class VerificationTask extends AsyncTask<Object, Void, User> {
 
 		@Override
-		protected Boolean doInBackground(Object... params) {
+		protected User doInBackground(Object... params) {
+			User authUser = null;
 			Token requestToken = (Token)params[0];
 			String url = (String)params[1];
 
@@ -125,19 +131,22 @@ public class AuthenticateAccountActivity extends Activity {
 				os.signRequest(accessToken, req);
 				Response response = req.send();
 				if (response.getCode() == 200) {
-					User authUser = JSON.parseObject(response.getBody(), User.class);
+					authUser = JSON.parseObject(response.getBody(), User.class);
 					storeAccessData(authUser, accessToken);
 				}
 				
 
 			}
 
-			return true;
+			return authUser;
 			
 		}
 		
 		@Override
-		protected void onPostExecute(Boolean result) {
+		protected void onPostExecute(User u) {
+			if (u != null) {
+				TimelineActivity.getInstance().createAccount(u);
+			}
 			self.finish();
 		}
 		

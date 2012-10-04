@@ -108,13 +108,7 @@ public class Account implements Serializable {
 		}
 		stream_request = new StreamRequest(this);
 		//stream_request.start();
-		boolean found = false;
-		for (Account a : all_accounts) {
-			found |= a.getUser().id == user.id;
-		}
-		if (!found) {
-			all_accounts.add(this);
-		}
+		all_accounts.add(this);
 		getMaxReadIDs();
 	}
 	
@@ -141,7 +135,7 @@ public class Account implements Serializable {
 		@Override
 		public void run() {
 			Log.d(LOG, "Starting run()...");
-			Utils.showMainSpinner();
+//			Utils.showMainSpinner();
 			if (Debug.ENABLED && Debug.FAKE_FILL_TIMELINE && Debug.FAKE_FILL_TIMELINE_JSON!=null) {
 				Log.d(LOG, "Fake Timeline Data given (Debug.FAKE_TIMELINE)");
 				ArrayList<TimelineElement> inner = new ArrayList<TimelineElement>();
@@ -234,7 +228,7 @@ public class Account implements Serializable {
 				// TODO Try again after some time
 				// TODO Show info message
 			}
-			Utils.hideMainSpinner();
+//			Utils.hideMainSpinner();
 		}
 		
 		private class RunnableRequestTweetsExecutor implements Runnable {

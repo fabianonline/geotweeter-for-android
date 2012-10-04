@@ -9,6 +9,7 @@ import org.scribe.oauth.OAuthService;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
@@ -20,10 +21,10 @@ import de.fabianonline.geotweeter.User;
 
 public class AccountPrefsActivity extends PreferenceActivity {
 
-	private Preference prefName;
-	private Preference prefUrl;
-	private Preference prefLoc;
-	private Preference prefDesc;
+	private EditTextPreference prefName;
+	private EditTextPreference prefUrl;
+	private EditTextPreference prefLoc;
+	private EditTextPreference prefDesc;
 	
     private User user;
     private Account account;
@@ -62,11 +63,16 @@ public class AccountPrefsActivity extends PreferenceActivity {
         
         addPreferencesFromResource(R.xml.account_settings);
         
-        prefName = findPreference("pref_name");
-        prefUrl = findPreference("pref_url");
-        prefLoc = findPreference("pref_loc");
-        prefDesc = findPreference("pref_desc");
+        prefName = (EditTextPreference) findPreference("pref_name");
+        prefUrl = (EditTextPreference) findPreference("pref_url");
+        prefLoc = (EditTextPreference) findPreference("pref_loc");
+        prefDesc = (EditTextPreference) findPreference("pref_desc");
         
+        prefName.getEditText().setText(user.name);
+        prefUrl.getEditText().setText(user.url);
+        prefLoc.getEditText().setText(user.location);
+        prefDesc.getEditText().setText(user.description);
+
         prefName.setDefaultValue(user.name);
         prefUrl.setDefaultValue(user.url);
         prefLoc.setDefaultValue(user.location);
