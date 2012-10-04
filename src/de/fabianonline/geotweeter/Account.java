@@ -70,7 +70,7 @@ public class Account implements Serializable {
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	
 	private Token token;
-	private transient OAuthService service = new ServiceBuilder()
+	private static transient OAuthService service = new ServiceBuilder()
 											.provider(TwitterApi.class)
 											.apiKey(Constants.API_KEY)
 											.apiSecret(Constants.API_SECRET)
@@ -134,7 +134,7 @@ public class Account implements Serializable {
 		@Override
 		public void run() {
 			Log.d(LOG, "Starting run()...");
-//			Utils.showMainSpinner();
+			Utils.showMainSpinner();
 			if (Debug.ENABLED && Debug.FAKE_FILL_TIMELINE && Debug.FAKE_FILL_TIMELINE_JSON!=null) {
 				Log.d(LOG, "Fake Timeline Data given (Debug.FAKE_TIMELINE)");
 				ArrayList<TimelineElement> inner = new ArrayList<TimelineElement>();
@@ -188,7 +188,7 @@ public class Account implements Serializable {
 			new Thread(new RunnableRequestDMsExecutor(req_dms_received, false), "FetchReceivedDMThread").start();
 		}
 		
-		private void runAfterEachSuccesfullRequest(ArrayList<TimelineElement> elements, boolean is_main_data) {
+		private void runAfterEachSuccesfulRequest(ArrayList<TimelineElement> elements, boolean is_main_data) {
 			Log.d(LOG, "Started...");
 			if (is_main_data) {
 				main_data = elements;
@@ -227,7 +227,7 @@ public class Account implements Serializable {
 				// TODO Try again after some time
 				// TODO Show info message
 			}
-//			Utils.hideMainSpinner();
+			Utils.hideMainSpinner();
 		}
 		
 		private class RunnableRequestTweetsExecutor implements Runnable {
@@ -242,16 +242,19 @@ public class Account implements Serializable {
 			
 			@Override
 			public void run() {
+				
 				Log.d(LOG, "Started.");
 				signRequest(request);
 				Response response;
-				try {
-					long start_time = System.currentTimeMillis();
-					response = request.send();
-					Log.d(LOG, "Download finished: " + (System.currentTimeMillis()-start_time) + "ms");
-				} catch (OAuthException e) {
-					runAfterEachFailedRequest();
-					return;
+				synchronized(Constants.THREAD_LOCK) {
+					try {
+						long start_time = System.currentTimeMillis();
+						response = request.send();
+						Log.d(LOG, "Download finished: " + (System.currentTimeMillis()-start_time) + "ms");
+					} catch (OAuthException e) {
+						runAfterEachFailedRequest();
+						return;
+					}
 				}
 				if (response.isSuccessful()) {
 					Log.d(LOG, "Started parsing JSON...");
@@ -261,10 +264,11 @@ public class Account implements Serializable {
 						elements = parse(response.getBody());
 					}
 					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time) + " ms");
-					runAfterEachSuccesfullRequest(elements, is_main_data);
+					runAfterEachSuccesfulRequest(elements, is_main_data);
 				} else {
 					runAfterEachFailedRequest();
 				}
+				
 			}
 			
 			@SuppressWarnings("unchecked")
