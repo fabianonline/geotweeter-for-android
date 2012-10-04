@@ -68,7 +68,6 @@ public class Account implements Serializable {
 	
 	protected final String LOG = "Account";
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
-	public static String imageHoster;
 	
 	private Token token;
 	private transient OAuthService service = new ServiceBuilder()
@@ -408,6 +407,7 @@ public class Account implements Serializable {
 	
 
 	public void sendTweetWithPic(String text, Location location, long reply_to_id, String picture) throws TweetSendException, IOException {
+		String imageHoster = appContext.getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
 		if(imageHoster.equals("twitter")) {
 			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
 			
@@ -469,14 +469,13 @@ public class Account implements Serializable {
 			Log.d(LOG, "Finished Send Twitpic");
 			
 			// Handle response
-			
+			// sendTweet with pic-URL
 			if(response.isSuccessful()) {
 				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
 				Log.d(LOG, "Send Tweet with Twitpic");
 				sendTweet(text + " " + twitpicURL, location, reply_to_id);
 				Log.d(LOG, "Finished Send Tweet with Twitpic");
 			}
-			// sendTweet with pic-URL
 		} else {
 			//TODO: Exception?
 		}

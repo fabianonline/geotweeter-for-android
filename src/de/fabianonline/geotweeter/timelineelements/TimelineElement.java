@@ -13,7 +13,7 @@ public abstract class TimelineElement implements Serializable {
 	private static final String LOG = "TimelineElement";
 	
 	private static SimpleDateFormat parseableDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
-	public static String tweetTimeStyle;
+	public static String tweetTimeStyle = "dd.MM.yy HH:mm";
 	
 	protected Date created_at = new Date();
 	
