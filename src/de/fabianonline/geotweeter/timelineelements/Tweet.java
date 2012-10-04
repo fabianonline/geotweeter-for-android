@@ -23,7 +23,7 @@ public class Tweet extends TimelineElement {
 	public User user;
 	public View view;
 	public String source;
-	public JSONObject entities;
+	public Entities entities;
 	
 	public long getID() {
 		return id;
@@ -36,15 +36,13 @@ public class Tweet extends TimelineElement {
 				text_for_display = new String(text);
 			} else {
 				StringBuilder temp_text = new StringBuilder();
-				JSONArray urls = entities.getJSONArray("urls");
 				int start_index = 0;
-				if (urls != null) {
-					for (int i = 0; i < urls.size(); i++) {
-						JSONObject url = urls.getJSONObject(i);
-						JSONArray indices = url.getJSONArray("indices");
-						temp_text.append(text.substring(start_index, indices.getIntValue(0)));
-						temp_text.append(url.getString("display_url"));
-						start_index = indices.getIntValue(1);
+				if (entities.urls != null) {
+					for (int i = 0; i < entities.urls.size(); i++) {
+						Url url = entities.urls.get(i);
+						temp_text.append(text.substring(start_index, url.indices.get(0)));
+						temp_text.append(url.display_url);
+						start_index = url.indices.get(1);
 					}
 
 
@@ -145,10 +143,9 @@ public class Tweet extends TimelineElement {
 	}
 
 	public boolean mentionsUser(User user) {
-		if (entities!=null) {
-			JSONArray mentions = entities.getJSONArray("user_mentions");
-			for(int i=0; i<mentions.size(); i++) {
-				if (mentions.getJSONObject(i).getLong("id").equals(user.id)) {
+		if (entities != null) {
+			for(int i = 0; i < entities.user_mentions.size(); i++ ) {
+				if (entities.user_mentions.get(i).id == user.id) {
 					return true;
 				}
 			}
