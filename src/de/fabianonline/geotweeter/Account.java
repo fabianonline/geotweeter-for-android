@@ -101,8 +101,18 @@ public class Account implements Serializable {
 		this.user = user;
 		handler = new Handler();
 		this.elements = elements;
-		loadPersistedTweets(applicationContext);
 		this.appContext = applicationContext;
+		
+		all_accounts.add(this);
+		start();
+	}
+	
+	public void start() {
+		Log.d(LOG, "In start()");
+		if (stream_request != null) {
+			stream_request.stop();
+		}
+		loadPersistedTweets(appContext);
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
@@ -110,9 +120,8 @@ public class Account implements Serializable {
 			t.setPriority(3);
 			t.start();
 		}
+		
 		stream_request = new StreamRequest(this);
-		//stream_request.start();
-		all_accounts.add(this);
 		getMaxReadIDs();
 	}
 	

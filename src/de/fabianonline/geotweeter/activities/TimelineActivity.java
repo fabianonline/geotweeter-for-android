@@ -70,6 +70,10 @@ public class TimelineActivity extends MapActivity {
 					createAccount(u);
 				}
 			}
+		} else {
+			for (Account acct : Account.all_accounts) {
+				acct.start();
+			}
 		}
 		
 		ListView l = (ListView) findViewById(R.id.timeline);
@@ -114,6 +118,8 @@ public class TimelineActivity extends MapActivity {
 				Intent addAccountIntent = new Intent(TimelineActivity.this, SettingsAccounts.class);
 				startActivity(addAccountIntent);
 			}
+		} else {
+			l.setAdapter(current_account.getElements());
 		}
 		
 		isRunning = true;
