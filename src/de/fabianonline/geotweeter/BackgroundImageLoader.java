@@ -103,14 +103,18 @@ public class BackgroundImageLoader {
 		Bitmap bitmap = null;
 		File cache_file = file_cache.getFile(url);
 		if (cache_file.exists()) {
-			Log.d(LOG, "Loading " + url + " from cache.");
+			if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
+				Log.d(LOG, "Loading " + url + " from cache.");
+			}
 			try {
 				bitmap = new BitmapDrawable(BitmapFactory.decodeFile(cache_file.getCanonicalPath())).getBitmap();
 				bitmap_cache.put(url, bitmap);
 				return bitmap;
 			} catch (IOException e) {}
 		}
-		Log.d("ImageLoader", "Loading " + url + " from web");
+		if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
+			Log.d(LOG, "Loading " + url + " from web");
+		}
 		try {
 			bitmap = new BitmapDrawable(BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream())).getBitmap();
 			bitmap_cache.put(url, bitmap);

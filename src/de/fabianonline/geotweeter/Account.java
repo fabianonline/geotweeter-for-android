@@ -70,12 +70,7 @@ public class Account implements Serializable {
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	
 	private Token token;
-	private static transient OAuthService service = new ServiceBuilder()
-											.provider(TwitterApi.class)
-											.apiKey(Constants.API_KEY)
-											.apiSecret(Constants.API_SECRET)
-											.debug()
-											.build();
+	private static transient OAuthService service;
 	private transient Handler handler;
 	private transient StreamRequest stream_request;
 	private long max_read_tweet_id = 0;
@@ -92,6 +87,16 @@ public class Account implements Serializable {
 	
 	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
+		if (service == null) {
+			ServiceBuilder builder = new ServiceBuilder()
+			                             .provider(TwitterApi.class)
+			                             .apiKey(Constants.API_KEY)
+			                             .apiSecret(Constants.API_SECRET);
+			if (Debug.LOG_OAUTH_STUFF) {
+				builder = builder.debug();
+			}
+			service = builder.build();
+		}
 		this.token = token;
 		this.user = user;
 		handler = new Handler();
