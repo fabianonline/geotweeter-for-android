@@ -42,7 +42,6 @@ import de.fabianonline.geotweeter.timelineelements.Tweet;
 
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
-	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private int acc;
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
@@ -200,8 +199,8 @@ public class TimelineActivity extends MapActivity {
 	}
 	
 	public void nextAccountHandler(View v) {
-		acc = (acc + 1) % accounts.size();
-		current_account = accounts.get(acc);
+		acc = (acc + 1) % Account.all_accounts.size();
+		current_account = Account.all_accounts.get(acc);
 //		elements = current_account.getElements().getItems();
 		ListView l = (ListView) findViewById(R.id.timeline);
 		l.setAdapter(current_account.getElements());
@@ -237,7 +236,6 @@ public class TimelineActivity extends MapActivity {
 	}
 	
 	public void addAccount(Account acc) {
-		accounts.add(acc);
 		if (current_account == null) {
 			current_account = acc;
 //			elements = acc.getElements().getItems();
