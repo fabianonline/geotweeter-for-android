@@ -260,16 +260,14 @@ public class Account implements Serializable {
 				
 				Log.d(LOG, "Started.");
 				signRequest(request);
-				Response response;
-				synchronized(Constants.THREAD_LOCK) {
-					try {
-						long start_time = System.currentTimeMillis();
-						response = request.send();
-						Log.d(LOG, "Download finished: " + (System.currentTimeMillis()-start_time) + "ms");
-					} catch (OAuthException e) {
-						runAfterEachFailedRequest();
-						return;
-					}
+				Response response;	
+				try {
+					long start_time = System.currentTimeMillis();
+					response = request.send();
+					Log.d(LOG, "Download finished: " + (System.currentTimeMillis()-start_time) + "ms");
+				} catch (OAuthException e) {
+					runAfterEachFailedRequest();
+					return;
 				}
 				if (response.isSuccessful()) {
 					Log.d(LOG, "Started parsing JSON...");
