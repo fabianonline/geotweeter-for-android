@@ -118,9 +118,7 @@ public class Account implements Serializable {
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
-			Thread t = new Thread(new TimelineRefreshThread(false));
-			t.setPriority(3);
-			t.start();
+			new Thread(new TimelineRefreshThread(false)).start();
 		}
 		
 		stream_request = new StreamRequest(this);
