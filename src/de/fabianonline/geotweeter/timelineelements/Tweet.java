@@ -20,6 +20,11 @@ public class Tweet extends TimelineElement {
 	public View view;
 	public String source;
 	public Entities entities;
+	public long in_reply_to_status_id;
+	public String in_reply_to_status_id_str;
+	public long in_reply_to_user_id;
+	public String in_reply_to_user_id_str;
+	
 	
 	public long getID() {
 		return id;
