@@ -74,7 +74,7 @@ public class TimelineActivity extends MapActivity {
 			}
 		} else {
 			for (Account acct : Account.all_accounts) {
-				acct.start();
+				acct.start(true);
 			}
 		}
 		
@@ -336,5 +336,12 @@ public class TimelineActivity extends MapActivity {
 	
 	public static TimelineActivity getInstance() {
 		return instance;
+	}
+	
+	public void refreshTimelineClickHandler(View v) {
+		for (Account acct : Account.all_accounts) {
+			acct.stopStream();
+			acct.start(false);
+		}
 	}
 }

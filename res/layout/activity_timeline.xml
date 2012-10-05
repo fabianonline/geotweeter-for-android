@@ -52,6 +52,16 @@
             android:layout_alignParentTop="true"
             android:visibility="invisible" />
 
+        <ImageButton
+            android:id="@+id/btnRefresh"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:onClick="refreshTimelineClickHandler"
+            android:src="@drawable/arrow_rotate_clockwise" />
+
     </RelativeLayout>
     
     <LinearLayout

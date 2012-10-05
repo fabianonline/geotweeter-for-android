@@ -104,15 +104,17 @@ public class Account implements Serializable {
 		this.appContext = applicationContext;
 		
 		all_accounts.add(this);
-		start();
+		start(true);
 	}
 	
-	public void start() {
+	public void start(boolean loadPersistedTweets) {
 		Log.d(LOG, "In start()");
 		if (stream_request != null) {
 			stream_request.stop();
 		}
-		loadPersistedTweets(appContext);
+		if (loadPersistedTweets) {
+			loadPersistedTweets(appContext);
+		}
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
@@ -164,6 +166,7 @@ public class Account implements Serializable {
 				ArrayList<ArrayList<TimelineElement>> outer = new ArrayList<ArrayList<TimelineElement>>();
 				outer.add(inner);
 				parseData(outer, false);
+				Utils.hideMainSpinner();
 				return;
 			}
 			OAuthRequest req_timeline     = new OAuthRequest(Verb.GET, Constants.URI_HOME_TIMELINE);

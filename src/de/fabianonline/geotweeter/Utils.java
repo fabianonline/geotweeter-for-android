@@ -93,14 +93,18 @@ public class Utils {
 		TimelineActivity ta = TimelineActivity.getInstance();
 		if (ta != null) {
 			final View spinner = ta.findViewById(R.id.spinnerMain);
-			if (spinner != null) {
-				ta.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
+			final View refreshButton = ta.findViewById(R.id.btnRefresh);
+			ta.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if (spinner != null) {
 						spinner.setVisibility(View.VISIBLE);
 					}
-				});
-			}
+					if (refreshButton != null) {
+						refreshButton.setVisibility(View.INVISIBLE);
+					}
+				}
+			});
 		}
 	}
 	
@@ -111,14 +115,18 @@ public class Utils {
 			TimelineActivity ta = TimelineActivity.getInstance();
 			if (ta != null) {
 				final View spinner = ta.findViewById(R.id.spinnerMain);
-				if (spinner != null) {
-					ta.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
+				final View refreshButton = ta.findViewById(R.id.btnRefresh);
+				ta.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (spinner != null) {
 							spinner.setVisibility(View.INVISIBLE);
 						}
-					});
-				}
+						if (refreshButton != null) {
+							refreshButton.setVisibility(View.VISIBLE);
+						}
+					}
+				});
 			}
 		}
 	}
