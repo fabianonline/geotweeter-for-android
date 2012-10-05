@@ -1,7 +1,5 @@
 package de.fabianonline.geotweeter.activities;
 
-import java.util.ArrayList;
-
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.OAuthRequest;
@@ -23,12 +21,9 @@ import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
 
-import de.fabianonline.geotweeter.Account;
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.R;
-import de.fabianonline.geotweeter.TimelineElementAdapter;
 import de.fabianonline.geotweeter.User;
-import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 
 public class AuthenticateAccountActivity extends Activity {
 
