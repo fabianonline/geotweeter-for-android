@@ -102,6 +102,7 @@ public class Account implements Serializable {
 		handler = new Handler();
 		this.elements = elements;
 		this.appContext = applicationContext;
+		stream_request = new StreamRequest(this);
 		
 		all_accounts.add(this);
 		start(true);
@@ -120,8 +121,6 @@ public class Account implements Serializable {
 		} else {
 			new Thread(new TimelineRefreshThread(false)).start();
 		}
-		
-		stream_request = new StreamRequest(this);
 		getMaxReadIDs();
 	}
 	
