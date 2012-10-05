@@ -48,23 +48,6 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 				return true;
 			}
 		});
-		
-		ListPreference notificationSoundList = (ListPreference) findPreference("pref_notification_sound");
-		notificationSoundList.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int soundID = Utils.stringToSoundResourceID(newValue.toString());
-				
-				try {
-					MediaPlayer player = MediaPlayer.create(getApplicationContext(), soundID);
-					player.start();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return true;
-			}
-		});
 	}
    
 

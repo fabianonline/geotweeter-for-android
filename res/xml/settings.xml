@@ -10,6 +10,110 @@
         </Preference>
         
     </PreferenceCategory>
+    
+    <PreferenceScreen
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:key="pref_notifications"
+	    android:title="@string/pref_notifications">
+		
+		<SwitchPreference
+		    android:key="pref_notifications_enabled"
+		    android:title="@string/pref_notifications_enabled_title"
+		    android:summaryOn="@string/pref_notifications_enabled_on"
+		    android:summaryOff="@string/pref_notifications_enabled_off" android:defaultValue="true"/>
+		
+		<PreferenceCategory
+		    android:title="@string/pref_notifications_sound"
+		    android:dependency="pref_notifications_enabled" android:key="pref_notifications_sound">
+			
+			<CheckBoxPreference
+			    android:key="pref_notifications_sound_enabled"
+			    android:title="@string/pref_notifications_sound_enabled_title" android:defaultValue="true"/>
+			
+			<RingtonePreference
+			    android:key="pref_notifications_sound_ringtone"
+			    android:title="@string/pref_notifications_sound_ringtone_title"
+			    android:ringtoneType="notification"
+			    android:showSilent="false"
+			    android:dependency="pref_notifications_sound_enabled" />
+			
+		</PreferenceCategory>
+		
+		<PreferenceCategory
+		    android:key="pref_notifications_vibration"
+		    android:title="@string/pref_notifications_vibration">
+			
+			<CheckBoxPreference
+			    android:key="pref_notifications_vibration_enabled"
+			    android:title="@string/pref_notifications_vibration_enabled_title" android:defaultValue="true"/>
+		
+		</PreferenceCategory>
+		
+		<PreferenceCategory
+		    android:key="pref_notifications_led"
+		    android:title="@string/pref_notifications_led">
+			
+			<CheckBoxPreference
+			    android:key="pref_notifications_led_enabled"
+			    android:title="@string/pref_notifications_led_enabled_title" android:defaultValue="false"/>
+			
+			<ListPreference
+			    android:key="pref_notifications_led_color"
+			    android:title="@string/pref_notifications_led_color_title"
+			    android:dependency="pref_notifications_led_enabled"
+			    android:entries="@array/pref_notifications_led_color_entries"
+			    android:entryValues="@array/pref_notifications_led_color_entries_values" />
+			
+			</PreferenceCategory>
+		
+		<PreferenceCategory
+		    android:key="pref_notifications_types"
+		    android:title="@string/pref_notifications_types">
+			
+			<CheckBoxPreference
+			    android:key="pref_notifications_types_mentions"
+			    android:title="@string/pref_notifications_types_mentions_title"
+			    android:defaultValue="true" />
+			
+			<CheckBoxPreference 
+			    android:key="pref_notifications_types_favorites"
+			    android:title="@string/pref_notifications_types_favorites_title"
+			    android:defaultValue="false" />
+			
+			<CheckBoxPreference 
+			    android:key="pref_notifications_types_retweets"
+			    android:title="@string/pref_notifications_types_retweets_title"
+			    android:defaultValue="false" />
+			
+			<CheckBoxPreference 
+			    android:key="pref_notifications_types_direct_messages"
+			    android:title="@string/pref_notifications_types_direct_messages_title"
+			    android:defaultValue="true" />
+		</PreferenceCategory>
+		
+		<PreferenceCategory
+		    android:title="@string/pref_notifications_silent_time" android:key="pref_notifications_silent_time">
+			
+			<CheckBoxPreference 
+			    android:key="pref_notifications_silent_time_enabled"
+			    android:title="@string/pref_notifications_silent_time_enabled_title"
+			    android:defaultValue="false" />
+			
+			<de.fabianonline.geotweeter.TimePreference
+			    android:key="pref_notifications_silent_time_start"
+			    android:title="@string/pref_notifications_silent_time_start_title"
+			    android:dependency="pref_notifications_silent_time_enabled"
+			    android:defaultValue="79200000" /><!-- 22:00 -->
+			
+			<de.fabianonline.geotweeter.TimePreference
+			    android:key="pref_notifications_silent_time_end"
+			    android:title="@string/pref_notifications_silent_time_end_title"
+			    android:dependency="pref_notifications_silent_time_enabled"
+			    android:defaultValue="28800000" /><!-- 08:00 -->
+		</PreferenceCategory>
+	</PreferenceScreen>
+    
+    
     <PreferenceCategory android:key="pref_cat_display" 
         				android:title="@string/settings_display">
         <CheckBoxPreference android:key="pref_show_img_previews" 
@@ -30,13 +134,6 @@
             android:entries="@array/pref_image_hoster_entries"
             android:entryValues="@array/pref_image_hoster_entryValues"
             android:defaultValue="twitter"/>
-        
-        <ListPreference 
-            android:key="pref_notification_sound"
-            android:title="@string/pref_notification_sound_title"
-            android:entries="@array/pref_notification_sound_entries"
-            android:entryValues="@array/pref_notification_sound_entryValues"
-            android:defaultValue="plang"/>
     </PreferenceCategory>
     
 
