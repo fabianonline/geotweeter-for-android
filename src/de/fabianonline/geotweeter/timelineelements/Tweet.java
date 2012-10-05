@@ -4,10 +4,6 @@ import java.util.regex.Matcher;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
 import de.fabianonline.geotweeter.Constants;
 import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.User;

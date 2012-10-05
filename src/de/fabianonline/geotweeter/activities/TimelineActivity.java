@@ -8,10 +8,14 @@ import org.scribe.model.Token;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -37,8 +41,11 @@ import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.TimelineElementAdapter;
 import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
+import de.fabianonline.geotweeter.timelineelements.Hashtag;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
+import de.fabianonline.geotweeter.timelineelements.Url;
+import de.fabianonline.geotweeter.timelineelements.UserMention;
 
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
@@ -63,6 +70,7 @@ public class TimelineActivity extends MapActivity {
 		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
 		
 		timelineListView = (ListView) findViewById(R.id.timeline);
+		registerForContextMenu(timelineListView);
 		
 		if (!isRunning) {
 			acc = 0;
@@ -88,20 +96,20 @@ public class TimelineActivity extends MapActivity {
 			}
 		});
 		
-		timelineListView.setOnItemLongClickListener(new OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				
-				if (current_account.getElements().getItem(position).isReplyable()) {
-					Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
-					replyIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", current_account.getElements().getItem(position));
-					startActivity(replyIntent);
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
+//		timelineListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+//			@Override
+//			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//				
+//				if (current_account.getElements().getItem(position).isReplyable()) {
+//					Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
+//					replyIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", current_account.getElements().getItem(position));
+//					startActivity(replyIntent);
+//					return true;
+//				} else {
+//					return false;
+//				}
+//			}
+//		});
 		
 		if (!isRunning) {
 			if (current_account != null) {
@@ -125,6 +133,67 @@ public class TimelineActivity extends MapActivity {
 		}
 		
 		isRunning = true;
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		if (v.getId() == R.id.timeline) {
+			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+			menu.setHeaderTitle(R.string.context_menu_title);
+			final TimelineElement te = current_account.getElements().getItem(info.position);
+			if (te.isReplyable()) {
+				menu.add(R.string.respond_to_tweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						return respondToTimelineElement(te);
+					}
+				}); 
+			}
+			
+			if (te instanceof Tweet) {
+				Tweet tweet = (Tweet) te;
+				if (tweet.entities != null) {
+					/* TODO: User-Infoscreen */
+//					if (tweet.entities.user_mentions != null) {
+//						for (UserMention um : tweet.entities.user_mentions) {
+//							menu.add('@' + um.screen_name);
+//						}
+//					}
+					if (tweet.entities.urls != null) {
+						for (final Url url : tweet.entities.urls) {
+							menu.add(url.display_url).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+								
+								@Override
+								public boolean onMenuItemClick(MenuItem item) {
+									return openURL(url.url);
+								}
+							});
+						}
+					}
+					/* TODO: Twitter-Suche implementieren */
+//					if (tweet.entities.hashtags != null) {
+//						for (Hashtag ht : tweet.entities.hashtags) {
+//							menu.add('#' + ht.text);
+//						}
+//					}
+				}
+			}
+		}
+	}
+	
+	protected boolean openURL(String url) {
+		Intent i = new Intent(Intent.ACTION_VIEW);
+		i.setData(Uri.parse(url));
+		startActivity(i);
+		return true;
+	}
+
+	protected boolean respondToTimelineElement(TimelineElement te) {
+		Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
+		replyIntent.putExtra("de.fabianonline.geotweeter.reply_to_tweet", te);
+		startActivity(replyIntent);
+		return true;
 	}
 
 	protected void showMapIfApplicable(AdapterView<?> parent, View view,

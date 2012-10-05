@@ -31,6 +31,11 @@
     <string name="minus">-</string>
     <string name="set">Setzen</string>
     <string name="cancel">Abbrechen</string>
+    <string name="btn_add_image">Bild</string>
+    <string name="pref_image_hoster_title">Image Hoster</string>
+    <string name="context_menu_title">Links</string>
+    <string name="respond_to_tweet">Beantworten</string>
+    
     <string-array name="pref_tweet_time_style_entries">
         <item >dd.MM.yy HH:mm</item>
         <item >dd.MM. HH:mm</item>
@@ -41,8 +46,6 @@
         <item >dd.MM. HH:mm</item>
         <item >minutes</item>
     </string-array>
-    <string name="btn_add_image">Bild</string>
-    <string name="pref_image_hoster_title">Image Hoster</string>
     <string-array name="pref_image_hoster_entries">
         <item >Twitter</item>
         <item >Twitpic</item>
