@@ -15,7 +15,12 @@ public class User extends UserElement implements java.io.Serializable {
 	public static HashMap<Long, User> all_users = new HashMap<Long, User>();
 	public Drawable avatar = null;
 	public long id;
-	public String name, screen_name, url, description, profile_image_url_https, location;
+	public String name;
+	public String screen_name;
+	public String url; 
+	public String description;
+	public String profile_image_url_https;
+	public String location;
 //	public View[] views = new View[] {};
 	
 	public User() {

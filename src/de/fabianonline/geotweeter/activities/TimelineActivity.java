@@ -1,6 +1,7 @@
 package de.fabianonline.geotweeter.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.scribe.model.Token;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -41,11 +41,9 @@ import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.TimelineElementAdapter;
 import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
-import de.fabianonline.geotweeter.timelineelements.Hashtag;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
 import de.fabianonline.geotweeter.timelineelements.Url;
-import de.fabianonline.geotweeter.timelineelements.UserMention;
 
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
@@ -57,6 +55,7 @@ public class TimelineActivity extends MapActivity {
 	private static TimelineActivity instance = null;
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
+	public static HashMap<Long,TimelineElement> availableTweets;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
