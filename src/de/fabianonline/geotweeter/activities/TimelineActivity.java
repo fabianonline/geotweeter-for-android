@@ -49,6 +49,7 @@ public class TimelineActivity extends MapActivity {
 	private MapView map;
 	private static TimelineActivity instance = null;
 	private static boolean isRunning = false;
+	private static ListView timelineListView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,9 +77,9 @@ public class TimelineActivity extends MapActivity {
 			}
 		}
 		
-		ListView l = (ListView) findViewById(R.id.timeline);
-		l.setScrollingCacheEnabled(false);
-		l.setOnItemClickListener(new OnItemClickListener() {
+		timelineListView = (ListView) findViewById(R.id.timeline);
+		timelineListView.setScrollingCacheEnabled(false);
+		timelineListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				//view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
@@ -86,7 +87,7 @@ public class TimelineActivity extends MapActivity {
 			}
 		});
 		
-		l.setOnItemLongClickListener(new OnItemLongClickListener() {
+		timelineListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				
@@ -103,7 +104,7 @@ public class TimelineActivity extends MapActivity {
 		
 		if (!isRunning) {
 			if (current_account != null) {
-				l.setAdapter(current_account.getElements());
+				timelineListView.setAdapter(current_account.getElements());
 				GCMRegistrar.checkDevice(this);
 				GCMRegistrar.checkManifest(this);
 				reg_id = GCMRegistrar.getRegistrationId(this);
@@ -119,7 +120,7 @@ public class TimelineActivity extends MapActivity {
 				startActivity(addAccountIntent);
 			}
 		} else {
-			l.setAdapter(current_account.getElements());
+			timelineListView.setAdapter(current_account.getElements());
 		}
 		
 		isRunning = true;
@@ -248,6 +249,10 @@ public class TimelineActivity extends MapActivity {
 		}
 		if (!reg_id.equals("")) {
 			acc.registerForGCMMessages();
+		}
+		
+		if (timelineListView.getAdapter() == null) {
+			timelineListView.setAdapter(acc.getElements());
 		}
 	}
 
