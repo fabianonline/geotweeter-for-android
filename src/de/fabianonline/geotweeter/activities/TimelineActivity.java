@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,11 +51,13 @@ public class TimelineActivity extends MapActivity {
 	private static TimelineActivity instance = null;
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
+	private Handler handler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		instance = this;
+		handler = new Handler();
 		map = new MapView(this, Constants.MAPS_API_KEY);
 		setContentView(R.layout.activity_timeline);
 		background_image_loader = new BackgroundImageLoader(getApplicationContext());
@@ -343,5 +346,9 @@ public class TimelineActivity extends MapActivity {
 			acct.stopStream();
 			acct.start(false);
 		}
+	}
+	
+	public Handler getHandler() {
+		return handler;
 	}
 }

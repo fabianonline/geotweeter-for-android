@@ -94,7 +94,7 @@ public class Utils {
 		if (ta != null) {
 			final View spinner = ta.findViewById(R.id.spinnerMain);
 			final View refreshButton = ta.findViewById(R.id.btnRefresh);
-			ta.runOnUiThread(new Runnable() {
+			ta.getHandler().post(new Runnable() {
 				@Override
 				public void run() {
 					if (spinner != null) {
@@ -116,7 +116,7 @@ public class Utils {
 			if (ta != null) {
 				final View spinner = ta.findViewById(R.id.spinnerMain);
 				final View refreshButton = ta.findViewById(R.id.btnRefresh);
-				ta.runOnUiThread(new Runnable() {
+				ta.getHandler().post(new Runnable() {
 					@Override
 					public void run() {
 						if (spinner != null) {
