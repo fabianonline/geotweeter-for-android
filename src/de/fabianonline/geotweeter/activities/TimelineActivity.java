@@ -62,6 +62,7 @@ public class TimelineActivity extends MapActivity {
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
 		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
 		
+		timelineListView = (ListView) findViewById(R.id.timeline);
 		
 		if (!isRunning) {
 			acc = 0;
@@ -77,7 +78,7 @@ public class TimelineActivity extends MapActivity {
 			}
 		}
 		
-		timelineListView = (ListView) findViewById(R.id.timeline);
+		
 		timelineListView.setScrollingCacheEnabled(false);
 		timelineListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
