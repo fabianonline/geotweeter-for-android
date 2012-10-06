@@ -111,7 +111,7 @@ public class Account implements Serializable {
 	public void start(boolean loadPersistedTweets) {
 		Log.d(LOG, "In start()");
 		if (stream_request != null) {
-			stream_request.stop();
+			stream_request.stop(true);
 		}
 		if (loadPersistedTweets) {
 			loadPersistedTweets(appContext);
@@ -129,7 +129,7 @@ public class Account implements Serializable {
 	}
 	
 	public void stopStream() {
-		stream_request.stop();
+		stream_request.stop(false);
 	}
     
 	private class TimelineRefreshThread implements Runnable {
