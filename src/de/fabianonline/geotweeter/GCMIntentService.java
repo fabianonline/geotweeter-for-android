@@ -97,6 +97,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			notificationIntent = new Intent(this, TimelineActivity.class);
 		}
 		PendingIntent contentIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), notificationIntent, 0);
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		
 		RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_with_small_text);
 		contentView.setTextViewText(R.id.txtTitle, contentTitle);

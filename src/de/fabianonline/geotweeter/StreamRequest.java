@@ -24,6 +24,8 @@ public class StreamRequest {
 	private StreamRequestThread thread = new StreamRequestThread();
 	private boolean keepRunning = true;
 	private Handler handler = new Handler();
+	private static final String LOG = "StreamRequest";
+	private boolean doRestart = true;
 	
 	protected Account account;
 	
@@ -32,12 +34,16 @@ public class StreamRequest {
 	}
 	
 	public void start() {
-		keepRunning = true;
-		new Thread(thread, "StreamRequestThread").start();
+		if (doRestart) {
+			new Thread(thread, "StreamRequestThread").start();
+		} else {
+			Log.d(LOG, "start() called but doRestart is false.");
+		}
 	}
 	
-	public void stop() {
+	public void stop(boolean restart) {
 		keepRunning = false;
+		this.doRestart = restart;
 		try {
 			if (thread != null && thread.stream != null) {
 				thread.stream.close();
