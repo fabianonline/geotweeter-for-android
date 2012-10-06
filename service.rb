@@ -71,9 +71,26 @@ def send_gcm(config, data, type)
 	result = JSON.parse(result.body)
 	unless result["success"]==config[:reg_ids].count
 		log "ERROR! Success was #{result['success']}, expected #{config[:reg_ids].count}"
-		log "ERROR: #{result.inspect}"
-		log "ERROR: Sent data packet length was: #{data.to_json.length}"
-		log "ERROR: Send data packet was: #{data.to_json}"
+		not_registered_reg_ids = []
+		result['results'].each_with_index do |res, id|
+			if res['error']=="NotRegistered"
+				not_registered_reg_ids << config[:reg_ids][id]
+			end
+		end
+		
+		not_registered_reg_ids.each do |reg_id|
+			config[:reg_ids].delete reg_id
+			log "ERROR: Not Registered Device - removing."
+			$stats[:reg_ids] -= 1
+		end
+		
+		save_settings unless not_registered_reg_ids.empty?
+		
+		unless result["success"]==(config[:reg_ids].count - not_registered_reg_ids.count)
+			log "ERROR: #{result.inspect}"
+			log "ERROR: Sent data packet length was: #{data.to_json.length}"
+			log "ERROR: Send data packet was: #{data.to_json}"
+		end
 	end
 	$stats[:gcms_successful] += result['success'].to_i
 	$stats[:gcms_failed] += result['failure'].to_i
