@@ -77,16 +77,6 @@ public class Utils {
 		}
 		throw new UnknownJSONObjectException();
 	}
-
-	public static int stringToSoundResourceID(String string) {
-		if (string.equals("meep")) {
-			return R.raw.sound_meep;
-		}
-		if (string.equals("plang")) {
-			return R.raw.sound_plang;
-		}
-		return R.raw.sound_pling;
-	}
 	
 	public static void showMainSpinner() {
 		mainSpinnerDisplays++;
