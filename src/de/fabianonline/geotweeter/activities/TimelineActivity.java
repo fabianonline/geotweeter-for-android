@@ -41,6 +41,7 @@ import de.fabianonline.geotweeter.R;
 import de.fabianonline.geotweeter.TimelineElementAdapter;
 import de.fabianonline.geotweeter.User;
 import de.fabianonline.geotweeter.timelineelements.DirectMessage;
+import de.fabianonline.geotweeter.timelineelements.Media;
 import de.fabianonline.geotweeter.timelineelements.TimelineElement;
 import de.fabianonline.geotweeter.timelineelements.Tweet;
 import de.fabianonline.geotweeter.timelineelements.Url;
@@ -170,6 +171,19 @@ public class TimelineActivity extends MapActivity {
 							});
 						}
 					}
+					
+					if (tweet.entities.media != null) {
+						for (final Media media : tweet.entities.media) {
+							menu.add(media.display_url).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+								
+								@Override
+								public boolean onMenuItemClick(MenuItem item) {
+									return openURL(media.media_url);
+								}
+							});
+						}
+					}
+					
 					/* TODO: Twitter-Suche implementieren */
 //					if (tweet.entities.hashtags != null) {
 //						for (Hashtag ht : tweet.entities.hashtags) {
