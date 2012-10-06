@@ -98,6 +98,7 @@ def stream(hash)
 	machine = EM.run do
 		client = EM::Twitter::Client.connect(opts)
 		$settings[hash][:client] = client
+		unauthorized_count = 0
 		
 		client.each do |result|
 			$stats[:bytes] += result.length
@@ -130,7 +131,15 @@ def stream(hash)
 		end
 		
 		client.on_forbidden { log screen_name, "Forbidden. o_O" }
-		client.on_unauthorized { log screen_name, "Unauthorized. o_O" }
+		client.on_unauthorized do
+			unauthorized_count += 1
+			log screen_name, "Unauthorized. o_O ##{unauthorized_count}"
+			if unauthorized_count > 15
+				log screen_name, "Too many unauthorized messages. Stopping and deleting account."
+				client.connection.stop
+				$settings.delete hash
+			end
+		end
 		client.on_reconnect { log screen_name, "Reconnect."; last_reconnect = Time.now ; $stats[:reconnects] += 1 }
 		client.on_close do
 			if (Time.now - last_reconnect) > 1
@@ -144,7 +153,6 @@ def stream(hash)
 		client.on_range_unacceptable { log screen_name, "Range unacceptable. o_O" }
 		client.on_rate_limited { log screen_name, "Rate limited. o_O" }
 	end
-
 	$stats[:accounts] += 1
 	$stats[:reg_ids] += config[:reg_ids].count
 end
