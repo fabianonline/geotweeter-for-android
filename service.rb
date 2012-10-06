@@ -132,7 +132,12 @@ def stream(hash)
 		client.on_forbidden { log screen_name, "Forbidden. o_O" }
 		client.on_unauthorized { log screen_name, "Unauthorized. o_O" }
 		client.on_reconnect { log screen_name, "Reconnect."; last_reconnect = Time.now ; $stats[:reconnects] += 1 }
-		client.on_close { log screen_name, "Closed." if (Time.now - last_reconnect)>1 }
+		client.on_close do
+			if (Time.now - last_reconnect) > 1
+				log screen_name, "Closed."
+				config[:client] = nil
+			end
+		end
 		client.on_not_found { log screen_name, "Not found. o_O" }
 		client.on_not_acceptable { log screen_name, "Not acceptable. o_O" }
 		client.on_too_long { log screen_name, "Too long. o_O" }
