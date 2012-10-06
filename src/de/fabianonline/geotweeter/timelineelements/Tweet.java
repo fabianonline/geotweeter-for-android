@@ -29,32 +29,22 @@ public class Tweet extends TimelineElement {
 	
 	public String getTextForDisplay() {
 		if (text_for_display == null) {
-			if (entities == null) {
-				// TODO why?
-				text_for_display = new String(text);
-			} else {
-				StringBuilder temp_text = new StringBuilder();
-				int start_index = 0;
+			text_for_display = new String(text);
+			if (entities != null) {
 				if (entities.urls != null) {
-					for (int i = 0; i < entities.urls.size(); i++) {
-						Url url = entities.urls.get(i);
-						temp_text.append(text.substring(start_index, url.indices.get(0)));
-						temp_text.append(url.display_url);
-						start_index = url.indices.get(1);
+					for (Url url : entities.urls) {
+						text_for_display = text_for_display.replaceAll(url.url, url.display_url);
 					}
-
-
-					if(start_index < text.length()) {
-						temp_text.append(text.substring(start_index, text.length()));
-					}
-
-					text_for_display = temp_text.toString();
-				} else {
-					text_for_display = new String(text);
 				}
+				if (entities.media != null) {
+					for (Media media : entities.media) {
+						text_for_display = text_for_display.replace(media.url, media.display_url);
+					}
+				}
+
 			}
 		}
-		return "<strong>" + user.getScreenName() + "</strong> " + text_for_display;
+		return "<b>" + user.getScreenName() + "</b> " + text_for_display;
 	}
 	
 	public void setUser(User u) {
