@@ -102,13 +102,13 @@
         </copy>
         
         <echo>Replacing package in source files...</echo>
-        <replace dir="./build_temp/" token="de.fabianonline.geotweeter" value="${package}" />
+        <replace dir="./build_temp/" token="de.geotweeter" value="${package}" />
         
         <echo>Disabling Log statements...</echo>
         <replace dir="./build_temp/" token="Log.d" value="// Log.d" />
         
         <move todir="${source.dir}/${sub_path}">
-            <fileset dir="${source.dir}/de/fabianonline/geotweeter/" />
+            <fileset dir="${source.dir}/de/geotweeter/" />
         </move>
         
         <delete dir="${gen.absolute.dir}" />

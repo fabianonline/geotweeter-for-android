@@ -94,13 +94,13 @@
 			    android:title="@string/pref_notifications_silent_time_enabled_title"
 			    android:defaultValue="false" />
 			
-			<de.fabianonline.geotweeter.TimePreference
+			<de.geotweeter.TimePreference
 			    android:key="pref_notifications_silent_time_start"
 			    android:title="@string/pref_notifications_silent_time_start_title"
 			    android:dependency="pref_notifications_silent_time_enabled"
 			    android:defaultValue="79200000" /><!-- 22:00 -->
 			
-			<de.fabianonline.geotweeter.TimePreference
+			<de.geotweeter.TimePreference
 			    android:key="pref_notifications_silent_time_end"
 			    android:title="@string/pref_notifications_silent_time_end_title"
 			    android:dependency="pref_notifications_silent_time_enabled"

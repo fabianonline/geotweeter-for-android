@@ -1,17 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="de.fabianonline.geotweeter"
+	package="de.geotweeter"
 	android:versionCode="1"
 	android:versionName="Wait, what?" >
 
 	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15" />
 
-	<permission android:name="de.fabianonline.geotweeter.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+	<permission android:name="de.geotweeter.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="de.fabianonline.geotweeter.permission.C2D_MESSAGE" />
+	<uses-permission android:name="de.geotweeter.permission.C2D_MESSAGE" />
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -55,7 +55,7 @@
 			<intent-filter>
 				<action android:name="com.google.android.c2dm.intent.RECEIVE" />
 				<action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-				<category android:name="de.fabianonline.geotweeter" />
+				<category android:name="de.geotweeter" />
 			</intent-filter>
 		</receiver>
 		
