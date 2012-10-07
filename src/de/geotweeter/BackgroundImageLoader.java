@@ -77,10 +77,10 @@ public class BackgroundImageLoader {
 				});
 				return;
 			}
-			if (imageViewReused(url, image_view)) return;
+			//if (imageViewReused(url, image_view)) return;
 			final Bitmap bmp = loadBitmap(url);
 			
-			if (imageViewReused(url, image_view)) return;
+			//if (imageViewReused(url, image_view)) return;
 			((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
 				
 				@Override
