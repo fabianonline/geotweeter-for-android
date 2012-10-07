@@ -673,7 +673,7 @@ public class Account implements Serializable {
 		
 		ArrayList<TimelineElement> last_tweets = new ArrayList<TimelineElement>(50);
 		for (int i=0; i<elements.getCount(); i++) {
-			if (i >= 50) {
+			if (i >= 100) {
 				break;
 			}
 			last_tweets.add(elements.getItem(i));
