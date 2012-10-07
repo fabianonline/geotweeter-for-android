@@ -9,18 +9,20 @@
 	<script src="js/bootstrap.js"></script>
 </head>
 
-<body data-spy="scroll" data-target=".navbar">
+<body data-spy="scroll" data-target=".navbar" data-offset="50" style="padding-top: 50px;">
 	<div class="container">
-		<div class="navbar navbar-inverse">
+		<div class="navbar navbar-inverse navbar-fixed-top">
 			<div class="navbar-inner">
-				<a class="brand" href="#">Geotweeter</a>
-				<ul class="nav">
-					<li><a href="#overview">Übersicht</a></li>
-					<li><a href="#features">Funktionen</a></li>
-					<li><a href="#plans">Pläne</a></li>
-					<li><a href="#screenshots">Screenshots</a></li>
-					<li><a href="#status">Aktueller Status</a></li>
-				</ul>
+				<div class="container">
+					<a class="brand" href="#">Geotweeter</a>
+					<ul class="nav">
+						<li class="active"><a href="#overview">Übersicht</a></li>
+						<li><a href="#features">Funktionen</a></li>
+						<li><a href="#plans">Pläne</a></li>
+						<li><a href="#screenshots">Screenshots</a></li>
+						<li><a href="#status">Aktueller Status</a></li>
+					</ul>
+				</div>
 			</div>
 		</div>
 		
@@ -29,23 +31,31 @@
 			<h2>Unser Versuch, den besten Twitter-Client für Android zu erschaffen</h2>
 		</div>
 		
-		<a name="overview" id="overview"></a>
-		<h2>Übersicht</h2>
-		<p>Der Geotweeter ist - einfach ausgedrückt - ein Twitter-Client für Android.</p>
-				
+		<div id="overview">
+			<a name="overview"></a>
+			<h2>Übersicht</h2>
+			<p>Der Geotweeter ist - einfach ausgedrückt - ein Twitter-Client für Android.</p>
+		</div>		
 		<hr>
-				
-		<h2 id="features">Funktionen</h2>
-		<p>
-			<dl>
-				<dt>Multiaccountfähigkeit</dt>
-				<dd>Heutzutage ist es ja quasi "in", mehr als einen Twitter-Account zu haben. Warum dann nicht auch einen Twitter-Client, der komfortabel mit mehr als einem Twitter-Account umgehen kann?</dd>
+		
+		<div id="features">
+			<a name="features"></a>
+			<h2>Funktionen</h2>
+			<p>
+				Die üblichen "Standardfeatures" (Tweets lesen, beantworten etc.) zählen wir hier mal nicht auf.
+				<dl>
+					<dt>Multiaccountfähigkeit</dt>
+					<dd>Heutzutage ist es ja quasi "in", mehr als einen Twitter-Account zu haben. Warum dann nicht auch einen Twitter-Client, der komfortabel mit mehr als einem Twitter-Account umgehen kann?</dd>
 						
-				<dt>Push-Notifications</dt>
-				<dd>Wir sind Twitter-süchtig. Und da gibt es kaum etwas schlimmeres, als seiner Timeline hinterherzuhinken. Also waren Push-Notifications eines der ersten Features beim Geotweeter, das komplett fertig und gut durchgetestet war.<br />
-					Jetzt meldet uns unser Handy quasi in Echtzeit per Sound, Vibration und / oder LED-Geblinke, wenn wir bei Twitter erwähnt wurden oder eine Direktnachricht empfangen haben.</dd>
-			</dl>
-		</p>
+					<dt>Push-Notifications</dt>
+					<dd>Wir sind Twitter-süchtig. Und da gibt es kaum etwas schlimmeres, als seiner Timeline hinterherzuhinken. Also waren Push-Notifications eines der ersten Features beim Geotweeter, das komplett fertig und gut durchgetestet war.<br />
+						Jetzt meldet uns unser Handy quasi in Echtzeit per Sound, Vibration und / oder LED-Geblinke, wenn wir bei Twitter erwähnt wurden oder eine Direktnachricht empfangen haben.</dd>
+				
+					<dt>Tweetmarker-Integration</dt>
+					<dd>Tweetmarker speichert, wie weit man seine Timeline gelesen hat. Client-übergreifend.</dd>
+				</dl>
+			</p>
+			</div>
 		</div>
 	</div>
 </body>
