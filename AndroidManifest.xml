@@ -60,5 +60,7 @@
 		<service android:name=".GCMIntentService" />
 		<activity android:name=".activities.AccountPrefsActivity"
 		    	  android:label="@string/account_prefs" />
+		
+		<service android:name=".services.TweetSendService" />
 	</application>
 </manifest>

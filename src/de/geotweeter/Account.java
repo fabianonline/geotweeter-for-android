@@ -408,17 +408,17 @@ public class Account implements Serializable {
 		});
 	}
 
-	public void sendTweet(String text, Location location, long reply_to_id) throws TweetSendException {
+	public void sendTweet(SendableTweet tweet) throws TweetSendException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
-		request.addBodyParameter("status", text);
+		request.addBodyParameter("status", tweet.text);
 		
-		if (location != null) {
-			request.addBodyParameter("lat", String.valueOf(location.getLatitude()));
-			request.addBodyParameter("long", String.valueOf(location.getLongitude()));
+		if (tweet.location != null) {
+			request.addBodyParameter("lat", String.valueOf(tweet.location.getLatitude()));
+			request.addBodyParameter("long", String.valueOf(tweet.location.getLongitude()));
 		}
 		
-		if (reply_to_id > 0) {
-			request.addBodyParameter("in_reply_to_status_id", String.valueOf(reply_to_id));
+		if (tweet.reply_to_status_id > 0) {
+			request.addBodyParameter("in_reply_to_status_id", String.valueOf(tweet.reply_to_status_id));
 		}
 		signRequest(request);
 		Response response = request.send();
@@ -429,24 +429,24 @@ public class Account implements Serializable {
 	}
 	
 
-	public void sendTweetWithPic(String text, Location location, long reply_to_id, String picture) throws TweetSendException, IOException {
+	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
 		String imageHoster = appContext.getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
 		if(imageHoster.equals("twitter")) {
 			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
 			
 			MultipartEntity entity = new MultipartEntity();
-			entity.addPart("status", new StringBody(text));
+			entity.addPart("status", new StringBody(tweet.text));
 			
-			File f = new File(picture);
+			File f = new File(tweet.imagePath);
 			addImageToMultipartEntity(entity, f, "media");
 			
-			if (location != null) {
-				entity.addPart("lat", new StringBody(String.valueOf(location.getLatitude())));
-				entity.addPart("long", new StringBody(String.valueOf(location.getLongitude())));
+			if (tweet.location != null) {
+				entity.addPart("lat", new StringBody(String.valueOf(tweet.location.getLatitude())));
+				entity.addPart("long", new StringBody(String.valueOf(tweet.location.getLongitude())));
 			}
 			
-			if (reply_to_id > 0) {
-				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(reply_to_id)));
+			if (tweet.reply_to_status_id > 0) {
+				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(tweet.reply_to_status_id)));
 			}
 			Log.d(LOG, "Start output Stream");
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -469,9 +469,9 @@ public class Account implements Serializable {
 			
 			MultipartEntity entity = new MultipartEntity();
 			entity.addPart("key", new StringBody(Constants.TWITPIC_API_KEY));
-			entity.addPart("message", new StringBody(text));
+			entity.addPart("message", new StringBody(tweet.text));
 			
-			File f = new File(picture);
+			File f = new File(tweet.imagePath);
 			addImageToMultipartEntity(entity, f, "media");
 //			entity.addPart("media", new FileBody(new File(picture)));
 			
@@ -496,7 +496,9 @@ public class Account implements Serializable {
 			if(response.isSuccessful()) {
 				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
 				Log.d(LOG, "Send Tweet with Twitpic");
-				sendTweet(text + " " + twitpicURL, location, reply_to_id);
+				tweet.imagePath = null;
+				tweet.text += " " + twitpicURL;
+				sendTweet(tweet);
 				Log.d(LOG, "Finished Send Tweet with Twitpic");
 			}
 		} else {

@@ -44,6 +44,8 @@ public class Constants extends Application {
 	public static final String MAPS_API_KEY = "0rSU2R8cwncwINNWuOQ4nOC3CxWFEUTEkYMiApA";
 	
 	public static final Path LOCATION_MARKER = new LocationMarker();
+
+	public static final int SENDING_TWEET_STATUS_NOTIFICATION_ID = 654616410;
 	
 	private static class LocationMarker extends Path {
 		

@@ -8,8 +8,10 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -18,6 +20,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,10 +40,12 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import de.geotweeter.R;
 import de.geotweeter.Account;
+import de.geotweeter.SendableTweet;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.exceptions.TweetSendException;
+import de.geotweeter.services.TweetSendService;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
@@ -59,13 +64,14 @@ public class NewTweetActivity extends Activity {
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		serviceBind();
 		setContentView(R.layout.new_tweet);
 		
 		EditText editTweetText = ((EditText)findViewById(R.id.tweet_text));
 		
 		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
 		((ToggleButton)findViewById(R.id.btnGeo)).setOnCheckedChangeListener(new GPSToggleListener(this));
-		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener(this));
+		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener());
 		
 		Intent i = getIntent();
 		if (i != null && i.getExtras() != null) {
@@ -240,41 +246,53 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	public class SendTweetListener implements OnClickListener {
-		private NewTweetActivity activity;
-		private ProgressDialog dialog;
-		Handler handler;
-		
-		public SendTweetListener(NewTweetActivity act) { 
-			activity = act; 
-		}
-		
 		public void onClick(View v) {
-			final String text = ((TextView)activity.findViewById(R.id.tweet_text)).getText().toString().trim();
-			handler = new Handler();
-			dialog = ProgressDialog.show(activity, "Sending", "Sending tweet...");
-			
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						if(picturePath == null) {
-							currentAccount.sendTweet(text, location, reply_to_id);
-						} else {
-							currentAccount.sendTweetWithPic(text, location, reply_to_id, picturePath);
-						}
-					} catch (TweetSendException e) {
-						e.printStackTrace();
-						return;
-					} catch (IOException e) {
-						e.printStackTrace();
-						return;
-					} finally {
-						dialog.dismiss();
-					}
-					if (gpslistener!=null && lm!=null) lm.removeUpdates(gpslistener);
-					activity.finish();
-				}
-			}).start();
+			String text = ((TextView)findViewById(R.id.tweet_text)).getText().toString().trim();
+			SendableTweet tweet = new SendableTweet(currentAccount, text);
+			tweet.imagePath = picturePath;
+			tweet.location = location;
+			tweet.reply_to_status_id = reply_to_id;
+			service.addSendableTweet(tweet);
+		
+			if (gpslistener != null && lm != null) {
+				lm.removeUpdates(gpslistener);
+			}
+			finish();
 		}
+	}
+	
+	private TweetSendService service;
+	boolean isServiceBound = false;
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder binder) {
+			service = ((TweetSendService.TweetSendBinder)binder).getService();
+			Log.d(LOG, "Got service connection.");
+		}
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			service = null;
+			Log.d(LOG, "Service disconnected.");
+		}
+	};
+	
+	private void serviceBind() {
+		startService(new Intent(this.getApplicationContext(), TweetSendService.class));
+		bindService(new Intent(this.getApplicationContext(), TweetSendService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+		isServiceBound = true;
+	}
+	
+	private void serviceUnbind() {
+		if (isServiceBound) {
+			unbindService(serviceConnection);
+			isServiceBound = false;
+		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		serviceUnbind();
 	}
 }
