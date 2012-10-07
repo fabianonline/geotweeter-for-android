@@ -22,7 +22,7 @@ public abstract class TimelineElement implements Serializable {
 	abstract public String getAvatarSource();
 	abstract public long getID();
 	abstract public String getSenderScreenName();
-	abstract public int getBackgroundDrawableID();
+	abstract public int getBackgroundDrawableID(boolean getDarkVersion);
 	abstract public String getSenderString();
 
 	

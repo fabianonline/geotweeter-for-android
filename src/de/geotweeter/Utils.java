@@ -5,6 +5,9 @@ import java.util.regex.Pattern;
 
 import org.json.JSONException;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView.FindListener;
@@ -119,6 +122,14 @@ public class Utils {
 					}
 				});
 			}
+		}
+	}
+	
+	public static void setDesign(Activity a) {
+		SharedPreferences prefs = a.getSharedPreferences(Constants.PREFS_APP, 0);
+		boolean useDarkTheme = prefs.getBoolean("pref_dark_theme", false);
+		if (useDarkTheme) {
+			a.setTheme(android.R.style.Theme_Holo);
 		}
 	}
 }

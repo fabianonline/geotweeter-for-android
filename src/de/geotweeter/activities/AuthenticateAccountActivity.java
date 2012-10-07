@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSON;
 import de.geotweeter.R;
 import de.geotweeter.Constants;
 import de.geotweeter.User;
+import de.geotweeter.Utils;
 
 public class AuthenticateAccountActivity extends Activity {
 
@@ -38,6 +39,7 @@ public class AuthenticateAccountActivity extends Activity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		self = this;
 		setContentView(R.layout.authenticate_account);

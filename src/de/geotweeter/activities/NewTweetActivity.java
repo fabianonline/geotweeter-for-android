@@ -63,6 +63,7 @@ public class NewTweetActivity extends Activity {
 	private HashMap<View, Account> viewToAccounts;
 	
 	public void onCreate(Bundle savedInstanceState) {
+		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		serviceBind();
 		setContentView(R.layout.new_tweet);
@@ -166,10 +167,7 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	public void addImageHandler(View v) {
-		Intent intent = new Intent();
-	    intent.setType("image/*");
-	    intent.setAction(Intent.ACTION_GET_CONTENT);
-	    intent.addCategory(Intent.CATEGORY_OPENABLE);
+		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 	    startActivityForResult(intent, PICTURE_REQUEST_CODE);
 	}
 	

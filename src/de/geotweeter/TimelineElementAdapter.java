@@ -19,12 +19,14 @@ import de.geotweeter.timelineelements.TimelineElement;
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private ArrayList<TimelineElement> items;
 	private Context context;
+	private boolean useDarkTheme;
 
 	public TimelineElementAdapter(Context context, 
 			int textViewResourceId, ArrayList<TimelineElement> objects) {
 		super(context, textViewResourceId, objects);
 		this.items = objects;
 		this.context = context;
+		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 	}
 	
 	public void addAsFirst(TimelineElement t) {
@@ -100,7 +102,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 						
 		}
 		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
-		v.setBackgroundResource(t.getBackgroundDrawableID());
+		v.setBackgroundResource(t.getBackgroundDrawableID(useDarkTheme));
 		return v;	
 	}
 	

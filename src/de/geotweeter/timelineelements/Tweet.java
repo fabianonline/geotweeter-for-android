@@ -2,7 +2,9 @@ package de.geotweeter.timelineelements;
 
 import java.util.regex.Matcher;
 
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.view.View;
 import de.geotweeter.R;
 import de.geotweeter.Constants;
@@ -118,16 +120,16 @@ public class Tweet extends TimelineElement {
 	}
 	
 	@Override
-	public int getBackgroundDrawableID() {
+	public int getBackgroundDrawableID(boolean getDarkVersion) {
 		User current_user = TimelineActivity.current_account.getUser();
 		if (user.id == current_user.id) {
-			return R.drawable.listelement_background_my;
+			return getDarkVersion ? R.drawable.listelement_background_dark_my : R.drawable.listelement_background_light_my;
 		} else if(this.mentionsUser(current_user)) {
-			return R.drawable.listelement_background_mention;
+			return getDarkVersion ? R.drawable.listelement_background_dark_mention : R.drawable.listelement_background_light_mention;
 		} else if(this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
-			return R.drawable.listelement_background_unread;
+			return getDarkVersion ? R.drawable.listelement_background_dark_unread : R.drawable.listelement_background_light_unread;
 		} else {
-			return R.drawable.listelement_background_normal;
+			return getDarkVersion ? R.drawable.listelement_background_dark_normal : R.drawable.listelement_background_light_normal;
 		}
 	}
 

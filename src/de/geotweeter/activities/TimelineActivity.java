@@ -41,6 +41,7 @@ import de.geotweeter.Constants;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
+import de.geotweeter.Utils;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -61,6 +62,7 @@ public class TimelineActivity extends MapActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		instance = this;
 		map = new MapView(this, Constants.MAPS_API_KEY);

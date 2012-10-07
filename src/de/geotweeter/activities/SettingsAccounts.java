@@ -12,11 +12,13 @@ import android.widget.ListView;
 import de.geotweeter.R;
 import de.geotweeter.Account;
 import de.geotweeter.AccountListElementAdapter;
+import de.geotweeter.Utils;
 
 public class SettingsAccounts extends Activity {
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pref_accounts);
 				

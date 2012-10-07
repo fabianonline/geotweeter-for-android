@@ -17,6 +17,7 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		getPreferenceManager().setSharedPreferencesName(Constants.PREFS_APP);
 		addPreferencesFromResource(R.xml.settings);

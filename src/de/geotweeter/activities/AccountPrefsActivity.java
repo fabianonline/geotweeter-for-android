@@ -18,6 +18,7 @@ import de.geotweeter.R;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
 import de.geotweeter.User;
+import de.geotweeter.Utils;
 
 public class AccountPrefsActivity extends PreferenceActivity {
 
@@ -56,6 +57,7 @@ public class AccountPrefsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
+		Utils.setDesign(this);
         super.onCreate(savedInstanceState);
         
         account = (Account) getIntent().getSerializableExtra("account");
