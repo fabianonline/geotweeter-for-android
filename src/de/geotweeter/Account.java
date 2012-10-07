@@ -305,6 +305,7 @@ public class Account implements Serializable {
 	}
 	
 	protected void parseData(ArrayList<ArrayList<TimelineElement>> responses, boolean do_clip) {
+		final long old_max_known_dm_id = max_known_dm_id;
 		Log.d(LOG, "parseData started.");
 		final ArrayList<TimelineElement> all_elements = new ArrayList<TimelineElement>();
 		long last_id = 0;
@@ -327,6 +328,8 @@ public class Account implements Serializable {
 			}
 			TimelineElement element = responses.get(newest_index).remove(0);
 			if (responses.get(newest_index).size() == 0) {
+				/* Das primäre Element ist leer. Also brechen wir ab.
+				 * Allerdings muss vorher noch ein bisschen gearbeitet werden... */
 				responses.remove(newest_index);
 
 				if (newest_index == 0) {
@@ -354,7 +357,9 @@ public class Account implements Serializable {
 			long element_id = element.getID();
 			
 			if (element_id != last_id) {
-				all_elements.add(element);
+				if (!(element instanceof DirectMessage) || element_id>old_max_known_dm_id) {
+					all_elements.add(element);
+				}
 			}
 			last_id = element_id;
 			
