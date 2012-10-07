@@ -18,11 +18,12 @@ public abstract class TimelineElement implements Serializable {
 	protected Date created_at = new Date();
 	
 	abstract public String getTextForDisplay();
-	abstract public CharSequence getSourceText();
+	abstract public String getSourceText();
 	abstract public String getAvatarSource();
 	abstract public long getID();
 	abstract public String getSenderScreenName();
 	abstract public int getBackgroundDrawableID();
+	abstract public String getSenderString();
 
 	
 	public Date getDate() {
@@ -40,7 +41,7 @@ public abstract class TimelineElement implements Serializable {
 		}
 	}
 	
-	protected String getDateString() {
+	public String getDateString() {
 		if(tweetTimeStyle.equals("minutes")) {
 			long time = System.currentTimeMillis()-created_at.getTime();
 			time /= 1000;
@@ -89,6 +90,13 @@ public abstract class TimelineElement implements Serializable {
 	}
 	public String getNotificationContentText(String type) {
 		return "";
+	}
+	
+	public boolean showWithFilter(String filter) {
+		return true;
+	}
+	public String getPlaceString() {
+		return null;
 	}
 	
 }

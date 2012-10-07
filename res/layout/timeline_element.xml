@@ -1,93 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="5px" >
-    
-	<LinearLayout
-	    android:id="@+id/tweet_element"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:descendantFocusability="blocksDescendants"
-	    android:focusable="false"
-	    android:focusableInTouchMode="false"
-	    android:orientation="horizontal" >
-	
-	    <ImageView
-	        android:id="@+id/avatar_image"
-	        android:layout_width="40dp"
-	        android:layout_height="40dp"
-	        android:scaleType="fitCenter"
-	        android:src="@drawable/ic_launcher" />
-	
-	    <LinearLayout
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical"
-	        android:paddingLeft="5px"
-	        android:paddingTop="-5px" >
-	
-	        <TextView
-	            android:id="@+id/tweet_content"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="TextView" />
-	
-	        <TextView
-	            android:id="@+id/source_text"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="Small Text"
-	            android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	    </LinearLayout>
-	
-	</LinearLayout>
+    android:layout_height="wrap_content"
+    android:padding="5dp" >
 
-	<LinearLayout
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/map_and_controls"
-	    android:layout_width="wrap_content"
-	    android:layout_height="160dp"
-	    android:orientation="horizontal"
-	    android:visibility="gone" >
+    <ImageView
+        android:id="@+id/avatar_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher" />
 
-		<LinearLayout
-		    android:id="@+id/zoom_controls"
-		    android:layout_width="40dp"
-		    android:layout_height="match_parent"
-		    android:layout_gravity="center"
-		    android:orientation="vertical" >
+    <TextView
+        android:id="@+id/txtSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/avatar_image"
+        android:text="txtSender"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold" />
 
-		    <TextView
-		        android:id="@+id/zoom_in"
-		        android:layout_width="match_parent"
-		        android:layout_height="0dp"
-		        android:layout_gravity="center_vertical|center_horizontal"
-		        android:layout_weight="1"
-		        android:gravity="center"
-		        android:text="@string/plus"
-		        android:textSize="50dp" />
-		    
-		    <TextView
-		        android:id="@+id/zoom_out"
-		        android:layout_width="match_parent"
-		        android:layout_height="0dp"
-		        android:layout_gravity="center_vertical|center_horizontal"
-		        android:layout_weight="1"
-		        android:gravity="center"
-		        android:text="@string/minus"
-		        android:textSize="50dp" />
-		    
-		</LinearLayout>
-	    
-    	<FrameLayout
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/map_fragment_container"
-			android:layout_width="match_parent"
-			android:layout_height="160dp" />
-    	    
-	</LinearLayout>
+    <TextView
+        android:id="@+id/txtText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/txtSender"
+        android:layout_below="@id/txtSender"
+        android:text="txtText" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/txtSource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/txtText"
+        android:text="txtSource"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/txtTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="txtTimestamp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/txtPlace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/txtText"
+        android:layout_below="@id/txtText"
+        android:text="txtPlace"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <RelativeLayout
+        android:id="@+id/map_and_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtPlace"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/zoom_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/plus"
+            android:textSize="50dp" />
+
+        <TextView
+            android:id="@+id/zoom_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/zoom_in"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/minus"
+            android:textSize="50dp" />
+
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/map_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_toRightOf="@id/zoom_in" >
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

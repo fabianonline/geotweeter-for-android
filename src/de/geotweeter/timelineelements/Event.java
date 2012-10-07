@@ -23,7 +23,7 @@ public abstract class Event extends TimelineElement {
 	}
 	
 	@Override
-	public CharSequence getSourceText() {
+	public String getSourceText() {
 		return null;
 	}
 	
@@ -48,5 +48,10 @@ public abstract class Event extends TimelineElement {
 	@Override
 	public int getBackgroundDrawableID() {
 		return R.drawable.listelement_background_status;
+	}
+	
+	@Override
+	public String getSenderString() {
+		return source.getScreenName();
 	}
 }

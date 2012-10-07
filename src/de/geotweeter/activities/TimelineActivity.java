@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -229,7 +230,7 @@ public class TimelineActivity extends MapActivity {
 				float lat = tweet.coordinates.coordinates.get(1);
 				GeoPoint coords = new GeoPoint((int) (lat*1e6), (int) (lon*1e6));
 				
-				LinearLayout mapAndControls = (LinearLayout) view.findViewById(R.id.map_and_controls);
+				View mapAndControls = view.findViewById(R.id.map_and_controls);
 				FrameLayout mapContainer = (FrameLayout) view.findViewById(R.id.map_fragment_container);
 				
 				TextView zoomIn = (TextView) view.findViewById(R.id.zoom_in);

@@ -21,7 +21,8 @@ public class Tweet extends TimelineElement {
 	public String source;
 	public Entities entities;
 	public long in_reply_to_status_id;
-	public long in_reply_to_user_id;	
+	public long in_reply_to_user_id;
+	private Place place;
 	
 	public long getID() {
 		return id;
@@ -44,7 +45,7 @@ public class Tweet extends TimelineElement {
 
 			}
 		}
-		return "<b>" + user.getScreenName() + "</b> " + text_for_display;
+		return text_for_display;
 	}
 	
 	public void setUser(User u) {
@@ -73,8 +74,8 @@ public class Tweet extends TimelineElement {
 		return user.avatar; 
 	}
 
-	public CharSequence getSourceText() {
-		return getDateString() + " from " + source; 
+	public String getSourceText() {
+		return "via " + source; 
 	}
 	
 	public String getSenderScreenName() {
@@ -139,5 +140,18 @@ public class Tweet extends TimelineElement {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public String getSenderString() {
+		return user.getScreenName();
+	}
+	
+	@Override
+	public String getPlaceString() {
+		if (place == null) {
+			return null;
+		}
+		return place.getFullName();
 	}
 }

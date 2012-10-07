@@ -1,5 +1,7 @@
 package de.geotweeter.timelineelements;
 
+import java.util.Currency;
+
 import de.geotweeter.R;
 import de.geotweeter.User;
 import de.geotweeter.activities.TimelineActivity;
@@ -13,17 +15,8 @@ public class DirectMessage extends Tweet {
 	private User recipient;
 
 	@Override
-	public String getTextForDisplay() {
-		if (sender.id == TimelineActivity.current_account.getUser().id) {
-			return "<strong>an " + recipient.getScreenName() + "</strong> " + text;
-		} else {
-			return "<strong>von " + sender.getScreenName() + "</strong> " + text;
-		}
-	}
-
-	@Override
-	public CharSequence getSourceText() {
-		return getDateString();
+	public String getSourceText() {
+		return null;
 	}
 	
 	public void setSender(User sender) {
@@ -76,5 +69,24 @@ public class DirectMessage extends Tweet {
 	@Override
 	public int getBackgroundDrawableID() {
 		return R.drawable.listelement_background_dm;
+	}
+	
+	@Override
+	public boolean showWithFilter(String filter) {
+		return false;
+	}
+	
+	@Override
+	public String getSenderString() {
+		if (sender.id == TimelineActivity.current_account.getUser().id) {
+			return "an " + recipient.getScreenName();
+		} else {
+			return "von " + sender.getScreenName();
+		}
+	}
+	
+	@Override
+	public String getPlaceString() {
+		return null;
 	}
 }

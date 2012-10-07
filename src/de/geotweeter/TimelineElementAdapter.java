@@ -38,27 +38,59 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
+		TimelineElement t = (TimelineElement) items.get(position);
+		
 		View v = convertView;
 		if (v == null) {
 			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.timeline_element, null);
 		}
-		TimelineElement t = (TimelineElement) items.get(position);
+		
 		if (t != null) {
 			FrameLayout mapContainer = (FrameLayout) v.findViewById(R.id.map_fragment_container);
 			mapContainer.removeAllViews();
 			
-			LinearLayout mapAndControls = (LinearLayout) v.findViewById(R.id.map_and_controls);
+			View mapAndControls = v.findViewById(R.id.map_and_controls);
 			mapAndControls.setVisibility(View.GONE);
 			
-			TextView text = (TextView) v.findViewById(R.id.tweet_content);
-			if (text != null) { 
-				text.setText(Html.fromHtml(t.getTextForDisplay()));
+			TextView txtView;
+			String text;
+			
+			txtView = (TextView) v.findViewById(R.id.txtSender);
+			if (txtView != null) {
+				txtView.setText(t.getSenderString());
 			}
 			
-			text = (TextView) v.findViewById(R.id.source_text);
-			if (text != null) {
-				text.setText(t.getSourceText());
+			txtView = (TextView) v.findViewById(R.id.txtTimestamp);
+			if (txtView != null) {
+				txtView.setText(t.getDateString());
+			}
+			
+			txtView = (TextView) v.findViewById(R.id.txtText);
+			if (txtView != null) { 
+				txtView.setText(t.getTextForDisplay());
+			}
+			
+			txtView = (TextView) v.findViewById(R.id.txtPlace);
+			if (txtView != null) {
+				text = t.getPlaceString();
+				if (text == null) {
+					txtView.setVisibility(View.GONE);
+				} else {
+					txtView.setText(text);
+					txtView.setVisibility(View.VISIBLE);
+				}
+			}
+			
+			txtView = (TextView) v.findViewById(R.id.txtSource);
+			if (txtView != null) {
+				text = t.getSourceText();
+				if (text == null) {
+					txtView.setVisibility(View.GONE);
+				} else {
+					txtView.setText(text);
+					txtView.setVisibility(View.VISIBLE);
+				}
 			}
 			
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
