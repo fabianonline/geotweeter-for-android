@@ -580,6 +580,9 @@ public class Account implements Serializable {
 					} catch (NumberFormatException ex) {}
 					try {
 						max_read_dm_id = Long.parseLong(parts[2]);
+						if (max_known_dm_id == 0) {
+							max_known_dm_id = max_read_dm_id;
+						}
 					} catch (NumberFormatException ex) {}
 					handler.post(new Runnable() {
 						@Override
