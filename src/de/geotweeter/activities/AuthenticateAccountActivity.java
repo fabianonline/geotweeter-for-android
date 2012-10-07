@@ -79,7 +79,7 @@ public class AuthenticateAccountActivity extends Activity {
 		protected Boolean doInBackground(Void... params) {
 
 			final Token requestToken = os.getRequestToken();
-			final String authURL = os.getAuthorizationUrl(requestToken);
+			final String authURL = os.getAuthorizationUrl(requestToken) + "&force_login=true";
 
 			final WebView wv = (WebView)findViewById(R.id.wvAuthenticate);
 
