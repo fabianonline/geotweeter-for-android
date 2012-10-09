@@ -12,6 +12,17 @@
         android:padding="5px" >
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textCharsRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnAddImage"
+        android:layout_alignBottom="@+id/btnAddImage"
+        android:layout_alignParentRight="true"
+        android:text="140"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#FF00FF00" />
+
     <Button
         android:id="@+id/btnAddImage"
         android:layout_width="wrap_content"
@@ -57,16 +68,5 @@
         android:dividerHeight="1px"
         tools:listitem="@layout/timeline_element" >
     </ListView>
-
-    <TextView
-        android:id="@+id/textCharsRemaining"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/btnAddImage"
-        android:layout_alignBottom="@+id/btnAddImage"
-        android:layout_alignParentRight="true"
-        android:text="140"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FF00FF00" />
 
 </RelativeLayout>
