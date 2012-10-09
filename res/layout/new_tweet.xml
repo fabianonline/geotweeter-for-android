@@ -1,68 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/everything"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <ToggleButton
-            android:id="@+id/btnGeo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_geo" />
-
-        <TextView
-            android:id="@+id/textCharsRemaining"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="140"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#FF00FF00" />
-        
-        <Button 
-            android:id="@+id/btnAddImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_add_image"
-            android:onClick="addImageHandler"
-            />
-
-        <Button
-            android:id="@+id/btnSend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_send" />
-
+        android:id="@+id/linLayAccounts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5px" >
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnAddImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/textCharsRemaining"
+        android:onClick="addImageHandler"
+        android:text="@string/btn_add_image" />
+
+    <ToggleButton
+        android:id="@+id/btnGeo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/btnAddImage"
+        android:text="@string/btn_geo" />
 
     <EditText
         android:id="@+id/tweet_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/btnAddImage"
         android:ems="10"
-        android:inputType="textMultiLine" >
+        android:inputType="textMultiLine"
+        android:minLines="3" />
 
-        <requestFocus />
-    </EditText>
-    
-    <LinearLayout 
-        android:id="@+id/linLayAccounts"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5px">
-    </LinearLayout>
-    
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/tweet_text"
+        android:text="@string/btn_send" />
+
     <ListView
         android:id="@+id/timeline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/btnSend"
         android:descendantFocusability="blocksDescendants"
         android:divider="#000000"
-        android:dividerHeight="1px" >
-
+        android:dividerHeight="1px"
+        tools:listitem="@layout/timeline_element" >
     </ListView>
-    
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/textCharsRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnAddImage"
+        android:layout_alignBottom="@+id/btnAddImage"
+        android:layout_alignParentRight="true"
+        android:text="140"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#FF00FF00" />
+
+</RelativeLayout>
