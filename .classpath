@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="libs/fastjson-1.1.22.jar"/>
 	<classpathentry kind="lib" path="libs/gcm.jar" sourcepath="libs/gcm-src.jar"/>
 	<classpathentry kind="lib" path="libs/httpmime-4.2.1.jar"/>
+	<classpathentry kind="lib" path="libs/acra-4.3.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
