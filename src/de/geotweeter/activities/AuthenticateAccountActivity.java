@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -84,6 +85,10 @@ public class AuthenticateAccountActivity extends Activity {
 			final String authURL = os.getAuthorizationUrl(requestToken) + "&force_login=true";
 
 			final WebView wv = (WebView)findViewById(R.id.wvAuthenticate);
+			
+			WebSettings settings = wv.getSettings();
+			settings.setSaveFormData(false);
+			settings.setSavePassword(false);
 
 			wv.setWebViewClient(new WebViewClient(){
 				@Override
