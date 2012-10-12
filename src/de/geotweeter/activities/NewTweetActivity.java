@@ -12,6 +12,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -38,6 +40,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.Account;
 import de.geotweeter.SendableTweet;
@@ -71,7 +74,10 @@ public class NewTweetActivity extends Activity {
 		EditText editTweetText = ((EditText)findViewById(R.id.tweet_text));
 		
 		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
-		((ToggleButton)findViewById(R.id.btnGeo)).setOnCheckedChangeListener(new GPSToggleListener(this));
+		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
+		gpsToggle.setOnCheckedChangeListener(new GPSToggleListener(this));
+		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_APP, 0);
+		gpsToggle.setChecked(prefs.getBoolean("gpsEnabledByDefault", false));
 		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener());
 		
 		Intent i = getIntent();
@@ -205,6 +211,10 @@ public class NewTweetActivity extends Activity {
 		public GPSToggleListener(NewTweetActivity a) { activity = a; }
 		
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			SharedPreferences prefs = getSharedPreferences(Constants.PREFS_APP, 0);
+			Editor ed = prefs.edit();
+			ed.putBoolean("gpsEnabledByDefault", isChecked);
+			ed.commit();
 			if (isChecked==true) {
 				lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 				gpslistener = new GPSCoordsListener(activity);
