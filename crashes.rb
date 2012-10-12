@@ -11,7 +11,7 @@ DataMapper.setup(:default, "sqlite:database.db")
 
 DataMapper.finalize
 
-#DataMapper.auto_upgrade!
+DataMapper.auto_upgrade!
 
 post '/send' do
 	crash = Crash.new
@@ -23,4 +23,6 @@ post '/send' do
 end
 
 get '/' do
+	@crashes = Crash.all(:order => [:id.desc])
+	erb :index
 end

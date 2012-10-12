@@ -1,0 +1,19 @@
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Timestamp</th>
+		<th>Package</th>
+		<th>Version</th>
+		<th>Android Version</th>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<th>Comment</th>
+		<th>Total Memory</th>
+		<th>Available Memory</th>
+		<th>Thread details</th>
+	</tr>
+	<% @crashes.each do |@crash| %>
+		<%= erb :show %>
+	<% end %>
+</table>
