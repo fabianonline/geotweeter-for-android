@@ -173,8 +173,11 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	public void addImageHandler(View v) {
-		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-	    startActivityForResult(intent, PICTURE_REQUEST_CODE);
+		Intent intent = new Intent();
+		intent.setType("image/*");
+		intent.setAction(Intent.ACTION_GET_CONTENT);
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		startActivityForResult(intent, PICTURE_REQUEST_CODE);
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
