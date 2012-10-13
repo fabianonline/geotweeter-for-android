@@ -75,7 +75,9 @@ public class StreamRequest {
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					Log.d("StreamCheckNewlineTimeoutTask", "Running. " + (System.currentTimeMillis() - lastNewlineReceivedAt));
+					if (Debug.LOG_STREAM_CHECKS) {
+						Log.d("StreamCheckNewlineTimeoutTask", "Running. " + (System.currentTimeMillis() - lastNewlineReceivedAt));
+					}
 					if (lastNewlineReceivedAt > 0 && (System.currentTimeMillis() - lastNewlineReceivedAt) > 40000) {
 						// We should get a newline every 30 seconds. If that didn't happen -> reconnect.
 						try {
@@ -88,7 +90,9 @@ public class StreamRequest {
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					Log.d("StreamCheckDataTimeoutTask", "Running. " + (System.currentTimeMillis() - lastDataReceivedAt));
+					if (Debug.LOG_STREAM_CHECKS) {
+						Log.d("StreamCheckDataTimeoutTask", "Running. " + (System.currentTimeMillis() - lastDataReceivedAt));
+					}
 					if (lastDataReceivedAt > 0 && (System.currentTimeMillis() - lastDataReceivedAt) > 600000) {
 						// We didn't get a single tweet for more than 10 minutes -> reconnect.
 						try {
