@@ -52,6 +52,8 @@ import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.Feature;
 
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.exceptions.PermanentTweetSendException;
+import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
 import de.geotweeter.timelineelements.DirectMessage;
@@ -424,8 +426,12 @@ public class Account implements Serializable {
 		Response response = request.send();
 		
 		if (!response.isSuccessful()) { 
+			if (response.getCode() >= 500) {
+				throw new TemporaryTweetSendException();
+			} else {
 			throw new TweetSendException();
 		}
+	}
 	}
 	
 
@@ -461,7 +467,11 @@ public class Account implements Serializable {
 			Log.d(LOG, "Finished Send Tweet");
 			
 			if (!response.isSuccessful()) { 
-				throw new TweetSendException();
+				if (response.getCode() >= 500 ) {
+					throw new TemporaryTweetSendException();
+				} else {
+					throw new PermanentTweetSendException();
+				}
 			}
 		} else if(imageHoster.equals("twitpic")) {
 			// Upload pic to Twitpic
@@ -500,6 +510,8 @@ public class Account implements Serializable {
 				tweet.text += " " + twitpicURL;
 				sendTweet(tweet);
 				Log.d(LOG, "Finished Send Tweet with Twitpic");
+			} else {
+				throw new PermanentTweetSendException();
 			}
 		} else {
 			//TODO: Exception?
