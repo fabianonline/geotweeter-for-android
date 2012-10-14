@@ -1,7 +1,12 @@
 package de.geotweeter.apiconn;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.exceptions.OAuthException;
@@ -11,6 +16,8 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import android.util.Log;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.Feature;
@@ -18,6 +25,7 @@ import com.alibaba.fastjson.parser.Feature;
 import de.geotweeter.Constants;
 import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
+import de.geotweeter.exceptions.TweetDestroyException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -178,6 +186,59 @@ public class TwitterApiAccess {
 			throw new TweetSendException();
 		}
 
+		return result;
+	}
+	
+	public Tweet sendTweetWithPicture(SendableTweet tweet, ContentBody picture) throws OAuthException, TweetSendException, IOException {
+		Tweet result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
+		MultipartEntity entity = new MultipartEntity();
+		entity.addPart("status", new StringBody(tweet.text));
+		entity.addPart("media", picture);
+		
+		if (tweet.location != null) {
+			entity.addPart("lat", new StringBody(String.valueOf(tweet.location.getLatitude())));
+			entity.addPart("long", new StringBody(String.valueOf(tweet.location.getLongitude())));
+		}
+		
+		if (tweet.reply_to_status_id > 0) {
+			entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(tweet.reply_to_status_id)));
+		}
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		entity.writeTo(out);
+
+		req.addPayload(out.toByteArray());
+		req.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
+		
+		service.signRequest(token, req);
+		
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Tweet.class);
+		} else {
+			throw new TweetSendException();
+		}
+
+		return result;
+	}
+	
+	
+	public Tweet destroyTweet(long id) throws OAuthException, TweetDestroyException {
+		Tweet result = null;
+		String uri = Constants.URI_DESTROY.replace(":id", String.valueOf(id));
+		OAuthRequest req = new OAuthRequest(Verb.POST, uri);
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Tweet.class);
+		} else {
+			throw new TweetDestroyException();
+		}
+		
 		return result;
 	}
 	

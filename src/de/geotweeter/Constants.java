@@ -22,6 +22,8 @@ public class Constants extends Application {
 	public static final String URI_USER_STREAM          = "https://userstream.twitter.com/1.1/user.json";
 	public static final String URI_HOME_TIMELINE        = "https://api.twitter.com/1.1/statuses/home_timeline.json";
 	public static final String URI_MENTIONS             = "https://api.twitter.com/1.1/statuses/mentions_timeline.json";
+	public static final String URI_CONFIGURATION        = "https://api.twitter.com/1.1/help/configuration.json";
+	public static final String URI_DESTROY              = "https://api.twitter.com/1.1/statuses/destroy/:id.json";
 	public static final String URI_DIRECT_MESSAGES      = "https://api.twitter.com/1.1/direct_messages.json";
 	public static final String URI_DIRECT_MESSAGES_SENT = "https://api.twitter.com/1.1/direct_messages/sent.json";
 	public static final String URI_SINGLE_STATUS        = "https://api.twitter.com/1.1/statuses/show.json";

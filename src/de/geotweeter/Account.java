@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +28,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -357,38 +357,49 @@ public class Account implements Serializable {
 
 	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
 		String imageHoster = appContext.getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
-		if(imageHoster.equals("twitter")) {
-			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
+		if (imageHoster.equals("twitter")) {
 			
-			MultipartEntity entity = new MultipartEntity();
-			entity.addPart("status", new StringBody(tweet.text));
-			
+			ContentBody picture = null;
 			File f = new File(tweet.imagePath);
-			addImageToMultipartEntity(entity, f, "media");
-			
-			if (tweet.location != null) {
-				entity.addPart("lat", new StringBody(String.valueOf(tweet.location.getLatitude())));
-				entity.addPart("long", new StringBody(String.valueOf(tweet.location.getLongitude())));
+			if (f.length() <= PIC_SIZE_TWITTER) {
+				picture = new FileBody(f);
+			} else {
+				picture = new ByteArrayBody(resizeImage(f), f.getName());
 			}
-			
-			if (tweet.reply_to_status_id > 0) {
-				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(tweet.reply_to_status_id)));
-			}
-			Log.d(LOG, "Start output Stream");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			entity.writeTo(out);
-			Log.d(LOG, "Finish output Stream");
-			request.addPayload(out.toByteArray());
-			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
-			
-			signRequest(request);
-			Log.d(LOG, "Send Tweet");
-			Response response = request.send();
-			Log.d(LOG, "Finished Send Tweet");
-			
-			if (!response.isSuccessful()) { 
-				throw new TweetSendException();
-			}
+
+			api.sendTweetWithPicture(tweet, picture);
+//			
+//			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
+//			
+//			MultipartEntity entity = new MultipartEntity();
+//			entity.addPart("status", new StringBody(tweet.text));
+//			
+//			
+//			addImageToMultipartEntity(entity, f, "media");
+//			
+//			if (tweet.location != null) {
+//				entity.addPart("lat", new StringBody(String.valueOf(tweet.location.getLatitude())));
+//				entity.addPart("long", new StringBody(String.valueOf(tweet.location.getLongitude())));
+//			}
+//			
+//			if (tweet.reply_to_status_id > 0) {
+//				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(tweet.reply_to_status_id)));
+//			}
+//			Log.d(LOG, "Start output Stream");
+//			ByteArrayOutputStream out = new ByteArrayOutputStream();
+//			entity.writeTo(out);
+//			Log.d(LOG, "Finish output Stream");
+//			request.addPayload(out.toByteArray());
+//			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
+//			
+//			signRequest(request);
+//			Log.d(LOG, "Send Tweet");
+//			Response response = request.send();
+//			Log.d(LOG, "Finished Send Tweet");
+//			
+//			if (!response.isSuccessful()) { 
+//				throw new TweetSendException();
+//			}
 		} else if(imageHoster.equals("twitpic")) {
 			// Upload pic to Twitpic
 			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
@@ -419,7 +430,7 @@ public class Account implements Serializable {
 			
 			// Handle response
 			// sendTweet with pic-URL
-			if(response.isSuccessful()) {
+			if (response.isSuccessful()) {
 				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
 				Log.d(LOG, "Send Tweet with Twitpic");
 				tweet.imagePath = null;
@@ -433,7 +444,7 @@ public class Account implements Serializable {
 	}
 	
 	private void addImageToMultipartEntity(MultipartEntity entity, File imageFile, String key) throws IOException {
-		if(imageFile.length() <= PIC_SIZE_TWITTER) {
+		if (imageFile.length() <= PIC_SIZE_TWITTER) {
 			entity.addPart(key, new FileBody(imageFile));
 		} else {
 			entity.addPart(key, new ByteArrayBody(resizeImage(imageFile), imageFile.getName()));
