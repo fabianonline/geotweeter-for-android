@@ -4,7 +4,8 @@ import android.app.Application;
 import org.acra.*;
 import org.acra.annotation.*;
 
-@ReportsCrashes(formKey                = "dHZaTjh2ZHcyd3dScFRTUFUzVmxlaUE6MQ",
+@ReportsCrashes(formKey                = "",
+                formUri                = Constants.URI_REPORT_CRASHES,
                 mode                   = ReportingInteractionMode.DIALOG,
                 resToastText           = R.string.crash_toast_text,
                 resDialogText          = R.string.crash_dialog_text,

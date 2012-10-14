@@ -36,6 +36,8 @@ public class Constants extends Application {
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 	public static final String TWEETMARKER_KEY = "GT-F181AC70B051";
 	
+	public static final String URI_REPORT_CRASHES       = "https://home.fabianonline.de/geotweeter-crashes/send";
+	
 	public static final Pattern REGEXP_FIND_SOURCE = Pattern.compile(">(.+)</a>");
 	public static final String GCM_SENDER_ID = "540800208547";
 	public static final String GCM_SERVER_URL = "https://home.fabianonline.de/geotweeter-gcm/";
