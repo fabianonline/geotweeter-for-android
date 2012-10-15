@@ -335,23 +335,6 @@ public class Account implements Serializable {
 
 	public void sendTweet(SendableTweet tweet) throws TweetSendException {
 		api.sendTweet(tweet);
-//		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
-//		request.addBodyParameter("status", tweet.text);
-//		
-//		if (tweet.location != null) {
-//			request.addBodyParameter("lat", String.valueOf(tweet.location.getLatitude()));
-//			request.addBodyParameter("long", String.valueOf(tweet.location.getLongitude()));
-//		}
-//		
-//		if (tweet.reply_to_status_id > 0) {
-//			request.addBodyParameter("in_reply_to_status_id", String.valueOf(tweet.reply_to_status_id));
-//		}
-//		signRequest(request);
-//		Response response = request.send();
-//		
-//		if (!response.isSuccessful()) { 
-//			throw new TweetSendException();
-//		}
 	}
 	
 
@@ -368,38 +351,7 @@ public class Account implements Serializable {
 			}
 
 			api.sendTweetWithPicture(tweet, picture);
-//			
-//			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
-//			
-//			MultipartEntity entity = new MultipartEntity();
-//			entity.addPart("status", new StringBody(tweet.text));
-//			
-//			
-//			addImageToMultipartEntity(entity, f, "media");
-//			
-//			if (tweet.location != null) {
-//				entity.addPart("lat", new StringBody(String.valueOf(tweet.location.getLatitude())));
-//				entity.addPart("long", new StringBody(String.valueOf(tweet.location.getLongitude())));
-//			}
-//			
-//			if (tweet.reply_to_status_id > 0) {
-//				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(tweet.reply_to_status_id)));
-//			}
-//			Log.d(LOG, "Start output Stream");
-//			ByteArrayOutputStream out = new ByteArrayOutputStream();
-//			entity.writeTo(out);
-//			Log.d(LOG, "Finish output Stream");
-//			request.addPayload(out.toByteArray());
-//			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
-//			
-//			signRequest(request);
-//			Log.d(LOG, "Send Tweet");
-//			Response response = request.send();
-//			Log.d(LOG, "Finished Send Tweet");
-//			
-//			if (!response.isSuccessful()) { 
-//				throw new TweetSendException();
-//			}
+
 		} else if(imageHoster.equals("twitpic")) {
 			// Upload pic to Twitpic
 			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
