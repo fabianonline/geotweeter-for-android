@@ -12,6 +12,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 
@@ -25,37 +28,34 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
-import org.scribe.exceptions.OAuthException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.parser.Feature;
 
 import de.geotweeter.activities.TimelineActivity;
-import de.geotweeter.exceptions.PermanentTweetSendException;
-import de.geotweeter.exceptions.TemporaryTweetSendException;
+import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.exceptions.TweetSendException;
-import de.geotweeter.exceptions.UnknownJSONObjectException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
@@ -68,11 +68,17 @@ public class Account implements Serializable {
 	private static final long serialVersionUID = -3681363869066996199L;
 	private static final long PIC_SIZE_TWITTER = 3145728;
 	
+	protected final static Object lock_object = new Object();
 	protected final String LOG = "Account";
-	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	
-	private Token token;
+	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
 	private static transient OAuthService service;
+	private transient int tasksRunning = 0;
+	
+	protected transient ArrayList<TimelineElement> mainTimeline = new ArrayList<TimelineElement>();
+	protected transient ArrayList<ArrayList<TimelineElement>> apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
+
+	private Token token;
 	private transient Handler handler;
 	private transient StreamRequest stream_request;
 	private long max_read_tweet_id = 0;
@@ -84,8 +90,12 @@ public class Account implements Serializable {
 	private User user;
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
-	protected final static Object lock_object = new Object();
 	private transient Context appContext;
+	private TwitterApiAccess api;
+	
+	private enum AccessType {
+		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
+	}
 	
 	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
@@ -99,6 +109,7 @@ public class Account implements Serializable {
 			}
 			service = builder.build();
 		}
+		api = new TwitterApiAccess(token);
 		this.token = token;
 		this.user = user;
 		handler = new Handler();
@@ -121,7 +132,11 @@ public class Account implements Serializable {
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
-			new Thread(new TimelineRefreshThread(false)).start();
+			if (Build.VERSION.SDK_INT >= 11) {
+				refreshTimeline();
+			} else {
+				refreshTimelinePreAPI11();
+			}
 		}
 		getMaxReadIDs();
 	}
@@ -133,179 +148,87 @@ public class Account implements Serializable {
 	public void stopStream() {
 		stream_request.stop(false);
 	}
-    
-	private class TimelineRefreshThread implements Runnable {
-		private static final String LOG = "TimelineRefreshThread";
-		protected boolean do_update_bottom = false;
-		protected ArrayList<ArrayList<TimelineElement>> responses = new ArrayList<ArrayList<TimelineElement>>(4);
-		protected ArrayList<TimelineElement> main_data = new ArrayList<TimelineElement>();
-		protected int count_running_threads = 0;
-		protected int count_errored_threads = 0;
-		
-		public TimelineRefreshThread(boolean do_update_bottom) {
-			this.do_update_bottom = do_update_bottom;
-		}
+	
+	@TargetApi(11)
+	private void refreshTimeline() {
+//		if (overallTasksRunning == 0) {
+//			Utils.showMainSpinner();
+//		}
+		tasksRunning = 4;
+		ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 4, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
+		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.TIMELINE);
+		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.MENTIONS);
+		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.DM_RCVD);
+		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.DM_SENT);
+	}
+
+	private void refreshTimelinePreAPI11() {
+//		if (overallTasksRunning == 0) {
+//			Utils.showMainSpinner();
+//		}
+		tasksRunning = 4;
+		new TimelineRefreshTask().execute(AccessType.TIMELINE);
+		new TimelineRefreshTask().execute(AccessType.MENTIONS);
+		new TimelineRefreshTask().execute(AccessType.DM_RCVD);
+		new TimelineRefreshTask().execute(AccessType.DM_SENT);
+	}
+
+	
+	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, ArrayList<TimelineElement>> {
+
+		private AccessType accessType;
+		private long startTime;
 		
 		@Override
-		public void run() {
-			Log.d(LOG, "Starting run()...");
-//			Utils.showMainSpinner();
-			if (Debug.ENABLED && Debug.FAKE_FILL_TIMELINE && Debug.FAKE_FILL_TIMELINE_JSON!=null) {
-				Log.d(LOG, "Fake Timeline Data given (Debug.FAKE_TIMELINE)");
-				ArrayList<TimelineElement> inner = new ArrayList<TimelineElement>();
-				for (String s : Debug.FAKE_FILL_TIMELINE_JSON) {
-					try {
-						inner.add(Utils.jsonToNativeObject(s));
-					} catch (JSONException e) {
-						e.printStackTrace();
-					} catch (UnknownJSONObjectException e) {
-						e.printStackTrace();
-					}
-				}
-				ArrayList<ArrayList<TimelineElement>> outer = new ArrayList<ArrayList<TimelineElement>>();
-				outer.add(inner);
-				parseData(outer, false);
-				Utils.hideMainSpinner();
-				return;
+		protected ArrayList<TimelineElement> doInBackground(AccessType... params) {
+			accessType = params[0];
+			startTime = System.currentTimeMillis();
+			switch (accessType) {
+			case TIMELINE: 
+				Log.d(LOG, "Get home timeline");
+				return api.getHomeTimeline(0, 0);
+			case MENTIONS:
+				Log.d(LOG, "Get mentions");
+				return api.getMentions(0, 0);
+			case DM_RCVD:
+				Log.d(LOG, "Get received dm");
+				return api.getReceivedDMs(0, 0);
+			case DM_SENT:
+				Log.d(LOG, "Get sent dm");
+				return api.getSentDMs(0, 0);
 			}
-			OAuthRequest req_timeline     = new OAuthRequest(Verb.GET, Constants.URI_HOME_TIMELINE);
-			OAuthRequest req_mentions     = new OAuthRequest(Verb.GET, Constants.URI_MENTIONS);
-			OAuthRequest req_dms_received = new OAuthRequest(Verb.GET, Constants.URI_DIRECT_MESSAGES);
-			OAuthRequest req_dms_sent     = new OAuthRequest(Verb.GET, Constants.URI_DIRECT_MESSAGES_SENT);
-			
-			req_timeline.addQuerystringParameter("count", "100");
-			req_mentions.addQuerystringParameter("count", "100");
-			req_dms_received.addQuerystringParameter("count", "50");
-			req_dms_sent.addQuerystringParameter("count", "50");
-			
-			if (max_known_tweet_id>0 && !do_update_bottom) {
-				req_timeline.addQuerystringParameter("since_id", ""+max_known_tweet_id);
-				req_mentions.addQuerystringParameter("since_id", ""+max_known_tweet_id);
-			}
-			if (do_update_bottom) {
-				req_timeline.addQuerystringParameter("max_id", ""+(min_known_tweet_id-1));
-				req_mentions.addQuerystringParameter("max_id", ""+(min_known_tweet_id-1));
-			}
-			
-			if (max_known_dm_id>0 && !do_update_bottom) {
-				req_dms_received.addQuerystringParameter("since_id", ""+max_known_dm_id);
-				req_dms_sent.addQuerystringParameter("since_id", ""+max_known_dm_id);
-			}
-			if (min_known_dm_id>=0 && do_update_bottom) {
-				req_dms_received.addQuerystringParameter("max_id", "" + (min_known_dm_id - 1));
-				req_dms_sent.addQuerystringParameter("max_id", "" + (min_known_dm_id - 1));
-			}
-			
-			/* Start all the requests */
-			count_running_threads = 4;
-			new Thread(new RunnableRequestTweetsExecutor(req_timeline, true), "FetchTimelineThread").start();
-			new Thread(new RunnableRequestTweetsExecutor(req_mentions, false), "FetchMentionsThread").start();
-			new Thread(new RunnableRequestDMsExecutor(req_dms_sent, false), "FetchSentDMThread").start();
-			new Thread(new RunnableRequestDMsExecutor(req_dms_received, false), "FetchReceivedDMThread").start();
+			return null;
 		}
 		
-		private void runAfterEachSuccesfulRequest(ArrayList<TimelineElement> elements, boolean is_main_data) {
-			Log.d(LOG, "Started...");
-			if (is_main_data) {
-				main_data = elements;
+		protected void onPostExecute(ArrayList<TimelineElement> result) {
+			tasksRunning--;
+			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: " + String.valueOf(System.currentTimeMillis() - startTime) + "ms");
+			if (accessType == AccessType.TIMELINE) {
+				mainTimeline = result;
 			} else {
-				responses.add(elements);
+				apiResponses.add(result);
 			}
-			count_running_threads--;
-			Log.d(LOG, "Remaining running threads: " + count_running_threads);
-			if (count_running_threads == 0) {
-				runAfterAllRequestsCompleted();
-			}
-		}
-		
-		private void runAfterEachFailedRequest() {
-			count_running_threads--;
-			count_errored_threads++;
-			// TODO Show error message
-			if (count_running_threads==0) {
-				runAfterAllRequestsCompleted();
-			}
-		}
-		
-		private void runAfterAllRequestsCompleted() {
-			Log.d(LOG, "All Requests completed.");
-			if (!main_data.isEmpty()) {
-				responses.add(0, main_data);
-			}
-			if (count_errored_threads==0) {
-				parseData(responses, do_update_bottom);
+			
+			if (tasksRunning == 0) { 
+				if (!mainTimeline.isEmpty()) {
+					apiResponses.add(0, mainTimeline);
+				}
+				parseData(apiResponses, false);
 				if (Debug.ENABLED && Debug.SKIP_START_STREAM) {
 					Log.d(LOG, "Not starting stream - Debug.SKIP_START_STREAM is true.");
 				} else {
 					stream_request.start();
 				}
-			} else {
-				// TODO Try again after some time
-				// TODO Show info message
 			}
-//			Utils.hideMainSpinner();
+			
+//			if (overallTasksRunning == 0) {
+//				Utils.hideMainSpinner();
+//			}
+
 		}
 		
-		private class RunnableRequestTweetsExecutor implements Runnable {
-			private final static String LOG = "RunnableRequestExecutor";
-			private boolean is_main_data;
-			private OAuthRequest request;
-			
-			public RunnableRequestTweetsExecutor(OAuthRequest request, boolean is_main_data) {
-				this.is_main_data = is_main_data;
-				this.request = request;
-			}
-			
-			@Override
-			public void run() {
-				
-				Log.d(LOG, "Started.");
-				signRequest(request);
-				Response response;	
-				try {
-					long start_time = System.currentTimeMillis();
-					synchronized(Constants.THREAD_LOCK) {
-						response = request.send();
-					}
-					Log.d(LOG, "Download finished: " + (System.currentTimeMillis()-start_time) + "ms");
-				} catch (OAuthException e) {
-					runAfterEachFailedRequest();
-					return;
-				}
-				if (response.isSuccessful()) {
-					Log.d(LOG, "Started parsing JSON...");
-					long start_time = System.currentTimeMillis();
-					ArrayList<TimelineElement> elements = null;
-					synchronized(lock_object) {
-						elements = parse(response.getBody());
-					}
-					Log.d(LOG, "Finished parsing JSON. " + elements.size() + " elements in " + (System.currentTimeMillis()-start_time) + " ms");
-					runAfterEachSuccesfulRequest(elements, is_main_data);
-				} else {
-					runAfterEachFailedRequest();
-				}
-				
-			}
-			
-			@SuppressWarnings("unchecked")
-			protected ArrayList<TimelineElement> parse(String json) {
-				return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<Tweet>>(){}, Feature.DisableCircularReferenceDetect);
-			}
-		}
-		
-		private class RunnableRequestDMsExecutor extends RunnableRequestTweetsExecutor {
-			public RunnableRequestDMsExecutor(OAuthRequest request, boolean is_main_data) {
-				super(request, is_main_data);
-			}
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			protected ArrayList<TimelineElement> parse(String json) {
-				return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<DirectMessage>>(){});
-			}
-		}
 	}
-	
+		
 	protected void parseData(ArrayList<ArrayList<TimelineElement>> responses, boolean do_clip) {
 		final long old_max_known_dm_id = max_known_dm_id;
 		Log.d(LOG, "parseData started.");
@@ -411,68 +334,24 @@ public class Account implements Serializable {
 	}
 
 	public void sendTweet(SendableTweet tweet) throws TweetSendException {
-		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
-		request.addBodyParameter("status", tweet.text);
-		
-		if (tweet.location != null) {
-			request.addBodyParameter("lat", String.valueOf(tweet.location.getLatitude()));
-			request.addBodyParameter("long", String.valueOf(tweet.location.getLongitude()));
-		}
-		
-		if (tweet.reply_to_status_id > 0) {
-			request.addBodyParameter("in_reply_to_status_id", String.valueOf(tweet.reply_to_status_id));
-		}
-		signRequest(request);
-		Response response = request.send();
-		
-		if (!response.isSuccessful()) { 
-			if (response.getCode() >= 500) {
-				throw new TemporaryTweetSendException();
-			} else {
-			throw new TweetSendException();
-		}
-	}
+		api.sendTweet(tweet);
 	}
 	
 
 	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
 		String imageHoster = appContext.getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
-		if(imageHoster.equals("twitter")) {
-			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
+		if (imageHoster.equals("twitter")) {
 			
-			MultipartEntity entity = new MultipartEntity();
-			entity.addPart("status", new StringBody(tweet.text));
-			
+			ContentBody picture = null;
 			File f = new File(tweet.imagePath);
-			addImageToMultipartEntity(entity, f, "media");
-			
-			if (tweet.location != null) {
-				entity.addPart("lat", new StringBody(String.valueOf(tweet.location.getLatitude())));
-				entity.addPart("long", new StringBody(String.valueOf(tweet.location.getLongitude())));
+			if (f.length() <= PIC_SIZE_TWITTER) {
+				picture = new FileBody(f);
+			} else {
+				picture = new ByteArrayBody(resizeImage(f), f.getName());
 			}
-			
-			if (tweet.reply_to_status_id > 0) {
-				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(tweet.reply_to_status_id)));
-			}
-			Log.d(LOG, "Start output Stream");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			entity.writeTo(out);
-			Log.d(LOG, "Finish output Stream");
-			request.addPayload(out.toByteArray());
-			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
-			
-			signRequest(request);
-			Log.d(LOG, "Send Tweet");
-			Response response = request.send();
-			Log.d(LOG, "Finished Send Tweet");
-			
-			if (!response.isSuccessful()) { 
-				if (response.getCode() >= 500 ) {
-					throw new TemporaryTweetSendException();
-				} else {
-					throw new PermanentTweetSendException();
-				}
-			}
+
+			api.sendTweetWithPicture(tweet, picture);
+
 		} else if(imageHoster.equals("twitpic")) {
 			// Upload pic to Twitpic
 			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
@@ -503,15 +382,13 @@ public class Account implements Serializable {
 			
 			// Handle response
 			// sendTweet with pic-URL
-			if(response.isSuccessful()) {
+			if (response.isSuccessful()) {
 				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
 				Log.d(LOG, "Send Tweet with Twitpic");
 				tweet.imagePath = null;
 				tweet.text += " " + twitpicURL;
 				sendTweet(tweet);
 				Log.d(LOG, "Finished Send Tweet with Twitpic");
-			} else {
-				throw new PermanentTweetSendException();
 			}
 		} else {
 			//TODO: Exception?
@@ -519,7 +396,7 @@ public class Account implements Serializable {
 	}
 	
 	private void addImageToMultipartEntity(MultipartEntity entity, File imageFile, String key) throws IOException {
-		if(imageFile.length() <= PIC_SIZE_TWITTER) {
+		if (imageFile.length() <= PIC_SIZE_TWITTER) {
 			entity.addPart(key, new FileBody(imageFile));
 		} else {
 			entity.addPart(key, new ByteArrayBody(resizeImage(imageFile), imageFile.getName()));

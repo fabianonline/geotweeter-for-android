@@ -22,12 +22,16 @@ public class Constants extends Application {
 	public static final String URI_USER_STREAM          = "https://userstream.twitter.com/1.1/user.json";
 	public static final String URI_HOME_TIMELINE        = "https://api.twitter.com/1.1/statuses/home_timeline.json";
 	public static final String URI_MENTIONS             = "https://api.twitter.com/1.1/statuses/mentions_timeline.json";
+	public static final String URI_CONFIGURATION        = "https://api.twitter.com/1.1/help/configuration.json";
+	public static final String URI_DESTROY              = "https://api.twitter.com/1.1/statuses/destroy/:id.json";
 	public static final String URI_DIRECT_MESSAGES      = "https://api.twitter.com/1.1/direct_messages.json";
 	public static final String URI_DIRECT_MESSAGES_SENT = "https://api.twitter.com/1.1/direct_messages/sent.json";
 	public static final String URI_SINGLE_STATUS        = "https://api.twitter.com/1.1/statuses/show.json";
 	public static final String URI_SEARCH               = "https://api.twitter.com/1.1/search/tweets.json";
+	public static final String URI_SHOW_TWEET           = "https://api.twitter.com/1.1/statuses/show.json";
 	public static final String URI_SINGLE_USER          = "https://api.twitter.com/1.1/users/show.json";
 	public static final String URI_USER_LIST            = "https://api.twitter.com/1.1/users/lookup.json";
+	public static final String URI_USER_TIMELINE        = "https://api.twitter.com/1.1/statuses/user_timeline.json";
 	public static final String URI_UPDATE               = "https://api.twitter.com/1.1/statuses/update.json";
 	public static final String URI_UPDATE_WITH_MEDIA    = "https://api.twitter.com/1.1/statuses/update_with_media.json";
 	
