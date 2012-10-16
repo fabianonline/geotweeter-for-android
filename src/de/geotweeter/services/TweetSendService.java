@@ -89,7 +89,7 @@ public class TweetSendService extends Service {
 		@Override
 		public void run() {
 			SendableTweet tweet;
-			while (i<tweets.size()) {
+			while (i < tweets.size()) {
 				updateNotification();
 				tweet = tweets.get(i);
 				if (tweet.imagePath != null) {
@@ -104,23 +104,24 @@ public class TweetSendService extends Service {
 					}
 				} else {
 					try {
+						
 						tweet.account.sendTweet(tweet);
 					} catch (TweetSendException e) {
 						e.printStackTrace();
 						try {
 							Thread.sleep(60000);
-						} catch(InterruptedException e1) {}
+						} catch (InterruptedException e1) {}
 						i--;
 					}
 				}
 				i++;
 			}
 			tweets.clear();
-			i=0;
+			i = 0;
 			
 			removeNotification();
 			
-			if (bindCount==0) {
+			if (bindCount == 0) {
 				stopSelf();
 			}
 		}
