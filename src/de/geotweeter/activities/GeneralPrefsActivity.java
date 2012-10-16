@@ -1,14 +1,12 @@
 package de.geotweeter.activities;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
-import de.geotweeter.R;
-import de.geotweeter.Account;
 import de.geotweeter.Constants;
+import de.geotweeter.R;
 import de.geotweeter.Utils;
 import de.geotweeter.timelineelements.TimelineElement;
 

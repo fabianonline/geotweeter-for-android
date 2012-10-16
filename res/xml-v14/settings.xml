@@ -11,7 +11,7 @@
 	    android:key="pref_notifications"
 	    android:title="@string/pref_notifications">
 		
-		<CheckBoxPreference
+		<SwitchPreference
 		    android:key="pref_notifications_enabled"
 		    android:title="@string/pref_notifications_enabled_title"
 		    android:summaryOn="@string/pref_notifications_enabled_on"

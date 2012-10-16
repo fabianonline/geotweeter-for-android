@@ -90,7 +90,7 @@ public class TweetSendService extends Service {
 		@Override
 		public void run() {
 			SendableTweet tweet;
-			while (i<tweets.size()) {
+			while (i < tweets.size()) {
 				updateNotification();
 				tweet = tweets.get(i);
 				try {
@@ -104,6 +104,7 @@ public class TweetSendService extends Service {
 					try { Thread.sleep(60000); } catch(InterruptedException e1) {}
 					i--;
 				} catch (Exception e) {
+					// TODO Inform the user
 					Log.e(LOG, "PermanentTweetException (or another exception) fired. Stopping.");
 					e.printStackTrace();
 					break;
@@ -111,11 +112,11 @@ public class TweetSendService extends Service {
 				i++;
 			}
 			tweets.clear();
-			i=0;
+			i = 0;
 			
 			removeNotification();
 			
-			if (bindCount==0) {
+			if (bindCount == 0) {
 				stopSelf();
 			}
 		}
