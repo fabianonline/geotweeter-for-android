@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -25,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -34,11 +34,11 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-import de.geotweeter.R;
 import de.geotweeter.Account;
 import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
 import de.geotweeter.MapOverlay;
+import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
@@ -218,7 +218,7 @@ public class TimelineActivity extends MapActivity {
 		if (map.getParent() != null) {
 			FrameLayout mapContainer = (FrameLayout) map.getParent();
 			mapContainer.removeAllViews();
-			LinearLayout mapAndControls = (LinearLayout) mapContainer.getParent();
+			RelativeLayout mapAndControls = (RelativeLayout) mapContainer.getParent();
 			mapAndControls.setVisibility(View.GONE);
 			if (mapAndControls.getParent() == view) {
 				return;

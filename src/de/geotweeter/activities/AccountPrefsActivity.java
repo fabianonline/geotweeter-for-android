@@ -61,7 +61,6 @@ public class AccountPrefsActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         
         account = (Account) getIntent().getSerializableExtra("account");
-        account.CreateAPIConnector();
         account.setAppContext(getApplicationContext());
         
         user = new User(account.getUser());

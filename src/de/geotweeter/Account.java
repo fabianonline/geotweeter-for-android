@@ -75,8 +75,8 @@ public class Account implements Serializable {
 	private static transient OAuthService service;
 	private transient int tasksRunning = 0;
 	
-	protected transient ArrayList<TimelineElement> mainTimeline = new ArrayList<TimelineElement>();
-	protected transient ArrayList<ArrayList<TimelineElement>> apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
+	protected transient ArrayList<TimelineElement> mainTimeline;
+	protected transient ArrayList<ArrayList<TimelineElement>> apiResponses;
 
 	private Token token;
 	private transient Handler handler;
@@ -108,6 +108,8 @@ public class Account implements Serializable {
 			}
 			service = builder.build();
 		}
+		mainTimeline = new ArrayList<TimelineElement>();
+		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
 		this.token = token;
 		this.user = user;
@@ -120,10 +122,25 @@ public class Account implements Serializable {
 		start(true);
 	}
 	
-	public void CreateAPIConnector() {
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		if (service == null) {
+			ServiceBuilder builder = new ServiceBuilder()
+			                             .provider(TwitterApi.class)
+			                             .apiKey(Constants.API_KEY)
+			                             .apiSecret(Constants.API_SECRET);
+			if (Debug.LOG_OAUTH_STUFF) {
+				builder = builder.debug();
+			}
+			service = builder.build();
+		}
+		mainTimeline = new ArrayList<TimelineElement>();
+		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
+		handler = new Handler();
+		stream_request = new StreamRequest(this);
 	}
-	
+		
 	public void setAppContext(Context appContext) {
 		this.appContext = appContext;
 	}
