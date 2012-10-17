@@ -91,12 +91,11 @@ public class Account implements Serializable {
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
 	private transient Context appContext;
-	private TwitterApiAccess api;
+	private transient TwitterApiAccess api;
 	
 	private enum AccessType {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
 	}
-	
 	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
 		if (service == null) {
@@ -121,6 +120,14 @@ public class Account implements Serializable {
 		start(true);
 	}
 	
+	public void CreateAPIConnector() {
+		api = new TwitterApiAccess(token);
+	}
+	
+	public void setAppContext(Context appContext) {
+		this.appContext = appContext;
+	}
+
 	public void start(boolean loadPersistedTweets) {
 		Log.d(LOG, "In start()");
 		if (stream_request != null) {
@@ -335,23 +342,6 @@ public class Account implements Serializable {
 
 	public void sendTweet(SendableTweet tweet) throws TweetSendException {
 		api.sendTweet(tweet);
-//		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
-//		request.addBodyParameter("status", tweet.text);
-//		
-//		if (tweet.location != null) {
-//			request.addBodyParameter("lat", String.valueOf(tweet.location.getLatitude()));
-//			request.addBodyParameter("long", String.valueOf(tweet.location.getLongitude()));
-//		}
-//		
-//		if (tweet.reply_to_status_id > 0) {
-//			request.addBodyParameter("in_reply_to_status_id", String.valueOf(tweet.reply_to_status_id));
-//		}
-//		signRequest(request);
-//		Response response = request.send();
-//		
-//		if (!response.isSuccessful()) { 
-//			throw new TweetSendException();
-//		}
 	}
 	
 
@@ -368,38 +358,7 @@ public class Account implements Serializable {
 			}
 
 			api.sendTweetWithPicture(tweet, picture);
-//			
-//			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
-//			
-//			MultipartEntity entity = new MultipartEntity();
-//			entity.addPart("status", new StringBody(tweet.text));
-//			
-//			
-//			addImageToMultipartEntity(entity, f, "media");
-//			
-//			if (tweet.location != null) {
-//				entity.addPart("lat", new StringBody(String.valueOf(tweet.location.getLatitude())));
-//				entity.addPart("long", new StringBody(String.valueOf(tweet.location.getLongitude())));
-//			}
-//			
-//			if (tweet.reply_to_status_id > 0) {
-//				entity.addPart("in_reply_to_status_id", new StringBody(String.valueOf(tweet.reply_to_status_id)));
-//			}
-//			Log.d(LOG, "Start output Stream");
-//			ByteArrayOutputStream out = new ByteArrayOutputStream();
-//			entity.writeTo(out);
-//			Log.d(LOG, "Finish output Stream");
-//			request.addPayload(out.toByteArray());
-//			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
-//			
-//			signRequest(request);
-//			Log.d(LOG, "Send Tweet");
-//			Response response = request.send();
-//			Log.d(LOG, "Finished Send Tweet");
-//			
-//			if (!response.isSuccessful()) { 
-//				throw new TweetSendException();
-//			}
+
 		} else if(imageHoster.equals("twitpic")) {
 			// Upload pic to Twitpic
 			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);

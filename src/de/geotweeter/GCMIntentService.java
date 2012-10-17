@@ -109,7 +109,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		
 		
 		if (pref.getBoolean("pref_notifications_sound_enabled", true)) {
-			String sound = pref.getString("pref_notifications_sound_ringtone", "DEFAULT_TINGTONE_URI");
+			String sound = pref.getString("pref_notifications_sound_ringtone", "DEFAULT_RINGTONE_URI");
 			if (! "".equals(sound)) {
 				notification.sound = Uri.parse(sound);
 			}

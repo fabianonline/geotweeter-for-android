@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
+import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetSendException;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -89,38 +90,33 @@ public class TweetSendService extends Service {
 		@Override
 		public void run() {
 			SendableTweet tweet;
-			while (i<tweets.size()) {
+			while (i < tweets.size()) {
 				updateNotification();
 				tweet = tweets.get(i);
-				if (tweet.imagePath != null) {
-					try {
+				try {
+					if (tweet.imagePath != null) {
 						tweet.account.sendTweetWithPic(tweet);
-					} catch (Exception e) {
-						e.printStackTrace();
-						try {
-							Thread.sleep(60000);
-						} catch (InterruptedException e1) {}
-						i--;
-					}
-				} else {
-					try {
+					} else {
 						tweet.account.sendTweet(tweet);
-					} catch (TweetSendException e) {
-						e.printStackTrace();
-						try {
-							Thread.sleep(60000);
-						} catch(InterruptedException e1) {}
-						i--;
 					}
+				} catch (TemporaryTweetSendException e) {
+					Log.d(LOG, "TemporaryTweetSendException fired. Sleeping 60 seconds.");
+					try { Thread.sleep(60000); } catch(InterruptedException e1) {}
+					i--;
+				} catch (Exception e) {
+					// TODO Inform the user
+					Log.e(LOG, "PermanentTweetException (or another exception) fired. Stopping.");
+					e.printStackTrace();
+					break;
 				}
 				i++;
 			}
 			tweets.clear();
-			i=0;
+			i = 0;
 			
 			removeNotification();
 			
-			if (bindCount==0) {
+			if (bindCount == 0) {
 				stopSelf();
 			}
 		}
