@@ -1,13 +1,11 @@
 package de.geotweeter.activities;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,18 +14,20 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -47,7 +47,6 @@ import de.geotweeter.SendableTweet;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
-import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.services.TweetSendService;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -188,6 +187,12 @@ public class NewTweetActivity extends Activity {
 			picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
 			cursor.close();
 			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
+			
+			ImageButton btnImageManager = (ImageButton) findViewById(R.id.btnImageManager);
+			Drawable draw = new BitmapDrawable(picturePath);
+			btnImageManager.setImageDrawable(draw);
+			btnImageManager.setVisibility(ImageView.VISIBLE);
+//			btnImageManager.setBackgroundResource(0);
 		}
 	}
 	
