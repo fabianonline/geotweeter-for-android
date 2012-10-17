@@ -97,7 +97,6 @@ public class Account implements Serializable {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
 	}
 	
-	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
 		if (service == null) {
 			ServiceBuilder builder = new ServiceBuilder()
@@ -121,6 +120,14 @@ public class Account implements Serializable {
 		start(true);
 	}
 	
+	public void CreateAPIConnector() {
+		api = new TwitterApiAccess(token);
+	}
+	
+	public void setAppContext(Context appContext) {
+		this.appContext = appContext;
+	}
+
 	public void start(boolean loadPersistedTweets) {
 		Log.d(LOG, "In start()");
 		if (stream_request != null) {
