@@ -91,7 +91,7 @@ public class Account implements Serializable {
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
 	private transient Context appContext;
-	private TwitterApiAccess api;
+	private transient TwitterApiAccess api;
 	
 	private enum AccessType {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
