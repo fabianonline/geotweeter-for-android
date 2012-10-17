@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pref_notifications_led_color_entries">
-            <item>Blau</item>
-            <item>Rot</item>
-            <item>Gelb</item>
-            <item>Grün</item>
-            <item>Lila</item>
-            <item>Rosa</item>
-            <item>Weiß</item>
-            <item>Orange</item>
-            <item>Braun</item>
-        </string-array>
-    <array name="pref_notifications_led_color_entries_values">
-        <item>0xff0000ff</item>
-        <item>0xffff0000</item>
-        <item>0xffffff00</item>
-        <item>0xff00ff00</item>
-        <item>0xffff00ff</item>
-        <item>0xffff8888</item>
-        <item>0xffffffff</item>
-        <item>0xffff8000</item>
-        <item>0xff996633</item>
-    </array>
+        <item>Blau</item>
+        <item>Rot</item>
+        <item>Gelb</item>
+        <item>Grün</item>
+        <item>Lila</item>
+        <item>Rosa</item>
+        <item>Weiß</item>
+        <item>Orange</item>
+        <item>Braun</item>
+    </string-array>
+    <string-array name="pref_notifications_led_color_entries_values">
+        <item>4278190335</item> <!-- 0xff0000ff -->
+        <item>4294901760</item> <!-- 0xffff0000 -->
+        <item>4294967040</item> <!-- 0xffffff00 -->
+        <item>4278255360</item> <!-- 0xff00ff00 -->
+        <item>4294902015</item> <!-- 0xffff00ff -->
+        <item>4294936712</item> <!-- 0xffff8888 -->
+        <item>4294967295</item> <!-- 0xffffffff -->
+        <item>4294934528</item> <!-- 0xffff8000 -->
+        <item>4288243251</item> <!-- 0xff996633 -->
+    </string-array>
 </resources>
