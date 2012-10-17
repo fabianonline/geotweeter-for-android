@@ -1,0 +1,27 @@
+<a href="<%= url("/") %>">Zurück zur Liste</a>
+<br />
+<br />
+<strong>Crash ID:</strong>                        <%= @crash.id %><br />
+<strong>Datum:</strong>                           <%= @crash.user_crash_date.strftime("%d.%m.%Y %H:%M:%S") rescue "" %><br />
+<strong>Package:</strong>                         <%= @crash.package_name %><br />
+<strong>Version:</strong>                         <%= @crash.app_version_name %> (<%= @crash.app_version_code %>)<br />
+<strong>Android-Version:</strong>                 <%= @crash.android_version %><br />
+<strong>Speicher gesamt:</strong>                 <%= @crash.total_mem_size %><br />
+<strong>Speicher frei:</strong>                   <%= @crash.available_mem_size %><br />
+<br />
+<strong>Kommentar des Users:</strong>             <%= @crash.user_comment %><br />
+<br />
+<form method="post" action="<%= url("/crash/#{@crash.id}/fixed") %>">
+	<input type="submit" name="button" value="Als erledigt markieren" />
+</form>
+<br />
+<strong>Stacktrace:</strong>
+<blockquote>
+	<%= @crash.stack_trace.gsub("\n", "<br/>").gsub("\t", "    ").gsub(" ", "&nbsp;") %>
+</blockquote>
+
+<strong>Logcat:</strong>
+<blockquote>
+	<%= @crash.logcat.gsub("\t", "    ").gsub("\n", "<br />\n") rescue "" %>
+</blockquote>
+<a href="<%= url("/") %>">Zurück zur Liste</a>

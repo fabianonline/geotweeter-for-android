@@ -22,6 +22,16 @@ post '/send' do
 	crash.save
 end
 
+get '/crash/:id' do
+	@crash = Crash.get(params[:id])
+	erb :show_long
+end
+
+post '/crash/:id/fixed' do
+	Crash.get(params[:id]).update(:fixed=>true)
+	redirect to('/')
+end
+
 get '/' do
 	@crashes = Crash.all(:order => [:id.desc])
 	erb :index

@@ -1,26 +1,37 @@
-<tr class="border-top">
+<tr class="border-top <%= @crash.fixed ? 'grey' : '' %>">
 	<td><strong><%= @crash.id %></strong></td>
-	<td><strong><%= @crash.user_crash_date.strftime("%d.%m.%Y %H:%M:%S") rescue "" %></strong></td>
+	<td>
+		<strong>
+			<a href="<%= url("/crash/#{@crash.id}") %>">
+				<%= @crash.user_crash_date.strftime("%d.%m.%Y %H:%M:%S") rescue "" %>
+			</a>
+		</strong>
+	</td>
 	<td><%= @crash.package_name %></td>
 	<td><%= @crash.app_version_name %> (<%= @crash.app_version_code %>)</td>
 	<td><%= @crash.android_version %></td>
 </tr>
-<tr>
+<tr class="<%= @crash.fixed ? 'grey' : '' %>">
 	<td>&nbsp;</td>
 	<td><%= @crash.user_comment %></td>
 	<td><%= @crash.total_mem_size %></td>
 	<td><%= @crash.available_mem_size %></td>
 	<td><%= @crash.thread_details %></td>
 </tr>
-<tr class="thin-border-top">
+<tr class="thin-border-top <%= @crash.fixed ? 'grey' : '' %>">
 	<td>&nbsp;</td>
 	<td colspan="4">
-		<%= @crash.stack_trace.gsub("\t", "    ").gsub(" ", "&nbsp;").gsub("\n", "<br />\n") rescue "" %>
-	</td>
-</tr>
-<tr class="thin-border-top">
-	<td>&nbsp;</td>
-	<td colspan="4">
-		<%= @crash.logcat.gsub("\t", "    ").gsub("\n", "<br />\n") rescue "" %>
+		<% take_next_line = true %>
+		<%= @crash.stack_trace.split("\n").collect do |line|
+			result = nil
+			if line[0]!=9
+				take_next_line=true
+				result = line
+			elsif take_next_line
+				take_next_line=false
+				result = line
+			end
+			result
+		end.compact.join("<br/>").gsub("\t", "    ").gsub(" ", "&nbsp;") %>
 	</td>
 </tr>

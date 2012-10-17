@@ -35,4 +35,6 @@ class Crash
     property :application_log, Text
     property :media_codec_list, Text
 	property :thread_details, Text, :lazy=>false
+
+	property :fixed, Boolean, :default=>false
 end
