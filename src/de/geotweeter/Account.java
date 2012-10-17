@@ -134,6 +134,8 @@ public class Account implements Serializable {
 			}
 			service = builder.build();
 		}
+		mainTimeline = new ArrayList<TimelineElement>();
+		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
 		handler = new Handler();
 		stream_request = new StreamRequest(this);
