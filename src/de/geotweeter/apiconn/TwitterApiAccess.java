@@ -25,6 +25,8 @@ import com.alibaba.fastjson.parser.Feature;
 import de.geotweeter.Constants;
 import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
+import de.geotweeter.exceptions.TemporaryTweetSendException;
+import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.TweetDestroyException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
@@ -182,8 +184,12 @@ public class TwitterApiAccess {
 		Response response = req.send();
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
-		} else { 
-			throw new TweetSendException();
+		} else {
+			if (response.getCode() >= 500) {
+				throw new TemporaryTweetSendException();
+			} else {
+				throw new PermanentTweetSendException();
+			}
 		}
 
 		return result;
@@ -218,7 +224,11 @@ public class TwitterApiAccess {
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
-			throw new TweetSendException();
+			if (response.getCode() >= 500)
+				throw new TemporaryTweetSendException();
+			else {
+				throw new PermanentTweetSendException();
+			}
 		}
 
 		return result;
