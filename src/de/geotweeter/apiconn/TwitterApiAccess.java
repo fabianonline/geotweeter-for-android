@@ -181,7 +181,16 @@ public class TwitterApiAccess {
 		}
 		
 		service.signRequest(token, req);
-		Response response = req.send();
+		
+		Response response;
+		try {
+			response = req.send();
+		} catch (OAuthException ex) {
+			// TODO In the next scribe version will be more differentiated Exception classes for
+			// connection problems and so on. We really should use that.
+			throw new TemporaryTweetSendException();
+		}
+		
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
@@ -219,7 +228,14 @@ public class TwitterApiAccess {
 		
 		service.signRequest(token, req);
 		
-		Response response = req.send();
+		Response response;
+		try {
+			response = req.send();
+		} catch (OAuthException ex) {
+			// TODO In the next scribe version will be more differentiated Exception classes for
+			// connection problems and so on. We really should use that.
+			throw new TemporaryTweetSendException();
+		}
 		
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
