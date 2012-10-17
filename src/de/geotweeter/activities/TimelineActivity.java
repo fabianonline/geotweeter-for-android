@@ -37,6 +37,7 @@ import com.google.android.maps.OverlayItem;
 import de.geotweeter.Account;
 import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
@@ -428,5 +429,12 @@ public class TimelineActivity extends MapActivity {
 			acct.stopStream();
 			acct.start(false);
 		}
+	}
+	
+	public BackgroundImageLoader getBackgroundImageLoader() {
+		if (background_image_loader == null) {
+			background_image_loader = new BackgroundImageLoader(getApplicationContext());
+		}
+		return background_image_loader;
 	}
 }
