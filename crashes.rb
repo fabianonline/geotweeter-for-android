@@ -23,7 +23,7 @@ post '/send' do
 
 	room = Broach::Room.find_by_name(ROOM)
 	
-	string = "Neuer Crashreport. "
+	string = "Neuer Crashreport ##{crash.id}. "
 	string << "Kommentar des Users: #{crash.user_comment} " if crash.user_comment
 	string << url("/crash/#{crash.id}")
 	room.speak(string, :type=>:text)
