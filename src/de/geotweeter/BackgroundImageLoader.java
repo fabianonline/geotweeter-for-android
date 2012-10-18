@@ -132,7 +132,9 @@ public class BackgroundImageLoader {
 	}
 
 	class FileCache {
+		
 		private File cache_dir;
+		
 		public FileCache(Context context) {
 			if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
 				cache_dir = new File(android.os.Environment.getExternalStorageDirectory(), "Geotweeter");

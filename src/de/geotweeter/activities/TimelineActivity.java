@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.scribe.model.Token;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -22,7 +23,6 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,7 +37,6 @@ import com.google.android.maps.OverlayItem;
 import de.geotweeter.Account;
 import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
-import de.geotweeter.Geotweeter;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
@@ -431,9 +430,9 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
-	public BackgroundImageLoader getBackgroundImageLoader() {
+	public static BackgroundImageLoader getBackgroundImageLoader(Context context) {
 		if (background_image_loader == null) {
-			background_image_loader = new BackgroundImageLoader(getApplicationContext());
+			background_image_loader = new BackgroundImageLoader(context);
 		}
 		return background_image_loader;
 	}

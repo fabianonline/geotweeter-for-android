@@ -97,11 +97,12 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
 			if (img != null) {
-				TimelineActivity.getInstance().getBackgroundImageLoader().displayImage(t.getAvatarSource(), img);
+				TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(t.getAvatarSource(), img);
+//				TimelineActivity.getInstance().getBackgroundImageLoader().displayImage(t.getAvatarSource(), img);
 			}
 						
 		}
-		//v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
+//		v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
 		v.setBackgroundResource(t.getBackgroundDrawableID(useDarkTheme));
 		return v;	
 	}
