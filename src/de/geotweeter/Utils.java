@@ -8,16 +8,12 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
-import android.webkit.WebView.FindListener;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 
-import de.geotweeter.R;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
 import de.geotweeter.timelineelements.DirectMessage;
@@ -130,7 +126,11 @@ public class Utils {
 		SharedPreferences prefs = a.getSharedPreferences(Constants.PREFS_APP, 0);
 		boolean useDarkTheme = prefs.getBoolean("pref_dark_theme", false);
 		if (useDarkTheme) {
-			a.setTheme(android.R.style.Theme_Holo);
+			if (Build.VERSION.SDK_INT < 11) {
+				a.setTheme(android.R.style.Theme_Black);
+			} else {
+				a.setTheme(android.R.style.Theme_Holo);
+			}
 		}
 	}
 }
