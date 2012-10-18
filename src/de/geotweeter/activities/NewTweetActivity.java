@@ -86,10 +86,29 @@ public class NewTweetActivity extends Activity {
 		
 		Intent i = getIntent();
 		if (i != null && i.getExtras() != null) {
+			
 			TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
 			String reply_string = "";
+			
 			if (elm instanceof DirectMessage) {
+				
+				if (TimelineActivity.current_account == null) {
+					DirectMessage dm = (DirectMessage)elm;
+					ArrayList<User> auth_users = getAuthUsers();
+					if (auth_users != null) {
+						for (User u : auth_users) {
+							Account acct = createAccount(u);
+							if (dm.recipient.id == acct.getUser().id) {
+								TimelineActivity.current_account = acct;
+							}
+						}
+					} else {
+						throw new NullPointerException("auth_users is null");
+					}
+				
+				}
 				reply_string = "d " + elm.getSenderScreenName() + " ";
+				
 			} else if (elm instanceof Tweet) {
 				reply_to_id = elm.getID();
 				if (TimelineActivity.current_account == null) {
@@ -113,6 +132,7 @@ public class NewTweetActivity extends Activity {
 				}
 				reply_string = "@" + elm.getSenderScreenName() + " ";
 			}
+			
 			editTweetText.setText(reply_string);
 			editTweetText.setSelection(reply_string.length());
 			

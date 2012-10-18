@@ -11,8 +11,8 @@ public class DirectMessage extends Tweet {
 	 * 
 	 */
 	private static final long serialVersionUID = -2657023974332061942L;
-	private User sender;
-	private User recipient;
+	public User sender;
+	public User recipient;
 
 	@Override
 	public String getSourceText() {
