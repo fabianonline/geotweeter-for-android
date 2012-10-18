@@ -324,7 +324,7 @@ public class TimelineActivity extends MapActivity {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this, 
 				   R.layout.timeline_element, 
 				   new ArrayList<TimelineElement>());
-		Account acct = new Account(ta, getUserToken(u), u, getApplicationContext());
+		Account acct = new Account(ta, getUserToken(u), u, getApplicationContext(), true);
 		addAccount(acct);
 	}
 	

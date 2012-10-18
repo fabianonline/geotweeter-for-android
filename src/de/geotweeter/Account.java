@@ -97,7 +97,7 @@ public class Account implements Serializable {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
 	}
 	
-	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext) {
+	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine) {
 		if (service == null) {
 			ServiceBuilder builder = new ServiceBuilder()
 			                             .provider(TwitterApi.class)
@@ -119,7 +119,9 @@ public class Account implements Serializable {
 		stream_request = new StreamRequest(this);
 		
 		all_accounts.add(this);
-		start(true);
+		if (fetchTimeLine) {
+			start(true);
+		}
 	}
 	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {

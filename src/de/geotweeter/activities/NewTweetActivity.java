@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.scribe.model.Token;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,7 +29,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -40,9 +41,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import de.geotweeter.Account;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
-import de.geotweeter.Account;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
@@ -63,6 +64,10 @@ public class NewTweetActivity extends Activity {
 	
 	private Account currentAccount;
 	private HashMap<View, Account> viewToAccounts;
+	
+	private TweetSendService service;
+	boolean isServiceBound = false;
+
 	
 	public void onCreate(Bundle savedInstanceState) {
 		Utils.setDesign(this);
@@ -87,6 +92,25 @@ public class NewTweetActivity extends Activity {
 				reply_string = "d " + elm.getSenderScreenName() + " ";
 			} else if (elm instanceof Tweet) {
 				reply_to_id = elm.getID();
+				if (TimelineActivity.current_account == null) {
+					Tweet tweet = (Tweet)elm;
+					if (tweet.entities.user_mentions != null) {
+						ArrayList<User> auth_users = getAuthUsers();
+						if (auth_users != null) {
+							for (User u : auth_users) {
+								Account acct = createAccount(u);
+								if (tweet.entities.user_mentions.get(0).id == acct.getUser().id) {
+									TimelineActivity.current_account = acct;
+								}
+							}
+						} else {
+							throw new NullPointerException("auth_users is null");
+						}
+					}
+				}
+				if (TimelineActivity.current_account == null) {
+					throw new NullPointerException("There's something rotten in the state of current_account");
+				}
 				reply_string = "@" + elm.getSenderScreenName() + " ";
 			}
 			editTweetText.setText(reply_string);
@@ -110,7 +134,7 @@ public class NewTweetActivity extends Activity {
 			User user = account.getUser();
 			ImageButton img = new ImageButton(this);
 			img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			TimelineActivity.background_image_loader.displayImage(user.getAvatarSource(), img);
+			TimelineActivity.getBackgroundImageLoader(getApplicationContext()).displayImage(user.getAvatarSource(), img);
 			img.setPadding(5, 5, 5, 5);
 			fooooo(img, currentAccount == account);
 			img.setOnClickListener(new AccountChangerListener());
@@ -277,8 +301,6 @@ public class NewTweetActivity extends Activity {
 		}
 	}
 	
-	private TweetSendService service;
-	boolean isServiceBound = false;
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -311,4 +333,33 @@ public class NewTweetActivity extends Activity {
 		super.onDestroy();
 		serviceUnbind();
 	}
+	
+	private ArrayList<User> getAuthUsers() {
+		ArrayList<User> result = null;
+		
+		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
+		String accountString = sp.getString("accounts", null);
+		
+		if (accountString != null) {
+			String[] accounts = accountString.split(" ");
+			result = User.getPersistentData(getApplicationContext(), accounts);
+		}
+		
+		return result;
+	}
+	
+	public Account createAccount(User u) {
+		TimelineElementAdapter ta = new TimelineElementAdapter(this, 
+				   R.layout.timeline_element, 
+				   new ArrayList<TimelineElement>());
+		Account acct = new Account(ta, getUserToken(u), u, getApplicationContext(), false);
+		return acct;
+	}
+
+	private Token getUserToken(User u) {
+		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
+		return new Token(sp.getString("access_token."+String.valueOf(u.id), null), 
+						  sp.getString("access_secret."+String.valueOf(u.id), null));
+	}
+
 }
