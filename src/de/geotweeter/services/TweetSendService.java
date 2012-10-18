@@ -2,18 +2,18 @@ package de.geotweeter.services;
 
 import java.util.LinkedList;
 
-import de.geotweeter.Constants;
-import de.geotweeter.R;
-import de.geotweeter.SendableTweet;
-import de.geotweeter.exceptions.TemporaryTweetSendException;
-import de.geotweeter.exceptions.TweetSendException;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import de.geotweeter.Constants;
+import de.geotweeter.R;
+import de.geotweeter.SendableTweet;
+import de.geotweeter.exceptions.TemporaryTweetSendException;
 
 public class TweetSendService extends Service {
 	private NotificationManager notificationManager;
@@ -78,6 +78,7 @@ public class TweetSendService extends Service {
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 		notification.setLatestEventInfo(getApplicationContext(), notification.tickerText, "Sending...", null);
+		notification.contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
 		notificationManager.notify(Constants.SENDING_TWEET_STATUS_NOTIFICATION_ID, notification);
 	}
 	
