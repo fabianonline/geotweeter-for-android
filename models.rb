@@ -37,4 +37,19 @@ class Crash
 	property :thread_details, Text, :lazy=>false
 
 	property :fixed, Boolean, :default=>false
+
+	def short_stacktrace
+		take_next_line = true
+		self.stack_trace.split("\n").collect do |line|
+			result = nil
+			if line[0]!=9
+				take_next_line=true
+				result = line
+			elsif take_next_line
+				take_next_line=false
+				result = line
+			end
+			result
+		end.compact.join("\n")
+	end
 end

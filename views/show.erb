@@ -21,17 +21,6 @@
 <tr class="thin-border-top <%= @crash.fixed ? 'grey' : '' %>">
 	<td>&nbsp;</td>
 	<td colspan="4">
-		<% take_next_line = true %>
-		<%= @crash.stack_trace.split("\n").collect do |line|
-			result = nil
-			if line[0]!=9
-				take_next_line=true
-				result = line
-			elsif take_next_line
-				take_next_line=false
-				result = line
-			end
-			result
-		end.compact.join("<br/>").gsub("\t", "    ").gsub(" ", "&nbsp;") %>
+		<%= @crash.short_stacktrace.gsub("\t", "    ").gsub(" ", "&nbsp;").gsub("\n", "<br />\n") %>
 	</td>
 </tr>
