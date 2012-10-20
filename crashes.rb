@@ -19,15 +19,16 @@ post '/send' do
 	Crash.properties.each do |p|
 		crash.send("#{p.name}=".to_sym, params[p.name.to_s.upcase.to_sym]) rescue nil
 	end
-	crash.save
+	if crash.save
 
-	room = Broach::Room.find_by_name(ROOM)
-	
-	string = "Neuer Crashreport ##{crash.id}. "
-	string << "Kommentar des Users: #{crash.user_comment} " if crash.user_comment
-	string << url("/crash/#{crash.id}")
-	room.speak(string, :type=>:text)
-	room.speak(crash.short_stacktrace, :type=>:paste)
+		room = Broach::Room.find_by_name(ROOM)
+		
+		string = "Neuer Crashreport ##{crash.id}. "
+		string << "Kommentar des Users: #{crash.user_comment} " if crash.user_comment
+		string << url("/crash/#{crash.id}")
+		room.speak(string, :type=>:text)
+		room.speak(crash.short_stacktrace, :type=>:paste)
+	end
 end
 
 get '/crash/:id' do

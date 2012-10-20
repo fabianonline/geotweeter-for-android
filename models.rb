@@ -2,7 +2,7 @@ class Crash
 	include DataMapper::Resource
 
 	property :id, Serial
-	property :report_id, String
+	property :report_id, String, :unique=>true
 	property :app_version_code, Integer
 	property :app_version_name, String
 	property :package_name, String
