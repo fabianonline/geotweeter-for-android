@@ -11,7 +11,10 @@ import org.acra.annotation.*;
                 resDialogText          = R.string.crash_dialog_text,
                 resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
                 resDialogOkToast       = R.string.crash_dialog_ok_toast,
-                logcatArguments        = {"-t", "200", "-v", "threadtime", "dalvikvm:s"})
+                logcatArguments        = {"-t", "200", "-v", "threadtime", "dalvikvm:s"},
+                sharedPreferencesName  = Constants.PREFS_APP,
+                additionalSharedPreferences = {Constants.PREFS_APP, Constants.PREFS_ACCOUNTS},
+                excludeMatchingSharedPreferencesKeys = {"^access_"})
 public class Geotweeter extends Application {
 	@Override
 	public void onCreate() {

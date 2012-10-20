@@ -87,4 +87,7 @@
     <string name="crash_dialog_comment_prompt">(Optional) Was hast du getan, als der Fehler auftrat?</string>
     <string name="crash_dialog_ok_toast">Fehlerbericht wurde gesendet. Vielen Dank!</string>
 
+    <string name="pref_development">Entwicklung</string>
+    <string name="pref_development_email">Mail-Adresse für Crashreports</string>
+    <string name="pref_development_email_summary">Freiwillig. Damit wird dich nach Crashes erreichen können.</string>
 </resources>

@@ -141,5 +141,15 @@
     	    <intent android:action=".activities.SettingsAboutActivity" />
     	</Preference>
     </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="@string/pref_development">
+        
+        <EditTextPreference
+            android:key="acra.user.email"
+            android:title="@string/pref_development_email"
+            android:summary="@string/pref_development_email_summary" />
+        
+    </PreferenceCategory>
 
 </PreferenceScreen>
