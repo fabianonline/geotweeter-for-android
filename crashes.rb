@@ -41,6 +41,11 @@ post '/crash/:id/fixed' do
 	redirect to('/')
 end
 
+post '/crash/:id/notfixed' do
+	Crash.get(params[:id]).update(:fixed=>false)
+	redirect to('/')
+end
+
 get '/' do
 	@crashes = Crash.all(:order => [:id.desc])
 	erb :index
