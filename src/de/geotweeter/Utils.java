@@ -3,7 +3,7 @@ package de.geotweeter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
+import org.acra.ErrorReporter;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.parser.Feature;
 
 import de.geotweeter.activities.TimelineActivity;
@@ -47,7 +48,14 @@ public class Utils {
 	}
 	
 	public static TimelineElement jsonToNativeObject(String json) throws JSONException, UnknownJSONObjectException {
-		JSONObject obj = JSON.parseObject(json, Feature.DisableCircularReferenceDetect);
+		JSONObject obj;
+		
+		try {
+			obj = JSON.parseObject(json, Feature.DisableCircularReferenceDetect);
+		} catch (JSONException ex) {
+			ErrorReporter.getInstance().putCustomData("json", json);
+			throw ex;
+		}
 		
 		if (obj.containsKey("text") && obj.containsKey("recipient")) {
 			return JSON.parseObject(json, DirectMessage.class);
