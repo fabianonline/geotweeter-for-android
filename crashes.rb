@@ -25,6 +25,7 @@ post '/send' do
 		
 		string = "Neuer Crashreport ##{crash.id}. "
 		string << "Kommentar des Users: #{crash.user_comment} " if crash.user_comment
+		string << "User: #{crash.email} " unless crash.email==""
 		string << url("/crash/#{crash.id}")
 		room.speak(string, :type=>:text)
 		room.speak(crash.short_stacktrace, :type=>:paste)
