@@ -8,16 +8,15 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
 
-import android.app.Application;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.alibaba.fastjson.JSONException;
+
 import de.geotweeter.exceptions.UnknownJSONObjectException;
 
 public class StreamRequest {

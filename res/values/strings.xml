@@ -80,6 +80,7 @@
     <string name="pref_notifications_types_mentions_title">Mentions</string>
     <string name="title_activity_settings_about">About</string>
     <string name="pref_about">Informationen</string>
+    <string name="menu_about">Informationen</string>
     <string name="pref_about_libraries">Verwendete Bibliotheken</string>
     
     <string name="crash_toast_text">Ups. Der Geotweeter ist abgestürzt. Räume auf…</string>
@@ -87,4 +88,7 @@
     <string name="crash_dialog_comment_prompt">(Optional) Was hast du getan, als der Fehler auftrat?</string>
     <string name="crash_dialog_ok_toast">Fehlerbericht wurde gesendet. Vielen Dank!</string>
 
+    <string name="pref_development">Entwicklung</string>
+    <string name="pref_development_email">Mail-Adresse für Crashreports</string>
+    <string name="pref_development_email_summary">Freiwillig. Damit wird dich nach Crashes erreichen können.</string>
 </resources>

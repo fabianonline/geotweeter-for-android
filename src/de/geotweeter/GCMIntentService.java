@@ -1,6 +1,6 @@
 package de.geotweeter;
 
-import org.json.JSONException;
+import com.alibaba.fastjson.JSONException;
 
 import android.app.Notification;
 import android.app.NotificationManager;

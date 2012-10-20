@@ -40,8 +40,8 @@
         android:id="@+id/btnAddImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_toLeftOf="@id/btnImageManager"
+        android:layout_below="@id/linLayAccounts"
         android:onClick="addImageHandler"
         android:text="@string/btn_add_image" />
 
@@ -49,8 +49,8 @@
         android:id="@+id/btnGeo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/btnAddImage"
+        android:layout_below="@id/linLayAccounts"
         android:text="@string/btn_geo" />
 
     <EditText
