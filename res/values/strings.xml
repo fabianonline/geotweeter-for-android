@@ -80,6 +80,7 @@
     <string name="pref_notifications_types_mentions_title">Mentions</string>
     <string name="title_activity_settings_about">About</string>
     <string name="pref_about">Informationen</string>
+    <string name="menu_about">Informationen</string>
     <string name="pref_about_libraries">Verwendete Bibliotheken</string>
     
     <string name="crash_toast_text">Ups. Der Geotweeter ist abgestürzt. Räume auf…</string>

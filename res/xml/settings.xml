@@ -132,17 +132,6 @@
     </PreferenceCategory>
     
     <PreferenceCategory 
-        android:title="@string/pref_about">
-    	
-    	<Preference
-    	    android:key="settings_about"
-    	    android:title="@string/pref_about">
-    	    
-    	    <intent android:action=".activities.SettingsAboutActivity" />
-    	</Preference>
-    </PreferenceCategory>
-    
-    <PreferenceCategory 
         android:title="@string/pref_development">
         
         <EditTextPreference

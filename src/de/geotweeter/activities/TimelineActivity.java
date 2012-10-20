@@ -404,11 +404,16 @@ public class TimelineActivity extends MapActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_settings:
-			Intent settingsActivity = new Intent(this,
-					GeneralPrefsActivity.class);
-			startActivity(settingsActivity);
-			return true;
+			case R.id.menu_settings:
+				Intent settingsActivity = new Intent(this,
+						GeneralPrefsActivity.class);
+				startActivity(settingsActivity);
+				return true;
+			
+			case R.id.menu_about:
+				Intent aboutActivity = new Intent(this, AboutActivity.class);
+				startActivity(aboutActivity);
+				return true;
 		}
 		return true;
 	}

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 
-public class SettingsAboutActivity extends Activity {
+public class AboutActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
