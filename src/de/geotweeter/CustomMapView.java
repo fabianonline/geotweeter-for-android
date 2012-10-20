@@ -62,5 +62,5 @@ public class CustomMapView extends MapView {
 		System.gc();
 		return super.onTouchEvent(ev);
 	}
-
+	
 }
