@@ -19,6 +19,7 @@
         android:layout_alignBaseline="@+id/btnAddImage"
         android:layout_alignBottom="@+id/btnAddImage"
         android:layout_alignParentRight="true"
+        android:layout_below="@id/linLayAccounts"
         android:text="140"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#FF00FF00" />
@@ -32,6 +33,7 @@
         android:layout_alignBottom="@id/btnAddImage"
         android:scaleType="centerInside"
         android:adjustViewBounds="true"
+        android:onClick="imageManagerHandler"
         android:visibility="gone"/>
 
     <Button

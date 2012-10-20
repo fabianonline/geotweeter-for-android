@@ -7,6 +7,8 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.view.View;
 
@@ -132,5 +134,21 @@ public class Utils {
 				a.setTheme(android.R.style.Theme_Holo);
 			}
 		}
+	}
+	
+	public static Bitmap resizeBitmap(String path, int reqHeight) {
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(path, options);
+		int imageHeight = options.outHeight;
+		
+		if(imageHeight > reqHeight) {
+//			options.inSampleSize = Math.round( (float) imageHeight / (float) reqHeight);
+			options.inSampleSize = Integer.highestOneBit(imageHeight / reqHeight);
+		}
+		
+		options.inJustDecodeBounds = false;
+		
+		return BitmapFactory.decodeFile(path, options);
 	}
 }
