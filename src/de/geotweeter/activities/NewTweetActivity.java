@@ -233,11 +233,18 @@ public class NewTweetActivity extends Activity {
 			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
 			
 			ImageButton btnImageManager = (ImageButton) findViewById(R.id.btnImageManager);
-			Drawable draw = new BitmapDrawable(picturePath);
+			int rowHeight = findViewById(R.id.btnAddImage).getHeight();
+			Drawable draw = new BitmapDrawable(Utils.resizeBitmap(picturePath, rowHeight));
 			btnImageManager.setImageDrawable(draw);
+//			btnImageManager.setMaxWidth((int) Math.ceil(rowHeight * ( (float) draw.getIntrinsicWidth() / (float) draw.getIntrinsicHeight())) );
 			btnImageManager.setVisibility(ImageView.VISIBLE);
 //			btnImageManager.setBackgroundResource(0);
+			Log.d(LOG, "Height" + draw.getIntrinsicHeight());
 		}
+	}
+	
+	public void imageManagerHandler(View v) {
+		
 	}
 	
 	protected class RemainingCharUpdater implements TextWatcher {
