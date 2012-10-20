@@ -156,7 +156,7 @@ public class NewTweetActivity extends Activity {
 			img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			TimelineActivity.getBackgroundImageLoader(getApplicationContext()).displayImage(user.getAvatarSource(), img);
 			img.setPadding(5, 5, 5, 5);
-			fooooo(img, currentAccount == account);
+			changeLayoutOfAccountButton(img, currentAccount == account);
 			img.setOnClickListener(new AccountChangerListener());
 			lin.addView(img);
 			viewToAccounts.put(img, account);
@@ -176,15 +176,15 @@ public class NewTweetActivity extends Activity {
 			if(acc != currentAccount) {
 				/* TODO: Hole oldView auf anderem Weg. Map, die in 2 Richtungen funktioniert */
 				ImageButton oldView = (ImageButton) getViewFromAccount(currentAccount);
-				fooooo(oldView, false);
-				fooooo((ImageButton) v, true);
+				changeLayoutOfAccountButton(oldView, false);
+				changeLayoutOfAccountButton((ImageButton) v, true);
 				currentAccount = acc;
 			}
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
-	private void fooooo(ImageView v, boolean chosen) {
+	private void changeLayoutOfAccountButton(ImageView v, boolean chosen) {
 		int bgColor = Color.LTGRAY;
 //		int bgColor = Color.WHITE;
 //		int highlightColor = 0xFFFF0000;
