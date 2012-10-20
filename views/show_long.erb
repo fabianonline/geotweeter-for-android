@@ -10,6 +10,7 @@
 <strong>Speicher frei:</strong>                   <%= @crash.available_mem_size %><br />
 <br />
 <strong>Kommentar des Users:</strong>             <%= @crash.user_comment %><br />
+<strong>User-eMail:</strong>                      <%= @crash.email %><br />
 <br />
 <% if @crash.fixed %>
 	<form method="post" action="<%= url("/crash/#{@crash.id}/notfixed") %>">

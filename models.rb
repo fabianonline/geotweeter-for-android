@@ -52,4 +52,8 @@ class Crash
 			result
 		end.compact.join("\n")
 	end
+
+	def email
+		(/acra\.user\.email=(.+)/.match(shared_preferences)[1] || "") rescue ""
+	end
 end
