@@ -21,6 +21,11 @@
 	</form>
 <% end %>
 <br />
+<strong>Custom Data:</strong>
+<blockquote>
+	<%= @crash.custom_data.gsub("\n", "<br />") %>
+</blockquote>
+
 <strong>Stacktrace:</strong>
 <blockquote>
 	<%= @crash.stack_trace.gsub("\n", "<br/>").gsub("\t", "    ").gsub(" ", "&nbsp;") %>
