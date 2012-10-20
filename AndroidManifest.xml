@@ -80,10 +80,10 @@
         <service android:name=".services.TweetSendService" />
 
         <activity
-            android:name=".activities.SettingsAboutActivity"
-            android:label="@string/pref_about">
+            android:name=".activities.AboutActivity"
+            android:label="@string/menu_about">
             <intent-filter>
-                <action android:name=".activities.SettingsAboutActivity" />
+                <action android:name=".activities.AboutActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
