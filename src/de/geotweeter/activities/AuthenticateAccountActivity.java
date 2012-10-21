@@ -31,8 +31,8 @@ public class AuthenticateAccountActivity extends Activity {
 
 	final OAuthService os = new ServiceBuilder()
 		.provider(TwitterApi.class)
-		.apiKey(Constants.API_KEY)
-		.apiSecret(Constants.API_SECRET)
+		.apiKey(Utils.getProperty("twitter.consumer.key"))
+		.apiSecret(Utils.getProperty("twitter.consumer.secret"))
 		.callback(Constants.OAUTH_CALLBACK)
 		.build();
 	
