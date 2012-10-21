@@ -4,7 +4,6 @@ require 'rubygems'
 require 'bundler'
 Bundler.require(:default)
 require 'dm-migrations'
-require 'dm-validations'
 require 'erb'
 require 'models.rb'
 
@@ -16,6 +15,7 @@ Broach.settings = {'account'=>'geotweeter', 'token'=>'1fcf39a7b2cbf17d77d7fabf81
 ROOM = "Geotweeter"
 
 post '/send' do
+	halt(200) if Crash.first(:report_id=>params[:REPORT_ID]) != nil
 	crash = Crash.new
 	Crash.properties.each do |p|
 		crash.send("#{p.name}=".to_sym, params[p.name.to_s.upcase.to_sym]) rescue nil

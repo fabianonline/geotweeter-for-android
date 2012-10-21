@@ -38,8 +38,6 @@ class Crash
 
 	property :fixed, Boolean, :default=>false
 
-	validates_uniqueness_of :report_id
-
 	def short_stacktrace
 		take_next_line = true
 		self.stack_trace.split("\n").collect do |line|
