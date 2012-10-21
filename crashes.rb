@@ -11,8 +11,14 @@ DataMapper.setup(:default, "sqlite:database.db")
 DataMapper.finalize
 DataMapper.auto_upgrade!
 
-Broach.settings = {'account'=>'geotweeter', 'token'=>'1fcf39a7b2cbf17d77d7fabf81a5d6ec27f17f18', 'use_ssl'=>true}
-ROOM = "Geotweeter"
+$properties = {}
+IO.readlines(File.join(File.dirname(__FILE__), "geotweeter.properties")).each do |l|
+	parts=l.split("=", 2)
+	next unless parts[1]
+	$properties[parts[0]] = parts[1].strip
+end
+
+Broach.settings = {'account'=>$properties['campfire.account'], 'token'=>$properties['campfire.token'], 'use_ssl'=>true}
 
 post '/send' do
 	halt(200) if Crash.first(:report_id=>params[:REPORT_ID]) != nil
@@ -21,8 +27,7 @@ post '/send' do
 		crash.send("#{p.name}=".to_sym, params[p.name.to_s.upcase.to_sym]) rescue nil
 	end
 	if crash.save
-
-		room = Broach::Room.find_by_name(ROOM)
+		room = Broach::Room.find_by_name($properties['campfire.room'])
 		
 		string = "Neuer Crashreport ##{crash.id}. "
 		string << "Kommentar des Users: #{crash.user_comment} " if crash.user_comment
