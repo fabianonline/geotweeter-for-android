@@ -120,7 +120,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		}
 		
 		if (pref.getBoolean("pref_notifications_led_enabled", false)) {
-			notification.ledARGB = Integer.parseInt(pref.getString("pref_notifications_led_color", "4278190335"));
+			notification.ledARGB = (int) Long.parseLong(pref.getString("pref_notifications_led_color", "4278190335"));
 			notification.ledOnMS = 200;
 			notification.ledOffMS = 1000;
 			notification.flags |= Notification.FLAG_SHOW_LIGHTS;
