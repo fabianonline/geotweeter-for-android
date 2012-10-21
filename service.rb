@@ -10,9 +10,17 @@ $settings = YAML::load_file("settings.yml") rescue {}
 $digest = Digest::SHA256.new
 $stats = {:normal_tweets=>0, :mentions=>0, :dms=>0, :bytes=>0, :accounts=>0, :reg_ids=>0, :gcms_successful=>0, :gcms_failed=>0, :favorites=>0, :retweets=>0, :re_registrations=>0, :reconnects=>0}
 
-$gcm_sender = HiGCM::Sender.new("AIzaSyCkOw9l2iZhjytnKNmL8EiWmZZtcco6lik")
-CONSUMER_TOKEN  = "7tbUmgasX8QXazkxGMNw"
-CONSUMER_SECRET = "F22QSxchkczthiUQomREXEu4zDA15mxiENNttkkA"
+$properties = {}
+IO.readlines(File.join(File.dirname(__FILE__), "geotweeter.properties")).each do |l|
+	parts=l.split("=", 2)
+	next unless parts[1]
+	$properties[parts[0]] = parts[1].strip
+end
+
+
+$gcm_sender = HiGCM::Sender.new($properties['google.gcm.sender.token'])
+CONSUMER_TOKEN  = $properties['twitter.consumer.key']
+CONSUMER_SECRET = $properties['twitter.consumer.secret']
 
 def update()
 	(lines = IO.readlines("command.txt")) rescue return
