@@ -4,6 +4,7 @@ require 'rubygems'
 require 'bundler'
 Bundler.require(:default)
 require 'dm-migrations'
+require 'dm-validations'
 require 'erb'
 require 'models.rb'
 

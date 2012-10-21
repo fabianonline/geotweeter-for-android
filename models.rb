@@ -2,7 +2,7 @@ class Crash
 	include DataMapper::Resource
 
 	property :id, Serial
-	property :report_id, String, :unique=>true
+	property :report_id, String
 	property :app_version_code, Integer
 	property :app_version_name, String
 	property :package_name, String
@@ -37,6 +37,8 @@ class Crash
 	property :thread_details, Text, :lazy=>false
 
 	property :fixed, Boolean, :default=>false
+
+	validates_uniqueness_of :report_id
 
 	def short_stacktrace
 		take_next_line = true
