@@ -370,7 +370,7 @@ public class Account implements Serializable {
 		if (imageHoster.equals("twitter")) {
 			
 			ContentBody picture = null;
-			File f = new File(tweet.imagePath);
+			File f = new File(tweet.images.get(0));
 			if (f.length() <= PIC_SIZE_TWITTER) {
 				picture = new FileBody(f);
 			} else {
@@ -387,7 +387,8 @@ public class Account implements Serializable {
 			entity.addPart("key", new StringBody(Utils.getProperty("twitpic.key")));
 			entity.addPart("message", new StringBody(tweet.text));
 			
-			File f = new File(tweet.imagePath);
+			// TODO Send more than one file
+			File f = new File(tweet.images.get(0));
 			addImageToMultipartEntity(entity, f, "media");
 //			entity.addPart("media", new FileBody(new File(picture)));
 			
@@ -412,7 +413,8 @@ public class Account implements Serializable {
 			if (response.isSuccessful()) {
 				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
 				Log.d(LOG, "Send Tweet with Twitpic");
-				tweet.imagePath = null;
+				// TODO Change below
+				tweet.images.clear();
 				tweet.text += " " + twitpicURL;
 				sendTweet(tweet);
 				Log.d(LOG, "Finished Send Tweet with Twitpic");

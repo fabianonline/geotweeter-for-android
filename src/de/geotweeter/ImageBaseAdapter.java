@@ -78,5 +78,9 @@ public class ImageBaseAdapter extends BaseAdapter {
 		imageView.setImageDrawable(new BitmapDrawable(context.getResources(), Utils.resizeBitmap(path, 300)));
 		return convertView;
 	}
+	
+	public List<String> getItems() {
+		return items;
+	}
 
 }

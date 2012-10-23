@@ -95,7 +95,7 @@ public class TweetSendService extends Service {
 				updateNotification();
 				tweet = tweets.get(i);
 				try {
-					if (tweet.imagePath != null) {
+					if (tweet.images.size() > 0) {
 						tweet.account.sendTweetWithPic(tweet);
 					} else {
 						tweet.account.sendTweet(tweet);
