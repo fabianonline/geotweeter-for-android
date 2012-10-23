@@ -174,7 +174,7 @@ public class Utils {
 				properties.load(stream);
 				stream.close();
 			} catch (Exception caught_exception) {
-				RuntimeException exception = new RuntimeException("Could now load file '/raw/geotweeter.properties'.");
+				RuntimeException exception = new RuntimeException("Could not load file '/raw/geotweeter.properties'.");
 				exception.initCause(caught_exception);
 				throw exception;
 			}

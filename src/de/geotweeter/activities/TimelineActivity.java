@@ -30,13 +30,13 @@ import android.widget.TextView;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import de.geotweeter.Account;
 import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
-import de.geotweeter.CustomMapView;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
@@ -54,7 +54,7 @@ public class TimelineActivity extends MapActivity {
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
-	private CustomMapView map;
+	private MapView map;
 	private static TimelineActivity instance = null;
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
