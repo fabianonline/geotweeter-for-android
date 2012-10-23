@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp" >
 
@@ -56,10 +62,11 @@
         android:layout_below="@id/txtText"
         android:text="txtPlace"
         android:textAppearance="?android:attr/textAppearanceSmall" />
+</RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/map_and_controls"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/txtPlace"
         android:visibility="gone" >
@@ -97,4 +104,4 @@
 
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

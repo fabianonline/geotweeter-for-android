@@ -36,6 +36,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
@@ -101,8 +102,8 @@ public class Account implements Serializable {
 		if (service == null) {
 			ServiceBuilder builder = new ServiceBuilder()
 			                             .provider(TwitterApi.class)
-			                             .apiKey(Constants.API_KEY)
-			                             .apiSecret(Constants.API_SECRET);
+			                             .apiKey(Utils.getProperty("twitter.consumer.key"))
+			                             .apiSecret(Utils.getProperty("twitter.consumer.secret"));
 			if (Debug.LOG_OAUTH_STUFF) {
 				builder = builder.debug();
 			}
@@ -129,8 +130,8 @@ public class Account implements Serializable {
 		if (service == null) {
 			ServiceBuilder builder = new ServiceBuilder()
 			                             .provider(TwitterApi.class)
-			                             .apiKey(Constants.API_KEY)
-			                             .apiSecret(Constants.API_SECRET);
+			                             .apiKey(Utils.getProperty("twitter.consumer.key"))
+			                             .apiSecret(Utils.getProperty("twitter.consumer.secret"));
 			if (Debug.LOG_OAUTH_STUFF) {
 				builder = builder.debug();
 			}
@@ -383,7 +384,7 @@ public class Account implements Serializable {
 			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
 			
 			MultipartEntity entity = new MultipartEntity();
-			entity.addPart("key", new StringBody(Constants.TWITPIC_API_KEY));
+			entity.addPart("key", new StringBody(Utils.getProperty("twitpic.key")));
 			entity.addPart("message", new StringBody(tweet.text));
 			
 			File f = new File(tweet.imagePath);
@@ -455,7 +456,7 @@ public class Account implements Serializable {
 		new Thread(new Runnable() {
 			public void run() {
 				HttpClient http_client = new CacertHttpClient(appContext);
-				HttpPost http_post = new HttpPost(Constants.GCM_SERVER_URL + "register");
+				HttpPost http_post = new HttpPost(Utils.getProperty("google.gcm.server.url") + "/register");
 				try {
 					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(5);
 					name_value_pair.add(new BasicNameValuePair("reg_id", TimelineActivity.reg_id));
@@ -486,7 +487,7 @@ public class Account implements Serializable {
 				
 				try {
 					HttpClient http_client = new DefaultHttpClient();
-					HttpGet http_get = new HttpGet(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
+					HttpGet http_get = new HttpGet(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
 					http_get.addHeader("X-Auth-Service-Provider", Constants.URI_VERIFY_CREDENTIALS);
 					http_get.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
 					HttpResponse response = http_client.execute(http_get);
@@ -544,7 +545,7 @@ public class Account implements Serializable {
 				
 				try {
 					HttpClient http_client = new DefaultHttpClient();
-					HttpPost http_post = new HttpPost(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Constants.TWEETMARKER_KEY);
+					HttpPost http_post = new HttpPost(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
 					http_post.addHeader("X-Auth-Service-Provider", Constants.URI_VERIFY_CREDENTIALS);
 					http_post.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
 					http_post.setEntity(new StringEntity(""+max_read_tweet_id+","+max_read_mention_id+","+max_read_dm_id));

@@ -65,7 +65,7 @@ public class TimelineActivity extends MapActivity {
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		instance = this;
-		map = new MapView(this, Constants.MAPS_API_KEY);
+		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
 		setContentView(R.layout.activity_timeline);
 		background_image_loader = new BackgroundImageLoader(getApplicationContext());
 		
@@ -121,7 +121,7 @@ public class TimelineActivity extends MapActivity {
 				GCMRegistrar.checkManifest(this);
 				reg_id = GCMRegistrar.getRegistrationId(this);
 				if (reg_id.equals("")) {
-					GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
+					GCMRegistrar.register(this, Utils.getProperty("google.gcm.sender.id"));
 				} else {
 					for (Account acct : Account.all_accounts) {
 						acct.registerForGCMMessages();

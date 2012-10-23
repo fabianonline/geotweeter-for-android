@@ -1,5 +1,10 @@
 package de.geotweeter;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +36,7 @@ import de.geotweeter.timelineelements.Tweet;
 public class Utils {
 	private static int mainSpinnerDisplays = 0;
 	private static final String LOG = "Utils";
+	private static Properties properties;
 	
 	public static int countChars(String str) {
 		str = str.trim();
@@ -158,5 +164,25 @@ public class Utils {
 		options.inJustDecodeBounds = false;
 		
 		return BitmapFactory.decodeFile(path, options);
+	}
+	
+	public static String getProperty(String key) {
+		if (properties == null) {
+			properties = new Properties();
+			try {
+				InputStream stream = Geotweeter.getContext().getResources().openRawResource(R.raw.geotweeter);
+				properties.load(stream);
+				stream.close();
+			} catch (Exception caught_exception) {
+				RuntimeException exception = new RuntimeException("Could not load file '/raw/geotweeter.properties'.");
+				exception.initCause(caught_exception);
+				throw exception;
+			}
+		}
+		
+		if (!properties.containsKey(key)) {
+			throw new RuntimeException("Couldn't find property '" + key + "'");
+		}
+		return properties.getProperty(key);
 	}
 }
