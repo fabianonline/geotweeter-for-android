@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/image_list_element"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp" >
+    
+    <ImageView
+        android:id="@+id/img_view_image_list_element"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop" />
+    
+    <ImageView
+        android:src="@drawable/cross"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />    <!-- 
+    <layer-list >
+        
+        <item
+            android:id="@+id/tweet_image" />
+        
+        <item>
+            <bitmap android:src="@drawable/cross" />
+        </item>
+    </layer-list>
+     -->
+
+</RelativeLayout>

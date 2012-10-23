@@ -3,13 +3,16 @@ package de.geotweeter.activities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.scribe.model.Token;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -28,6 +31,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -35,6 +39,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,6 +48,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
+import de.geotweeter.ImageAdapter;
+import de.geotweeter.ImageBaseAdapter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.TimelineElementAdapter;
@@ -60,7 +67,8 @@ public class NewTweetActivity extends Activity {
 	protected Location location = null;
 	protected GPSCoordsListener gpslistener = null;
 	private long reply_to_id;
-	private String picturePath;
+//	private String picturePath;
+	private ImageBaseAdapter imageAdapter;
 	
 	private Account currentAccount;
 	private HashMap<View, Account> viewToAccounts;
@@ -162,6 +170,9 @@ public class NewTweetActivity extends Activity {
 			viewToAccounts.put(img, account);
 		}
 		
+//		imageAdapter = new ImageAdapter(this, new LinkedList<String>());
+		imageAdapter = new ImageBaseAdapter(this, new LinkedList<String>());
+		
 	}
 	
 	protected void onPause() {
@@ -228,7 +239,8 @@ public class NewTweetActivity extends Activity {
 			
 			Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
 			cursor.moveToFirst();
-			picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+			String picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+			imageAdapter.add(picturePath);
 			cursor.close();
 			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
 			
@@ -244,7 +256,23 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	public void imageManagerHandler(View v) {
-		
+//		ImageView img = new ImageView(this);
+//		img.setImageBitmap(Utils.resizeBitmap(picturePath, 150));
+		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		GridView gridView = (GridView) vi.inflate(R.layout.image_gridview, null);
+		gridView.setAdapter(imageAdapter);
+		gridView.setColumnWidth(90);
+		gridView.setNumColumns(GridView.AUTO_FIT);
+		new AlertDialog.Builder(this)
+		               .setTitle("Title foo")
+		               .setView(gridView)
+//		               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//		            	   @Override
+//		            	   public void onClick(DialogInterface dialog, int which) {
+//		            		   dialog.dismiss();
+//		            	   }
+//		               })
+		               .show();
 	}
 	
 	protected class RemainingCharUpdater implements TextWatcher {
@@ -316,7 +344,8 @@ public class NewTweetActivity extends Activity {
 		public void onClick(View v) {
 			String text = ((TextView)findViewById(R.id.tweet_text)).getText().toString().trim();
 			SendableTweet tweet = new SendableTweet(currentAccount, text);
-			tweet.imagePath = picturePath;
+//			tweet.imagePath = picturePath;
+			tweet.imagePath = imageAdapter.getItem(0);
 			tweet.location = location;
 			tweet.reply_to_status_id = reply_to_id;
 			service.addSendableTweet(tweet);

@@ -16,41 +16,19 @@
         android:id="@+id/textCharsRemaining"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/btnAddImage"
-        android:layout_alignBottom="@+id/btnAddImage"
+        android:layout_alignBaseline="@+id/btnGeo"
+        android:layout_alignBottom="@+id/btnGeo"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/linLayAccounts"
+        android:layout_alignParentTop="true"
         android:text="140"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#FF00FF00" />
-    
-    <ImageButton
-        android:id="@+id/btnImageManager"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/textCharsRemaining"
-        android:layout_alignTop="@id/btnAddImage"
-        android:layout_alignBottom="@id/btnAddImage"
-        android:scaleType="centerInside"
-        android:adjustViewBounds="true"
-        android:onClick="imageManagerHandler"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/btnAddImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/btnImageManager"
-        android:layout_below="@id/linLayAccounts"
-        android:onClick="addImageHandler"
-        android:text="@string/btn_add_image" />
 
     <ToggleButton
         android:id="@+id/btnGeo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/btnAddImage"
-        android:layout_below="@id/linLayAccounts"
+        android:layout_toLeftOf="@+id/textCharsRemaining"
         android:text="@string/btn_geo" />
 
     <EditText
@@ -58,11 +36,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/btnAddImage"
+        android:layout_below="@id/btnGeo"
         android:ems="10"
         android:inputType="textMultiLine"
         android:minLines="3"
         android:gravity="top" />
+
+    <Button
+        android:id="@+id/btnAddImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tweet_text"
+        android:onClick="addImageHandler"
+        android:text="@string/btn_add_image" />
+    
+    <ImageButton
+        android:id="@+id/btnImageManager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/btnAddImage"
+        android:layout_alignTop="@id/btnAddImage"
+        android:layout_alignBottom="@id/btnAddImage"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:onClick="imageManagerHandler"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnSend"
