@@ -259,8 +259,8 @@ public class NewTweetActivity extends Activity {
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		GridView gridView = (GridView) vi.inflate(R.layout.image_gridview, null);
 		gridView.setAdapter(imageAdapter);
-		gridView.setColumnWidth(90);
-		gridView.setNumColumns(GridView.AUTO_FIT);
+//		gridView.setColumnWidth(90);
+//		gridView.setNumColumns(GridView.AUTO_FIT);
 		new AlertDialog.Builder(this)
 		               .setTitle("Title foo")
 		               .setView(gridView)

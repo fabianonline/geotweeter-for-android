@@ -3,10 +3,9 @@
     android:id="@+id/image_gridview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:columnWidth="120dp"
-    android:numColumns="auto_fit"
-    android:verticalSpacing="10dp"
-    android:horizontalSpacing="10dp"
+    android:numColumns="3"
+    android:verticalSpacing="1dp"
+    android:horizontalSpacing="1dp"
     android:stretchMode="columnWidth"
     android:gravity="center" >
     

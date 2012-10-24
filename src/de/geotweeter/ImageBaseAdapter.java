@@ -7,8 +7,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import android.widget.ImageView;
  */
 public class ImageBaseAdapter extends BaseAdapter {
 	
+	private static final String LOG = "ImageBaseAdapter";
 	private List<String> items;
 	private Context context;
 	
@@ -64,7 +64,9 @@ public class ImageBaseAdapter extends BaseAdapter {
 //			imageView.setPadding(8, 8, 8, 8);
 			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.image_list_element, null);
-			convertView.setLayoutParams(new GridView.LayoutParams(110, 110));
+			int width = parent.getWidth() / 3;
+			Log.d(LOG, "width: " + width);
+			convertView.setLayoutParams(new GridView.LayoutParams(140, 140));
 //		} else {
 //			imageView = (ImageView) convertView;
 		}
