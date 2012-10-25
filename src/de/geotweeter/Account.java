@@ -56,6 +56,8 @@ import com.alibaba.fastjson.JSON;
 
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
+import de.geotweeter.exceptions.PermanentTweetSendException;
+import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -380,44 +382,63 @@ public class Account implements Serializable {
 			api.sendTweetWithPicture(tweet, picture);
 
 		} else if(imageHoster.equals("twitpic")) {
-			// Upload pic to Twitpic
-			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
 			
-			MultipartEntity entity = new MultipartEntity();
-			entity.addPart("key", new StringBody(Utils.getProperty("twitpic.key")));
-			entity.addPart("message", new StringBody(tweet.text));
-			
-			// TODO Send more than one file
-			File f = new File(tweet.images.get(0));
-			addImageToMultipartEntity(entity, f, "media");
-			
-			Log.d(LOG, "Start output Stream");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			entity.writeTo(out);
-			Log.d(LOG, "Finish output Stream");
-			request.addPayload(out.toByteArray());
-			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
-			
-			OAuthRequest oauth_request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/account/verify_credentials.json");
-			signRequest(oauth_request);
-			request.addHeader("X-Auth-Service-Provider", "https://api.twitter.com/1/account/verify_credentials.json");
-			request.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
-			
-			Log.d(LOG, "Send Twitpic");
-			Response response = request.send();
-			Log.d(LOG, "Finished Send Twitpic");
-			
-			// Handle response
-			// sendTweet with pic-URL
-			if (response.isSuccessful()) {
-				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
-				Log.d(LOG, "Send Tweet with Twitpic");
-				// TODO Change below
-				tweet.images.clear();
-				tweet.text += " " + twitpicURL;
-				sendTweet(tweet);
-				Log.d(LOG, "Finished Send Tweet with Twitpic");
+			for(int i = 0; i < tweet.images.size(); i++) {
+				if(! tweet.images.get(i).equals("")) {
+					// Upload pic to Twitpic
+					OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
+					
+					MultipartEntity entity = new MultipartEntity();
+					entity.addPart("key", new StringBody(Utils.getProperty("twitpic.key")));
+					entity.addPart("message", new StringBody(tweet.text));
+					
+					// TODO Send more than one file
+					File f = new File(tweet.images.get(i));
+					addImageToMultipartEntity(entity, f, "media");
+					
+					Log.d(LOG, "Start output Stream, Twitpic " + i);
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					entity.writeTo(out);
+					Log.d(LOG, "Finish output Stream, Twitpic " + i);
+					request.addPayload(out.toByteArray());
+					request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
+					out.close();
+					
+					OAuthRequest oauth_request = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS_1);
+					signRequest(oauth_request);
+					request.addHeader("X-Auth-Service-Provider", Constants.URI_VERIFY_CREDENTIALS_1);
+					request.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
+					
+					Log.d(LOG, "Send Twitpic " + i);
+					Response response;
+					try {
+						response = request.send();
+					} catch(OAuthException e) {
+						// TODO In the next scribe version will be more differentiated Exception classes for
+						// connection problems and so on. We really should use that.
+						throw new TemporaryTweetSendException();
+					}
+					Log.d(LOG, "Finished Send Twitpic " + i);
+					
+					// Handle response
+					// Add pic-URL to message
+					if (response.isSuccessful()) {
+						String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
+						tweet.images.set(i, "");
+						tweet.text += " " + twitpicURL;
+						Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
+					} else {
+						if (response.getCode() >= 500) {
+							throw new TemporaryTweetSendException();
+						} else {
+							throw new PermanentTweetSendException();
+						}
+					}
+				}
 			}
+			Log.d(LOG, "Send Twitpic-Tweet");
+			sendTweet(tweet);
+			Log.d(LOG, "Finished: Send Twitpic-Tweet");
 		} else {
 			//TODO: Exception?
 		}
