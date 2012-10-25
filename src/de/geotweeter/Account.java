@@ -390,7 +390,6 @@ public class Account implements Serializable {
 			// TODO Send more than one file
 			File f = new File(tweet.images.get(0));
 			addImageToMultipartEntity(entity, f, "media");
-//			entity.addPart("media", new FileBody(new File(picture)));
 			
 			Log.d(LOG, "Start output Stream");
 			ByteArrayOutputStream out = new ByteArrayOutputStream();

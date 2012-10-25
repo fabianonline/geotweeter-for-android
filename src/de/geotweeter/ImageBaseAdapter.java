@@ -3,6 +3,7 @@
  */
 package de.geotweeter;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
@@ -25,13 +26,20 @@ public class ImageBaseAdapter extends BaseAdapter {
 	private List<String> items;
 	private Context context;
 	
+	private List<Boolean> markedForDelete;
+	
 	public ImageBaseAdapter(Context context, List<String> objects) {
 		this.context = context;
 		items = objects;
+		markedForDelete = new LinkedList<Boolean>();
+		for (int i = 0; i < objects.size(); i++) {
+			markedForDelete.add(false);
+		}
 	}
 	
 	public void add(String path) {
 		items.add(path);
+		markedForDelete.add(false);
 		notifyDataSetChanged();
 	}
 	
@@ -52,6 +60,24 @@ public class ImageBaseAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	public void markForDelete(int position) {
+		markedForDelete.set(position, true);
+	}
+	
+	public void unmarkForDelete(int position) {
+		markedForDelete.set(position, false);
+	}
+	
+	public void deleteMarked() {
+		for(int i = markedForDelete.size() - 1; i >= 0 ; i--) {
+			if(markedForDelete.get(i)) {
+				items.remove(i);
+				markedForDelete.remove(i);
+			}
+		}
+		notifyDataSetChanged();
 	}
 	
 	@Override
@@ -78,11 +104,18 @@ public class ImageBaseAdapter extends BaseAdapter {
 //		                      context.getResources().getDrawable(R.drawable.cross) };
 //		LayerDrawable draw = new LayerDrawable(layers);
 		imageView.setImageDrawable(new BitmapDrawable(context.getResources(), Utils.resizeBitmap(path, 300)));
+		convertView.findViewById(R.id.cross).setVisibility(markedForDelete.get(position)? View.VISIBLE: View.INVISIBLE);
 		return convertView;
 	}
 	
 	public List<String> getItems() {
 		return items;
+	}
+	
+	public void clear() {
+		items.clear();
+		markedForDelete.clear();
+		notifyDataSetChanged();
 	}
 
 }

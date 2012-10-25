@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -34,6 +35,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -238,6 +241,10 @@ public class NewTweetActivity extends Activity {
 			Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
 			cursor.moveToFirst();
 			String picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+			if(getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitter")) {
+				// TODO Warnung, dass Bild ausgetauscht wird.
+				imageAdapter.clear();
+			}
 			imageAdapter.add(picturePath);
 			cursor.close();
 			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
@@ -259,17 +266,36 @@ public class NewTweetActivity extends Activity {
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		GridView gridView = (GridView) vi.inflate(R.layout.image_gridview, null);
 		gridView.setAdapter(imageAdapter);
+		gridView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView parent, View v, int position, long id) {
+				View cross = v.findViewById(R.id.cross);
+				if(cross.getVisibility() == View.VISIBLE) {
+					cross.setVisibility(View.INVISIBLE);
+					imageAdapter.unmarkForDelete(position);
+				} else {
+					cross.setVisibility(View.VISIBLE);
+					imageAdapter.markForDelete(position);
+				}
+			}
+		});
 //		gridView.setColumnWidth(90);
 //		gridView.setNumColumns(GridView.AUTO_FIT);
 		new AlertDialog.Builder(this)
 		               .setTitle("Title foo")
 		               .setView(gridView)
-//		               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//		            	   @Override
-//		            	   public void onClick(DialogInterface dialog, int which) {
+		               .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+		            	   @Override
+		            	   public void onClick(DialogInterface dialog, int which) {
+		            		   dialog.dismiss();
+		            	   }
+		               })
+		               .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
+		            	   @Override
+		            	   public void onClick(DialogInterface dialog, int which) {
 //		            		   dialog.dismiss();
-//		            	   }
-//		               })
+		            		   imageAdapter.deleteMarked();
+		            	   }
+		               })
 		               .show();
 	}
 	
