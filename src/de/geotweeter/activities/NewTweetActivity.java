@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -278,22 +279,26 @@ public class NewTweetActivity extends Activity {
 				}
 			}
 		});
-//		gridView.setColumnWidth(90);
-//		gridView.setNumColumns(GridView.AUTO_FIT);
+		
 		new AlertDialog.Builder(this)
 		               .setTitle("Title foo")
 		               .setView(gridView)
 		               .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
 		            	   @Override
 		            	   public void onClick(DialogInterface dialog, int which) {
-		            		   dialog.dismiss();
+		            		   dialog.cancel();
 		            	   }
 		               })
 		               .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
 		            	   @Override
 		            	   public void onClick(DialogInterface dialog, int which) {
-//		            		   dialog.dismiss();
 		            		   imageAdapter.deleteMarked();
+		            	   }
+		               })
+		               .setOnCancelListener(new OnCancelListener() {
+		            	   @Override
+		            	   public void onCancel(DialogInterface dialog) {
+		            		   imageAdapter.unmarkAll();
 		            	   }
 		               })
 		               .show();

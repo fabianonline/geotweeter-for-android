@@ -70,6 +70,12 @@ public class ImageBaseAdapter extends BaseAdapter {
 		markedForDelete.set(position, false);
 	}
 	
+	public void unmarkAll() {
+		for(int i = 0; i < markedForDelete.size(); i++) {
+			markedForDelete.set(i, false);
+		}
+	}
+	
 	public void deleteMarked() {
 		for(int i = markedForDelete.size() - 1; i >= 0 ; i--) {
 			if(markedForDelete.get(i)) {
