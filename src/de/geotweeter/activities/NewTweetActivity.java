@@ -283,13 +283,13 @@ public class NewTweetActivity extends Activity {
 		new AlertDialog.Builder(this)
 		               .setTitle("Title foo")
 		               .setView(gridView)
-		               .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+		               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 		            	   @Override
 		            	   public void onClick(DialogInterface dialog, int which) {
 		            		   dialog.cancel();
 		            	   }
 		               })
-		               .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
+		               .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
 		            	   @Override
 		            	   public void onClick(DialogInterface dialog, int which) {
 		            		   imageAdapter.deleteMarked();
