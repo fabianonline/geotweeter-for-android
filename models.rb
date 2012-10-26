@@ -36,11 +36,12 @@ class Crash
     property :media_codec_list, Text
 	property :thread_details, Text, :lazy=>false
 
-	property :fixed, Boolean, :default=>false
+	property :fixed, Boolean, :default=>false, :required=>true
+	property :crash_hash, String
 
-	def short_stacktrace
+	def self.short_stacktrace(stack_trace)
 		take_next_line = true
-		self.stack_trace.split("\n").collect do |line|
+		stack_trace.split("\n").collect do |line|
 			result = nil
 			if line[0]!=9
 				take_next_line=true
@@ -53,7 +54,23 @@ class Crash
 		end.compact.join("\n")
 	end
 
+	def Crash.generalize_stacktrace(stack_trace)
+		stack_trace.
+			gsub(/=[0-9]+KB/, "=...KB").
+		    gsub(/com\.alibaba\.fastjson\.JSONException: expect .+ at .+\n\t/m, "com.alibaba.fastjson.JSONException: expect [...]\n\t");
+	end
+
+	def short_stacktrace
+		Crash.short_stacktrace(self.stack_trace)
+	end
+
 	def email
 		(/acra\.user\.email=(.+)/.match(shared_preferences)[1] || "") rescue ""
+	end
+
+	def calculate_hash
+		require 'digest/sha2'
+		string = Crash.generalize_stacktrace(self.short_stacktrace)
+		self.crash_hash = (Digest::SHA2.new << string).to_s.slice(0,7)
 	end
 end

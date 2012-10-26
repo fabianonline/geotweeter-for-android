@@ -1,0 +1,23 @@
+<table>
+	<tr>
+		<th>Hash</th>
+		<th>Anzahl</th>
+		<th>Erstmalig</th>
+		<th>Letztmalig</th>
+	</tr>
+
+	<% @crashes.each do |@crash| %>
+		<tr class="border-top <%= @crash[:fixed] ? 'grey' : '' %>">
+			<td><strong><a href="<%= url("/crashes/#{@crash[:hash]}") %>"><%= @crash[:hash] %></a></strong></td>
+			<td><strong><%= @crash[:count] %></strong></td>
+			<td><%= @crash[:date_first].strftime("%d.%m.%Y %H:%M:%S") rescue "" %></td>
+			<td><%= @crash[:date_last].strftime("%d.%m.%Y %H:%M:%S") rescue "" %></td>
+		</tr>
+		<tr class="thin-border-top <%= @crash[:fixed] ? 'grey' : '' %>">
+			<td>&nbsp;</td>
+			<td colspan="3">
+				<%= Crash.generalize_stacktrace(Crash.short_stacktrace(@crash[:stack_trace])).gsub("\t", "    ").gsub(" ", "&nbsp;").gsub("\n", "<br />\n") %>
+			</td>
+		</tr>
+	<% end %>
+</table>

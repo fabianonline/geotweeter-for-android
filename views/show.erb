@@ -14,8 +14,8 @@
 <tr class="<%= @crash.fixed ? 'grey' : '' %>">
 	<td>&nbsp;</td>
 	<td><%= @crash.user_comment %></td>
-	<td><%= @crash.total_mem_size %></td>
-	<td><%= @crash.available_mem_size %></td>
+	<td><%= @crash.available_mem_size/(1024*1024) %>MB / <%= @crash.total_mem_size/(1024*1024) %>MB</td>
+	<td><%= @crash.phone_model %></td>
 	<td><%= @crash.email %></td>
 </tr>
 <tr class="thin-border-top <%= @crash.fixed ? 'grey' : '' %>">

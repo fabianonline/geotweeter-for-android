@@ -1,0 +1,52 @@
+<a href="<%= url("/") %>">Zurück zur Liste</a>
+<br />
+<br />
+<form method="post" action="<%= url("/crashes/#{@crashes.first.crash_hash}/fixed") %>">
+	<input type="submit" name="button" value="Alle Crashes als erledigt markieren" />
+</form>
+
+<% @crashes.each do |@crash| %>
+	<hr />
+	<strong>Crash ID:</strong>                        <%= @crash.id %><br />
+	<strong>Datum:</strong>                           <%= @crash.user_crash_date.strftime("%d.%m.%Y %H:%M:%S") rescue "" %><br />
+	<strong>Package:</strong>                         <%= @crash.package_name %><br />
+	<strong>Version:</strong>                         <%= @crash.app_version_name %> (<%= @crash.app_version_code %>)<br />
+	<strong>Android-Version:</strong>                 <%= @crash.android_version %><br />
+	<strong>Device:</strong>                          <%= @crash.phone_model %> (<%= @crash.brand %>/<%= @crash.product %>)<br />
+	<strong>Speicher gesamt:</strong>                 <%= @crash.total_mem_size/(1024*1024) %> MB<br />
+	<strong>Speicher frei:</strong>                   <%= @crash.available_mem_size/(1024*1024) %> MB<br />
+	<br />
+	<strong>Kommentar des Users:</strong>             <%= @crash.user_comment %><br />
+	<strong>User-eMail:</strong>                      <%= @crash.email %><br />
+	<br />
+	<% if @crash.fixed %>
+		<form method="post" action="<%= url("/crash/#{@crash.id}/notfixed") %>">
+			<input type="submit" name="button" value="Diesen einen Crash als nicht erledigt markieren" />
+		</form>
+	<% else %>
+		<form method="post" action="<%= url("/crash/#{@crash.id}/fixed") %>">
+			<input type="submit" name="button" value="Diesen einen Crash als erledigt markieren" />
+		</form>
+	<% end %>
+	<br />
+	<strong>Custom Data:</strong>
+	<blockquote>
+		<%= @crash.custom_data.gsub("\n", "<br />") %>
+	</blockquote>
+
+	<strong>Stacktrace:</strong>
+	<blockquote>
+		<%= @crash.stack_trace.gsub("\n", "<br/>").gsub("\t", "    ").gsub(" ", "&nbsp;") %>
+	</blockquote>
+
+	<strong>SharedPreferences:</strong>
+	<blockquote>
+		<%= @crash.shared_preferences.gsub("\n", "<br/>") %>
+	</blockquote>
+
+	<strong>Logcat:</strong>
+	<blockquote>
+		<%= @crash.logcat.gsub("\t", "    ").gsub("\n", "<br />\n") rescue "" %>
+	</blockquote>
+<% end %>
+<a href="<%= url("/") %>">Zurück zur Liste</a>
