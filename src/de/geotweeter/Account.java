@@ -30,14 +30,12 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
@@ -50,10 +48,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
-
-import com.alibaba.fastjson.JSON;
-
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
@@ -368,11 +364,12 @@ public class Account implements Serializable {
 	
 
 	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
+		
 		String imageHoster = appContext.getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
 		if (imageHoster.equals("twitter")) {
 			
 			ContentBody picture = null;
-			File f = new File(tweet.imagePath);
+			File f = new File(tweet.images.get(0));
 			if (f.length() <= PIC_SIZE_TWITTER) {
 				picture = new FileBody(f);
 			} else {
@@ -382,53 +379,26 @@ public class Account implements Serializable {
 			api.sendTweetWithPicture(tweet, picture);
 
 		} else if(imageHoster.equals("twitpic")) {
-			// Upload pic to Twitpic
-			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
 			
-			MultipartEntity entity = new MultipartEntity();
-			entity.addPart("key", new StringBody(Utils.getProperty("twitpic.key")));
-			entity.addPart("message", new StringBody(tweet.text));
+			TwitpicApiAccess twitpic_api = new TwitpicApiAccess(token);
 			
-			File f = new File(tweet.imagePath);
-			addImageToMultipartEntity(entity, f, "media");
-//			entity.addPart("media", new FileBody(new File(picture)));
-			
-			Log.d(LOG, "Start output Stream");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			entity.writeTo(out);
-			Log.d(LOG, "Finish output Stream");
-			request.addPayload(out.toByteArray());
-			request.addHeader(entity.getContentType().getName(), entity.getContentType().getValue());
-			
-			OAuthRequest oauth_request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1/account/verify_credentials.json");
-			signRequest(oauth_request);
-			request.addHeader("X-Auth-Service-Provider", "https://api.twitter.com/1/account/verify_credentials.json");
-			request.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
-			
-			Log.d(LOG, "Send Twitpic");
-			Response response = request.send();
-			Log.d(LOG, "Finished Send Twitpic");
-			
-			// Handle response
-			// sendTweet with pic-URL
-			if (response.isSuccessful()) {
-				String twitpicURL = JSON.parseObject(response.getBody()).getString("url");
-				Log.d(LOG, "Send Tweet with Twitpic");
-				tweet.imagePath = null;
-				tweet.text += " " + twitpicURL;
-				sendTweet(tweet);
-				Log.d(LOG, "Finished Send Tweet with Twitpic");
+			for(int i = 0; i < tweet.images.size(); i++) {
+				
+				if (!tweet.images.get(i).equals("")) {
+					
+					File image = new File(tweet.images.get(i));
+					String twitpic_url = twitpic_api.uploadImage(image, tweet.text);
+					tweet.images.set(i, "");
+					tweet.text += " " + twitpic_url;
+					Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
+
+				}
 			}
+			Log.d(LOG, "Send Twitpic-Tweet");
+			sendTweet(tweet);
+			Log.d(LOG, "Finished: Send Twitpic-Tweet");
 		} else {
 			//TODO: Exception?
-		}
-	}
-	
-	private void addImageToMultipartEntity(MultipartEntity entity, File imageFile, String key) throws IOException {
-		if (imageFile.length() <= PIC_SIZE_TWITTER) {
-			entity.addPart(key, new FileBody(imageFile));
-		} else {
-			entity.addPart(key, new ByteArrayBody(resizeImage(imageFile), imageFile.getName()));
 		}
 	}
 	
