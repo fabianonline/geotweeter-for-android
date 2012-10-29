@@ -11,8 +11,10 @@
 # generated files
 bin/
 gen/
+build_temp/
 
 # Local configuration file (sdk path, etc)
 local.properties
 /libs/javadoc
 /res/raw/geotweeter.properties
+release.keystore

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="help">
+<project name="de.geotweeter" default="help">
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
@@ -67,66 +67,6 @@
             -pre-clean
     -->
     <import file="custom_rules.xml" optional="true" />
-    
-    <target name="full" depends="-pre-everything">
-        <property name="package" value="de.geotweeter" />
-        <property name="sub_path" value="de/geotweeter" />
-        <property name="ant.project.name" value="${package}" />
-    </target>
-    
-    <target name="beta" depends="-pre-everything">
-        <property name="package" value="de.geotweeter.beta" />
-        <property name="sub_path" value="de/geotweeter/beta" />
-        <property name="ant.project.name" value="${package}" />
-    </target>
-    
-    <target name="lite" depends="-pre-everything">
-        <property name="package" value="de.geotweeter.lite" />
-        <property name="sub_path" value="de/geotweeter/lite" />
-        <property name="ant.project.name" value="${package}" />
-    </target>
-    
-    <target name="-pre-everything">
-        <copy todir="./build_temp">
-            <fileset file="AndroidManifest.xml" />
-        </copy>
-    </target>
-    
-    <target name="-pre-build">
-        <fail unless="package">
-            Property "package" not set. Please use `ant {full,beta,lite} {release,debug}` to build
-            the correct version.
-        </fail>
-        <copy todir="./build_temp">
-            <fileset dir="." />
-        </copy>
-        
-        <echo>Replacing package in source files...</echo>
-        <replace dir="./build_temp/" token="de.geotweeter" value="${package}" />
-        
-        <echo>Disabling Log statements...</echo>
-        <replace dir="./build_temp/" token="Log.d" value="// Log.d" />
-        
-        <move todir="${source.dir}/${sub_path}">
-            <fileset dir="${source.dir}/de/geotweeter/" />
-        </move>
-        
-        <delete dir="${gen.absolute.dir}" />
-        <mkdir dir="${gen.absolute.dir}" />
-        
-        <tstamp>
-            <format property="current_time" pattern="yyyy MMMM dd HH:mm:ss" locale="en" />
-        </tstamp>
-        <echo file="${source.dir}/../AndroidManifest.xml" append="true" message="&lt;!-- ${current_time} --&gt;" />
-        <echo file="${resource.absolute.dir}/values/strings.xml" append="true" message="&lt;!-- ${current_time} --&gt;" />
-        
-        <delete dir="${out.res.absolute.dir}" />
-        <mkdir dir="${out.res.absolute.dir}" />
-    </target>
-    
-    <target name="-post-build">
-        <delete dir="${source.dir}/.." />
-    </target>
 
     <!-- Import the actual build file.
 
@@ -146,71 +86,7 @@
          In all cases you must update the value of version-tag below to read 'custom' instead of an integer,
          in order to avoid having your file be overridden by tools such as "android update project"
     -->
-    <!-- version-tag: custom -->
-    
-    <target name="-code-gen">
-        <!-- always merge manifest -->
-        <mergemanifest
-                appManifest="${manifest.abs.file}"
-                outManifest="${out.manifest.abs.file}"
-                enabled="${manifestmerger.enabled}">
-            <library refid="project.library.manifest.file.path" />
-        </mergemanifest>
-
-        <do-only-if-manifest-hasCode
-                elseText="hasCode = false. Skipping aidl/renderscript/R.java">
-            <echo level="info">Handling aidl files...</echo>
-            <aidl executable="${aidl}"
-                    framework="${project.target.framework.aidl}"
-                    libraryBinAidlFolderPathRefid="project.library.bin.aidl.folder.path"
-                    genFolder="${gen.absolute.dir}"
-                    aidlOutFolder="${out.aidl.absolute.dir}">
-                <source path="${source.absolute.dir}"/>
-            </aidl>
-
-            <!-- renderscript generates resources so it must be called before aapt -->
-            <echo level="info">----------</echo>
-            <echo level="info">Handling RenderScript files...</echo>
-            <renderscript executable="${renderscript}"
-                    includePathRefId="android.renderscript.include.path"
-                    genFolder="${gen.absolute.dir}"
-                    resFolder="${out.res.absolute.dir}/raw"
-                    targetApi="${project.minSdkVersion}"
-                    optLevel="${renderscript.opt.level}"
-                    buildType="${build.is.packaging.debug}"
-                    previousBuildType="${build.last.is.packaging.debug}">
-                <source path="${source.absolute.dir}"/>
-            </renderscript>
-
-            <echo level="info">----------</echo>
-            <echo level="info">Handling Resources...</echo>
-            <aapt executable="${aapt}"
-                    command="package"
-                    force="true"
-                    verbose="${verbose}"
-                    manifest="${out.manifest.abs.file}"
-                    androidjar="${project.target.android.jar}"
-                    rfolder="${gen.absolute.dir}"
-                    nonConstantId="${android.library}"
-                    libraryResFolderPathRefid="project.library.res.folder.path"
-                    libraryPackagesRefid="project.library.packages"
-                    ignoreAssets="${aapt.ignore.assets}"
-                    proguardFile="${out.absolute.dir}/proguard.txt">
-                <res path="${out.res.absolute.dir}" />
-                <res path="${resource.absolute.dir}" />
-            </aapt>
-
-            <echo level="info">----------</echo>
-            <echo level="info">Handling BuildConfig class...</echo>
-            <buildconfig
-                    genFolder="${gen.absolute.dir}"
-                    package="${project.app.package}"
-                    buildType="${build.is.packaging.debug}"
-                    previousBuildType="${build.last.is.packaging.debug}"/>
-
-        </do-only-if-manifest-hasCode>
-    </target>
-    
+    <!-- version-tag: 1 -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
 </project>

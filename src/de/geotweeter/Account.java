@@ -202,6 +202,9 @@ public class Account implements Serializable {
 			}
 			
 			if (tasksRunning == 0) { 
+				if (mainTimeline == null) {
+					mainTimeline = new ArrayList<TimelineElement>();
+				}
 				if (!mainTimeline.isEmpty()) {
 					apiResponses.add(0, mainTimeline);
 				}
