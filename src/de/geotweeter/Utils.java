@@ -1,8 +1,9 @@
 package de.geotweeter;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -15,11 +16,12 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 
 import de.geotweeter.activities.TimelineActivity;
@@ -185,4 +187,27 @@ public class Utils {
 		}
 		return properties.getProperty(key);
 	}
+	
+	public static byte[] reduceImageSize(File file) throws IOException {
+		Log.d(LOG, "Before resizeFile: " + file.length());
+		int scale = (int) (file.length() / Constants.PIC_SIZE_TWITTER);
+		scale = 2 * Integer.highestOneBit(scale);
+		Log.d(LOG, "scale: " + scale);
+		BitmapFactory.Options opt = new BitmapFactory.Options();
+		opt.inSampleSize = scale;
+		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, opt);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		if (file.getName().endsWith(".png")) {
+			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
+		} else {
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+		}
+		
+		byte[] bytes = out.toByteArray();
+		Log.d(LOG, "After resizeFile: " + bytes.length);
+		return bytes;
+	}
+
+	
 }

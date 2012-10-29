@@ -14,6 +14,8 @@ public class Constants extends Application {
 	
 	public static final String OAUTH_CALLBACK = "oauth://twitter";
 	
+	public static final long PIC_SIZE_TWITTER = 3145728;
+	
 	public static final String URI_VERIFY_CREDENTIALS_1	= "https://api.twitter.com/1/account/verify_credentials.json"; // API v1: wird für Twitpic benötigt
 	public static final String URI_VERIFY_CREDENTIALS   = "https://api.twitter.com/1.1/account/verify_credentials.json";
 	public static final String URI_UPDATE_PROFILE       = "https://api.twitter.com/1.1/account/update_profile.json";

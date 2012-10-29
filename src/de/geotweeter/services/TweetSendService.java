@@ -1,6 +1,12 @@
 package de.geotweeter.services;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
+
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,7 +19,10 @@ import android.util.Log;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
+import de.geotweeter.Utils;
+import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
+import de.geotweeter.exceptions.TweetSendException;
 
 public class TweetSendService extends Service {
 	private NotificationManager notificationManager;
@@ -26,9 +35,11 @@ public class TweetSendService extends Service {
 	private int bindCount = 0;
 
 	public class TweetSendBinder extends Binder {
+		
 		public TweetSendService getService() {
 			return TweetSendService.this;
 		}
+		
 	}
 	
 	@Override
@@ -96,9 +107,9 @@ public class TweetSendService extends Service {
 				tweet = tweets.get(i);
 				try {
 					if (tweet.images.size() > 0) {
-						tweet.account.sendTweetWithPic(tweet);
+						sendTweetWithPic(tweet);
 					} else {
-						tweet.account.sendTweet(tweet);
+						tweet.account.getApi().sendTweet(tweet);
 					}
 				} catch (TemporaryTweetSendException e) {
 					Log.d(LOG, "TemporaryTweetSendException fired. Sleeping 60 seconds.");
@@ -122,4 +133,45 @@ public class TweetSendService extends Service {
 			}
 		}
 	}
+	
+	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
+		
+		String imageHoster = getApplicationContext().getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
+		if (imageHoster.equals("twitter")) {
+			
+			ContentBody picture = null;
+			File f = new File(tweet.images.get(0));
+			
+			if (f.length() <= Constants.PIC_SIZE_TWITTER) {
+				picture = new FileBody(f);
+			} else {
+				picture = new ByteArrayBody(Utils.reduceImageSize(f), f.getName());
+			}
+
+			tweet.account.getApi().sendTweetWithPicture(tweet, picture);
+
+		} else if(imageHoster.equals("twitpic")) {
+			
+			TwitpicApiAccess twitpic_api = new TwitpicApiAccess(tweet.account.getToken());
+			
+			for (int i = 0; i < tweet.images.size(); i++) {
+				
+				if (!tweet.images.get(i).equals("")) {
+					
+					File image = new File(tweet.images.get(i));
+					String twitpic_url = twitpic_api.uploadImage(image, tweet.text);
+					tweet.images.set(i, "");
+					tweet.text += " " + twitpic_url;
+					Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
+
+				}
+			}
+			Log.d(LOG, "Send Twitpic-Tweet");
+			tweet.account.getApi().sendTweet(tweet);
+			Log.d(LOG, "Finished: Send Twitpic-Tweet");
+		} else {
+			//TODO: Exception?
+		}
+	}
+
 }

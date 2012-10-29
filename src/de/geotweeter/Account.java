@@ -1,6 +1,5 @@
 package de.geotweeter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,9 +25,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -37,16 +33,12 @@ import org.scribe.model.Token;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import de.geotweeter.activities.TimelineActivity;
-import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.apiconn.TwitterApiAccess;
-import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
@@ -57,7 +49,6 @@ public class Account implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3681363869066996199L;
-	private static final long PIC_SIZE_TWITTER = 3145728;
 	
 	protected final static Object lock_object = new Object();
 	protected final String LOG = "Account";
@@ -328,71 +319,6 @@ public class Account implements Serializable {
 		});
 	}
 
-	public void sendTweet(SendableTweet tweet) throws TweetSendException {
-		api.sendTweet(tweet);
-	}
-	
-
-	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
-		
-		String imageHoster = appContext.getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
-		if (imageHoster.equals("twitter")) {
-			
-			ContentBody picture = null;
-			File f = new File(tweet.images.get(0));
-			if (f.length() <= PIC_SIZE_TWITTER) {
-				picture = new FileBody(f);
-			} else {
-				picture = new ByteArrayBody(resizeImage(f), f.getName());
-			}
-
-			api.sendTweetWithPicture(tweet, picture);
-
-		} else if(imageHoster.equals("twitpic")) {
-			
-			TwitpicApiAccess twitpic_api = new TwitpicApiAccess(token);
-			
-			for(int i = 0; i < tweet.images.size(); i++) {
-				
-				if (!tweet.images.get(i).equals("")) {
-					
-					File image = new File(tweet.images.get(i));
-					String twitpic_url = twitpic_api.uploadImage(image, tweet.text);
-					tweet.images.set(i, "");
-					tweet.text += " " + twitpic_url;
-					Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
-
-				}
-			}
-			Log.d(LOG, "Send Twitpic-Tweet");
-			api.sendTweet(tweet);
-			Log.d(LOG, "Finished: Send Twitpic-Tweet");
-		} else {
-			//TODO: Exception?
-		}
-	}
-	
-	private byte[] resizeImage(File file) throws IOException {
-		Log.d(LOG, "Before resizeFile: " + file.length());
-		int scale = (int) (file.length() / PIC_SIZE_TWITTER);
-//		if(Integer.bitCount(scale) > 1) {
-			scale = 2 * Integer.highestOneBit(scale);
-//		}
-		Log.d(LOG, "scale: " + scale);
-		BitmapFactory.Options opt = new BitmapFactory.Options();
-		opt.inSampleSize = scale;
-		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, opt);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		if(file.getName().endsWith(".png")) {
-			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
-		} else {
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-		}
-		byte[] bytes = out.toByteArray();
-		Log.d(LOG, "After resizeFile: " + bytes.length);
-		return bytes;
-	}
-
 	public void registerForGCMMessages() {
 		Log.d(LOG, "Registering...");
 		new Thread(new Runnable() {
@@ -598,4 +524,10 @@ public class Account implements Serializable {
 		}
 		elements.addAllAsFirst(tweets);
 	}
+	
+	public TwitterApiAccess getApi() {
+		return api;
+	}
+
+	
 }

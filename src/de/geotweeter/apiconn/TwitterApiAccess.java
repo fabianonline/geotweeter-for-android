@@ -16,8 +16,6 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
-import android.util.Log;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.Feature;
@@ -26,8 +24,8 @@ import de.geotweeter.Constants;
 import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
-import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.PermanentTweetSendException;
+import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetDestroyException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
