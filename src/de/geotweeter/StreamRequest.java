@@ -17,9 +17,13 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSONException;
 
+import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
 
 public class StreamRequest {
+	
+	private transient TwitterApiAccess api;
+	
 	private StreamRequestThread thread = new StreamRequestThread();
 	private boolean keepRunning = true;
 	private Handler handler = new Handler();
@@ -30,6 +34,7 @@ public class StreamRequest {
 	
 	public StreamRequest(Account account) {
 		this.account = account;
+		api = new TwitterApiAccess(account.getToken());
 	}
 	
 	public void start() {
@@ -112,7 +117,7 @@ public class StreamRequest {
 				String line;
 				OAuthRequest request = new OAuthRequest(Verb.GET, Constants.URI_USER_STREAM);
 				request.addQuerystringParameter("delimited", "length");
-				account.signRequest(request);
+				api.signRequest(request);
 				Response response = request.send();
 				stream = response.getStream();
 				InputStreamReader reader = new InputStreamReader(stream);

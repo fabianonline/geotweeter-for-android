@@ -60,6 +60,10 @@ public class TwitterApiAccess {
 		return req;
 	}
 	
+	public void signRequest(OAuthRequest req) {
+		service.signRequest(token, req);
+	}
+	
 	public ArrayList<TimelineElement> getMentions(long from_id, long to_id) throws OAuthException {
 		return getMentions(from_id, to_id, 100);
 	}

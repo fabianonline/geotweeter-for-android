@@ -26,19 +26,14 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -68,7 +63,6 @@ public class Account implements Serializable {
 	protected final String LOG = "Account";
 	
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
-	private static transient OAuthService service;
 	private transient int tasksRunning = 0;
 	
 	protected transient ArrayList<TimelineElement> mainTimeline;
@@ -94,16 +88,6 @@ public class Account implements Serializable {
 	}
 	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine) {
-		if (service == null) {
-			ServiceBuilder builder = new ServiceBuilder()
-			                             .provider(TwitterApi.class)
-			                             .apiKey(Utils.getProperty("twitter.consumer.key"))
-			                             .apiSecret(Utils.getProperty("twitter.consumer.secret"));
-			if (Debug.LOG_OAUTH_STUFF) {
-				builder = builder.debug();
-			}
-			service = builder.build();
-		}
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
@@ -122,16 +106,6 @@ public class Account implements Serializable {
 	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-		if (service == null) {
-			ServiceBuilder builder = new ServiceBuilder()
-			                             .provider(TwitterApi.class)
-			                             .apiKey(Utils.getProperty("twitter.consumer.key"))
-			                             .apiSecret(Utils.getProperty("twitter.consumer.secret"));
-			if (Debug.LOG_OAUTH_STUFF) {
-				builder = builder.debug();
-			}
-			service = builder.build();
-		}
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
@@ -162,11 +136,7 @@ public class Account implements Serializable {
 		}
 		getMaxReadIDs();
 	}
-	
-	public void signRequest(OAuthRequest request) {
-		service.signRequest(getToken(), request);
-	}
-	
+		
 	public void stopStream() {
 		stream_request.stop(false);
 	}
@@ -392,7 +362,7 @@ public class Account implements Serializable {
 				}
 			}
 			Log.d(LOG, "Send Twitpic-Tweet");
-			sendTweet(tweet);
+			api.sendTweet(tweet);
 			Log.d(LOG, "Finished: Send Twitpic-Tweet");
 		} else {
 			//TODO: Exception?
@@ -451,9 +421,8 @@ public class Account implements Serializable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS);
-				signRequest(oauth_request);
-				
+				OAuthRequest oauth_request = api.getVerifiedCredentials();
+								
 				try {
 					HttpClient http_client = new DefaultHttpClient();
 					HttpGet http_get = new HttpGet(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
@@ -509,9 +478,8 @@ public class Account implements Serializable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS);
-				signRequest(oauth_request);
-				
+				OAuthRequest oauth_request = api.getVerifiedCredentials();
+								
 				try {
 					HttpClient http_client = new DefaultHttpClient();
 					HttpPost http_post = new HttpPost(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
