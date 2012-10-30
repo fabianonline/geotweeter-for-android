@@ -98,22 +98,7 @@ public class TimelineActivity extends MapActivity {
 				showMapIfApplicable(parent, view, position, id);
 			}
 		});
-		
-//		timelineListView.setOnItemLongClickListener(new OnItemLongClickListener() {
-//			@Override
-//			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//				
-//				if (current_account.getElements().getItem(position).isReplyable()) {
-//					Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
-//					replyIntent.putExtra("de.geotweeter.reply_to_tweet", current_account.getElements().getItem(position));
-//					startActivity(replyIntent);
-//					return true;
-//				} else {
-//					return false;
-//				}
-//			}
-//		});
-		
+				
 		if (!isRunning) {
 			if (current_account != null) {
 				timelineListView.setAdapter(current_account.getElements());
