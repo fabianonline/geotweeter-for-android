@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -40,6 +41,7 @@ import android.util.Log;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.timelineelements.DirectMessage;
+import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 
@@ -200,6 +202,7 @@ public class Account implements Serializable {
 					apiResponses.add(0, mainTimeline);
 				}
 				parseData(apiResponses, false);
+				
 				if (Debug.ENABLED && Debug.SKIP_START_STREAM) {
 					Log.d(LOG, "Not starting stream - Debug.SKIP_START_STREAM is true.");
 				} else {
@@ -245,7 +248,7 @@ public class Account implements Serializable {
 
 				if (newest_index == 0) {
 					if (max_known_tweet_id == 0) {
-						for(ArrayList<TimelineElement> array : responses) {
+						for (ArrayList<TimelineElement> array : responses) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof Tweet && ((Tweet) first_element).id > max_known_tweet_id) {
 								max_known_tweet_id = ((Tweet)first_element).id;
@@ -253,7 +256,7 @@ public class Account implements Serializable {
 						}
 					}
 					if (max_known_dm_id==0) {
-						for(ArrayList<TimelineElement> array : responses) {
+						for (ArrayList<TimelineElement> array : responses) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof DirectMessage && first_element.getID() > max_known_dm_id) {
 								max_known_dm_id = first_element.getID();
