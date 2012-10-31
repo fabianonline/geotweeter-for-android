@@ -9,7 +9,7 @@ class Crash
 	property :file_path, String
 	property :phone_model, String
 	property :android_version, String
-	property :build, String
+	property :build, Text
 	property :brand, String
 	property :product, String
 	property :total_mem_size, Integer
