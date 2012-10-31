@@ -4,8 +4,10 @@ require 'rubygems'
 require 'bundler'
 Bundler.require(:default)
 require 'dm-migrations'
+require 'dm-validations'
 require 'erb'
 require 'models.rb'
+
 
 DataMapper.setup(:default, "sqlite:database.db")
 DataMapper.finalize
@@ -47,6 +49,8 @@ if defined?(::Sinatra) && defined?(::Sinatra::Base)
 			string << url("/crash/#{crash.id}")
 			room.speak(string, :type=>:text)
 			room.speak(crash.short_stacktrace, :type=>:paste)
+		else
+			error 500, "Crash konnte nicht gespeichert werden. Fehler: \n#{crash.errors.collect(&:to_s).join("\n")}"
 		end
 	end
 
