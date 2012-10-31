@@ -21,6 +21,10 @@ end
 Broach.settings = {'account'=>$properties['campfire.account'], 'token'=>$properties['campfire.token'], 'use_ssl'=>true}
 
 if defined?(::Sinatra) && defined?(::Sinatra::Base)
+	#log = File.new("log.log", "a+")
+	#$stdout.reopen(log)
+	#$stderr.reopen(log)
+
 	post '/send' do
 		halt(200) if Crash.first(:report_id=>params[:REPORT_ID]) != nil
 		crash = Crash.new
