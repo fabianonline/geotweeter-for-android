@@ -36,6 +36,7 @@
     <string name="pref_image_hoster_title">Image Hoster</string>
     <string name="context_menu_title">Links</string>
     <string name="respond_to_tweet">Beantworten</string>
+    <string name="show_conversation">Konversation anzeigen</string>
 
     <string-array name="pref_tweet_time_style_entries">
         <item>dd.MM.yy HH:mm</item>

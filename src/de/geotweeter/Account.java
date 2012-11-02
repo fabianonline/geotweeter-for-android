@@ -9,9 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,6 @@ import android.util.Log;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.timelineelements.DirectMessage;
-import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 
@@ -75,7 +74,8 @@ public class Account implements Serializable {
 	private long max_read_mention_id = 0;
 	private transient Context appContext;
 	private transient TwitterApiAccess api;
-	
+	private transient Stack<TimelineElementAdapter> timeline_stack;
+
 	private enum AccessType {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
 	}
@@ -92,6 +92,10 @@ public class Account implements Serializable {
 		stream_request = new StreamRequest(this);
 		
 		all_accounts.add(this);
+		
+		timeline_stack = new Stack<TimelineElementAdapter>();
+		timeline_stack.push(elements);
+		
 		if (fetchTimeLine) {
 			start(true);
 		}
@@ -531,6 +535,17 @@ public class Account implements Serializable {
 	public TwitterApiAccess getApi() {
 		return api;
 	}
-
+	
+	public void pushTimeline(TimelineElementAdapter tea) {
+		timeline_stack.push(tea);
+	}
+	
+	public TimelineElementAdapter popTimeline() {
+		return timeline_stack.pop();
+	}
+	
+	public TimelineElementAdapter activeTimeline() {
+		return timeline_stack.peek();
+	}
 	
 }
