@@ -131,8 +131,7 @@ public class TimelineActivity extends MapActivity {
 			super.onBackPressed();
 		} else {
 			ListView l = (ListView) findViewById(R.id.timeline);
-			current_account.popTimeline();
-			l.setAdapter(current_account.activeTimeline());
+			l.setAdapter(current_account.getPrevTimeline());
 		}
 	}
 	

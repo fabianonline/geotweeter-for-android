@@ -534,10 +534,11 @@ public class Account implements Serializable {
 		timeline_stack.push(tea);
 	}
 	
-	public TimelineElementAdapter popTimeline() {
-		return timeline_stack.pop();
+	public TimelineElementAdapter getPrevTimeline() {
+		timeline_stack.pop();
+		return timeline_stack.peek();
 	}
-	
+		
 	public TimelineElementAdapter activeTimeline() {
 		return timeline_stack.peek();
 	}
