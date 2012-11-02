@@ -37,6 +37,9 @@ public class Constants extends Application {
 	
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 		
+	public static final String PATH_AVATAR_IMAGES       = "avatars";
+	public static final String PATH_TIMELINE_DATA       = "timelines";
+		
 	public static final Pattern REGEXP_FIND_SOURCE = Pattern.compile(">(.+)</a>");
 	
 	public static final String TWITPIC_URI = "http://api.twitpic.com/2/upload.json";
