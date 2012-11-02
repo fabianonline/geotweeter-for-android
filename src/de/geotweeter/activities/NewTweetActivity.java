@@ -61,6 +61,7 @@ import de.geotweeter.services.TweetSendService;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
+import de.geotweeter.timelineelements.UserMention;
 
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";
@@ -130,8 +131,11 @@ public class NewTweetActivity extends Activity {
 						if (auth_users != null) {
 							for (User u : auth_users) {
 								Account acct = createAccount(u);
-								if (tweet.entities.user_mentions.get(0).id == acct.getUser().id) {
-									TimelineActivity.current_account = acct;
+								for (UserMention um : tweet.entities.user_mentions) {
+									if (um.id == acct.getUser().id) {
+										TimelineActivity.current_account = acct;
+										break;
+									}
 								}
 							}
 						} else {
