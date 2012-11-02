@@ -1,6 +1,7 @@
 package de.geotweeter;
 
 import android.os.AsyncTask;
+import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
@@ -27,7 +28,11 @@ public class Conversation {
 			}
 			Tweet current = (Tweet) current_element;
 			while (current.in_reply_to_status_id != 0) {
-				current = api.getTweet(current.in_reply_to_status_id);
+				long predecessor_id = current.in_reply_to_status_id;
+				current = (Tweet) TimelineActivity.availableTweets.get(predecessor_id);
+				if (current == null) {
+					current = api.getTweet(predecessor_id);
+				}				
 				publishProgress(current);
 			}
 			return null;
