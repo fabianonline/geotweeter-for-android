@@ -136,24 +136,23 @@ public class BackgroundImageLoader {
 		private File cache_dir;
 		
 		public FileCache(Context context) {
-			if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-				cache_dir = new File(android.os.Environment.getExternalStorageDirectory(), "Geotweeter");
-			} else {
+			cache_dir = context.getExternalFilesDir(null);
+			if (!cache_dir.exists()) {
 				cache_dir = context.getCacheDir();
 			}
-			cache_dir = new File(cache_dir, "images");
+			cache_dir = new File(cache_dir, Constants.PATH_AVATAR_IMAGES);
 			if (!cache_dir.exists()) {
 				cache_dir.mkdirs();
 			}
 			
-			File nomedia_file = new File(cache_dir, ".nomedia");
+			/*File nomedia_file = new File(cache_dir, ".nomedia");
 			if (!nomedia_file.exists()) {
 				try {
 					FileWriter fwriter = new FileWriter(nomedia_file);
 					fwriter.write("");
 					fwriter.close();
 				} catch (IOException e) { }
-			}
+			}*/
 		}
 		
 		public File getFile(String url) {

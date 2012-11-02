@@ -556,14 +556,12 @@ public class Account implements Serializable {
 	}
 
 	public void persistTweets(Context context) {
-		File dir;
-		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-			dir = android.os.Environment.getExternalStorageDirectory();
-		} else {
+		File dir = context.getExternalFilesDir(null);
+		if (!dir.exists()) {
 			dir = context.getCacheDir();
 		}
 		
-		dir = new File(dir.getPath() + File.separator + "Geotweeter" + File.separator + "timelines");
+		dir = new File(dir, Constants.PATH_TIMELINE_DATA);
 		
 		if (!dir.exists()) {
 			dir.mkdirs();
@@ -589,22 +587,18 @@ public class Account implements Serializable {
 	
 	public void loadPersistedTweets(Context context) {
 		String fileToLoad = null;
-		String suffix = File.separator + "Geotweeter" + File.separator + "timelines" + File.separator + String.valueOf(getUser().id);
-		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-			String file = android.os.Environment.getExternalStorageDirectory().getPath() + suffix;
-			if (new File(file).exists()) {
-				fileToLoad = file;
-			}
+		File dir = context.getExternalFilesDir(null);
+		if (!dir.exists()) {
+			dir = context.getCacheDir();
 		}
 		
-		if (fileToLoad == null) {
-			String file = context.getCacheDir().getPath() + suffix;
-			if (new File(file).exists()) {
-				fileToLoad = file;
-			}
-		}
+		dir = new File(dir, Constants.PATH_TIMELINE_DATA);
 		
-		if (fileToLoad == null) return;
+		fileToLoad = dir.getPath() + File.separator + String.valueOf(getUser().id);
+		
+		if (!(new File(fileToLoad).exists())) {
+			return;
+		}
 		
 		ArrayList<TimelineElement> tweets;
 		try {
