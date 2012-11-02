@@ -10,9 +10,11 @@ public class Conversation {
 
 	private TimelineElementAdapter tea;
 	private TwitterApiAccess api;
+	private boolean backwards;
 	
-	public Conversation(TimelineElementAdapter tea, Account current_account) {
+	public Conversation(TimelineElementAdapter tea, Account current_account, boolean backwards) {
 		this.tea = tea;
+		this.backwards = backwards;
 		api = current_account.getApi();
 		current_account.pushTimeline(tea);
 		new LoadConversationTask().execute(tea.getItem(0));
@@ -39,7 +41,11 @@ public class Conversation {
 		}
 		
 		protected void onProgressUpdate(TimelineElement... params) {
-			tea.addAsFirst(params[0]);
+			if (backwards) {
+				tea.add(params[0]);
+			} else {
+				tea.addAsFirst(params[0]);
+			}
 		}
 		
 	}

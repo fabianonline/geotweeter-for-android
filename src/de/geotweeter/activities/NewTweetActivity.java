@@ -51,6 +51,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
+import de.geotweeter.Conversation;
 import de.geotweeter.ImageBaseAdapter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
@@ -153,10 +154,12 @@ public class NewTweetActivity extends Activity {
 			editTweetText.setSelection(reply_string.length());
 			
 			ListView l = (ListView) findViewById(R.id.timeline);
-			TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, 
+			TimelineElementAdapter tea = new TimelineElementAdapter(this, R.layout.timeline_element, 
 																    new ArrayList<TimelineElement>());
-			l.setAdapter(ta);
-			ta.add(elm);
+			tea.add(elm);
+			new Conversation(tea, TimelineActivity.current_account, true);
+			l.setAdapter(tea);
+			
 		}
 		
 		/* Accountauswahl */
