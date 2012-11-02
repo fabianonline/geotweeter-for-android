@@ -34,6 +34,7 @@ if defined?(::Sinatra) && defined?(::Sinatra::Base)
 			crash.send("#{p.name}=".to_sym, params[p.name.to_s.upcase.to_sym]) rescue nil
 		end
 		crash.fixed = false
+		crash.shared_preferences = crash.shared_preferences.gsub(/\n(access_.+)=([^\n]+)/, "\n\\1=[FILTERED]")
 		crash.calculate_hash
 		if crash.save
 			room = Broach::Room.find_by_name($properties['campfire.room'])
