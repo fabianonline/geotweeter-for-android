@@ -67,41 +67,45 @@
     <RelativeLayout
         android:id="@+id/map_and_controls"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="160dp"
         android:layout_below="@id/txtPlace"
         android:visibility="gone" >
 
-        <TextView
-            android:id="@+id/zoom_in"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/plus"
-            android:textSize="50dp" />
+        <LinearLayout
+            android:id="@+id/zoom_controls"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/zoom_out"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/zoom_in"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/minus"
-            android:textSize="50dp" />
+            <TextView
+                android:id="@+id/zoom_in"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/plus"
+                android:textSize="50dp" />
+
+            <TextView
+                android:id="@+id/zoom_out"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/zoom_in"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/minus"
+                android:textSize="50dp" />
+
+        </LinearLayout>
 
         <FrameLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/map_fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_toRightOf="@id/zoom_in" >
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/zoom_controls" >
 
         </FrameLayout>
-
     </RelativeLayout>
 
 </LinearLayout>

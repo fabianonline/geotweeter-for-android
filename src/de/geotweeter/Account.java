@@ -1,6 +1,5 @@
 package de.geotweeter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,33 +26,22 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import de.geotweeter.activities.TimelineActivity;
-import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.apiconn.TwitterApiAccess;
-import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
+import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 
@@ -62,13 +51,11 @@ public class Account implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3681363869066996199L;
-	private static final long PIC_SIZE_TWITTER = 3145728;
 	
 	protected final static Object lock_object = new Object();
 	protected final String LOG = "Account";
 	
 	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
-	private static transient OAuthService service;
 	private transient int tasksRunning = 0;
 	
 	protected transient ArrayList<TimelineElement> mainTimeline;
@@ -94,16 +81,6 @@ public class Account implements Serializable {
 	}
 	
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine) {
-		if (service == null) {
-			ServiceBuilder builder = new ServiceBuilder()
-			                             .provider(TwitterApi.class)
-			                             .apiKey(Utils.getProperty("twitter.consumer.key"))
-			                             .apiSecret(Utils.getProperty("twitter.consumer.secret"));
-			if (Debug.LOG_OAUTH_STUFF) {
-				builder = builder.debug();
-			}
-			service = builder.build();
-		}
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
@@ -122,16 +99,6 @@ public class Account implements Serializable {
 	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-		if (service == null) {
-			ServiceBuilder builder = new ServiceBuilder()
-			                             .provider(TwitterApi.class)
-			                             .apiKey(Utils.getProperty("twitter.consumer.key"))
-			                             .apiSecret(Utils.getProperty("twitter.consumer.secret"));
-			if (Debug.LOG_OAUTH_STUFF) {
-				builder = builder.debug();
-			}
-			service = builder.build();
-		}
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
@@ -162,11 +129,7 @@ public class Account implements Serializable {
 		}
 		getMaxReadIDs();
 	}
-	
-	public void signRequest(OAuthRequest request) {
-		service.signRequest(getToken(), request);
-	}
-	
+		
 	public void stopStream() {
 		stream_request.stop(false);
 	}
@@ -239,6 +202,7 @@ public class Account implements Serializable {
 					apiResponses.add(0, mainTimeline);
 				}
 				parseData(apiResponses, false);
+				
 				if (Debug.ENABLED && Debug.SKIP_START_STREAM) {
 					Log.d(LOG, "Not starting stream - Debug.SKIP_START_STREAM is true.");
 				} else {
@@ -284,7 +248,7 @@ public class Account implements Serializable {
 
 				if (newest_index == 0) {
 					if (max_known_tweet_id == 0) {
-						for(ArrayList<TimelineElement> array : responses) {
+						for (ArrayList<TimelineElement> array : responses) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof Tweet && ((Tweet) first_element).id > max_known_tweet_id) {
 								max_known_tweet_id = ((Tweet)first_element).id;
@@ -292,7 +256,7 @@ public class Account implements Serializable {
 						}
 					}
 					if (max_known_dm_id==0) {
-						for(ArrayList<TimelineElement> array : responses) {
+						for (ArrayList<TimelineElement> array : responses) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof DirectMessage && first_element.getID() > max_known_dm_id) {
 								max_known_dm_id = first_element.getID();
@@ -358,71 +322,6 @@ public class Account implements Serializable {
 		});
 	}
 
-	public void sendTweet(SendableTweet tweet) throws TweetSendException {
-		api.sendTweet(tweet);
-	}
-	
-
-	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
-		
-		String imageHoster = appContext.getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
-		if (imageHoster.equals("twitter")) {
-			
-			ContentBody picture = null;
-			File f = new File(tweet.images.get(0));
-			if (f.length() <= PIC_SIZE_TWITTER) {
-				picture = new FileBody(f);
-			} else {
-				picture = new ByteArrayBody(resizeImage(f), f.getName());
-			}
-
-			api.sendTweetWithPicture(tweet, picture);
-
-		} else if(imageHoster.equals("twitpic")) {
-			
-			TwitpicApiAccess twitpic_api = new TwitpicApiAccess(token);
-			
-			for(int i = 0; i < tweet.images.size(); i++) {
-				
-				if (!tweet.images.get(i).equals("")) {
-					
-					File image = new File(tweet.images.get(i));
-					String twitpic_url = twitpic_api.uploadImage(image, tweet.text);
-					tweet.images.set(i, "");
-					tweet.text += " " + twitpic_url;
-					Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
-
-				}
-			}
-			Log.d(LOG, "Send Twitpic-Tweet");
-			sendTweet(tweet);
-			Log.d(LOG, "Finished: Send Twitpic-Tweet");
-		} else {
-			//TODO: Exception?
-		}
-	}
-	
-	private byte[] resizeImage(File file) throws IOException {
-		Log.d(LOG, "Before resizeFile: " + file.length());
-		int scale = (int) (file.length() / PIC_SIZE_TWITTER);
-//		if(Integer.bitCount(scale) > 1) {
-			scale = 2 * Integer.highestOneBit(scale);
-//		}
-		Log.d(LOG, "scale: " + scale);
-		BitmapFactory.Options opt = new BitmapFactory.Options();
-		opt.inSampleSize = scale;
-		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, opt);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		if(file.getName().endsWith(".png")) {
-			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
-		} else {
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-		}
-		byte[] bytes = out.toByteArray();
-		Log.d(LOG, "After resizeFile: " + bytes.length);
-		return bytes;
-	}
-
 	public void registerForGCMMessages() {
 		Log.d(LOG, "Registering...");
 		new Thread(new Runnable() {
@@ -454,9 +353,8 @@ public class Account implements Serializable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS);
-				signRequest(oauth_request);
-				
+				OAuthRequest oauth_request = api.getVerifiedCredentials();
+								
 				try {
 					HttpClient http_client = new DefaultHttpClient();
 					HttpGet http_get = new HttpGet(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
@@ -512,9 +410,8 @@ public class Account implements Serializable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				OAuthRequest oauth_request = new OAuthRequest(Verb.GET, Constants.URI_VERIFY_CREDENTIALS);
-				signRequest(oauth_request);
-				
+				OAuthRequest oauth_request = api.getVerifiedCredentials();
+								
 				try {
 					HttpClient http_client = new DefaultHttpClient();
 					HttpPost http_post = new HttpPost(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
@@ -624,4 +521,10 @@ public class Account implements Serializable {
 		}
 		elements.addAllAsFirst(tweets);
 	}
+	
+	public TwitterApiAccess getApi() {
+		return api;
+	}
+
+	
 }

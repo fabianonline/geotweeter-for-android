@@ -25,6 +25,7 @@ import android.widget.ImageView;
  * Vorlage: https://github.com/thest1/LazyList/blob/master/src/com/fedorvlasov/lazylist/ImageLoader.java
  */
 public class BackgroundImageLoader {
+	private Context application_context;
 	private static FileCache file_cache;
 	private Map<String, Bitmap> bitmap_cache = Collections.synchronizedMap(new WeakHashMap<String, Bitmap>());
 	private Map<ImageView, String> image_views = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
@@ -33,6 +34,7 @@ public class BackgroundImageLoader {
 	private static final String LOG = "BackgroundImageLoader";
 	
 	public BackgroundImageLoader(Context applicationContext) {
+		application_context = applicationContext;
 		if (executor_service == null) {
 			executor_service = Executors.newFixedThreadPool(5);
 		}
@@ -65,7 +67,6 @@ public class BackgroundImageLoader {
 			this.image_view = image_view;
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public void run() {
 			if (bitmap_cache.containsKey(url)) {
@@ -85,7 +86,7 @@ public class BackgroundImageLoader {
 				
 				@Override
 				public void run() {
-					if (bmp!=null) {
+					if (bmp != null) {
 						image_view.setImageBitmap(bmp);
 					}
 				}
@@ -109,7 +110,7 @@ public class BackgroundImageLoader {
 				Log.d(LOG, "Loading " + url + " from cache.");
 			}
 			try {
-				bitmap = new BitmapDrawable(BitmapFactory.decodeFile(cache_file.getCanonicalPath())).getBitmap();
+				bitmap = new BitmapDrawable(application_context.getResources(), BitmapFactory.decodeFile(cache_file.getCanonicalPath())).getBitmap();
 				bitmap_cache.put(url, bitmap);
 				return bitmap;
 			} catch (IOException e) {}
@@ -118,7 +119,7 @@ public class BackgroundImageLoader {
 			Log.d(LOG, "Loading " + url + " from web");
 		}
 		try {
-			bitmap = new BitmapDrawable(BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream())).getBitmap();
+			bitmap = new BitmapDrawable(application_context.getResources(), BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream())).getBitmap();
 			bitmap_cache.put(url, bitmap);
 			FileOutputStream file_stream = new FileOutputStream(cache_file);
 			bitmap.compress(Bitmap.CompressFormat.PNG, 85, file_stream);

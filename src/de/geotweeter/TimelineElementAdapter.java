@@ -1,6 +1,7 @@
 package de.geotweeter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.content.Context;
 import android.text.Html;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.geotweeter.R;
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
@@ -35,6 +37,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	}
 	
 	public void addAllAsFirst(ArrayList<TimelineElement> elements) {
+		Collections.sort(elements, new TLEComparator());
 		items.addAll(0, elements);
 		this.notifyDataSetChanged();
 	}

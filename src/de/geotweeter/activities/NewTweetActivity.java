@@ -61,6 +61,7 @@ import de.geotweeter.services.TweetSendService;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
+import de.geotweeter.timelineelements.UserMention;
 
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";
@@ -80,6 +81,7 @@ public class NewTweetActivity extends Activity {
 
 	
 	public void onCreate(Bundle savedInstanceState) {
+		
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		serviceBind();
@@ -95,6 +97,7 @@ public class NewTweetActivity extends Activity {
 		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener());
 		
 		Intent i = getIntent();
+		
 		if (i != null && i.getExtras() != null) {
 			
 			TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
@@ -128,8 +131,11 @@ public class NewTweetActivity extends Activity {
 						if (auth_users != null) {
 							for (User u : auth_users) {
 								Account acct = createAccount(u);
-								if (tweet.entities.user_mentions.get(0).id == acct.getUser().id) {
-									TimelineActivity.current_account = acct;
+								for (UserMention um : tweet.entities.user_mentions) {
+									if (um.id == acct.getUser().id) {
+										TimelineActivity.current_account = acct;
+										break;
+									}
 								}
 							}
 						} else {
@@ -199,14 +205,8 @@ public class NewTweetActivity extends Activity {
 	@SuppressWarnings("deprecation")
 	private void changeLayoutOfAccountButton(ImageView v, boolean chosen) {
 		int bgColor = Color.LTGRAY;
-//		int bgColor = Color.WHITE;
-//		int highlightColor = 0xFFFF0000;
 		int highlightColor = 0xFF000000;
-//		int highlightColor = 0xFFFFFFFF;
-//		int highlightColor = 0xFFFFA500;
-//		int highlightColor = 0xFF00FF00;
-//		int highlightColor = 0xFFFFFF00;
-		if(chosen) {
+		if (chosen) {
 			v.setAlpha(255);
 			GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, 
 															 new int[] {highlightColor, bgColor});
@@ -242,10 +242,12 @@ public class NewTweetActivity extends Activity {
 			Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
 			cursor.moveToFirst();
 			String picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-			if(getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitter")) {
+			
+			if (getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitter")) {
 				// TODO Warnung, dass Bild ausgetauscht wird.
 				imageAdapter.clear();
 			}
+			
 			imageAdapter.add(picturePath);
 			cursor.close();
 			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
@@ -268,9 +270,10 @@ public class NewTweetActivity extends Activity {
 		GridView gridView = (GridView) vi.inflate(R.layout.image_gridview, null);
 		gridView.setAdapter(imageAdapter);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
+			
 			public void onItemClick(AdapterView parent, View v, int position, long id) {
 				View cross = v.findViewById(R.id.cross);
-				if(cross.getVisibility() == View.VISIBLE) {
+				if (cross.getVisibility() == View.VISIBLE) {
 					cross.setVisibility(View.INVISIBLE);
 					imageAdapter.unmarkForDelete(position);
 				} else {
@@ -278,6 +281,7 @@ public class NewTweetActivity extends Activity {
 					imageAdapter.markForDelete(position);
 				}
 			}
+			
 		});
 		
 		new AlertDialog.Builder(this)
@@ -305,15 +309,22 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	protected class RemainingCharUpdater implements TextWatcher {
+		
 		private Activity activity;
-		public RemainingCharUpdater(Activity a) { activity = a; }
+		
+		public RemainingCharUpdater(Activity a) { 
+			activity = a; 
+		}
+		
 		public void onTextChanged(CharSequence s, int start, int before, int count) {}
+		
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+		
 		public void afterTextChanged(Editable s) {
 			TextView t = (TextView) activity.findViewById(R.id.textCharsRemaining);
 			int remaining = 140 - Utils.countChars(s.toString());
 			t.setText(String.valueOf(remaining));
-			if (remaining<0) {
+			if (remaining < 0) {
 				t.setTextColor(0xFFFF0000);
 			} else {
 				t.setTextColor(0xFF00FF00);
@@ -324,14 +335,16 @@ public class NewTweetActivity extends Activity {
 	protected class GPSToggleListener implements OnCheckedChangeListener {
 		private NewTweetActivity activity;
 		
-		public GPSToggleListener(NewTweetActivity a) { activity = a; }
+		public GPSToggleListener(NewTweetActivity a) { 
+			activity = a; 
+		}
 		
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			SharedPreferences prefs = getSharedPreferences(Constants.PREFS_APP, 0);
 			Editor ed = prefs.edit();
 			ed.putBoolean("gpsEnabledByDefault", isChecked);
 			ed.commit();
-			if (isChecked==true) {
+			if (isChecked == true) {
 				lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 				gpslistener = new GPSCoordsListener(activity);
 				List<String> providers = lm.getAllProviders();
@@ -346,6 +359,7 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	protected class GPSCoordsListener implements LocationListener {
+		
 		private NewTweetActivity activity;
 		
 		public GPSCoordsListener(NewTweetActivity a) { 
@@ -364,12 +378,15 @@ public class NewTweetActivity extends Activity {
 		}
 		
 		public void onProviderDisabled(String provider) {}
+		
 		public void onProviderEnabled(String provider) {}
+		
 		public void onStatusChanged(String provider, int new_status, Bundle extra) {}
 
 	}
 	
 	public class SendTweetListener implements OnClickListener {
+		
 		public void onClick(View v) {
 			String text = ((TextView)findViewById(R.id.tweet_text)).getText().toString().trim();
 			SendableTweet tweet = new SendableTweet(currentAccount, text);
@@ -385,9 +402,11 @@ public class NewTweetActivity extends Activity {
 			}
 			finish();
 		}
+		
 	}
 	
 	private ServiceConnection serviceConnection = new ServiceConnection() {
+		
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
 			service = ((TweetSendService.TweetSendBinder)binder).getService();
@@ -399,6 +418,7 @@ public class NewTweetActivity extends Activity {
 			service = null;
 			Log.d(LOG, "Service disconnected.");
 		}
+		
 	};
 	
 	private void serviceBind() {
