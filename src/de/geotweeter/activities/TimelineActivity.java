@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
 
 import android.content.Context;
@@ -45,6 +46,7 @@ import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -188,6 +190,30 @@ public class TimelineActivity extends MapActivity {
 						}
 					});
 				}
+				
+				menu.add("Retweet").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						new Thread(new Runnable() {
+							
+							public void run() {
+								try {
+									current_account.getApi().retweet(te.getID());
+								} catch (OAuthException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (RetweetException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}).start();
+						
+						return true;
+					}
+				});
+				
 				if (tweet.entities != null) {
 					/* TODO: User-Infoscreen */
 //					if (tweet.entities.user_mentions != null) {

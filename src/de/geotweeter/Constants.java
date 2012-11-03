@@ -34,6 +34,7 @@ public class Constants extends Application {
 	public static final String URI_USER_TIMELINE        = "https://api.twitter.com/1.1/statuses/user_timeline.json";
 	public static final String URI_UPDATE               = "https://api.twitter.com/1.1/statuses/update.json";
 	public static final String URI_UPDATE_WITH_MEDIA    = "https://api.twitter.com/1.1/statuses/update_with_media.json";
+	public static final String URI_RETWEET				= "https://api.twitter.com/1.1/statuses/retweet/:id.json";
 	
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 		

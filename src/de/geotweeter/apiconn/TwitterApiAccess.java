@@ -25,6 +25,7 @@ import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
 import de.geotweeter.exceptions.PermanentTweetSendException;
+import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetDestroyException;
 import de.geotweeter.exceptions.TweetSendException;
@@ -272,6 +273,23 @@ public class TwitterApiAccess {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
 			throw new TweetDestroyException();
+		}
+		
+		return result;
+	}
+	
+	public Tweet retweet(long id) throws OAuthException, RetweetException {
+		Tweet result = null;
+		String uri = Constants.URI_RETWEET.replace(":id", String.valueOf(id));
+		OAuthRequest req = new OAuthRequest(Verb.POST, uri);
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Tweet.class);
+		} else {
+			throw new RetweetException();
 		}
 		
 		return result;
