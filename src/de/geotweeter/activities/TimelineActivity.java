@@ -191,7 +191,7 @@ public class TimelineActivity extends MapActivity {
 					});
 				}
 				
-				if (! (te instanceof DirectMessage)) {
+				if (! (te instanceof DirectMessage) && ! te.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())) {
 					menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 						
 						@Override
