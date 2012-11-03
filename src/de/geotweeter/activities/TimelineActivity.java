@@ -183,7 +183,7 @@ public class TimelineActivity extends MapActivity {
 						
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
-							showCoversation(tweet);
+							showConversation(tweet);
 							return true;
 						}
 					});
@@ -359,7 +359,7 @@ public class TimelineActivity extends MapActivity {
 		addAccount(acct);
 	}
 	
-	public void showCoversation(TimelineElement te) {
+	public void showConversation(TimelineElement te) {
 		TimelineElementAdapter tea = new TimelineElementAdapter(this, 
 				R.layout.timeline_element, 
 				new ArrayList<TimelineElement>());
