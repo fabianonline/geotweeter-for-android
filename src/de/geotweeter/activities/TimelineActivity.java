@@ -392,7 +392,7 @@ public class TimelineActivity extends MapActivity {
 				R.layout.timeline_element, 
 				new ArrayList<TimelineElement>());
 		tea.add(te);
-		new Conversation(tea, current_account, false);
+		new Conversation(tea, current_account, false, true);
 		ListView l = (ListView) findViewById(R.id.timeline);
 		l.setAdapter(tea);
 	}

@@ -158,7 +158,7 @@ public class NewTweetActivity extends Activity {
 																    new ArrayList<TimelineElement>());
 			tea.add(elm);
 			if(! (elm instanceof DirectMessage)) {
-				new Conversation(tea, TimelineActivity.current_account, true);
+				new Conversation(tea, TimelineActivity.current_account, true, false);
 			}
 			l.setAdapter(tea);
 			

@@ -12,11 +12,13 @@ public class Conversation {
 	private TwitterApiAccess api;
 	private boolean backwards;
 	
-	public Conversation(TimelineElementAdapter tea, Account current_account, boolean backwards) {
+	public Conversation(TimelineElementAdapter tea, Account current_account, boolean backwards, boolean onStack) {
 		this.tea = tea;
 		this.backwards = backwards;
 		api = current_account.getApi();
-		current_account.pushTimeline(tea);
+		if (onStack) {
+			current_account.pushTimeline(tea);
+		}
 		new LoadConversationTask().execute(tea.getItem(0));
 	}
 	
