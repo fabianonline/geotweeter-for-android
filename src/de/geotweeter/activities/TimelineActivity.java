@@ -23,6 +23,8 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,7 +53,6 @@ import de.geotweeter.timelineelements.Url;
 
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
-	private int acc;
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
@@ -60,6 +61,7 @@ public class TimelineActivity extends MapActivity {
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
 	public static HashMap<Long,TimelineElement> availableTweets;
+	public static HashMap<View, Account> viewToAccounts;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +80,6 @@ public class TimelineActivity extends MapActivity {
 		registerForContextMenu(timelineListView);
 		
 		if (!isRunning) {
-			acc = 0;
 			ArrayList<User> auth_users = getAuthUsers();
 			if (auth_users != null) {
 				for (User u : auth_users) {
@@ -120,6 +121,30 @@ public class TimelineActivity extends MapActivity {
 			}
 		} else {
 			timelineListView.setAdapter(current_account.getElements());
+		}
+
+		viewToAccounts = new HashMap<View, Account>();
+		if(Account.all_accounts.size() > 1) {
+			for (Account account : Account.all_accounts) {
+				Log.d(LOG, "Account: " + account.getUser().getScreenName());
+				LinearLayout accountSwitcher = (LinearLayout) findViewById(R.id.layAccountSwitcher);
+				View element = getLayoutInflater().inflate(R.layout.account_switcher_element, null);
+				ImageView imgAccount = (ImageView) element.findViewById(R.id.imgAccount);
+				background_image_loader.displayImage(account.getUser().getAvatarSource(), imgAccount);
+				TextView txtView = (TextView) element.findViewById(R.id.txtUnread);
+				txtView.setText(account.getUser().getScreenName());
+				
+				viewToAccounts.put(element, account);
+				
+				element.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						setCurrentAccount(viewToAccounts.get(v));
+					}
+				});
+				accountSwitcher.addView(element);
+			}
 		}
 		
 		isRunning = true;
@@ -298,9 +323,8 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
-	public void nextAccountHandler(View v) {
-		acc = (acc + 1) % Account.all_accounts.size();
-		current_account = Account.all_accounts.get(acc);
+	public void setCurrentAccount(Account account) {
+		current_account = account;
 //		elements = current_account.getElements().getItems();
 		ListView l = (ListView) findViewById(R.id.timeline);
 		l.setAdapter(current_account.getElements());
