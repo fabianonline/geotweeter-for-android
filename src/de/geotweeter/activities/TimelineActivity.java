@@ -327,7 +327,7 @@ public class TimelineActivity extends MapActivity {
 		current_account = account;
 //		elements = current_account.getElements().getItems();
 		ListView l = (ListView) findViewById(R.id.timeline);
-		l.setAdapter(current_account.getElements());
+		l.setAdapter(current_account.activeTimeline());
 		Log.d(LOG, "Changed Account: " + current_account.getUser().screen_name);
 	}
 
