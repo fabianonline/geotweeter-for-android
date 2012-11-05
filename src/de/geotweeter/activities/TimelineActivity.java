@@ -152,7 +152,7 @@ public class TimelineActivity extends MapActivity {
 //				});
 //				accountSwitcher.addView(element);
 				
-				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, null);
+				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
 //				rdBtn.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(background_image_loader.getBitmap(account.getUser().getAvatarSource())), null, null, null);
 				rdBtn.setButtonDrawable(new BitmapDrawable(getResources(), background_image_loader.getBitmap(account.getUser().getAvatarSource())));
 				rdBtn.setText(account.getUser().getScreenName());
