@@ -156,9 +156,6 @@ public class TimelineActivity extends MapActivity {
 //				rdBtn.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(background_image_loader.getBitmap(account.getUser().getAvatarSource())), null, null, null);
 				rdBtn.setButtonDrawable(new BitmapDrawable(getResources(), background_image_loader.getBitmap(account.getUser().getAvatarSource())));
 				rdBtn.setText(account.getUser().getScreenName());
-//				RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-//				params.setMargins(5, 0, 5, 0);
-//				rdBtn.setLayoutParams(params);
 				
 				viewToAccounts.put(rdBtn, account);
 				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
