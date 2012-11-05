@@ -102,7 +102,7 @@ public class TwitterApiAccess {
 	}
 
 	private ArrayList<TimelineElement> getTimeline(OAuthRequest req, long from_id, long to_id, int count) throws OAuthException {
-		ArrayList<TimelineElement> elements = null;
+		ArrayList<TimelineElement> elements;
 		req.addQuerystringParameter("count", String.valueOf(count));
 		if (from_id != 0) {
 			req.addQuerystringParameter("since_id", String.valueOf(from_id));
@@ -115,6 +115,9 @@ public class TwitterApiAccess {
 		response = req.send();
 		if (response.isSuccessful()) {
 			elements = parseTweets(response.getBody());
+		} else {
+			// TODO Do something more than just chickening out.
+			elements = new ArrayList<TimelineElement>();
 		}
 		return elements;
 	}
