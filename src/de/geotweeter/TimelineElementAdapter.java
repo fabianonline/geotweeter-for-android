@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import de.geotweeter.R;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -33,12 +30,16 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	
 	public void addAsFirst(TimelineElement t) {
 		items.add(0, t);
+		TimelineActivity.addToAvailableTLE(t);
 		this.notifyDataSetChanged();
 	}
 	
 	public void addAllAsFirst(ArrayList<TimelineElement> elements) {
 		Collections.sort(elements, new TLEComparator());
 		items.addAll(0, elements);
+		for (TimelineElement t : elements) {
+			TimelineActivity.addToAvailableTLE(t);
+		}
 		this.notifyDataSetChanged();
 	}
 	

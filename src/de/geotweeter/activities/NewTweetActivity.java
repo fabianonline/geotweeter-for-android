@@ -51,6 +51,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
+import de.geotweeter.Conversation;
 import de.geotweeter.ImageBaseAdapter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
@@ -102,6 +103,7 @@ public class NewTweetActivity extends Activity {
 			
 			TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
 			String reply_string = "";
+			int replyStringSelectionStart = 0;
 			
 			if (elm instanceof DirectMessage) {
 				
@@ -121,6 +123,7 @@ public class NewTweetActivity extends Activity {
 				
 				}
 				reply_string = "d " + elm.getSenderScreenName() + " ";
+				replyStringSelectionStart = reply_string.length();
 				
 			} else if (elm instanceof Tweet) {
 				reply_to_id = elm.getID();
@@ -147,16 +150,26 @@ public class NewTweetActivity extends Activity {
 					throw new NullPointerException("There's something rotten in the state of current_account");
 				}
 				reply_string = "@" + elm.getSenderScreenName() + " ";
+				replyStringSelectionStart = reply_string.length();
+				for (UserMention userMention : ((Tweet) elm).entities.user_mentions) {
+					if (    ! (userMention.screen_name.equalsIgnoreCase(TimelineActivity.current_account.getUser().getScreenName())
+							|| userMention.screen_name.equalsIgnoreCase(elm.getSenderScreenName())) ) {
+						reply_string += "@" + userMention.screen_name + " ";
+					}
+				}
 			}
 			
 			editTweetText.setText(reply_string);
-			editTweetText.setSelection(reply_string.length());
+			editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
+//			editTweetText.setSelection(reply_string.length());
 			
 			ListView l = (ListView) findViewById(R.id.timeline);
-			TimelineElementAdapter ta = new TimelineElementAdapter(this, R.layout.timeline_element, 
+			TimelineElementAdapter tea = new TimelineElementAdapter(this, R.layout.timeline_element, 
 																    new ArrayList<TimelineElement>());
-			l.setAdapter(ta);
-			ta.add(elm);
+			tea.add(elm);
+			new Conversation(tea, TimelineActivity.current_account, true, false);
+			l.setAdapter(tea);
+			
 		}
 		
 		/* Accountauswahl */

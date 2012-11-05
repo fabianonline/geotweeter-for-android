@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
 
 import android.content.Context;
@@ -23,6 +24,8 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,11 +40,13 @@ import com.google.android.maps.OverlayItem;
 import de.geotweeter.Account;
 import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
+import de.geotweeter.Conversation;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -50,7 +55,6 @@ import de.geotweeter.timelineelements.Url;
 
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
-	private int acc;
 	public static Account current_account = null;
 	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
@@ -59,10 +63,12 @@ public class TimelineActivity extends MapActivity {
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
 	public static HashMap<Long,TimelineElement> availableTweets;
+	public static HashMap<View, Account> viewToAccounts;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Utils.setDesign(this);
+		availableTweets = new HashMap<Long, TimelineElement>();
 		super.onCreate(savedInstanceState);
 		instance = this;
 		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
@@ -76,7 +82,6 @@ public class TimelineActivity extends MapActivity {
 		registerForContextMenu(timelineListView);
 		
 		if (!isRunning) {
-			acc = 0;
 			ArrayList<User> auth_users = getAuthUsers();
 			if (auth_users != null) {
 				for (User u : auth_users) {
@@ -119,10 +124,44 @@ public class TimelineActivity extends MapActivity {
 		} else {
 			timelineListView.setAdapter(current_account.getElements());
 		}
+
+		viewToAccounts = new HashMap<View, Account>();
+		if(Account.all_accounts.size() > 1) {
+			for (Account account : Account.all_accounts) {
+				Log.d(LOG, "Account: " + account.getUser().getScreenName());
+				LinearLayout accountSwitcher = (LinearLayout) findViewById(R.id.layAccountSwitcher);
+				View element = getLayoutInflater().inflate(R.layout.account_switcher_element, null);
+				ImageView imgAccount = (ImageView) element.findViewById(R.id.imgAccount);
+				background_image_loader.displayImage(account.getUser().getAvatarSource(), imgAccount);
+				TextView txtView = (TextView) element.findViewById(R.id.txtUnread);
+				txtView.setText(account.getUser().getScreenName());
+				
+				viewToAccounts.put(element, account);
+				
+				element.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						setCurrentAccount(viewToAccounts.get(v));
+					}
+				});
+				accountSwitcher.addView(element);
+			}
+		}
 		
 		isRunning = true;
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (current_account.activeTimeline() == current_account.getElements()) {
+			super.onBackPressed();
+		} else {
+			ListView l = (ListView) findViewById(R.id.timeline);
+			l.setAdapter(current_account.getPrevTimeline());
+		}
+	}
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		if (v.getId() == R.id.timeline) {
@@ -140,7 +179,43 @@ public class TimelineActivity extends MapActivity {
 			}
 			
 			if (te instanceof Tweet) {
-				Tweet tweet = (Tweet) te;
+				final Tweet tweet = (Tweet) te;
+				if (tweet.in_reply_to_status_id != 0) {
+					menu.add(R.string.show_conversation).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+						
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							showConversation(tweet);
+							return true;
+						}
+					});
+				}
+				
+				if (! (te instanceof DirectMessage) && ! te.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())) {
+					menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+						
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							new Thread(new Runnable() {
+								
+								public void run() {
+									try {
+										current_account.getApi().retweet(te.getID());
+									} catch (OAuthException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (RetweetException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							}).start();
+							
+							return true;
+						}
+					});
+				}
+				
 				if (tweet.entities != null) {
 					/* TODO: User-Infoscreen */
 //					if (tweet.entities.user_mentions != null) {
@@ -276,12 +351,11 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
-	public void nextAccountHandler(View v) {
-		acc = (acc + 1) % Account.all_accounts.size();
-		current_account = Account.all_accounts.get(acc);
+	public void setCurrentAccount(Account account) {
+		current_account = account;
 //		elements = current_account.getElements().getItems();
 		ListView l = (ListView) findViewById(R.id.timeline);
-		l.setAdapter(current_account.getElements());
+		l.setAdapter(current_account.activeTimeline());
 		Log.d(LOG, "Changed Account: " + current_account.getUser().screen_name);
 	}
 
@@ -311,6 +385,16 @@ public class TimelineActivity extends MapActivity {
 				   new ArrayList<TimelineElement>());
 		Account acct = new Account(ta, getUserToken(u), u, getApplicationContext(), true);
 		addAccount(acct);
+	}
+	
+	public void showConversation(TimelineElement te) {
+		TimelineElementAdapter tea = new TimelineElementAdapter(this, 
+				R.layout.timeline_element, 
+				new ArrayList<TimelineElement>());
+		tea.add(te);
+		new Conversation(tea, current_account, false, true);
+		ListView l = (ListView) findViewById(R.id.timeline);
+		l.setAdapter(tea);
 	}
 	
 	public void addAccount(Account acc) {
@@ -425,5 +509,9 @@ public class TimelineActivity extends MapActivity {
 			background_image_loader = new BackgroundImageLoader(context);
 		}
 		return background_image_loader;
+	}
+
+	public static void addToAvailableTLE(TimelineElement t) {
+		availableTweets.put(t.getID(), t);
 	}
 }
