@@ -229,7 +229,7 @@ public class Account implements Serializable {
 		long last_id = 0;
 		// remove empty arrays
 		for (int i = responses.size() - 1; i >= 0; i--) {
-			if (responses.get(i).size()==0) {
+			if (responses.get(i)==null || responses.get(i).size()==0) {
 				responses.remove(i);
 			}
 		}
