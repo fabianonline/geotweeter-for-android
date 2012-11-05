@@ -102,6 +102,14 @@ public class BackgroundImageLoader {
 		return false;
 	}
 	
+	public Bitmap getBitmap(String url) {
+		if(bitmap_cache.containsKey(url)) {
+			return bitmap_cache.get(url);
+		} else {
+			return loadBitmap(url);
+		}
+	}
+	
 	public Bitmap loadBitmap(String url) {
 		Bitmap bitmap = null;
 		File cache_file = file_cache.getFile(url);

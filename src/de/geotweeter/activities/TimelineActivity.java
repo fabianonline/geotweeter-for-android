@@ -10,6 +10,7 @@ import org.scribe.model.Token;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,12 +22,15 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -127,25 +131,42 @@ public class TimelineActivity extends MapActivity {
 
 		viewToAccounts = new HashMap<View, Account>();
 		if(Account.all_accounts.size() > 1) {
+			RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
 			for (Account account : Account.all_accounts) {
-				Log.d(LOG, "Account: " + account.getUser().getScreenName());
-				LinearLayout accountSwitcher = (LinearLayout) findViewById(R.id.layAccountSwitcher);
-				View element = getLayoutInflater().inflate(R.layout.account_switcher_element, null);
-				ImageView imgAccount = (ImageView) element.findViewById(R.id.imgAccount);
-				background_image_loader.displayImage(account.getUser().getAvatarSource(), imgAccount);
-				TextView txtView = (TextView) element.findViewById(R.id.txtUnread);
-				txtView.setText(account.getUser().getScreenName());
+//				Log.d(LOG, "Account: " + account.getUser().getScreenName());
+//				LinearLayout accountSwitcher = (LinearLayout) findViewById(R.id.layAccountSwitcher);
+//				View element = getLayoutInflater().inflate(R.layout.account_switcher_element, null);
+//				ImageView imgAccount = (ImageView) element.findViewById(R.id.imgAccount);
+//				background_image_loader.displayImage(account.getUser().getAvatarSource(), imgAccount);
+//				TextView txtView = (TextView) element.findViewById(R.id.txtUnread);
+//				txtView.setText(account.getUser().getScreenName());
+//				
+//				viewToAccounts.put(element, account);
+//				
+//				element.setOnClickListener(new OnClickListener() {
+//					
+//					@Override
+//					public void onClick(View v) {
+//						setCurrentAccount(viewToAccounts.get(v));
+//					}
+//				});
+//				accountSwitcher.addView(element);
 				
-				viewToAccounts.put(element, account);
+				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, null);
+//				rdBtn.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(background_image_loader.getBitmap(account.getUser().getAvatarSource())), null, null, null);
+				rdBtn.setButtonDrawable(new BitmapDrawable(getResources(), background_image_loader.getBitmap(account.getUser().getAvatarSource())));
+				rdBtn.setText(account.getUser().getScreenName());
+//				RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+//				params.setMargins(5, 0, 5, 0);
+//				rdBtn.setLayoutParams(params);
 				
-				element.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						setCurrentAccount(viewToAccounts.get(v));
-					}
-				});
-				accountSwitcher.addView(element);
+				viewToAccounts.put(rdBtn, account);
+				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
+				
+//				accountSwitcher.addView(rdBtn);
+				if(account == current_account) {
+					rdBtn.setChecked(true);
+				}
 			}
 		}
 		
@@ -513,5 +534,19 @@ public class TimelineActivity extends MapActivity {
 
 	public static void addToAvailableTLE(TimelineElement t) {
 		availableTweets.put(t.getID(), t);
+	}
+	
+	private class AccountSwitcherOnClickListener implements OnClickListener {
+		
+		private Account account;
+		
+		public AccountSwitcherOnClickListener(Account account) {
+			this.account = account;
+		}
+		
+		@Override
+		public void onClick(View v) {
+			setCurrentAccount(account);
+		}
 	}
 }
