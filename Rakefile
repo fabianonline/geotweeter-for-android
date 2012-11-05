@@ -4,6 +4,7 @@ require 'rake'
 $target_dir = File.dirname(__FILE__) + "/build_temp"
 $default_package = "de.geotweeter"
 $target_package = $default_package
+$app_name = "Geotweeter"
 $replacements = []
 $key_to_use = :debug
 
@@ -20,6 +21,7 @@ end
 desc "Build de.geotweeter.beta with debug keys and logging."
 task :beta do
 	$target_package = "de.geotweeter.beta"
+	$app_name = "Geotweeter Beta"
 	$replacements << [$default_package, $target_package]
 	Rake::Task['copy_and_modify_files'].invoke
 end
@@ -27,6 +29,7 @@ end
 desc "Build de.geotweeter.lite with release keys."
 task :lite do
 	$target_package = "de.geotweeter.lite"
+	$app_name = "Geotweeter Lite"
 	$key_to_use = :release
 	$replacements << [$default_package, $target_package]
 	$replacements << ["Log.d(", "// Log.d("]
@@ -46,6 +49,11 @@ task :copy_and_modify_files do
 		FileUtils.mkdir_p($target_dir + "/src/" + $target_package.gsub('.', '/'))
 		FileUtils.mv(list, $target_dir + "/src/" + $target_package.gsub('.', '/'))
 	end
+	
+	puts "Setting app name..."
+	string = File.read($target_dir + "/res/values/strings.xml")
+	string = string.gsub(/<string name="app_name">.+<\/string>/, '<string name="app_name">' + $app_name + '</string>')
+	File.open($target_dir + "/res/values/strings.xml", "w") {|f| f.write(string)}
 	
 	unless $replacements.empty?
 		puts "Performing string replacements..."
