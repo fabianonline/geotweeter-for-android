@@ -28,12 +28,16 @@ public class Conversation {
 		protected Void doInBackground(TimelineElement... params) {
 			TimelineElement current_element = params[0];
 			if (current_element.getClass() != Tweet.class) {
-				throw new ClassCastException("Conversation should be based on a tweet");
+				return null;
 			}
 			Tweet current = (Tweet) current_element;
 			while (current.in_reply_to_status_id != 0) {
 				long predecessor_id = current.in_reply_to_status_id;
-				current = (Tweet) TimelineActivity.availableTweets.get(predecessor_id);
+				try {
+					current = (Tweet) TimelineActivity.availableTweets.get(predecessor_id);
+				} catch (NullPointerException e) {
+					current = null;
+				}
 				if (current == null) {
 					current = api.getTweet(predecessor_id);
 				}				
