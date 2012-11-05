@@ -163,7 +163,7 @@ public class TimelineActivity extends MapActivity {
 				viewToAccounts.put(rdBtn, account);
 				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
 				
-//				accountSwitcher.addView(rdBtn);
+				accountSwitcher.addView(rdBtn);
 				if(account == current_account) {
 					rdBtn.setChecked(true);
 				}
