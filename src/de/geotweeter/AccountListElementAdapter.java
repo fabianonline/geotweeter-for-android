@@ -42,7 +42,7 @@ public class AccountListElementAdapter extends ArrayAdapter<Account> {
 			}
 			ImageView ivAvatar = (ImageView) v.findViewById(R.id.ivAccountAvatar);
 			if (ivAvatar != null) {
-				TimelineActivity.background_image_loader.displayImage(listElement.getUser().getAvatarSource(), ivAvatar);
+				TimelineActivity.background_image_loader.displayImage(listElement.getUser().getAvatarSource(), ivAvatar, true);
 			}
 		}
 		

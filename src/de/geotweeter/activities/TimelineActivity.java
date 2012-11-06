@@ -151,7 +151,7 @@ public class TimelineActivity extends MapActivity {
 				
 				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
 //				rdBtn.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(background_image_loader.getBitmap(account.getUser().getAvatarSource())), null, null, null);
-				rdBtn.setButtonDrawable(new BitmapDrawable(getResources(), background_image_loader.getBitmap(account.getUser().getAvatarSource())));
+				rdBtn.setButtonDrawable(new BitmapDrawable(getResources(), background_image_loader.getBitmap(account.getUser().getAvatarSource(), true)));
 				rdBtn.setText(account.getUser().getScreenName());
 				
 				viewToAccounts.put(rdBtn, account);
@@ -316,7 +316,7 @@ public class TimelineActivity extends MapActivity {
 				mapContainer.addView(map);
 				
 				List<Overlay> overlays = map.getOverlays();
-				Drawable marker = MapOverlay.getLocationMarker(background_image_loader.loadBitmap(tweet.user.profile_image_url_https));
+				Drawable marker = MapOverlay.getLocationMarker(background_image_loader.loadBitmap(tweet.user.profile_image_url_https, true));
 				MapOverlay overlay = new MapOverlay(marker);
 				OverlayItem overlayItem = new OverlayItem(coords, null, null);
 				overlay.addOverlay(overlayItem);

@@ -183,7 +183,7 @@ public class NewTweetActivity extends Activity {
 			User user = account.getUser();
 			ImageButton img = new ImageButton(this);
 			img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			TimelineActivity.getBackgroundImageLoader(getApplicationContext()).displayImage(user.getAvatarSource(), img);
+			TimelineActivity.getBackgroundImageLoader(getApplicationContext()).displayImage(user.getAvatarSource(), img, true);
 			img.setPadding(5, 5, 5, 5);
 			changeLayoutOfAccountButton(img, currentAccount == account);
 			img.setOnClickListener(new AccountChangerListener());

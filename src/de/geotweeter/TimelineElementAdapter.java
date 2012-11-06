@@ -101,8 +101,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
 			if (img != null) {
-				TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(t.getAvatarSource(), img);
-//				TimelineActivity.getInstance().getBackgroundImageLoader().displayImage(t.getAvatarSource(), img);
+				TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(t.getAvatarSource(), img, true);
 			}
 						
 		}

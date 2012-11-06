@@ -41,7 +41,7 @@ public class BackgroundImageLoader {
 	}
 
 	
-	public void displayImage(String url, ImageView image_view) {
+	public void displayImage(String url, ImageView image_view, boolean store_persistent) {
 		image_views.put(image_view, url);
 		Bitmap bitmap = bitmap_cache.get(url);
 		
@@ -50,7 +50,7 @@ public class BackgroundImageLoader {
 		} else {
 			image_view.setImageResource(loading_image_id);
 			/* Queue Image to download */
-			executor_service.submit(new ImageLoader(url, image_view));
+			executor_service.submit(new ImageLoader(url, image_view, store_persistent));
 		}
 		
 	}
@@ -58,10 +58,12 @@ public class BackgroundImageLoader {
 	public class ImageLoader implements Runnable {
 		String url;
 		ImageView image_view;
+		private boolean store_persistent;
 		
-		public ImageLoader(String url, ImageView image_view) {
+		public ImageLoader(String url, ImageView image_view, boolean store_persistent) {
 			this.url = url;
 			this.image_view = image_view;
+			this.store_persistent = store_persistent;
 		}
 
 		@Override
@@ -76,7 +78,7 @@ public class BackgroundImageLoader {
 				return;
 			}
 			//if (imageViewReused(url, image_view)) return;
-			final Bitmap bmp = loadBitmap(url);
+			final Bitmap bmp = loadBitmap(url, store_persistent);
 			
 			//if (imageViewReused(url, image_view)) return;
 			((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
@@ -99,15 +101,15 @@ public class BackgroundImageLoader {
 		return false;
 	}
 	
-	public Bitmap getBitmap(String url) {
-		if(bitmap_cache.containsKey(url)) {
+	public Bitmap getBitmap(String url, boolean store_persistent) {
+		if (bitmap_cache.containsKey(url)) {
 			return bitmap_cache.get(url);
 		} else {
-			return loadBitmap(url);
+			return loadBitmap(url, store_persistent);
 		}
 	}
 	
-	public Bitmap loadBitmap(String url) {
+	public Bitmap loadBitmap(String url, boolean store_persistent) {
 		Bitmap bitmap = null;
 		File cache_file = file_cache.getFile(url);
 		if (cache_file.exists()) {
@@ -126,10 +128,12 @@ public class BackgroundImageLoader {
 		try {
 			bitmap = new BitmapDrawable(application_context.getResources(), BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream())).getBitmap();
 			bitmap_cache.put(url, bitmap);
-			FileOutputStream file_stream = new FileOutputStream(cache_file);
-			bitmap.compress(Bitmap.CompressFormat.PNG, 85, file_stream);
-			file_stream.flush();
-			file_stream.close();
+			if (store_persistent) {
+				FileOutputStream file_stream = new FileOutputStream(cache_file);
+				bitmap.compress(Bitmap.CompressFormat.PNG, 85, file_stream);
+				file_stream.flush();
+				file_stream.close();
+			}
 			return bitmap;
 		} catch (IOException e) { 
 			e.printStackTrace(); 
