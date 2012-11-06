@@ -3,6 +3,8 @@ package de.geotweeter.apiconn;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -14,6 +16,7 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 
 import android.util.Log;
+import android.util.Pair;
 
 import com.alibaba.fastjson.JSON;
 
@@ -22,6 +25,7 @@ import de.geotweeter.Utils;
 import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetSendException;
+import de.geotweeter.timelineelements.Url;
 
 public class TwitpicApiAccess {
 	
@@ -81,6 +85,10 @@ public class TwitpicApiAccess {
 		
 	}
 	
-	
+	public static Pair<URL, URL> getUrlPair(Url url) throws MalformedURLException {
+		URL screen_url = new URL(url.expanded_url);
+		return new Pair<URL, URL>(new URL("http://twitpic.com/show/mini/" + screen_url.getPath()), 
+				new URL("http://twitpic.com/show/full/" + screen_url.getPath()));
+	}
 	
 }

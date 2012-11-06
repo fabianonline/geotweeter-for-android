@@ -3,6 +3,8 @@ package de.geotweeter;
 import java.util.regex.Pattern;
 
 import android.app.Application;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Path;
 
 public class Constants extends Application {

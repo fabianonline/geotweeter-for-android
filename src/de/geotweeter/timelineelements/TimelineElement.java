@@ -1,12 +1,15 @@
 package de.geotweeter.timelineelements;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 import android.util.Log;
+import android.util.Pair;
 
 public abstract class TimelineElement implements Serializable {
 	private static final long serialVersionUID = -4794489823636370071L;
@@ -107,4 +110,8 @@ public abstract class TimelineElement implements Serializable {
 		return null;
 	}
 		
+	public ArrayList<Pair<URL, URL>> getMediaList() {
+		return new ArrayList<Pair<URL, URL>>();
+	}
+	
 }

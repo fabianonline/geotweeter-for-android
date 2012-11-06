@@ -1,15 +1,19 @@
 package de.geotweeter;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import android.content.Context;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.timelineelements.TLEComparator;
@@ -19,6 +23,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private ArrayList<TimelineElement> items;
 	private Context context;
 	private boolean useDarkTheme;
+	
 
 	public TimelineElementAdapter(Context context, 
 			int textViewResourceId, ArrayList<TimelineElement> objects) {
@@ -102,6 +107,24 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
 			if (img != null) {
 				TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(t.getAvatarSource(), img, true);
+			}
+			
+			ArrayList<Pair<URL, URL>> media_list = t.getMediaList();
+			LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
+			if (!media_list.isEmpty()) {
+				picPreviews.setVisibility(View.VISIBLE);
+				for (Pair<URL, URL> url_pair : media_list) {
+					ImageView thumbnail = new ImageView(context);
+					picPreviews.addView(thumbnail);
+					thumbnail.getLayoutParams().width = 50;
+					thumbnail.getLayoutParams().height = 50;
+					thumbnail.setScaleType(ScaleType.CENTER_CROP);
+					thumbnail.setImageResource(R.drawable.ic_launcher);
+					TimelineActivity.getBackgroundImageLoader(context).displayImage(url_pair.first.toString(), thumbnail, false);
+				}
+			} else {
+				picPreviews.setVisibility(View.GONE);
+				picPreviews.removeAllViews();
 			}
 						
 		}

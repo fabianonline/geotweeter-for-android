@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,11 +36,16 @@ import de.geotweeter.timelineelements.ListMemberRemovedEvent;
 import de.geotweeter.timelineelements.NotShownEvent;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
+import de.geotweeter.timelineelements.Url;
 
 public class Utils {
 	private static int mainSpinnerDisplays = 0;
 	private static final String LOG = "Utils";
 	private static Properties properties;
+	
+	public enum PictureService {
+		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM
+	}
 	
 	public static int countChars(String str) {
 		str = str.trim();
@@ -207,6 +214,20 @@ public class Utils {
 		byte[] bytes = out.toByteArray();
 		Log.d(LOG, "After resizeFile: " + bytes.length);
 		return bytes;
+	}
+
+	public static PictureService getPictureService(Url url) {
+		try {
+			URL finalUrl = new URL(url.expanded_url);
+			String host = finalUrl.getHost();
+			if (host.endsWith("twitpic.com")) {
+				return PictureService.TWITPIC;
+			}
+			/* More services to follow */
+			return PictureService.NONE;
+		} catch (MalformedURLException e) {
+			return PictureService.NONE;
+		}
 	}
 
 	

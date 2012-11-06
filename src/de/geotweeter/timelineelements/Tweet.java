@@ -1,13 +1,20 @@
 package de.geotweeter.timelineelements;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.view.View;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.User;
+import de.geotweeter.Utils;
+import de.geotweeter.Utils.PictureService;
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.apiconn.TwitpicApiAccess;
 
 public class Tweet extends TimelineElement {
 	private static final long serialVersionUID = -6610449879010917836L;
@@ -155,4 +162,32 @@ public class Tweet extends TimelineElement {
 		}
 		return place.getFullName();
 	}
+	
+	public ArrayList<Pair<URL, URL>> getMediaList() {
+		ArrayList<Pair<URL, URL>> result = new ArrayList<Pair<URL, URL>>();
+		for (Media media : entities.media) {
+			try {
+				Pair<URL, URL> urls = new Pair<URL, URL>(new URL(media.media_url + ":thumb"), new URL(media.media_url));
+				result.add(urls);
+			} catch (MalformedURLException e) {
+				continue;
+			}
+		}
+		for (Url url : entities.urls) {
+			PictureService hoster = Utils.getPictureService(url);
+			switch (hoster) {
+			case NONE: 
+				break;
+			case TWITPIC: 
+				try {
+					result.add(TwitpicApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			}
+		}
+		return result;
+	}
+	
 }
