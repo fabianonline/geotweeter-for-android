@@ -75,6 +75,7 @@ public class Account implements Serializable {
 	private transient Context appContext;
 	private transient TwitterApiAccess api;
 	private transient Stack<TimelineElementAdapter> timeline_stack;
+	private MessageHashMap dm_conversations;
 
 	private enum AccessType {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
@@ -90,6 +91,7 @@ public class Account implements Serializable {
 		this.elements = elements;
 		this.appContext = applicationContext;
 		stream_request = new StreamRequest(this);
+		dm_conversations = new MessageHashMap(user.id);
 		
 		all_accounts.add(this);
 		
@@ -101,6 +103,10 @@ public class Account implements Serializable {
 		}
 	}
 	
+	public MessageHashMap getDMConversations() {
+		return dm_conversations;
+	}
+
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		mainTimeline = new ArrayList<TimelineElement>();
@@ -198,6 +204,10 @@ public class Account implements Serializable {
 				apiResponses.add(result);
 			}
 			
+			if (accessType == AccessType.DM_RCVD || accessType == AccessType.DM_SENT) {
+				dm_conversations.addMessages(result);
+			}
+			
 			if (tasksRunning == 0) { 
 				if (mainTimeline == null) {
 					mainTimeline = new ArrayList<TimelineElement>();
@@ -275,7 +285,8 @@ public class Account implements Serializable {
 			long element_id = element.getID();
 			
 			if (element_id != last_id) {
-				if (!(element instanceof DirectMessage) || element_id>old_max_known_dm_id) {
+//				if (!(element instanceof DirectMessage) || element_id>old_max_known_dm_id) {
+				if (element_id > old_max_known_dm_id) {
 					all_elements.add(element);
 				}
 			}
@@ -310,6 +321,7 @@ public class Account implements Serializable {
 	public void addTweet(final TimelineElement elm) {
 		Log.d(LOG, "Adding Tweet.");
 		if (elm instanceof DirectMessage) {
+			dm_conversations.addMessage((DirectMessage) elm);
 			if (elm.getID() > max_known_dm_id) {
 				max_known_dm_id = elm.getID();
 			}

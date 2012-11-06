@@ -201,7 +201,7 @@ public class TimelineActivity extends MapActivity {
 			
 			if (te instanceof Tweet) {
 				final Tweet tweet = (Tweet) te;
-				if (tweet.in_reply_to_status_id != 0) {
+				if (tweet.in_reply_to_status_id != 0 || te instanceof DirectMessage) {
 					menu.add(R.string.show_conversation).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 						
 						@Override
@@ -211,7 +211,7 @@ public class TimelineActivity extends MapActivity {
 						}
 					});
 				}
-				
+								
 				if (! (te instanceof DirectMessage) && ! te.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())) {
 					menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 						
