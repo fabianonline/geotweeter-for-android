@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -113,7 +114,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
 			if (!media_list.isEmpty()) {
 				picPreviews.setVisibility(View.VISIBLE);
-				for (Pair<URL, URL> url_pair : media_list) {
+				for (final Pair<URL, URL> url_pair : media_list) {
 					ImageView thumbnail = new ImageView(context);
 					picPreviews.addView(thumbnail);
 					thumbnail.getLayoutParams().width = 75;
@@ -121,6 +122,13 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 					thumbnail.setScaleType(ScaleType.CENTER_CROP);
 					thumbnail.setImageResource(R.drawable.ic_launcher);
 					TimelineActivity.getBackgroundImageLoader(context).displayImage(url_pair.first.toString(), thumbnail, false);
+					thumbnail.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							showOverlay(url_pair.second.toString());
+						}
+					});
 				}
 			} else {
 				picPreviews.setVisibility(View.GONE);
@@ -133,6 +141,12 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		return v;	
 	}
 	
+	protected void showOverlay(String url) {
+		ImageView img_overlay = (ImageView) TimelineActivity.getInstance().findViewById(R.id.img_overlay);
+		TimelineActivity.getBackgroundImageLoader(context).displayImage(url, img_overlay, false);
+		img_overlay.setVisibility(View.VISIBLE);
+	}
+
 	public ArrayList<TimelineElement> getItems() {
 		return items;
 	}

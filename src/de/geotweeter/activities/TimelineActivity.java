@@ -25,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -78,6 +79,15 @@ public class TimelineActivity extends MapActivity {
 		
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
 		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
+		
+		ImageView img_overlay = (ImageView) findViewById(R.id.img_overlay);
+		img_overlay.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismissOverlay((ImageView) v);	
+			}
+		});
 		
 		timelineListView = (ListView) findViewById(R.id.timeline);
 		registerForContextMenu(timelineListView);
@@ -165,6 +175,11 @@ public class TimelineActivity extends MapActivity {
 		}
 		
 		isRunning = true;
+	}
+
+	protected void dismissOverlay(ImageView v) {
+		v.setImageResource(R.drawable.ic_launcher);
+		v.setVisibility(View.GONE);
 	}
 
 	@Override

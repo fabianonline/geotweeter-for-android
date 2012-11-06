@@ -1,3 +1,9 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/timeline_top"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/Everything"
@@ -95,3 +101,13 @@
     </ListView>
 
 </LinearLayout>
+
+<ImageView
+    android:id="@+id/img_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="centerInside"
+    android:src="@drawable/ic_launcher"
+    android:visibility="gone" />
+
+</FrameLayout>
