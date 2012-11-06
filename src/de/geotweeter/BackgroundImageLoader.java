@@ -2,7 +2,6 @@ package de.geotweeter;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -10,8 +9,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import de.geotweeter.R;
 
 import android.app.Activity;
 import android.content.Context;

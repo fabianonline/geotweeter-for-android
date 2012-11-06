@@ -1,7 +1,5 @@
 package de.geotweeter.timelineelements;
 
-import java.util.Currency;
-
 import de.geotweeter.R;
 import de.geotweeter.User;
 import de.geotweeter.activities.TimelineActivity;

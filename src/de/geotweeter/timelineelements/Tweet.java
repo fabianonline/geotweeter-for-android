@@ -2,17 +2,16 @@ package de.geotweeter.timelineelements;
 
 import java.util.regex.Matcher;
 
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
 import android.view.View;
-import de.geotweeter.R;
 import de.geotweeter.Constants;
+import de.geotweeter.R;
 import de.geotweeter.User;
 import de.geotweeter.activities.TimelineActivity;
 
 public class Tweet extends TimelineElement {
 	private static final long serialVersionUID = -6610449879010917836L;
+	@SuppressWarnings("unused")
 	private static final String LOG = "Tweet";
 	public Coordinates coordinates;
 	public String text;
