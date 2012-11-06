@@ -117,6 +117,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				for (final Pair<URL, URL> url_pair : media_list) {
 					ImageView thumbnail = new ImageView(context);
 					picPreviews.addView(thumbnail);
+					thumbnail.setFocusable(false);
 					thumbnail.getLayoutParams().width = 75;
 					thumbnail.getLayoutParams().height = 75;
 					thumbnail.setScaleType(ScaleType.CENTER_CROP);

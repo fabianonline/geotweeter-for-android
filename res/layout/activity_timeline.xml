@@ -108,6 +108,7 @@
     android:layout_height="match_parent"
     android:scaleType="centerInside"
     android:src="@drawable/ic_launcher"
-    android:visibility="gone" />
+    android:visibility="gone"
+    android:focusable="false" />
 
 </FrameLayout>

@@ -44,8 +44,10 @@ public class MessageHashMap implements Serializable {
 	}
 	
 	public void addMessages(ArrayList<TimelineElement> msgs) {
-		for (TimelineElement tle : msgs) {
-			addMessage((DirectMessage) tle);
+		if (msgs != null) {
+			for (TimelineElement tle : msgs) {
+				addMessage((DirectMessage) tle);
+			}
 		}
 	}
 
