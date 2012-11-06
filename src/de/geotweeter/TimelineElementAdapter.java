@@ -116,8 +116,8 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				for (Pair<URL, URL> url_pair : media_list) {
 					ImageView thumbnail = new ImageView(context);
 					picPreviews.addView(thumbnail);
-					thumbnail.getLayoutParams().width = 50;
-					thumbnail.getLayoutParams().height = 50;
+					thumbnail.getLayoutParams().width = 75;
+					thumbnail.getLayoutParams().height = 75;
 					thumbnail.setScaleType(ScaleType.CENTER_CROP);
 					thumbnail.setImageResource(R.drawable.ic_launcher);
 					TimelineActivity.getBackgroundImageLoader(context).displayImage(url_pair.first.toString(), thumbnail, false);
