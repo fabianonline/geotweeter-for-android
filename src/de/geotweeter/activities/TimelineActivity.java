@@ -10,6 +10,8 @@ import org.scribe.model.Token;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -65,7 +67,6 @@ public class TimelineActivity extends MapActivity {
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
 	public static HashMap<Long,TimelineElement> availableTweets;
-	public static HashMap<View, Account> viewToAccounts;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -135,35 +136,16 @@ public class TimelineActivity extends MapActivity {
 		} else {
 			timelineListView.setAdapter(current_account.getElements());
 		}
-
-		viewToAccounts = new HashMap<View, Account>();
+		
 		if(Account.all_accounts.size() > 1) {
 			RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
 			for (Account account : Account.all_accounts) {
-//				Log.d(LOG, "Account: " + account.getUser().getScreenName());
-//				LinearLayout accountSwitcher = (LinearLayout) findViewById(R.id.layAccountSwitcher);
-//				View element = getLayoutInflater().inflate(R.layout.account_switcher_element, null);
-//				ImageView imgAccount = (ImageView) element.findViewById(R.id.imgAccount);
-//				background_image_loader.displayImage(account.getUser().getAvatarSource(), imgAccount);
-//				TextView txtView = (TextView) element.findViewById(R.id.txtUnread);
-//				txtView.setText(account.getUser().getScreenName());
-//				
-//				viewToAccounts.put(element, account);
-//				
-//				element.setOnClickListener(new OnClickListener() {
-//					
-//					@Override
-//					public void onClick(View v) {
-//						setCurrentAccount(viewToAccounts.get(v));
-//					}
-//				});
-//				accountSwitcher.addView(element);
 				
 				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
-				rdBtn.setButtonDrawable(new BitmapDrawable(getResources(), background_image_loader.getBitmap(account.getUser().getAvatarSource(), true)));
+				Bitmap bitmap = background_image_loader.getBitmap(account.getUser().getAvatarSource(), true);
+				rdBtn.setButtonDrawable(new AlphaBitmapDrawable(getResources(), bitmap));
 				rdBtn.setText(account.getUser().getScreenName());
 				
-				viewToAccounts.put(rdBtn, account);
 				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
 				
 				accountSwitcher.addView(rdBtn);
@@ -381,11 +363,12 @@ public class TimelineActivity extends MapActivity {
 	}
 	
 	public void setCurrentAccount(Account account) {
-		current_account = account;
-//		elements = current_account.getElements().getItems();
-		ListView l = (ListView) findViewById(R.id.timeline);
-		l.setAdapter(current_account.activeTimeline());
-		Log.d(LOG, "Changed Account: " + current_account.getUser().screen_name);
+		if(current_account != account) {
+			current_account = account;
+			ListView l = (ListView) findViewById(R.id.timeline);
+			l.setAdapter(current_account.activeTimeline());
+			Log.d(LOG, "Changed Account: " + current_account.getUser().screen_name);
+		}
 	}
 
 	private Token getUserToken(User u) {
@@ -556,5 +539,39 @@ public class TimelineActivity extends MapActivity {
 		public void onClick(View v) {
 			setCurrentAccount(account);
 		}
+	}
+	
+	private class AlphaBitmapDrawable extends BitmapDrawable {
+		private boolean checked;
+		
+		public AlphaBitmapDrawable(Resources res, Bitmap bitmap) {
+			super(res, bitmap);
+			setAlpha(50);
+			checked = false;
+		}
+
+		@Override
+		protected boolean onStateChange(int[] state) {
+			if(state != null) {
+				for (int s : state) {
+					if (s == android.R.attr.state_checked) {
+						if (!checked) {
+							setAlpha(255);
+							checked = true;
+							return true;
+						}
+						return false;
+					}
+				}
+			}
+			if (checked) {
+				setAlpha(50);
+				checked = false;
+				return true;
+			}
+			return false;
+		}
+		
+		
 	}
 }
