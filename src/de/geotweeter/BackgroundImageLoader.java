@@ -12,11 +12,13 @@ import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 
 /*
  * Vorlage: https://github.com/thest1/LazyList/blob/master/src/com/fedorvlasov/lazylist/ImageLoader.java
@@ -90,6 +92,60 @@ public class BackgroundImageLoader {
 				public void run() {
 					if (bmp != null) {
 						image_view.setImageBitmap(bmp);
+					}
+				}
+				
+			});
+		}
+
+	}
+	
+	public void displayImage(String url, RadioButton radioButton, boolean store_persistent) {
+		Bitmap bitmap = bitmap_cache.get(url);
+		
+		if (bitmap != null) {
+			radioButton.setButtonDrawable(new AlphaBitmapDrawable(application_context.getResources(), bitmap));
+		} else {
+			radioButton.setButtonDrawable(loading_image_id);
+			/* Queue Image to download */
+			executor_service.submit(new RadioButtonImageLoader(url, radioButton, store_persistent));
+		}
+		
+	}
+	
+	public class RadioButtonImageLoader implements Runnable {
+		String url;
+		RadioButton radioButton;
+		private boolean store_persistent;
+		
+		public RadioButtonImageLoader(String url, RadioButton radioButton, boolean store_persistent) {
+			this.url = url;
+			this.radioButton = radioButton;
+			this.store_persistent = store_persistent;
+		}
+
+		@Override
+		public void run() {
+			if (bitmap_cache.containsKey(url)) {
+				((Activity)radioButton.getContext()).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						radioButton.setButtonDrawable(new AlphaBitmapDrawable(application_context.getResources(), bitmap_cache.get(url)));
+					}
+				});
+				return;
+			}
+			final Bitmap bmp = loadBitmap(url, store_persistent);
+			if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
+				Log.d(LOG, "Finished loading " + url);
+			}
+			
+			((Activity)radioButton.getContext()).runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					if (bmp != null) {
+						radioButton.setButtonDrawable(new AlphaBitmapDrawable(application_context.getResources(), bmp));
 					}
 				}
 				
@@ -187,6 +243,38 @@ public class BackgroundImageLoader {
 				file.delete();
 			}
 		}
+	}
+	
+	private class AlphaBitmapDrawable extends BitmapDrawable {
+		private boolean checked;
+		
+		public AlphaBitmapDrawable(Resources res, Bitmap bitmap) {
+			super(res, bitmap);
+			setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
+			checked = false;
+		}
+
+		@Override
+		protected boolean onStateChange(int[] state) {
+			if(state != null) {
+				for (int s : state) {
+					if (s == android.R.attr.state_checked) {
+						if (!checked) {
+							setAlpha(Constants.CHECKED_ALPHA_VALUE);
+							checked = true;
+							return true;
+						}
+						return false;
+					}
+				}
+			}
+			if (checked) {
+				setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
+				checked = false;
+				return true;
+			}
+			return false;
+		}	
 	}
 
 }

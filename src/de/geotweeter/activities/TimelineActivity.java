@@ -141,11 +141,9 @@ public class TimelineActivity extends MapActivity {
 			RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
 			for (Account account : Account.all_accounts) {
 				
+				// TODO Change background of RadioButtons
 				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
-				// TODO Blocks when image is not in Cache.
-//				Bitmap bitmap = background_image_loader.getBitmap(account.getUser().getAvatarSource(), true);
-//				Log.d(LOG, "Bitmap width: "+ bitmap.getWidth() + " height: " + bitmap.getHeight());
-//				rdBtn.setButtonDrawable(new AlphaBitmapDrawable(getResources(), bitmap));
+				background_image_loader.displayImage(account.getUser().getAvatarSource(), rdBtn, true);
 				// TODO Set Text to # of unread Tweets
 				rdBtn.setText(account.getUser().getScreenName());
 				
@@ -542,39 +540,5 @@ public class TimelineActivity extends MapActivity {
 		public void onClick(View v) {
 			setCurrentAccount(account);
 		}
-	}
-	
-	private class AlphaBitmapDrawable extends BitmapDrawable {
-		private boolean checked;
-		
-		public AlphaBitmapDrawable(Resources res, Bitmap bitmap) {
-			super(res, bitmap);
-			setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
-			checked = false;
-		}
-
-		@Override
-		protected boolean onStateChange(int[] state) {
-			if(state != null) {
-				for (int s : state) {
-					if (s == android.R.attr.state_checked) {
-						if (!checked) {
-							setAlpha(Constants.CHECKED_ALPHA_VALUE);
-							checked = true;
-							return true;
-						}
-						return false;
-					}
-				}
-			}
-			if (checked) {
-				setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
-				checked = false;
-				return true;
-			}
-			return false;
-		}
-		
-		
 	}
 }
