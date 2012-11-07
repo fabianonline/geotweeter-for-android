@@ -142,8 +142,11 @@ public class TimelineActivity extends MapActivity {
 			for (Account account : Account.all_accounts) {
 				
 				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
-				Bitmap bitmap = background_image_loader.getBitmap(account.getUser().getAvatarSource(), true);
-				rdBtn.setButtonDrawable(new AlphaBitmapDrawable(getResources(), bitmap));
+				// TODO Blocks when image is not in Cache.
+//				Bitmap bitmap = background_image_loader.getBitmap(account.getUser().getAvatarSource(), true);
+//				Log.d(LOG, "Bitmap width: "+ bitmap.getWidth() + " height: " + bitmap.getHeight());
+//				rdBtn.setButtonDrawable(new AlphaBitmapDrawable(getResources(), bitmap));
+				// TODO Set Text to # of unread Tweets
 				rdBtn.setText(account.getUser().getScreenName());
 				
 				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));

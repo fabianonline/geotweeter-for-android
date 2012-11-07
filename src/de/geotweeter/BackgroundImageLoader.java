@@ -27,7 +27,7 @@ public class BackgroundImageLoader {
 	private Map<String, Bitmap> bitmap_cache = Collections.synchronizedMap(new WeakHashMap<String, Bitmap>());
 	private Map<ImageView, String> image_views = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 	static ExecutorService executor_service = null;
-	final int loading_image_id = R.drawable.ic_launcher;
+	final int loading_image_id = R.drawable.loading_image;
 	private static final String LOG = "BackgroundImageLoader";
 	
 	public BackgroundImageLoader(Context applicationContext) {
@@ -79,6 +79,9 @@ public class BackgroundImageLoader {
 			}
 			//if (imageViewReused(url, image_view)) return;
 			final Bitmap bmp = loadBitmap(url, store_persistent);
+			if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
+				Log.d(LOG, "Finished loading " + url);
+			}
 			
 			//if (imageViewReused(url, image_view)) return;
 			((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
@@ -139,6 +142,10 @@ public class BackgroundImageLoader {
 			e.printStackTrace(); 
 		}
 		return bitmap;
+	}
+	
+	public void clearCache() {
+		file_cache.clear();
 	}
 
 	class FileCache {
