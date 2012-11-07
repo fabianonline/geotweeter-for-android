@@ -220,14 +220,14 @@ public class NewTweetActivity extends Activity {
 		int bgColor = Color.LTGRAY;
 		int highlightColor = 0xFF000000;
 		if (chosen) {
-			v.setAlpha(255);
+			v.setAlpha(Constants.CHECKED_ALPHA_VALUE);
 			GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, 
 															 new int[] {highlightColor, bgColor});
 			gradDraw.setGradientType(GradientDrawable.RADIAL_GRADIENT);
 			gradDraw.setGradientRadius(40);
 			v.setBackgroundDrawable(gradDraw);
 		} else {
-			v.setAlpha(50);
+			v.setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
 			v.setBackgroundColor(bgColor);
 		}
 	}

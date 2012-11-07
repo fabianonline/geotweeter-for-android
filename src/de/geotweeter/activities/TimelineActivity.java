@@ -546,7 +546,7 @@ public class TimelineActivity extends MapActivity {
 		
 		public AlphaBitmapDrawable(Resources res, Bitmap bitmap) {
 			super(res, bitmap);
-			setAlpha(50);
+			setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
 			checked = false;
 		}
 
@@ -556,7 +556,7 @@ public class TimelineActivity extends MapActivity {
 				for (int s : state) {
 					if (s == android.R.attr.state_checked) {
 						if (!checked) {
-							setAlpha(255);
+							setAlpha(Constants.CHECKED_ALPHA_VALUE);
 							checked = true;
 							return true;
 						}
@@ -565,7 +565,7 @@ public class TimelineActivity extends MapActivity {
 				}
 			}
 			if (checked) {
-				setAlpha(50);
+				setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
 				checked = false;
 				return true;
 			}

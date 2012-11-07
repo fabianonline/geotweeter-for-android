@@ -3,8 +3,6 @@ package de.geotweeter;
 import java.util.regex.Pattern;
 
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Path;
 
 public class Constants extends Application {
@@ -50,6 +48,9 @@ public class Constants extends Application {
 	public static final Path LOCATION_MARKER = new LocationMarker();
 
 	public static final int SENDING_TWEET_STATUS_NOTIFICATION_ID = 654616410;
+	
+	public static final int CHECKED_ALPHA_VALUE = 255;
+	public static final int UNCHECKED_ALPHA_VALUE = 50;
 	
 	private static class LocationMarker extends Path {
 		
