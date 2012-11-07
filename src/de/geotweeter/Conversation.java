@@ -25,13 +25,18 @@ public class Conversation {
 		if (onStack) {
 			current_account.pushTimeline(tea);
 		}
-		new LoadConversationTask().execute(tea.getItem(0));
+		if (!tea.isEmpty()) {
+			new LoadConversationTask().execute(tea.getItem(0));
+		}
 	}
 	
 	private class LoadConversationTask extends AsyncTask<TimelineElement, TimelineElement, Void> {
 
 		@Override
 		protected Void doInBackground(TimelineElement... params) {
+			if (params == null) {
+				throw new NullPointerException("Conversation Task parameter is null");
+			}
 			TimelineElement current_element = params[0];
 			if (current_element.getClass() != Tweet.class) {
 				ArrayList<DirectMessage> messages = dm_conversations.getConversation(getRespondent(current_element));
