@@ -14,7 +14,13 @@ import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.Utils.PictureService;
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.apiconn.ImgurApiAccess;
+import de.geotweeter.apiconn.InstagramApiAccess;
+import de.geotweeter.apiconn.LockerzApiAccess;
+import de.geotweeter.apiconn.PlixiApiAccess;
 import de.geotweeter.apiconn.TwitpicApiAccess;
+import de.geotweeter.apiconn.YfrogApiAccess;
+import de.geotweeter.apiconn.YoutubeApiAccess;
 
 public class Tweet extends TimelineElement {
 	private static final long serialVersionUID = -6610449879010917836L;
@@ -181,6 +187,48 @@ public class Tweet extends TimelineElement {
 			case TWITPIC: 
 				try {
 					result.add(TwitpicApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case YFROG:
+				try {
+					result.add(YfrogApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case YOUTUBE:
+				try {
+					result.add(YoutubeApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case IMGUR:
+				try {
+					result.add(ImgurApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case INSTAGRAM:
+				try {
+					result.add(InstagramApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case PLIXI:
+				try {
+					result.add(PlixiApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case LOCKERZ:
+				try {
+					result.add(LockerzApiAccess.getUrlPair(url));
 				} catch (MalformedURLException e) {
 					break;
 				}
