@@ -142,10 +142,11 @@ public class TimelineActivity extends MapActivity {
 			for (Account account : Account.all_accounts) {
 				
 				// TODO Change background of RadioButtons
-				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
+//				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
+				AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(this, account);
 				background_image_loader.displayImage(account.getUser().getAvatarSource(), rdBtn, true);
 				// TODO Set Text to # of unread Tweets
-				rdBtn.setText(account.getUser().getScreenName());
+//				rdBtn.setText(account.getUser().getScreenName());
 				
 				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
 				
