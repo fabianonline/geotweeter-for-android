@@ -113,6 +113,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			ArrayList<Pair<URL, URL>> media_list = t.getMediaList();
 			LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
 			if (!media_list.isEmpty()) {
+				picPreviews.removeAllViews();
 				picPreviews.setVisibility(View.VISIBLE);
 				for (final Pair<URL, URL> url_pair : media_list) {
 					ImageView thumbnail = new ImageView(context);
@@ -133,7 +134,6 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				}
 			} else {
 				picPreviews.setVisibility(View.GONE);
-				picPreviews.removeAllViews();
 			}
 						
 		}

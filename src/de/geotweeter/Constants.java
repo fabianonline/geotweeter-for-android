@@ -50,7 +50,7 @@ public class Constants extends Application {
 	public static final int SENDING_TWEET_STATUS_NOTIFICATION_ID = 654616410;
 	
 	public static final int CHECKED_ALPHA_VALUE = 255;
-	public static final int UNCHECKED_ALPHA_VALUE = 50;
+	public static final int UNCHECKED_ALPHA_VALUE = 127;
 	
 	private static class LocationMarker extends Path {
 		
