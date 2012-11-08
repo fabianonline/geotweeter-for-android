@@ -1,6 +1,7 @@
 package de.geotweeter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -182,11 +183,25 @@ public class BackgroundImageLoader {
 				return bitmap;
 			} catch (IOException e) {}
 		}
+
+		
 		if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
 			Log.d(LOG, "Loading " + url + " from web");
 		}
+		
 		try {
-			InputStream bitmapStream = new URL(url).openConnection().getInputStream();
+			URL url_handler = new URL(url);
+			InputStream bitmapStream;
+			if (url_handler.getHost().equals("img.youtube.com")) {
+				try {
+					bitmapStream = url_handler.openConnection().getInputStream();
+				} catch (FileNotFoundException e) {
+					url_handler = new URL(url.replace("maxresdefault.jpg", "hqdefault.jpg"));
+					bitmapStream = url_handler.openConnection().getInputStream();
+				}
+			} else {
+				bitmapStream = url_handler.openConnection().getInputStream();
+			}
 			bitmap = new BitmapDrawable(application_context.getResources(), BitmapFactory.decodeStream(bitmapStream)).getBitmap();
 			bitmap_cache.put(url, bitmap);
 			if (store_persistent) {
