@@ -12,6 +12,7 @@ import de.geotweeter.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -26,27 +27,46 @@ import android.widget.RadioGroup.LayoutParams;
  */
 public class AccountSwitcherRadioButton extends RadioButton implements Observer {
 	
+	private static final int checkedColorDark = Color.WHITE;
+	private static final int checkedColorLight = Color.BLACK;
+	private static final int uncheckedColor = Color.GRAY;
+	
 	private final Account account;
 	private final Context context;
+	private boolean useDarkTheme;
 	
 	public AccountSwitcherRadioButton(Context context, Account account) {
 		super(context);
 		this.account = account;
 		this.context = context;
+		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 		
 		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		layout.setMargins(pixelToDIP(5), pixelToDIP(2), pixelToDIP(1), 0);
 		setLayoutParams(layout);
 		setPadding(pixelToDIP(35), pixelToDIP(4), pixelToDIP(0), pixelToDIP(4));
-		setBackgroundResource(R.drawable.account_switcher_selector);
+		if (useDarkTheme) {
+			setBackgroundResource(R.drawable.account_switcher_selector);
+		} else {
+			setBackgroundResource(R.drawable.account_switcher_selector_light);
+		}
 		// TODO # of unread Tweets
 		setText(account.getUser().getScreenName());
+		setTextColor(uncheckedColor);
 		
 		setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				
+				if (isChecked) {
+					if (useDarkTheme) {
+						setTextColor(checkedColorDark);
+					} else {
+						setTextColor(checkedColorLight);
+					}
+				} else {
+					setTextColor(uncheckedColor);
+				}
 			}
 		});
 		
