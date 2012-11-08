@@ -315,6 +315,8 @@ public class Account extends Observable implements Serializable {
 			@Override
 			public void run() {
 				elements.addAllAsFirst(all_elements);
+				setChanged();
+				notifyObservers();
 			}
 		});
 	}
@@ -335,6 +337,8 @@ public class Account extends Observable implements Serializable {
 		handler.post(new Runnable() {
 			public void run() {
 				elements.addAsFirst(elm);
+				setChanged();
+				notifyObservers();
 			}
 		});
 	}
@@ -398,6 +402,8 @@ public class Account extends Observable implements Serializable {
 						@Override
 						public void run() {
 							elements.notifyDataSetChanged();
+							setChanged();
+							notifyObservers();
 						}
 					});
 				} catch (UnsupportedEncodingException e) {
@@ -411,6 +417,8 @@ public class Account extends Observable implements Serializable {
 		}, "GetMaxReadIDs").start();
 		
 		elements.notifyDataSetChanged();
+		setChanged();
+		notifyObservers();
 	}
 	
 	public void setMaxReadIDs(long tweet_id, long mention_id, long dm_id) {
@@ -447,6 +455,8 @@ public class Account extends Observable implements Serializable {
 		}, "SetMaxReadIDs").start();
 		
 		elements.notifyDataSetChanged();
+		setChanged();
+		notifyObservers();
 	}
 	
 	public long getMaxReadTweetID() {
@@ -537,6 +547,8 @@ public class Account extends Observable implements Serializable {
 			}
 		}
 		elements.addAllAsFirst(tweets);
+		setChanged();
+		notifyObservers();
 	}
 	
 	public TwitterApiAccess getApi() {
@@ -554,6 +566,14 @@ public class Account extends Observable implements Serializable {
 		
 	public TimelineElementAdapter activeTimeline() {
 		return timeline_stack.peek();
+	}
+	
+	public int getUnreadTweetsSize() {
+		List<TimelineElement> tweets = elements.getItems();
+		int size = 0;
+		for (; size < tweets.size() && tweets.get(size).getID() > max_read_tweet_id; size++) {
+		}
+		return size;
 	}
 	
 }

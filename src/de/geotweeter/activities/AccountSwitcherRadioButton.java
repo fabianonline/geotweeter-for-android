@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package de.geotweeter.activities;
 
 import java.util.Observable;
@@ -15,8 +13,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup.LayoutParams;
@@ -44,14 +40,14 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		layout.setMargins(pixelToDIP(5), pixelToDIP(2), pixelToDIP(1), 0);
 		setLayoutParams(layout);
-		setPadding(pixelToDIP(35), pixelToDIP(4), pixelToDIP(0), pixelToDIP(4));
+		setPadding(pixelToDIP(35), pixelToDIP(4), pixelToDIP(4), pixelToDIP(4));
 		if (useDarkTheme) {
 			setBackgroundResource(R.drawable.account_switcher_selector);
 		} else {
 			setBackgroundResource(R.drawable.account_switcher_selector_light);
 		}
 		// TODO # of unread Tweets
-		setText(account.getUser().getScreenName());
+		setText("(" + account.getUnreadTweetsSize() + ")");
 		setTextColor(uncheckedColor);
 		
 		setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -82,7 +78,7 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO # of unread Tweets
-		
+		setText("(" + account.getUnreadTweetsSize() + ")");
 	}
 	
 	private int pixelToDIP(int pixel) {
