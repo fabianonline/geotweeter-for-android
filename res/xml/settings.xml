@@ -139,6 +139,10 @@
             android:title="@string/pref_development_email"
             android:summary="@string/pref_development_email_summary" />
         
+        <Preference 
+            android:title="@string/pref_clear_image_cache"
+            android:key="pref_clear_image_cache"/>
+        
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.widget.Toast;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
@@ -44,6 +46,17 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				ListPreference imageHoster = (ListPreference) findPreference("pref_image_hoster");
 				preference.setSummary(imageHoster.getEntries()[imageHoster.findIndexOfValue(newValue.toString())]);
+				return true;
+			}
+		});
+		
+		Preference imageCache = findPreference("pref_clear_image_cache");
+		imageCache.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				TimelineActivity.background_image_loader.clearCache();
+				Toast.makeText(getApplicationContext(), R.string.pref_image_cache_cleared, Toast.LENGTH_SHORT).show();
 				return true;
 			}
 		});
