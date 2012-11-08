@@ -3,6 +3,7 @@ package de.geotweeter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -126,7 +127,8 @@ public class BackgroundImageLoader {
 			Log.d(LOG, "Loading " + url + " from web");
 		}
 		try {
-			bitmap = new BitmapDrawable(application_context.getResources(), BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream())).getBitmap();
+			InputStream bitmapStream = new URL(url).openConnection().getInputStream();
+			bitmap = new BitmapDrawable(application_context.getResources(), BitmapFactory.decodeStream(bitmapStream)).getBitmap();
 			bitmap_cache.put(url, bitmap);
 			if (store_persistent) {
 				FileOutputStream file_stream = new FileOutputStream(cache_file);

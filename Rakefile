@@ -39,7 +39,7 @@ end
 task :copy_and_modify_files do
 	FileUtils.rm_r($target_dir, :force=>true)
 	puts "Copying files..."
-	list = FileList.new(File.dirname(__FILE__) + '/*').exclude("build_temp")
+	list = FileList.new(File.dirname(__FILE__) + '/*').exclude("build_temp").to_a
 	FileUtils.mkdir_p($target_dir)
 	FileUtils.cp_r(list, $target_dir)
 	
@@ -73,7 +73,7 @@ task :copy_and_modify_files do
 	FileUtils.mkdir($target_dir + "/bin")
 	
 	puts "Setting Version string..."
-	commit = %x(git show --format="%h")
+	commit = %x(git rev-parse --short HEAD)
 	string = File.read($target_dir + "/AndroidManifest.xml")
 	string = string.gsub(/android:versionName="(.+)"/, "android:versionName=\"\\1 (#{commit.strip})\"")
 	File.open($target_dir + "/AndroidManifest.xml", "w") {|f| f.write(string)}
