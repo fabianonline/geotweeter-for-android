@@ -100,6 +100,9 @@ public class Account extends Observable implements Serializable {
 		timeline_stack.push(elements);
 		
 		if (fetchTimeLine) {
+			if (Debug.LOG_ACCOUNT) {
+				Log.d(LOG, "Fetch timelines from API for " + user.screen_name);
+			}
 			start(true);
 		}
 	}
@@ -121,6 +124,7 @@ public class Account extends Observable implements Serializable {
 		this.appContext = appContext;
 	}
 
+	@SuppressWarnings("unused")
 	public void start(boolean loadPersistedTweets) {
 		Log.d(LOG, "In start()");
 		if (stream_request != null) {
@@ -196,6 +200,7 @@ public class Account extends Observable implements Serializable {
 			return null;
 		}
 		
+		@SuppressWarnings("unused")
 		protected void onPostExecute(ArrayList<TimelineElement> result) {
 			tasksRunning--;
 			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: " + String.valueOf(System.currentTimeMillis() - startTime) + "ms");
@@ -509,6 +514,7 @@ public class Account extends Observable implements Serializable {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void loadPersistedTweets(Context context) {
 		String fileToLoad = null;
 		File dir = context.getExternalFilesDir(null);
@@ -574,6 +580,15 @@ public class Account extends Observable implements Serializable {
 		for (; size < tweets.size() && tweets.get(size).getID() > max_read_tweet_id; size++) {
 		}
 		return size;
+	}
+	
+	public static Account getAccount(User u) {
+		for (Account a : all_accounts) {
+			if (a.getUser().id == u.id) {
+				return a;
+			}
+		}
+		return null;
 	}
 	
 }

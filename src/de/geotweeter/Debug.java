@@ -26,4 +26,6 @@ public class Debug {
 	public static final boolean  LOG_BACKGROUND_IMAGE_LOADER = false;
 	public static final boolean  LOG_OAUTH_STUFF = false;
 	public static final boolean  LOG_STREAM_CHECKS = false;
+	public static final boolean LOG_TIMELINE_ACTIVITY = true;
+	public static final boolean LOG_ACCOUNT = false;
 }

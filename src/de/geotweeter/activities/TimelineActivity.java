@@ -10,9 +10,6 @@ import org.scribe.model.Token;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,7 +26,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -45,6 +41,7 @@ import de.geotweeter.Account;
 import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
+import de.geotweeter.Debug;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
@@ -94,6 +91,9 @@ public class TimelineActivity extends MapActivity {
 		registerForContextMenu(timelineListView);
 		
 		if (!isRunning) {
+			if (Debug.LOG_TIMELINE_ACTIVITY) {
+				Log.d(LOG, "Create accounts");
+			}
 			ArrayList<User> auth_users = getAuthUsers();
 			if (auth_users != null) {
 				for (User u : auth_users) {
@@ -101,6 +101,9 @@ public class TimelineActivity extends MapActivity {
 				}
 			}
 		} else {
+			if (Debug.LOG_TIMELINE_ACTIVITY) {
+				Log.d(LOG, "Refreshing timelines");
+			}
 			for (Account acct : Account.all_accounts) {
 				acct.start(true);
 			}
@@ -397,8 +400,13 @@ public class TimelineActivity extends MapActivity {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this, 
 				   R.layout.timeline_element, 
 				   new ArrayList<TimelineElement>());
-		Account acct = new Account(ta, getUserToken(u), u, getApplicationContext(), true);
-		addAccount(acct);
+		Account acc = Account.getAccount(u);
+		if (acc == null) {
+			acc = new Account(ta, getUserToken(u), u, getApplicationContext(), true);
+		} else {
+			acc.start(true);
+		}
+		addAccount(acc);
 	}
 	
 	public void showConversation(TimelineElement te) {

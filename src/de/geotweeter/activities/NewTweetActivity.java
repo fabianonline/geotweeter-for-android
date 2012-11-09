@@ -471,8 +471,11 @@ public class NewTweetActivity extends Activity {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this, 
 				   R.layout.timeline_element, 
 				   new ArrayList<TimelineElement>());
-		Account acct = new Account(ta, getUserToken(u), u, getApplicationContext(), false);
-		return acct;
+		Account acc = Account.getAccount(u);
+		if (acc == null) {
+			acc = new Account(ta, getUserToken(u), u, getApplicationContext(), false);
+		}
+		return acc;
 	}
 
 	private Token getUserToken(User u) {
