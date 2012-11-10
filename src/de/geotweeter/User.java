@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -51,8 +52,8 @@ public class User extends UserElement implements java.io.Serializable {
 		return avatar;
 	}
 
-	public static ArrayList<User> getPersistentData(Context context, String[] accounts) {
-		ArrayList<User> result = new ArrayList<User>();
+	public static List<User> getPersistentData(Context context, String[] accounts) {
+		List<User> result = new ArrayList<User>();
 		for (String id : accounts) {
 			if (!id.equals("")) {
 				try {
