@@ -23,6 +23,10 @@ import android.widget.RadioGroup.LayoutParams;
  */
 public class AccountSwitcherRadioButton extends RadioButton implements Observer {
 	
+	public enum Message {
+		UNREAD, REFRESH_START, REFRESH_FINISHED
+	}
+	
 	private static final int checkedColorDark = Color.WHITE;
 	private static final int checkedColorLight = Color.BLACK;
 	private static final int uncheckedColor = Color.GRAY;
@@ -46,7 +50,6 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		} else {
 			setBackgroundResource(R.drawable.account_switcher_selector_light);
 		}
-		// TODO # of unread Tweets
 		setText("(" + account.getUnreadTweetsSize() + ")");
 		setTextColor(uncheckedColor);
 		
@@ -69,16 +72,21 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		account.addObserver(this);
 	}
 	
-	@Override
-	public void setButtonDrawable(Drawable d) {
-		// TODO Auto-generated method stub
-		super.setButtonDrawable(d);
+	public void setButtonBitmap(Bitmap bitmap) {
+		super.setButtonDrawable(new AlphaBitmapDrawable(getResources(), bitmap));
 	}
 	
 	@Override
-	public void update(Observable arg0, Object arg1) {
-		// TODO # of unread Tweets
-		setText("(" + account.getUnreadTweetsSize() + ")");
+	public void update(Observable observable, Object data) {
+		if (data instanceof Message) {
+			if (data == Message.UNREAD) {
+				setText("(" + account.getUnreadTweetsSize() + ")");
+			} else if (data == Message.REFRESH_START) {
+				
+			} else if (data == Message.REFRESH_FINISHED) {
+				
+			}
+		}
 	}
 	
 	private int pixelToDIP(int pixel) {
