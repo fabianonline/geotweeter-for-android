@@ -44,7 +44,7 @@ public class Utils {
 	private static Properties properties;
 	
 	public enum PictureService {
-		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY
+		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY, MOBYTO
 	}
 	
 	public static int countChars(String str) {
@@ -249,6 +249,9 @@ public class Utils {
 			}
 			if (host.endsWith("youtu.be")) {
 				return PictureService.YOUTUBE;
+			}
+			if (host.endsWith("moby.to")) {
+				return PictureService.MOBYTO;
 			}
 			/* More services to follow */
 			return PictureService.NONE;

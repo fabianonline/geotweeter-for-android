@@ -18,6 +18,7 @@ import de.geotweeter.apiconn.ImglyApiAccess;
 import de.geotweeter.apiconn.ImgurApiAccess;
 import de.geotweeter.apiconn.InstagramApiAccess;
 import de.geotweeter.apiconn.LockerzApiAccess;
+import de.geotweeter.apiconn.MobytoApiAccess;
 import de.geotweeter.apiconn.PlixiApiAccess;
 import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.apiconn.YfrogApiAccess;
@@ -237,6 +238,13 @@ public class Tweet extends TimelineElement {
 			case LOCKERZ:
 				try {
 					result.add(LockerzApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case MOBYTO:
+				try {
+					result.add(MobytoApiAccess.getUrlPair(url));
 				} catch (MalformedURLException e) {
 					break;
 				}
