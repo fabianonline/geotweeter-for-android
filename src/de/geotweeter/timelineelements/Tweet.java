@@ -14,6 +14,7 @@ import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.Utils.PictureService;
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.apiconn.ImglyApiAccess;
 import de.geotweeter.apiconn.ImgurApiAccess;
 import de.geotweeter.apiconn.InstagramApiAccess;
 import de.geotweeter.apiconn.LockerzApiAccess;
@@ -208,6 +209,13 @@ public class Tweet extends TimelineElement {
 			case IMGUR:
 				try {
 					result.add(ImgurApiAccess.getUrlPair(url));
+				} catch (MalformedURLException e) {
+					break;
+				}
+				break;
+			case IMGLY:
+				try {
+					result.add(ImglyApiAccess.getUrlPair(url));
 				} catch (MalformedURLException e) {
 					break;
 				}

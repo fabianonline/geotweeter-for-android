@@ -44,7 +44,7 @@ public class Utils {
 	private static Properties properties;
 	
 	public enum PictureService {
-		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI
+		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY
 	}
 	
 	public static int countChars(String str) {
@@ -240,6 +240,9 @@ public class Utils {
 			}
 			if (host.endsWith("lockerz.com")) {
 				return PictureService.LOCKERZ;
+			}
+			if (host.endsWith("img.ly")) {
+				return PictureService.IMGLY;
 			}
 			if (host.contains("youtube.")) {
 				return PictureService.YOUTUBE;
