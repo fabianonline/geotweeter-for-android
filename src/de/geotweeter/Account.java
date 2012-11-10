@@ -39,6 +39,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import de.geotweeter.activities.AccountSwitcherRadioButton;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.timelineelements.DirectMessage;
@@ -241,7 +242,7 @@ public class Account extends Observable implements Serializable {
 	protected void parseData(ArrayList<ArrayList<TimelineElement>> responses, boolean do_clip) {
 		final long old_max_known_dm_id = max_known_dm_id;
 		Log.d(LOG, "parseData started.");
-		final ArrayList<TimelineElement> all_elements = new ArrayList<TimelineElement>();
+		final List<TimelineElement> all_elements = new ArrayList<TimelineElement>();
 		long last_id = 0;
 		// remove empty arrays
 		for (int i = responses.size() - 1; i >= 0; i--) {
@@ -321,7 +322,7 @@ public class Account extends Observable implements Serializable {
 			public void run() {
 				elements.addAllAsFirst(all_elements);
 				setChanged();
-				notifyObservers();
+				notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 			}
 		});
 	}
@@ -343,7 +344,7 @@ public class Account extends Observable implements Serializable {
 			public void run() {
 				elements.addAsFirst(elm);
 				setChanged();
-				notifyObservers();
+				notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 			}
 		});
 	}
@@ -408,7 +409,7 @@ public class Account extends Observable implements Serializable {
 						public void run() {
 							elements.notifyDataSetChanged();
 							setChanged();
-							notifyObservers();
+							notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 						}
 					});
 				} catch (UnsupportedEncodingException e) {
@@ -423,7 +424,7 @@ public class Account extends Observable implements Serializable {
 		
 		elements.notifyDataSetChanged();
 		setChanged();
-		notifyObservers();
+		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 	}
 	
 	public void setMaxReadIDs(long tweet_id, long mention_id, long dm_id) {
@@ -461,7 +462,7 @@ public class Account extends Observable implements Serializable {
 		
 		elements.notifyDataSetChanged();
 		setChanged();
-		notifyObservers();
+		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 	}
 	
 	public long getMaxReadTweetID() {
@@ -530,11 +531,11 @@ public class Account extends Observable implements Serializable {
 			return;
 		}
 		
-		ArrayList<TimelineElement> tweets;
+		List<TimelineElement> tweets;
 		try {
 			FileInputStream fin = new FileInputStream(fileToLoad);
 			ObjectInputStream ois = new ObjectInputStream(fin);
-			tweets = (ArrayList<TimelineElement>) ois.readObject();
+			tweets = (List<TimelineElement>) ois.readObject();
 			ois.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -554,7 +555,7 @@ public class Account extends Observable implements Serializable {
 		}
 		elements.addAllAsFirst(tweets);
 		setChanged();
-		notifyObservers();
+		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 	}
 	
 	public TwitterApiAccess getApi() {
