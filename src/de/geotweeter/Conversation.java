@@ -1,7 +1,7 @@
 package de.geotweeter;
 
 import java.security.AccessControlException;
-import java.util.ArrayList;
+import java.util.List;
 
 import android.os.AsyncTask;
 import de.geotweeter.activities.TimelineActivity;
@@ -39,7 +39,7 @@ public class Conversation {
 			}
 			TimelineElement current_element = params[0];
 			if (current_element.getClass() != Tweet.class) {
-				ArrayList<DirectMessage> messages = dm_conversations.getConversation(getRespondent(current_element));
+				List<DirectMessage> messages = dm_conversations.getConversation(getRespondent(current_element));
 				for (DirectMessage msg : messages) {
 					publishProgress(msg);
 				}
