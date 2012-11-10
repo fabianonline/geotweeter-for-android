@@ -3,6 +3,7 @@ package de.geotweeter.timelineelements;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import android.graphics.drawable.Drawable;
@@ -171,8 +172,8 @@ public class Tweet extends TimelineElement {
 		return place.getFullName();
 	}
 	
-	public ArrayList<Pair<URL, URL>> getMediaList() {
-		ArrayList<Pair<URL, URL>> result = new ArrayList<Pair<URL, URL>>();
+	public List<Pair<URL, URL>> getMediaList() {
+		List<Pair<URL, URL>> result = new ArrayList<Pair<URL, URL>>();
 		for (Media media : entities.media) {
 			try {
 				Pair<URL, URL> urls = new Pair<URL, URL>(new URL(media.media_url + ":thumb"), new URL(media.media_url));

@@ -94,7 +94,7 @@ public class TimelineActivity extends MapActivity {
 			if (Debug.LOG_TIMELINE_ACTIVITY) {
 				Log.d(LOG, "Create accounts");
 			}
-			ArrayList<User> auth_users = getAuthUsers();
+			List<User> auth_users = getAuthUsers();
 			if (auth_users != null) {
 				for (User u : auth_users) {
 					createAccount(u);
@@ -382,8 +382,8 @@ public class TimelineActivity extends MapActivity {
 						  sp.getString("access_secret."+String.valueOf(u.id), null));
 	}
 
-	private ArrayList<User> getAuthUsers() {
-		ArrayList<User> result = null;
+	private List<User> getAuthUsers() {
+		List<User> result = null;
 		
 		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
 		String accountString = sp.getString("accounts", null);

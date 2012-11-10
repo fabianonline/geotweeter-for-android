@@ -1,6 +1,7 @@
 package de.geotweeter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,7 +15,7 @@ import com.google.android.maps.OverlayItem;
 
 public class MapOverlay extends ItemizedOverlay<OverlayItem> {
 
-	private ArrayList<OverlayItem> overlays = new ArrayList<OverlayItem>();
+	private List<OverlayItem> overlays = new ArrayList<OverlayItem>();
 	
 	public MapOverlay(Drawable drawable) {
 		super(boundCenterBottom(drawable));

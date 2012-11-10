@@ -109,7 +109,7 @@ public class NewTweetActivity extends Activity {
 				
 				if (TimelineActivity.current_account == null) {
 					DirectMessage dm = (DirectMessage)elm;
-					ArrayList<User> auth_users = getAuthUsers();
+					List<User> auth_users = getAuthUsers();
 					if (auth_users != null) {
 						for (User u : auth_users) {
 							Account acct = createAccount(u);
@@ -130,7 +130,7 @@ public class NewTweetActivity extends Activity {
 				if (TimelineActivity.current_account == null) {
 					Tweet tweet = (Tweet)elm;
 					if (tweet.entities.user_mentions != null) {
-						ArrayList<User> auth_users = getAuthUsers();
+						List<User> auth_users = getAuthUsers();
 						if (auth_users != null) {
 							for (User u : auth_users) {
 								Account acct = createAccount(u);
@@ -453,8 +453,8 @@ public class NewTweetActivity extends Activity {
 		serviceUnbind();
 	}
 	
-	private ArrayList<User> getAuthUsers() {
-		ArrayList<User> result = null;
+	private List<User> getAuthUsers() {
+		List<User> result = null;
 		
 		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
 		String accountString = sp.getString("accounts", null);

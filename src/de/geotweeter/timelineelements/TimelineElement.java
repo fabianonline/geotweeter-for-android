@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import android.util.Log;
@@ -110,7 +111,7 @@ public abstract class TimelineElement implements Serializable {
 		return null;
 	}
 		
-	public ArrayList<Pair<URL, URL>> getMediaList() {
+	public List<Pair<URL, URL>> getMediaList() {
 		return new ArrayList<Pair<URL, URL>>();
 	}
 	

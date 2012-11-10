@@ -56,11 +56,11 @@ public class Account extends Observable implements Serializable {
 	protected final static Object lock_object = new Object();
 	protected final String LOG = "Account";
 	
-	public static ArrayList<Account> all_accounts = new ArrayList<Account>();
+	public static List<Account> all_accounts = new ArrayList<Account>();
 	private transient int tasksRunning = 0;
 	
 	protected transient ArrayList<TimelineElement> mainTimeline;
-	protected transient ArrayList<ArrayList<TimelineElement>> apiResponses;
+	protected transient List<ArrayList<TimelineElement>> apiResponses;
 
 	private Token token;
 	private transient Handler handler;
@@ -175,13 +175,13 @@ public class Account extends Observable implements Serializable {
 	}
 
 	
-	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, ArrayList<TimelineElement>> {
+	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, List<TimelineElement>> {
 
 		private AccessType accessType;
 		private long startTime;
 		
 		@Override
-		protected ArrayList<TimelineElement> doInBackground(AccessType... params) {
+		protected List<TimelineElement> doInBackground(AccessType... params) {
 			accessType = params[0];
 			startTime = System.currentTimeMillis();
 			switch (accessType) {
@@ -239,37 +239,37 @@ public class Account extends Observable implements Serializable {
 		
 	}
 		
-	protected void parseData(ArrayList<ArrayList<TimelineElement>> responses, boolean do_clip) {
+	protected void parseData(List<ArrayList<TimelineElement>> apiResponses2, boolean do_clip) {
 		final long old_max_known_dm_id = max_known_dm_id;
 		Log.d(LOG, "parseData started.");
 		final List<TimelineElement> all_elements = new ArrayList<TimelineElement>();
 		long last_id = 0;
 		// remove empty arrays
-		for (int i = responses.size() - 1; i >= 0; i--) {
-			if (responses.get(i)==null || responses.get(i).size()==0) {
-				responses.remove(i);
+		for (int i = apiResponses2.size() - 1; i >= 0; i--) {
+			if (apiResponses2.get(i)==null || apiResponses2.get(i).size()==0) {
+				apiResponses2.remove(i);
 			}
 		}
 		
-		while (responses.size() > 0) {
+		while (apiResponses2.size() > 0) {
 			Date newest_date = null;
 			int newest_index = -1;
-			for (int i = 0; i < responses.size(); i++) {
-				TimelineElement element = responses.get(i).get(0);
+			for (int i = 0; i < apiResponses2.size(); i++) {
+				TimelineElement element = apiResponses2.get(i).get(0);
 				if (newest_date == null || element.getDate().after(newest_date)) {
 					newest_date = element.getDate();
 					newest_index = i;
 				}
 			}
-			TimelineElement element = responses.get(newest_index).remove(0);
-			if (responses.get(newest_index).size() == 0) {
+			TimelineElement element = apiResponses2.get(newest_index).remove(0);
+			if (apiResponses2.get(newest_index).size() == 0) {
 				/* Das primäre Element ist leer. Also brechen wir ab.
 				 * Allerdings muss vorher noch ein bisschen gearbeitet werden... */
-				responses.remove(newest_index);
+				apiResponses2.remove(newest_index);
 
 				if (newest_index == 0) {
 					if (max_known_tweet_id == 0) {
-						for (ArrayList<TimelineElement> array : responses) {
+						for (List<TimelineElement> array : apiResponses2) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof Tweet && ((Tweet) first_element).id > max_known_tweet_id) {
 								max_known_tweet_id = ((Tweet)first_element).id;
@@ -277,7 +277,7 @@ public class Account extends Observable implements Serializable {
 						}
 					}
 					if (max_known_dm_id==0) {
-						for (ArrayList<TimelineElement> array : responses) {
+						for (List<TimelineElement> array : apiResponses2) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof DirectMessage && first_element.getID() > max_known_dm_id) {
 								max_known_dm_id = first_element.getID();
@@ -497,7 +497,7 @@ public class Account extends Observable implements Serializable {
 			dir.mkdirs();
 		}
 		
-		ArrayList<TimelineElement> last_tweets = new ArrayList<TimelineElement>(50);
+		List<TimelineElement> last_tweets = new ArrayList<TimelineElement>(50);
 		for (int i=0; i<elements.getCount(); i++) {
 			if (i >= 100) {
 				break;

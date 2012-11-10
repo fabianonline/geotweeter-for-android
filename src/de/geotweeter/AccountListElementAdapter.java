@@ -1,6 +1,6 @@
 package de.geotweeter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,11 +14,11 @@ import de.geotweeter.activities.TimelineActivity;
 
 public class AccountListElementAdapter extends ArrayAdapter<Account> {
 
-	private ArrayList<Account> items;
+	private List<Account> items;
 	private Context context;
 	
 	public AccountListElementAdapter(Context context, int textViewResourceId,
-			ArrayList<Account> objects) {
+			List<Account> objects) {
 		super(context, textViewResourceId, objects);
 		this.items = objects;
 		this.context = context;

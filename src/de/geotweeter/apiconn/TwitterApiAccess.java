@@ -3,6 +3,7 @@ package de.geotweeter.apiconn;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -63,46 +64,46 @@ public class TwitterApiAccess {
 		service.signRequest(token, req);
 	}
 	
-	public ArrayList<TimelineElement> getMentions(long from_id, long to_id) throws OAuthException {
+	public List<TimelineElement> getMentions(long from_id, long to_id) throws OAuthException {
 		return getMentions(from_id, to_id, 100);
 	}
 	
-	public ArrayList<TimelineElement> getMentions(long from_id, long to_id, int count) throws OAuthException {
+	public List<TimelineElement> getMentions(long from_id, long to_id, int count) throws OAuthException {
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_MENTIONS);
 		return getTimeline(req, from_id, to_id, count);
 	}
 	
-	public ArrayList<TimelineElement> getHomeTimeline(long from_id, long to_id) throws OAuthException {
+	public List<TimelineElement> getHomeTimeline(long from_id, long to_id) throws OAuthException {
 		return getHomeTimeline(from_id, to_id, 100);
 	}
 	
-	public ArrayList<TimelineElement> getHomeTimeline(long from_id, long to_id, int count) throws OAuthException {
+	public List<TimelineElement> getHomeTimeline(long from_id, long to_id, int count) throws OAuthException {
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_HOME_TIMELINE);
 		return getTimeline(req, from_id, to_id, count);
 	}
 	
-	public ArrayList<TimelineElement> getUserTimeline(String screen_name) throws OAuthException {
+	public List<TimelineElement> getUserTimeline(String screen_name) throws OAuthException {
 		return getUserTimeline(screen_name, 0, 0);
 	}
 	
-	public ArrayList<TimelineElement> getUserTimeline(long user_id) throws OAuthException {
+	public List<TimelineElement> getUserTimeline(long user_id) throws OAuthException {
 		return getUserTimeline(user_id, 0, 0);
 	}
 
-	public ArrayList<TimelineElement> getUserTimeline(String screen_name, long from_id, long to_id) throws OAuthException {
+	public List<TimelineElement> getUserTimeline(String screen_name, long from_id, long to_id) throws OAuthException {
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_USER_TIMELINE);
 		req.addQuerystringParameter("screen_name", screen_name);
 		return getTimeline(req, from_id, to_id, 100);
 	}
 	
-	public ArrayList<TimelineElement> getUserTimeline(long user_id, long from_id, long to_id) throws OAuthException {
+	public List<TimelineElement> getUserTimeline(long user_id, long from_id, long to_id) throws OAuthException {
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_USER_TIMELINE);
 		req.addQuerystringParameter("user_id", String.valueOf(user_id));
 		return getTimeline(req, from_id, to_id, 100);
 	}
 
-	private ArrayList<TimelineElement> getTimeline(OAuthRequest req, long from_id, long to_id, int count) throws OAuthException {
-		ArrayList<TimelineElement> elements;
+	private List<TimelineElement> getTimeline(OAuthRequest req, long from_id, long to_id, int count) throws OAuthException {
+		List<TimelineElement> elements;
 		req.addQuerystringParameter("count", String.valueOf(count));
 		if (from_id != 0) {
 			req.addQuerystringParameter("since_id", String.valueOf(from_id));
@@ -127,26 +128,26 @@ public class TwitterApiAccess {
 		return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<Tweet>>(){}, Feature.DisableCircularReferenceDetect);
 	}
 
-	public ArrayList<TimelineElement> getReceivedDMs(long from_id, long to_id) {
+	public List<TimelineElement> getReceivedDMs(long from_id, long to_id) {
 		return getReceivedDMs(from_id, to_id, 50);
 	}
 	
-	public ArrayList<TimelineElement> getReceivedDMs(long from_id, long to_id, int count) {
+	public List<TimelineElement> getReceivedDMs(long from_id, long to_id, int count) {
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_DIRECT_MESSAGES);
 		return getDMTimeline(req, from_id, to_id, count);
 	}
 	
-	public ArrayList<TimelineElement> getSentDMs(long from_id, long to_id) {
+	public List<TimelineElement> getSentDMs(long from_id, long to_id) {
 		return getSentDMs(from_id, to_id, 50);
 	}
 	
-	public ArrayList<TimelineElement> getSentDMs(long from_id, long to_id, int count) {
+	public List<TimelineElement> getSentDMs(long from_id, long to_id, int count) {
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_DIRECT_MESSAGES_SENT);
 		return getDMTimeline(req, from_id, to_id, count);
 	}
 
-	private ArrayList<TimelineElement> getDMTimeline(OAuthRequest req, long from_id, long to_id, int count) throws OAuthException {
-		ArrayList<TimelineElement> elements = null;
+	private List<TimelineElement> getDMTimeline(OAuthRequest req, long from_id, long to_id, int count) throws OAuthException {
+		List<TimelineElement> elements = null;
 		req.addQuerystringParameter("count", String.valueOf(count));
 		if (from_id != 0) {
 			req.addQuerystringParameter("since_id", String.valueOf(from_id));
