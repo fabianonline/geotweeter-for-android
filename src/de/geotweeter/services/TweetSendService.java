@@ -3,6 +3,7 @@ package de.geotweeter.services;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -28,7 +29,7 @@ public class TweetSendService extends Service {
 	private NotificationManager notificationManager;
 	private static final String LOG = "TweetSendService";
 	private final IBinder binder = new TweetSendBinder();
-	private LinkedList<SendableTweet> tweets = new LinkedList<SendableTweet>();
+	private List<SendableTweet> tweets = new LinkedList<SendableTweet>();
 	private Notification notification;
 	private int i = 0;
 	private TweetSenderThread tweetSenderThread;
