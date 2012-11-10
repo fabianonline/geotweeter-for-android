@@ -1,8 +1,8 @@
 package de.geotweeter;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.content.Context;
 import android.util.Pair;
@@ -21,13 +21,13 @@ import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
-	private ArrayList<TimelineElement> items;
+	private List<TimelineElement> items;
 	private Context context;
 	private boolean useDarkTheme;
 	
 
 	public TimelineElementAdapter(Context context, 
-			int textViewResourceId, ArrayList<TimelineElement> objects) {
+			int textViewResourceId, List<TimelineElement> objects) {
 		super(context, textViewResourceId, objects);
 		this.items = objects;
 		this.context = context;
@@ -40,7 +40,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		this.notifyDataSetChanged();
 	}
 	
-	public void addAllAsFirst(ArrayList<TimelineElement> elements) {
+	public void addAllAsFirst(List<TimelineElement> elements) {
 		Collections.sort(elements, new TLEComparator());
 		items.addAll(0, elements);
 		for (TimelineElement t : elements) {
@@ -110,7 +110,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(t.getAvatarSource(), img, true);
 			}
 			
-			ArrayList<Pair<URL, URL>> media_list = t.getMediaList();
+			List<Pair<URL, URL>> media_list = t.getMediaList();
 			LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
 			if (!media_list.isEmpty()) {
 				picPreviews.removeAllViews();
@@ -148,7 +148,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		img_overlay.setVisibility(View.VISIBLE);
 	}
 
-	public ArrayList<TimelineElement> getItems() {
+	public List<TimelineElement> getItems() {
 		return items;
 	}
 
