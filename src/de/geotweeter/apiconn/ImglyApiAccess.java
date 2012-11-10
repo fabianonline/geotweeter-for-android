@@ -11,7 +11,7 @@ public class ImglyApiAccess {
 	public static Pair<URL, URL> getUrlPair(Url url) throws MalformedURLException {
 		URL screen_url = new URL(url.expanded_url);
 		return new Pair<URL, URL>(new URL("http://img.ly/show/mini" + screen_url.getPath()), 
-				new URL("http://img.ly/show/full" + screen_url.getPath() + "/media/?size=l"));
+				new URL("http://img.ly/show/full" + screen_url.getPath()));
 	}
 
 }
