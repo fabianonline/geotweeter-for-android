@@ -152,9 +152,10 @@ public class Account extends Observable implements Serializable {
 	
 	@TargetApi(11)
 	private void refreshTimeline() {
-//		if (overallTasksRunning == 0) {
-//			Utils.showMainSpinner();
-//		}
+		if (tasksRunning == 0) {
+			setChanged();
+			notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_START);
+		}
 		tasksRunning = 4;
 		ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 4, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
 		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.TIMELINE);
@@ -164,9 +165,10 @@ public class Account extends Observable implements Serializable {
 	}
 
 	private void refreshTimelinePreAPI11() {
-//		if (overallTasksRunning == 0) {
-//			Utils.showMainSpinner();
-//		}
+		if (tasksRunning == 0) {
+			setChanged();
+			notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_START);
+		}
 		tasksRunning = 4;
 		new TimelineRefreshTask().execute(AccessType.TIMELINE);
 		new TimelineRefreshTask().execute(AccessType.MENTIONS);
@@ -229,11 +231,10 @@ public class Account extends Observable implements Serializable {
 				} else {
 					stream_request.start();
 				}
+				
+				setChanged();
+				notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_FINISHED);
 			}
-			
-//			if (overallTasksRunning == 0) {
-//				Utils.hideMainSpinner();
-//			}
 
 		}
 		
