@@ -208,29 +208,32 @@ public class TimelineActivity extends MapActivity {
 					});
 				}
 								
-				if (! (te instanceof DirectMessage) && ! te.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())) {
-					menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				if (!(te instanceof DirectMessage) && !te.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())) {
+					if (!tweet.user._protected) {
 						
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							new Thread(new Runnable() {
-								
-								public void run() {
-									try {
-										current_account.getApi().retweet(te.getID());
-									} catch (OAuthException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									} catch (RetweetException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								}
-							}).start();
+						menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 							
-							return true;
-						}
-					});
+							@Override
+							public boolean onMenuItemClick(MenuItem item) {
+								new Thread(new Runnable() {
+									
+									public void run() {
+										try {
+											current_account.getApi().retweet(te.getID());
+										} catch (OAuthException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (RetweetException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+								}).start();
+								
+								return true;
+							}
+						});
+					}
 				}
 				
 				if (tweet.entities != null) {

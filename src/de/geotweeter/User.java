@@ -22,6 +22,7 @@ public class User extends UserElement implements java.io.Serializable {
 	public String description;
 	public String profile_image_url_https;
 	public String location;
+	public boolean _protected;
 //	public View[] views = new View[] {};
 	
 	public User() {
@@ -81,5 +82,8 @@ public class User extends UserElement implements java.io.Serializable {
 		}
 	}
 
+	public void setProtected(boolean value) {
+		_protected = value;
+	}
 
 }
