@@ -18,3 +18,4 @@ local.properties
 /libs/javadoc
 /res/raw/geotweeter.properties
 release.keystore
+/proguard.cfg
