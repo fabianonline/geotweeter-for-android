@@ -340,7 +340,7 @@ public class NewTweetActivity extends Activity {
 			if (remaining < 0) {
 				t.setTextColor(0xFFFF0000);
 			} else {
-				t.setTextColor(0xFF00FF00);
+				t.setTextColor(0xFF00CD00);
 			}
 		}
 	}

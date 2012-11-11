@@ -22,7 +22,7 @@
         android:layout_alignParentTop="true"
         android:text="140"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FF00FF00" />
+        android:textColor="#FF00CD00" />
 
     <ToggleButton
         android:id="@+id/btnGeo"
