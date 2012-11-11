@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup.LayoutParams;
@@ -41,7 +40,7 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		this.context = context;
 		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 		
-		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, 48);
 		layout.setMargins(pixelToDIP(5), pixelToDIP(2), pixelToDIP(1), 0);
 		setLayoutParams(layout);
 		setPadding(pixelToDIP(35), pixelToDIP(4), pixelToDIP(4), pixelToDIP(4));
