@@ -175,13 +175,13 @@ public class Account extends Observable implements Serializable {
 	}
 
 	
-	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, List<TimelineElement>> {
+	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, ArrayList<TimelineElement>> {
 
 		private AccessType accessType;
 		private long startTime;
 		
 		@Override
-		protected List<TimelineElement> doInBackground(AccessType... params) {
+		protected ArrayList<TimelineElement> doInBackground(AccessType... params) {
 			accessType = params[0];
 			startTime = System.currentTimeMillis();
 			switch (accessType) {
