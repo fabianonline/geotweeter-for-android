@@ -45,9 +45,9 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		setLayoutParams(layout);
 		setPadding(pixelToDIP(35), pixelToDIP(4), pixelToDIP(4), pixelToDIP(4));
 		if (useDarkTheme) {
-			setBackgroundResource(R.drawable.account_switcher_selector);
+			setBackgroundResource(R.drawable.listelement_background_dark_dm);
 		} else {
-			setBackgroundResource(R.drawable.account_switcher_selector_light);
+			setBackgroundResource(R.drawable.listelement_background_light_dm);
 		}
 		setText("(" + account.getUnreadTweetsSize() + ")");
 		setTextColor(uncheckedColor);
@@ -81,9 +81,17 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 			if (data == Message.UNREAD) {
 				setText("(" + account.getUnreadTweetsSize() + ")");
 			} else if (data == Message.REFRESH_START) {
-				
+				if(useDarkTheme) {
+					setBackgroundResource(R.drawable.listelement_background_dark_dm);
+				} else {
+					setBackgroundResource(R.drawable.listelement_background_light_dm);
+				}
 			} else if (data == Message.REFRESH_FINISHED) {
-				
+				if(useDarkTheme) {
+					setBackgroundResource(R.drawable.listelement_background_dark_my);
+				} else {
+					setBackgroundResource(R.drawable.listelement_background_light_my);
+				}
 			}
 		}
 	}
