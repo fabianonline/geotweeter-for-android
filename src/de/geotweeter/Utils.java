@@ -44,7 +44,7 @@ public class Utils {
 	private static Properties properties;
 	
 	public enum PictureService {
-		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY, MOBYTO
+		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY, MOBYTO, VIMEO
 	}
 	
 	public static int countChars(String str) {
@@ -253,6 +253,10 @@ public class Utils {
 			if (host.endsWith("moby.to")) {
 				return PictureService.MOBYTO;
 			}
+			/* Das wird noch etwas komplizierter hier */
+//			if (host.endsWith("vimeo.com")) {
+//				return PictureService.VIMEO;
+//			}
 			/* More services to follow */
 			return PictureService.NONE;
 		} catch (MalformedURLException e) {
