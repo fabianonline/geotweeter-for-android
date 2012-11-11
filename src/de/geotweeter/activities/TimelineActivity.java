@@ -183,7 +183,8 @@ public class TimelineActivity extends MapActivity {
 		if (v.getId() == R.id.timeline) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 			menu.setHeaderTitle(R.string.context_menu_title);
-			final TimelineElement te = current_account.getElements().getItem(info.position);
+//			final TimelineElement te = current_account.getElements().getItem(info.position);
+			final TimelineElement te = current_account.activeTimeline().getItem(info.position);
 			if (te.isReplyable()) {
 				menu.add(R.string.respond_to_tweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					
