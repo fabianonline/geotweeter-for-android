@@ -37,26 +37,15 @@
     <string name="context_menu_title">Links</string>
     <string name="respond_to_tweet">Beantworten</string>
     <string name="show_conversation">Konversation anzeigen</string>
-
     <string-array name="pref_tweet_time_style_entries">
         <item>dd.MM.yy HH:mm</item>
         <item>dd.MM. HH:mm</item>
         <item>vergangene Zeit</item>
     </string-array>
-    <string-array name="pref_tweet_time_style_entryValues">
-        <item>dd.MM.yy HH:mm</item>
-        <item>dd.MM. HH:mm</item>
-        <item>minutes</item>
-    </string-array>
     <string-array name="pref_image_hoster_entries">
         <item>Twitter</item>
         <item>Twitpic</item>
     </string-array>
-    <string-array name="pref_image_hoster_entryValues">
-        <item>twitter</item>
-        <item>twitpic</item>
-    </string-array>
-
     <string name="pref_notifications">Benachrichtigungen</string>
     <string name="pref_notifications_enabled_title">Hauptschalter</string>
     <string name="pref_notifications_enabled_on">Benachrichtigungen sind aktiviert</string>
@@ -69,6 +58,17 @@
     <string name="pref_notifications_led">LED</string>
     <string name="pref_notifications_led_enabled_title">LED benutzen</string>
     <string name="pref_notifications_led_color_title">Farbe</string>
+    <string-array name="pref_notifications_led_color_entries">
+        <item>Blau</item>
+        <item>Rot</item>
+        <item>Gelb</item>
+        <item>Grün</item>
+        <item>Lila</item>
+        <item>Rosa</item>
+        <item>Weiß</item>
+        <item>Orange</item>
+        <item>Braun</item>
+    </string-array>
     <string name="pref_notifications_types">Benachrichtigungstypen</string>
     <string name="pref_notifications_types_mentions_from_friends_title">Mentions von Freunden</string>
     <string name="pref_notifications_types_mentions_from_strangers_title">Mentions von Fremden</string>
