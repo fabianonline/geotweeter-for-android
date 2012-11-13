@@ -31,7 +31,8 @@
 
         <activity
             android:name=".activities.TimelineActivity"
-            android:label="@string/title_activity_timeline" >
+            android:label="@string/title_activity_timeline"
+            android:configChanges="keyboardHidden|orientation" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,7 +41,8 @@
         </activity>
         <activity
             android:name=".activities.NewTweetActivity"
-            android:label="@string/title_activity_timeline" >
+            android:label="@string/title_activity_timeline"
+            android:configChanges="keyboardHidden|orientation" >
         </activity>
         <activity
             android:name=".activities.GeneralPrefsActivity"
@@ -48,7 +50,8 @@
         </activity>
         <activity
             android:name=".activities.SettingsAccounts"
-            android:label="@string/settings_accounts_title" >
+            android:label="@string/settings_accounts_title"
+            android:configChanges="keyboardHidden|orientation" >
             <intent-filter>
                 <action android:name=".activities.SettingsAccounts" />
 
@@ -57,7 +60,8 @@
         </activity>
         <activity
             android:name=".activities.AuthenticateAccountActivity"
-            android:label="@string/authenticate_account" >
+            android:label="@string/authenticate_account"
+            android:configChanges="keyboardHidden|orientation" >
         </activity>
 
         <receiver
@@ -75,13 +79,15 @@
 
         <activity
             android:name=".activities.AccountPrefsActivity"
-            android:label="@string/account_prefs" />
+            android:label="@string/account_prefs"
+            android:configChanges="keyboardHidden|orientation" />
 
         <service android:name=".services.TweetSendService" />
 
         <activity
             android:name=".activities.AboutActivity"
-            android:label="@string/menu_about">
+            android:label="@string/menu_about"
+            android:configChanges="keyboardHidden|orientation" >
             <intent-filter>
                 <action android:name=".activities.AboutActivity" />
 
@@ -94,7 +100,8 @@
             android:theme="@android:style/Theme.Dialog"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true" />
+            android:finishOnTaskLaunch="true"
+            android:configChanges="keyboardHidden|orientation" />
     </application>
 
 </manifest>
