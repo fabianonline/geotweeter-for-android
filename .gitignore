@@ -19,3 +19,4 @@ local.properties
 /res/raw/geotweeter.properties
 release.keystore
 /proguard.cfg
+/publish.sh

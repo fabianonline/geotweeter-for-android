@@ -10,7 +10,9 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -30,6 +32,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Token;
 
@@ -39,6 +42,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 import de.geotweeter.activities.AccountSwitcherRadioButton;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
@@ -78,7 +82,9 @@ public class Account extends Observable implements Serializable {
 	private transient TwitterApiAccess api;
 	private transient Stack<TimelineElementAdapter> timeline_stack;
 	private MessageHashMap dm_conversations;
-
+	private Map<AccessType, Boolean> accessSuccessful = new HashMap<AccessType, Boolean>();
+	
+	
 	private enum AccessType {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
 	}
@@ -86,6 +92,9 @@ public class Account extends Observable implements Serializable {
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine) {
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
+		for (AccessType type : AccessType.values()) {
+			accessSuccessful.put(type, true);
+		}
 		api = new TwitterApiAccess(token);
 		this.token = token;
 		this.user = user;
@@ -156,6 +165,9 @@ public class Account extends Observable implements Serializable {
 			setChanged();
 			notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_START);
 		}
+		for (AccessType type : AccessType.values()) {
+			accessSuccessful.put(type, true);
+		}
 		tasksRunning = 4;
 		ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 4, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
 		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.TIMELINE);
@@ -169,6 +181,9 @@ public class Account extends Observable implements Serializable {
 			setChanged();
 			notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_START);
 		}
+		for (AccessType type : AccessType.values()) {
+			accessSuccessful.put(type, true);
+		}
 		tasksRunning = 4;
 		new TimelineRefreshTask().execute(AccessType.TIMELINE);
 		new TimelineRefreshTask().execute(AccessType.MENTIONS);
@@ -176,45 +191,83 @@ public class Account extends Observable implements Serializable {
 		new TimelineRefreshTask().execute(AccessType.DM_SENT);
 	}
 
+	private class TimelineRefreshResult {
+		public Exception e;
+		public ArrayList<TimelineElement> elements;
+	}
 	
-	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, ArrayList<TimelineElement>> {
-
+	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, TimelineRefreshResult> {
+	
 		private AccessType accessType;
 		private long startTime;
 		
 		@Override
-		protected ArrayList<TimelineElement> doInBackground(AccessType... params) {
+		protected TimelineRefreshResult doInBackground(AccessType... params) {
 			accessType = params[0];
 			startTime = System.currentTimeMillis();
-			switch (accessType) {
-			case TIMELINE: 
-				Log.d(LOG, "Get home timeline");
-				return api.getHomeTimeline(0, 0);
-			case MENTIONS:
-				Log.d(LOG, "Get mentions");
-				return api.getMentions(0, 0);
-			case DM_RCVD:
-				Log.d(LOG, "Get received dm");
-				return api.getReceivedDMs(0, 0);
-			case DM_SENT:
-				Log.d(LOG, "Get sent dm");
-				return api.getSentDMs(0, 0);
+			TimelineRefreshResult result = new TimelineRefreshResult();
+			try {
+				switch (accessType) {
+				case TIMELINE: 
+					Log.d(LOG, "Get home timeline");
+					result.elements = api.getHomeTimeline(0, 0);
+					return result;
+				case MENTIONS:
+					Log.d(LOG, "Get mentions");
+					result.elements = api.getMentions(0, 0);
+					return result;
+				case DM_RCVD:
+					Log.d(LOG, "Get received dm");
+					result.elements = api.getReceivedDMs(0, 0);
+					return result;
+				case DM_SENT:
+					Log.d(LOG, "Get sent dm");
+					result.elements = api.getSentDMs(0, 0);
+					return result;
+				}
+			} catch (OAuthException e) {
+				result.e = e;
+				return result;
 			}
 			return null;
 		}
 		
 		@SuppressWarnings("unused")
-		protected void onPostExecute(ArrayList<TimelineElement> result) {
+		protected void onPostExecute(TimelineRefreshResult result) {
 			tasksRunning--;
+			
+			if (result.e != null) {
+				if (accessSuccessful.get(accessType)) {
+					Log.d(LOG, "Get " + accessType.toString() + " failed. Retrying in 10 seconds");
+					Toast.makeText(appContext, R.string.error_api_access_retry, Toast.LENGTH_SHORT).show();
+					handler.postDelayed(new Runnable() {
+						
+						@Override
+						public void run() {
+							accessSuccessful.put(accessType, false);
+							tasksRunning++;
+							new TimelineRefreshTask().execute(accessType);
+						}
+					}, 10000);
+				return;
+				} else {
+					Log.d(LOG, "Recurring error in " + accessType.toString() + " access. Not Retrying");
+					Toast.makeText(appContext, R.string.error_api_access_recurring, Toast.LENGTH_SHORT).show();
+					return;
+				}
+			}
+			
+			accessSuccessful.put(accessType, true);
+			
 			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: " + String.valueOf(System.currentTimeMillis() - startTime) + "ms");
 			if (accessType == AccessType.TIMELINE) {
-				mainTimeline = result;
+				mainTimeline = result.elements;
 			} else {
-				apiResponses.add(result);
+				apiResponses.add(result.elements);
 			}
 			
 			if (accessType == AccessType.DM_RCVD || accessType == AccessType.DM_SENT) {
-				dm_conversations.addMessages(result);
+				dm_conversations.addMessages(result.elements);
 			}
 			
 			if (tasksRunning == 0) { 
