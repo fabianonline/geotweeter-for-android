@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="pref_notifications_led_color_entries">
-        <item>Blau</item>
-        <item>Rot</item>
-        <item>Gelb</item>
-        <item>Grün</item>
-        <item>Lila</item>
-        <item>Rosa</item>
-        <item>Weiß</item>
-        <item>Orange</item>
-        <item>Braun</item>
+    <string-array name="pref_tweet_time_style_entryValues">
+        <item>dd.MM.yy HH:mm</item>
+        <item>dd.MM. HH:mm</item>
+        <item>minutes</item>
+    </string-array>
+    <string-array name="pref_image_hoster_entryValues">
+        <item>twitter</item>
+        <item>twitpic</item>
     </string-array>
     <string-array name="pref_notifications_led_color_entries_values">
         <item>4278190335</item> <!-- 0xff0000ff -->

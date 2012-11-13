@@ -20,8 +20,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -79,6 +77,7 @@ public class NewTweetActivity extends Activity {
 	
 	private TweetSendService service;
 	boolean isServiceBound = false;
+	private ImageButton btnImageManager;
 
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -191,8 +190,8 @@ public class NewTweetActivity extends Activity {
 			viewToAccounts.put(img, account);
 		}
 		
-//		imageAdapter = new ImageAdapter(this, new LinkedList<String>());
 		imageAdapter = new ImageBaseAdapter(this, new LinkedList<String>());
+		btnImageManager = (ImageButton) findViewById(R.id.btnImageManager);
 		
 	}
 	
@@ -265,14 +264,15 @@ public class NewTweetActivity extends Activity {
 			cursor.close();
 			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
 			
-			ImageButton btnImageManager = (ImageButton) findViewById(R.id.btnImageManager);
-			int rowHeight = findViewById(R.id.btnAddImage).getHeight();
-			Drawable draw = new BitmapDrawable(Utils.resizeBitmap(picturePath, rowHeight));
-			btnImageManager.setImageDrawable(draw);
-//			btnImageManager.setMaxWidth((int) Math.ceil(rowHeight * ( (float) draw.getIntrinsicWidth() / (float) draw.getIntrinsicHeight())) );
+			if(imageAdapter.getCount() > 1) {
+				btnImageManager.setImageResource(R.drawable.pictures);
+			} else {
+				btnImageManager.setImageResource(R.drawable.picture);
+			}
+//			int rowHeight = findViewById(R.id.btnAddImage).getHeight();
+//			Drawable draw = new BitmapDrawable(Utils.resizeBitmap(picturePath, rowHeight));
+//			btnImageManager.setImageDrawable(draw);
 			btnImageManager.setVisibility(ImageView.VISIBLE);
-//			btnImageManager.setBackgroundResource(0);
-			Log.d(LOG, "Height" + draw.getIntrinsicHeight());
 		}
 	}
 	
@@ -310,6 +310,11 @@ public class NewTweetActivity extends Activity {
 		            	   @Override
 		            	   public void onClick(DialogInterface dialog, int which) {
 		            		   imageAdapter.deleteMarked();
+		            		   if (imageAdapter.getCount() == 1) {
+		            			   btnImageManager.setImageResource(R.drawable.picture);
+		           			   } else if (imageAdapter.getCount() == 0){
+		           				   btnImageManager.setVisibility(View.GONE);
+		           			   }
 		            	   }
 		               })
 		               .setOnCancelListener(new OnCancelListener() {
@@ -340,7 +345,7 @@ public class NewTweetActivity extends Activity {
 			if (remaining < 0) {
 				t.setTextColor(0xFFFF0000);
 			} else {
-				t.setTextColor(0xFF00FF00);
+				t.setTextColor(0xFF00CD00);
 			}
 		}
 	}
