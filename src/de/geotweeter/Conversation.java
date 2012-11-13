@@ -3,8 +3,6 @@ package de.geotweeter;
 import java.security.AccessControlException;
 import java.util.List;
 
-import org.scribe.exceptions.OAuthException;
-
 import android.os.AsyncTask;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
