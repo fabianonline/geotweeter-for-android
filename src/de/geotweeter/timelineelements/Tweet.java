@@ -51,7 +51,7 @@ public class Tweet extends TimelineElement {
 			if (entities != null) {
 				if (entities.urls != null) {
 					for (Url url : entities.urls) {
-						text_for_display = text_for_display.replaceAll(url.url, url.display_url);
+						text_for_display = text_for_display.replace(url.url, url.display_url);
 					}
 				}
 				if (entities.media != null) {
