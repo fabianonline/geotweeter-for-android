@@ -61,6 +61,7 @@ public class Tweet extends TimelineElement {
 				}
 
 			}
+			text_for_display = text_for_display.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
 		}
 		return text_for_display;
 	}
