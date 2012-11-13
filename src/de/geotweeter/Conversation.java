@@ -3,10 +3,14 @@ package de.geotweeter;
 import java.security.AccessControlException;
 import java.util.List;
 
+import org.scribe.exceptions.OAuthException;
+
 import android.os.AsyncTask;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
+import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.timelineelements.DirectMessage;
+import de.geotweeter.timelineelements.ProtectedTweet;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 
@@ -35,6 +39,9 @@ public class Conversation {
 		@Override
 		protected Void doInBackground(TimelineElement... params) {
 			if (params == null) {
+				throw new NullPointerException("Conversation Task parameters are null");
+			}
+			if (params[0] == null) {
 				throw new NullPointerException("Conversation Task parameter is null");
 			}
 			TimelineElement current_element = params[0];
@@ -54,7 +61,12 @@ public class Conversation {
 					current = null;
 				}
 				if (current == null) {
-					current = api.getTweet(predecessor_id);
+					try {
+						current = api.getTweet(predecessor_id);
+					} catch (TweetAccessException e) {
+						publishProgress(new ProtectedTweet());
+						break;
+					}
 				}				
 				publishProgress(current);
 			}
@@ -75,6 +87,9 @@ public class Conversation {
 		}
 
 		protected void onProgressUpdate(TimelineElement... params) {
+			if (params[0] == null) {
+				return;
+			}
 			if (tea.getItem(0).getID() == params[0].getID()) {
 				return;
 			}

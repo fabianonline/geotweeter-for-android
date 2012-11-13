@@ -28,6 +28,7 @@ import de.geotweeter.Utils;
 import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
+import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.exceptions.TweetDestroyException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
@@ -168,7 +169,7 @@ public class TwitterApiAccess {
 		return (ArrayList<TimelineElement>)(ArrayList<?>)JSON.parseObject(json, new TypeReference<ArrayList<DirectMessage>>(){});
 	}
 
-	public Tweet getTweet(long id) throws OAuthException {
+	public Tweet getTweet(long id) throws OAuthException, TweetAccessException {
 		Tweet result = null;
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_SHOW_TWEET);
 		req.addQuerystringParameter("id", String.valueOf(id));
@@ -176,6 +177,10 @@ public class TwitterApiAccess {
 		Response response = req.send();
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);		
+		} else {
+			if (response.getCode() == 403) {
+				throw new TweetAccessException();
+			}
 		}
 		return result;
 	}

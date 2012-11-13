@@ -99,4 +99,5 @@
     
     <string name="error_api_access_retry">Fehler beim API-Zugriff. Erneuter Versuch in 10 Sekunden.</string>
     <string name="error_api_access_recurring">Wiederkehrender Fehler beim API-Zugriff. Kein automatischer Neuversuch.</string>
+    <string name="error_protected_tweet">Dieser Tweet ist in Deiner Timeline nicht verfügbar. Das tut uns leid.</string>
 </resources>
