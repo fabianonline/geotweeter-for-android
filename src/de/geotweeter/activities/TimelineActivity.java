@@ -144,12 +144,8 @@ public class TimelineActivity extends MapActivity {
 			RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
 			for (Account account : Account.all_accounts) {
 				
-				// TODO Change background of RadioButtons
-//				RadioButton rdBtn = (RadioButton) getLayoutInflater().inflate(R.layout.account_switcher_radio_button, accountSwitcher, false);
 				AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(this, account);
 				background_image_loader.displayImage(account.getUser().getAvatarSource(), rdBtn, true);
-				// TODO Set Text to # of unread Tweets
-//				rdBtn.setText(account.getUser().getScreenName());
 				
 				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
 				
@@ -183,7 +179,6 @@ public class TimelineActivity extends MapActivity {
 		if (v.getId() == R.id.timeline) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 			menu.setHeaderTitle(R.string.context_menu_title);
-//			final TimelineElement te = current_account.getElements().getItem(info.position);
 			final TimelineElement te = current_account.activeTimeline().getItem(info.position);
 			if (te.isReplyable()) {
 				menu.add(R.string.respond_to_tweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -208,32 +203,32 @@ public class TimelineActivity extends MapActivity {
 					});
 				}
 								
-				if (!(te instanceof DirectMessage) && !te.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())) {
-					if (!tweet.user._protected) {
+				if (   ! ( tweet instanceof DirectMessage 
+				        || tweet.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())
+				        || tweet.user._protected)) {
 						
-						menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-							
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								new Thread(new Runnable() {
-									
-									public void run() {
-										try {
-											current_account.getApi().retweet(te.getID());
-										} catch (OAuthException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (RetweetException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
+					menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							new Thread(new Runnable() {
+
+								public void run() {
+									try {
+										current_account.getApi().retweet(te.getID());
+									} catch (OAuthException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (RetweetException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
 									}
-								}).start();
-								
-								return true;
-							}
-						});
-					}
+								}
+							}).start();
+
+							return true;
+						}
+					});
 				}
 				
 				if (tweet.entities != null) {
