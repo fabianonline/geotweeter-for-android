@@ -3,7 +3,6 @@ package de.geotweeter.activities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.scribe.model.Token;
@@ -190,7 +189,7 @@ public class NewTweetActivity extends Activity {
 			viewToAccounts.put(img, account);
 		}
 		
-		imageAdapter = new ImageBaseAdapter(this, new LinkedList<String>());
+		imageAdapter = new ImageBaseAdapter(this);
 		btnImageManager = (ImageButton) findViewById(R.id.btnImageManager);
 		
 	}
@@ -284,7 +283,7 @@ public class NewTweetActivity extends Activity {
 		gridView.setAdapter(imageAdapter);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			
-			public void onItemClick(AdapterView parent, View v, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				View cross = v.findViewById(R.id.cross);
 				if (cross.getVisibility() == View.VISIBLE) {
 					cross.setVisibility(View.INVISIBLE);
