@@ -40,6 +40,7 @@ public class Tweet extends TimelineElement {
 	public long in_reply_to_status_id;
 	public long in_reply_to_user_id;
 	private Place place;
+	public Tweet retweeted_status;
 	
 	public long getID() {
 		return id;

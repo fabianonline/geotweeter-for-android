@@ -20,6 +20,7 @@ import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.timelineelements.ProtectedTweet;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
+import de.geotweeter.timelineelements.Tweet;
 
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private List<TimelineElement> items;
@@ -52,7 +53,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
-		TimelineElement t = (TimelineElement) items.get(position);
+		TimelineElement tle = (TimelineElement) items.get(position);
+		boolean is_retweet = false;
+		String retweeter = "";
 		
 		View v = convertView;
 		if (v == null) {
@@ -60,7 +63,16 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			v = vi.inflate(R.layout.timeline_element, null);
 		}
 		
-		if (t != null) {
+		if (tle.getClass() == Tweet.class) {
+			Tweet t = (Tweet) tle;
+			if (t.retweeted_status != null) {
+				tle = t.retweeted_status;
+				is_retweet = true;
+				retweeter = t.getSenderScreenName();
+			}
+		}
+		
+		if (tle != null) {
 			FrameLayout mapContainer = (FrameLayout) v.findViewById(R.id.map_fragment_container);
 			mapContainer.removeAllViews();
 			
@@ -70,7 +82,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			TextView txtView;
 			String text;
 			
-			if (t.getClass() == ProtectedTweet.class) {
+			if (tle.getClass() == ProtectedTweet.class) {
 				txtView = (TextView) v.findViewById(R.id.txtText);
 				if (txtView != null) {
 					txtView.setText(R.string.error_protected_tweet);
@@ -105,22 +117,22 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 				txtView = (TextView) v.findViewById(R.id.txtSender);
 				if (txtView != null) {
-					txtView.setText(t.getSenderString());
+					txtView.setText(tle.getSenderString());
 				}
 				
 				txtView = (TextView) v.findViewById(R.id.txtTimestamp);
 				if (txtView != null) {
-					txtView.setText(t.getDateString());
+					txtView.setText(tle.getDateString());
 				}
 				
 				txtView = (TextView) v.findViewById(R.id.txtText);
 				if (txtView != null) { 
-					txtView.setText(t.getTextForDisplay());
+					txtView.setText(tle.getTextForDisplay());
 				}
 				
 				txtView = (TextView) v.findViewById(R.id.txtPlace);
 				if (txtView != null) {
-					text = t.getPlaceString();
+					text = tle.getPlaceString();
 					if (text == null) {
 						txtView.setVisibility(View.GONE);
 					} else {
@@ -131,7 +143,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				
 				txtView = (TextView) v.findViewById(R.id.txtSource);
 				if (txtView != null) {
-					text = t.getSourceText();
+					if (is_retweet) {
+						text = "RT by " + retweeter;
+					} else {
+						text = tle.getSourceText();
+					}
 					if (text == null) {
 						txtView.setVisibility(View.GONE);
 					} else {
@@ -142,10 +158,10 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				
 				ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
 				if (img != null) {
-					TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(t.getAvatarSource(), img, true);
+					TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(tle.getAvatarSource(), img, true);
 				}
 				
-				List<Pair<URL, URL>> media_list = t.getMediaList();
+				List<Pair<URL, URL>> media_list = tle.getMediaList();
 				LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
 				if (!media_list.isEmpty()) {
 					picPreviews.removeAllViews();
@@ -173,7 +189,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			}
 		}
 //		v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
-		v.setBackgroundResource(t.getBackgroundDrawableID(useDarkTheme));
+		v.setBackgroundResource(tle.getBackgroundDrawableID(useDarkTheme));
 		return v;	
 	}
 	
