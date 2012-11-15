@@ -12,6 +12,9 @@ public class SendableTweet {
 	public Location location = null;
 	public Long reply_to_status_id = null;
 	
+	public String imageHoster;
+	public long imageSize;
+	
 	public SendableTweet(Account account, String text) {
 		this.text = text;
 		this.account = account;

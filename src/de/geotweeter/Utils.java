@@ -195,9 +195,9 @@ public class Utils {
 		return properties.getProperty(key);
 	}
 	
-	public static byte[] reduceImageSize(File file) throws IOException {
+	public static byte[] reduceImageSize(File file, long imageSize) throws IOException {
 		Log.d(LOG, "Before resizeFile: " + file.length());
-		int scale = (int) (file.length() / Constants.PIC_SIZE_TWITTER);
+		int scale = (int) (file.length() / imageSize);
 		scale = 2 * Integer.highestOneBit(scale);
 		Log.d(LOG, "scale: " + scale);
 		BitmapFactory.Options opt = new BitmapFactory.Options();

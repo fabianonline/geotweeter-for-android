@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.scribe.exceptions.OAuthException;
@@ -41,12 +43,19 @@ public class TwitpicApiAccess {
 		twitter_api = new TwitterApiAccess(twitterToken);
 	}
 
-	public String uploadImage(File image, String text) throws IOException, TweetSendException {
+	public String uploadImage(File image, String text, long imageSize) throws IOException, TweetSendException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
 		MultipartEntity entity = new MultipartEntity();
 		entity.addPart("key", new StringBody(Utils.getProperty("twitpic.key")));
-		entity.addPart("message", new StringBody(text));		
-		entity.addPart("media", new FileBody(image));
+		entity.addPart("message", new StringBody(text));
+		
+		ContentBody picture = null;
+		if (imageSize < 0 || image.length() <= imageSize) {
+			picture = new FileBody(image);
+		} else {
+			picture = new ByteArrayBody(Utils.reduceImageSize(image, imageSize), image.getName());
+		}
+		entity.addPart("media", picture);
 		
 		Log.d(LOG, "Start output Stream, Twitpic " + image.getName());
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
