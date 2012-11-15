@@ -20,4 +20,11 @@
         <item>4294934528</item> <!-- 0xffff8000 -->
         <item>4288243251</item> <!-- 0xff996633 -->
     </string-array>
+    
+    <string-array name="pref_image_size_entry_values">
+        <item>-1</item>
+        <item>1048576</item>
+        <item>2097152</item>
+        <item>3145728</item>
+    </string-array>
 </resources>

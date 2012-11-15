@@ -129,6 +129,13 @@
             android:entries="@array/pref_image_hoster_entries"
             android:entryValues="@array/pref_image_hoster_entryValues"
             android:defaultValue="twitter"/>
+        
+        <ListPreference 
+            android:key="pref_image_size"
+            android:title="@string/pref_image_size_title"
+            android:entries="@array/pref_image_size_entries"
+            android:entryValues="@array/pref_image_size_entry_values"
+            android:defaultValue="-1"/>
     </PreferenceCategory>
     
     <PreferenceCategory 
