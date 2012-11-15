@@ -137,16 +137,20 @@ public class TweetSendService extends Service {
 	
 	public void sendTweetWithPic(SendableTweet tweet) throws TweetSendException, IOException {
 		
-		String imageHoster = getApplicationContext().getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
+		String imageHoster = tweet.imageHoster;
+		long imageSize = tweet.imageSize;
 		if (imageHoster.equals("twitter")) {
+			if (imageSize < 0) {
+				imageSize = Constants.PIC_SIZE_TWITTER;
+			}
 			
 			ContentBody picture = null;
 			File f = new File(tweet.images.get(0));
 			
-			if (f.length() <= Constants.PIC_SIZE_TWITTER) {
+			if (f.length() <= imageSize) {
 				picture = new FileBody(f);
 			} else {
-				picture = new ByteArrayBody(Utils.reduceImageSize(f), f.getName());
+				picture = new ByteArrayBody(Utils.reduceImageSize(f, imageSize), f.getName());
 			}
 
 			tweet.account.getApi().sendTweetWithPicture(tweet, picture);
@@ -160,7 +164,7 @@ public class TweetSendService extends Service {
 				if (!tweet.images.get(i).equals("")) {
 					
 					File image = new File(tweet.images.get(i));
-					String twitpic_url = twitpic_api.uploadImage(image, tweet.text);
+					String twitpic_url = twitpic_api.uploadImage(image, tweet.text, imageSize);
 					tweet.images.set(i, "");
 					tweet.text += " " + twitpic_url;
 					Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);

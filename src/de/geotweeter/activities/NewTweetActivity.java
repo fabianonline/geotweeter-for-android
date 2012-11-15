@@ -412,6 +412,8 @@ public class NewTweetActivity extends Activity {
 			tweet.images = imageAdapter.getItems();
 			tweet.location = location;
 			tweet.reply_to_status_id = reply_to_id;
+			tweet.imageHoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
+			tweet.imageSize = Long.parseLong(getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_size", "-1"));
 			service.addSendableTweet(tweet);
 		
 			if (gpslistener != null && lm != null) {
