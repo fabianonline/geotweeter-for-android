@@ -198,7 +198,7 @@ public class Utils {
 	public static byte[] reduceImageSize(File file, long imageSize) throws IOException {
 		Log.d(LOG, "Before resizeFile: " + file.length());
 		int scale = (int) (file.length() / imageSize);
-		scale = 2 * Integer.highestOneBit(scale);
+//		scale = 2 * Integer.highestOneBit(scale);
 		Log.d(LOG, "scale: " + scale);
 		BitmapFactory.Options opt = new BitmapFactory.Options();
 		opt.inSampleSize = scale;
