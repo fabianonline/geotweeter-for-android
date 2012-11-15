@@ -108,4 +108,5 @@
         <item>2MB</item>
         <item>3MB</item>
     </string-array>
+    <string name="pref_image_size_summary">Maximalgröße der zu versendenen Bilder. Bei Twitter ist die Maximalgröße begrenzt.</string>
 </resources>

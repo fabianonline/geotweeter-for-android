@@ -135,7 +135,8 @@
             android:title="@string/pref_image_size_title"
             android:entries="@array/pref_image_size_entries"
             android:entryValues="@array/pref_image_size_entry_values"
-            android:defaultValue="-1"/>
+            android:defaultValue="-1"
+            android:summary="@string/pref_image_size_summary"/>
     </PreferenceCategory>
     
     <PreferenceCategory 
