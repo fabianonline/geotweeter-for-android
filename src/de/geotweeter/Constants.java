@@ -44,6 +44,7 @@ public class Constants extends Application {
 	public static final Pattern REGEXP_FIND_SOURCE = Pattern.compile(">(.+)</a>");
 	
 	public static final String TWITPIC_URI = "http://api.twitpic.com/2/upload.json";
+	public static final String TWITPIC = "http://twitpic.com/";
 	
 	public static final Path LOCATION_MARKER = new LocationMarker();
 

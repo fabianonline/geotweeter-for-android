@@ -45,6 +45,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
@@ -55,6 +56,7 @@ import de.geotweeter.SendableTweet;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.services.TweetSendService;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -253,25 +255,38 @@ public class NewTweetActivity extends Activity {
 			Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
 			cursor.moveToFirst();
 			String picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+			cursor.close();
 			
-			if (getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitter")) {
+			String imageHoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter"); 
+			if (imageHoster.equals("twitter")) {
 				// TODO Warnung, dass Bild ausgetauscht wird.
 				imageAdapter.clear();
 			}
 			
-			imageAdapter.add(picturePath);
-			cursor.close();
-			Log.d(LOG, picturePath + ": " + new File(picturePath).length());
-			
-			if(imageAdapter.getCount() > 1) {
-				btnImageManager.setImageResource(R.drawable.pictures);
+			int imageIndex = imageAdapter.add(picturePath);
+			if(imageIndex == -1) {
+				Toast.makeText(this, R.string.too_much_images, Toast.LENGTH_SHORT).show();
 			} else {
-				btnImageManager.setImageResource(R.drawable.picture);
+				Log.d(LOG, picturePath + ": " + new File(picturePath).length());
+
+				if(imageHoster.equals("twitpic")) {
+					EditText editTweetText = ((EditText)findViewById(R.id.tweet_text));
+					String editText = editTweetText.getText().toString();
+					Log.d(LOG, "String: " + editText + " Length: " + editText.length());
+					String prefix = " ";
+					if(editText.length() == 0 || editText.matches(".*\\s")) {
+						prefix = "";
+					}
+					editTweetText.append(prefix + TwitpicApiAccess.getPlaceholder(imageIndex) + " ");
+				}
+
+				if(imageAdapter.getCount() > 1) {
+					btnImageManager.setImageResource(R.drawable.pictures);
+				} else {
+					btnImageManager.setImageResource(R.drawable.picture);
+				}
+				btnImageManager.setVisibility(ImageView.VISIBLE);
 			}
-//			int rowHeight = findViewById(R.id.btnAddImage).getHeight();
-//			Drawable draw = new BitmapDrawable(Utils.resizeBitmap(picturePath, rowHeight));
-//			btnImageManager.setImageDrawable(draw);
-			btnImageManager.setVisibility(ImageView.VISIBLE);
 		}
 	}
 	
@@ -410,6 +425,7 @@ public class NewTweetActivity extends Activity {
 //			tweet.imagePath = picturePath;
 //			tweet.imagePath = imageAdapter.getItem(0);
 			tweet.images = imageAdapter.getItems();
+			tweet.remainingImages = imageAdapter.getCount();
 			tweet.location = location;
 			tweet.reply_to_status_id = reply_to_id;
 			tweet.imageHoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");

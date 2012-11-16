@@ -107,7 +107,7 @@ public class TweetSendService extends Service {
 				updateNotification();
 				tweet = tweets.get(i);
 				try {
-					if (tweet.images.size() > 0) {
+					if (tweet.remainingImages > 0) {
 						sendTweetWithPic(tweet);
 					} else {
 						tweet.account.getApi().sendTweet(tweet);
@@ -145,7 +145,12 @@ public class TweetSendService extends Service {
 			}
 			
 			ContentBody picture = null;
-			File f = new File(tweet.images.get(0));
+			File f = null;
+			for (String image : tweet.images) {
+				if(image != null) {
+					f = new File(image);
+				}
+			}
 			
 			if (f.length() <= imageSize) {
 				picture = new FileBody(f);
@@ -155,18 +160,17 @@ public class TweetSendService extends Service {
 
 			tweet.account.getApi().sendTweetWithPicture(tweet, picture);
 
-		} else if(imageHoster.equals("twitpic")) {
+		} else if (imageHoster.equals("twitpic")) {
 			
-			TwitpicApiAccess twitpic_api = new TwitpicApiAccess(tweet.account.getToken());
+			TwitpicApiAccess twitpicApi = new TwitpicApiAccess(tweet.account.getToken());
 			
-			for (int i = 0; i < tweet.images.size(); i++) {
-				
-				if (!tweet.images.get(i).equals("")) {
-					
-					File image = new File(tweet.images.get(i));
-					String twitpic_url = twitpic_api.uploadImage(image, tweet.text, imageSize);
-					tweet.images.set(i, "");
-					tweet.text += " " + twitpic_url;
+			for (int i = 0; i < tweet.images.length; i++) {
+				if (tweet.images[i] != null) {
+					File image = new File(tweet.images[i]);
+					String twitpicUrl = twitpicApi.uploadImage(image, tweet.text.replaceAll("http://twitpic\\.com/\\w{6}", ""), imageSize);
+					tweet.images[i] = null;
+					tweet.remainingImages--;
+					tweet.text = TwitpicApiAccess.replacePlaceholder(tweet.text, twitpicUrl, i);
 					Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
 
 				}
@@ -174,8 +178,6 @@ public class TweetSendService extends Service {
 			Log.d(LOG, "Send Twitpic-Tweet");
 			tweet.account.getApi().sendTweet(tweet);
 			Log.d(LOG, "Finished: Send Twitpic-Tweet");
-		} else {
-			//TODO: Exception?
 		}
 	}
 

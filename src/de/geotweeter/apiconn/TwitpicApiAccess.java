@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
@@ -98,6 +99,15 @@ public class TwitpicApiAccess {
 		URL screen_url = new URL(url.expanded_url);
 		return new Pair<URL, URL>(new URL("http://twitpic.com/show/mini/" + screen_url.getPath()), 
 				new URL("http://twitpic.com/show/full/" + screen_url.getPath()));
+	}
+	
+	public static String getPlaceholder(int index) {
+		DecimalFormat df = new DecimalFormat("000");
+		return Constants.TWITPIC + "pic" + df.format(index);
+	}
+	
+	public static String replacePlaceholder(String text, String url, int index) {
+		return text.replace(getPlaceholder(index) , url);
 	}
 	
 }

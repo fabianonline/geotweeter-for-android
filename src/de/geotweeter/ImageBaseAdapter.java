@@ -4,8 +4,6 @@
 package de.geotweeter;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
@@ -28,35 +26,43 @@ import android.widget.ImageView;
 public class ImageBaseAdapter extends BaseAdapter {
 	
 	private static final String LOG = "ImageBaseAdapter";
-	private List<String> items;
+	private static final int SIZE = 7;
+	private String[] items;
 	private Context context;
 	private Map<String, Drawable> bitmaps;
-	
-	private List<Boolean> markedForDelete;
+	private boolean[] markedForDelete;
+	private int size;
 	
 	public ImageBaseAdapter(Context context) {
 		this.context = context;
-		items = new LinkedList<String>();
-		markedForDelete = new LinkedList<Boolean>();
+		items = new String[SIZE];
+		markedForDelete = new boolean[SIZE];
 		bitmaps = new HashMap<String, Drawable>();
+		size = 0;
 	}
 	
-	public void add(String path) {
-		items.add(path);
-		markedForDelete.add(false);
-		notifyDataSetChanged();
+	public int add(String path) {
+		if(size == SIZE) {
+			return -1;
+		}
+		int i = 0;
+		for (; i < items.length && items[i] != null; i++) {
+		}
+		items[i] = path;
+		size++;
 		new ImageResizeTask().execute(path);
+		return i;
 	}
 	
 	@Override
 	public int getCount() {
-		return items.size();
+		return size;
 	}
 	
 	@Override
 	public String getItem(int position) {
-		if(0 <= position && position < getCount()) {
-			return items.get(position);
+		if (0 <= position && position < getCount()) {
+			return items[getIndex(position)];
 		}
 		return null;
 	}
@@ -68,27 +74,27 @@ public class ImageBaseAdapter extends BaseAdapter {
 	}
 	
 	public void markForDelete(int position) {
-		markedForDelete.set(position, true);
+		markedForDelete[getIndex(position)] = true;
 	}
 	
 	public void unmarkForDelete(int position) {
-		markedForDelete.set(position, false);
+		markedForDelete[getIndex(position)] = false;
 	}
 	
 	public void unmarkAll() {
-		for(int i = 0; i < markedForDelete.size(); i++) {
-			markedForDelete.set(i, false);
+		for(int i = 0; i < markedForDelete.length; i++) {
+			markedForDelete[i] = false;
 		}
 	}
 	
 	public void deleteMarked() {
-		for(int i = markedForDelete.size() - 1; i >= 0 ; i--) {
-			if(markedForDelete.get(i)) {
-				items.remove(i);
-				markedForDelete.remove(i);
+		for (int i = 0; i < markedForDelete.length; i++) {
+			if (markedForDelete[i]) {
+				items[i] = null;
+				markedForDelete[i] = false;
 			}
 		}
-		notifyDataSetChanged();
+//		notifyDataSetChanged();
 	}
 	
 	@Override
@@ -103,20 +109,36 @@ public class ImageBaseAdapter extends BaseAdapter {
 		}
 		imageView = (ImageView) convertView.findViewById(R.id.img_view_image_list_element);
 		
-		String path = items.get(position);
+		int index = getIndex(position);
+		String path = items[index];
 		imageView.setImageDrawable(bitmaps.get(path));
-		convertView.findViewById(R.id.cross).setVisibility(markedForDelete.get(position)? View.VISIBLE: View.INVISIBLE);
+		convertView.findViewById(R.id.cross).setVisibility(markedForDelete[index]? View.VISIBLE: View.INVISIBLE);
 		return convertView;
 	}
 	
-	public List<String> getItems() {
+	public String[] getItems() {
 		return items;
 	}
 	
 	public void clear() {
-		items.clear();
-		markedForDelete.clear();
-		notifyDataSetChanged();
+		for (int i = 0; i < SIZE; i++) {
+			items[i] = null;
+		}
+//		notifyDataSetChanged();
+	}
+	
+	private int getIndex(int position) throws IllegalArgumentException {
+		if (0 <= position && position < getCount()) {
+			for (int i = 0; i < items.length; i++) {
+				if(items[i] != null) {
+					if(position == 0) {
+						return i;
+					}
+					position--;
+				}
+			}
+		}
+		throw new IllegalArgumentException();
 	}
 	
 	private class ImageResizeTask extends AsyncTask<String, Void, Boolean> {
