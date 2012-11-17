@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.scribe.model.Token;
 
@@ -343,23 +345,55 @@ public class NewTweetActivity extends Activity {
 	protected class RemainingCharUpdater implements TextWatcher {
 		
 		private Activity activity;
+		private boolean delete;
+		private String text;
+		private int start;
+		private int end;
 		
 		public RemainingCharUpdater(Activity a) { 
-			activity = a; 
+			activity = a;
+			delete = false;
 		}
 		
 		public void onTextChanged(CharSequence s, int start, int before, int count) {}
 		
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//			Log.d(LOG, s + " start: " + start + " count: " + count + " after: " + after);
+			Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
+			Matcher matcher = p.matcher(s);
+			while (matcher.find()) {
+//				Log.d(LOG, "start=" + matcher.start() + " end=" + matcher.end() + " " + (matcher.start() <= start && start < matcher.end()) + " Image: " + matcher.group());
+				if (!delete && start < matcher.end()) {
+					boolean insertion = after > count;
+					if ((insertion && matcher.start() < start) || (!insertion && matcher.start() <= start)) {
+					text = s.toString().replace(matcher.group(), "");
+					start = matcher.start();
+					delete = true;
+					imageAdapter.delete(Integer.parseInt(matcher.group(1)));
+					if (imageAdapter.getCount() == 1) {
+						btnImageManager.setImageResource(R.drawable.picture);
+					} else if (imageAdapter.getCount() == 0){
+						btnImageManager.setVisibility(View.GONE);
+					}
+					}
+				}
+			}
+		}
 		
 		public void afterTextChanged(Editable s) {
-			TextView t = (TextView) activity.findViewById(R.id.textCharsRemaining);
-			int remaining = 140 - Utils.countChars(s.toString());
-			t.setText(String.valueOf(remaining));
-			if (remaining < 0) {
-				t.setTextColor(0xFFFF0000);
+			if (delete) {
+				delete = false;
+				editTweetText.setText(text);
+				editTweetText.setSelection(start);
 			} else {
-				t.setTextColor(0xFF00CD00);
+				TextView t = (TextView) activity.findViewById(R.id.textCharsRemaining);
+				int remaining = 140 - Utils.countChars(s.toString());
+				t.setText(String.valueOf(remaining));
+				if (remaining < 0) {
+					t.setTextColor(0xFFFF0000);
+				} else {
+					t.setTextColor(0xFF00CD00);
+				}
 			}
 		}
 	}

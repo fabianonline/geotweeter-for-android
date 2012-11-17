@@ -100,6 +100,16 @@ public class ImageBaseAdapter extends BaseAdapter {
 //		notifyDataSetChanged();
 	}
 	
+	public void delete(int position) {
+		try {
+			int index = getIndex(position);
+			items[index] = null;
+			markedForDelete[index] = false;
+			size--;
+		} catch(IllegalArgumentException e) {
+		}
+	}
+	
 	public String deletePlaceholder(String text) {
 		for (int i = 0; i < markedForDelete.length; i++) {
 			if (markedForDelete[i]) {
