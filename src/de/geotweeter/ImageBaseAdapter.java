@@ -6,6 +6,8 @@ package de.geotweeter;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.geotweeter.apiconn.TwitpicApiAccess;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -92,9 +94,20 @@ public class ImageBaseAdapter extends BaseAdapter {
 			if (markedForDelete[i]) {
 				items[i] = null;
 				markedForDelete[i] = false;
+				size--;
 			}
 		}
 //		notifyDataSetChanged();
+	}
+	
+	public String deletePlaceholder(String text) {
+		for (int i = 0; i < markedForDelete.length; i++) {
+			if (markedForDelete[i]) {
+				String placeHolder = TwitpicApiAccess.getPlaceholder(i);
+				text = text.replace(placeHolder, "");
+			}
+		}
+		return text;
 	}
 	
 	@Override
@@ -138,7 +151,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 				}
 			}
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("Position: " + position);
 	}
 	
 	private class ImageResizeTask extends AsyncTask<String, Void, Boolean> {

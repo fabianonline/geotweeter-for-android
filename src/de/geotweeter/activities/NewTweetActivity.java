@@ -79,7 +79,7 @@ public class NewTweetActivity extends Activity {
 	private TweetSendService service;
 	boolean isServiceBound = false;
 	private ImageButton btnImageManager;
-
+	private EditText editTweetText;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -88,7 +88,7 @@ public class NewTweetActivity extends Activity {
 		serviceBind();
 		setContentView(R.layout.new_tweet);
 		
-		EditText editTweetText = ((EditText)findViewById(R.id.tweet_text));
+		editTweetText = ((EditText)findViewById(R.id.tweet_text));
 		
 		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
@@ -270,7 +270,6 @@ public class NewTweetActivity extends Activity {
 				Log.d(LOG, picturePath + ": " + new File(picturePath).length());
 
 				if(imageHoster.equals("twitpic")) {
-					EditText editTweetText = ((EditText)findViewById(R.id.tweet_text));
 					String editText = editTweetText.getText().toString();
 					Log.d(LOG, "String: " + editText + " Length: " + editText.length());
 					String prefix = " ";
@@ -323,6 +322,7 @@ public class NewTweetActivity extends Activity {
 		               .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
 		            	   @Override
 		            	   public void onClick(DialogInterface dialog, int which) {
+		            		   editTweetText.setText(imageAdapter.deletePlaceholder(editTweetText.getText().toString()));
 		            		   imageAdapter.deleteMarked();
 		            		   if (imageAdapter.getCount() == 1) {
 		            			   btnImageManager.setImageResource(R.drawable.picture);

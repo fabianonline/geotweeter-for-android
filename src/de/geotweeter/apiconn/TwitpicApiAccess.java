@@ -106,6 +106,7 @@ public class TwitpicApiAccess {
 		return Constants.TWITPIC + "pic" + df.format(index);
 	}
 	
+	// TODO Whitespaces berücksichtigen
 	public static String replacePlaceholder(String text, String url, int index) {
 		return text.replace(getPlaceholder(index) , url);
 	}
