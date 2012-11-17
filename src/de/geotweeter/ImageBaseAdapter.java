@@ -110,7 +110,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 		}
 	}
 	
-	public String deletePlaceholder(String text) {
+	public String deleteAllMarkedPlaceholder(String text) {
 		for (int i = 0; i < markedForDelete.length; i++) {
 			if (markedForDelete[i]) {
 				String placeHolder = TwitpicApiAccess.getPlaceholder(i);
