@@ -40,6 +40,22 @@ task :lite do
 	Rake::Task['copy_and_modify_files'].invoke
 end
 
+task :tag_version do
+    last_tag = %x(git describe --abbrev=0 --tags).strip
+    last_tag = "(leer)" if last_tag == ""
+    puts "Letztes Tag war '#{last_tag}'. Soll eine neue Version gesetzt und getaggt werden? (Leerlassen für 'Nein' oder Versionsbezeichnung eingeben.)"
+    new_version = STDIN.gets.chomp
+    if new_version != ""
+        %x(git tag #{new_version})
+    else
+        new_version = last_tag
+    end
+
+    string = File.read($target_dir + "/AndroidManifest.xml")
+    string = string.gsub(/android:versionName="(.+)"/, "android:versionName=\"#{new_version}\"")
+    File.open($target_dir + "/AndroidManifest.xml", "w") {|f| f.write(string)}
+end
+
 task :copy_and_modify_files do
 	FileUtils.rm_r($target_dir, :force=>true)
 	puts "Copying files..."
@@ -77,9 +93,10 @@ task :copy_and_modify_files do
 	FileUtils.mkdir($target_dir + "/bin")
 	
 	puts "Setting Version information..."
-	commit = %x(git rev-parse --short HEAD)
+    Rake::Task['tag_version'].invoke
+	commit = %x(git describe --tags --always --long --dirty)
 	string = File.read($target_dir + "/AndroidManifest.xml")
-	string = string.gsub(/android:versionName="(.+)"/, "android:versionName=\"\\1 (#{commit.strip})\"")
+	string = string.gsub(/android:versionName="(.+)"/, "android:versionName=\"#{commit.strip}\"")
     commit_count = %x(git rev-list --all | wc -l)
 	string = string.gsub(/android:versionCode="(.+)"/, "android:versionCode=\"#{commit_count.strip}\"")
 	File.open($target_dir + "/AndroidManifest.xml", "w") {|f| f.write(string)}
@@ -117,6 +134,9 @@ task :clean do
 	puts
 	puts "DONE."
 	puts "File is in bin/#{$target_package}.apk"
+    
+    puts
+    puts "Please remember to push all newly created tags to the central repository by using 'git push --tags'."
 end
 
 
