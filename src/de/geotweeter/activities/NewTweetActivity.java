@@ -98,6 +98,12 @@ public class NewTweetActivity extends Activity {
 		
 		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
 		if (useTwitpic) {
+			
+			/* Diese Funktionen werden benötigt, um Modifikationen von Twitpic-Platzhaltern
+			 * durch den Benutzer zu unterbinden. Ist Twitter selbst als Bilderdienst eingestellt,
+			 * muss hier gar nichts überwacht werden und wir können uns die Funktionen zur
+			 * Laufzeit komplett sparen */ 
+			
 			editTweetText.setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -397,9 +403,9 @@ public class NewTweetActivity extends Activity {
 					boolean insertion = after > count;
 					if ((insertion && matcher.start() < start) || (!insertion && matcher.start() <= start)) {
 						text = s.toString().replace(matcher.group(), "");
-						start = matcher.start();
+						this.start = matcher.start();
 						delete = true;
-						imageAdapter.delete(Integer.parseInt(matcher.group(1)));
+						imageAdapter.deleteIndex(Integer.parseInt(matcher.group(1)));
 						if (imageAdapter.getCount() == 1) {
 							btnImageManager.setImageResource(R.drawable.picture);
 						} else if (imageAdapter.getCount() == 0){

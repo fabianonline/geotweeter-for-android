@@ -92,9 +92,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 	public void deleteMarked() {
 		for (int i = 0; i < markedForDelete.length; i++) {
 			if (markedForDelete[i]) {
-				items[i] = null;
-				markedForDelete[i] = false;
-				size--;
+				deleteIndex(i);
 			}
 		}
 //		notifyDataSetChanged();
@@ -103,11 +101,15 @@ public class ImageBaseAdapter extends BaseAdapter {
 	public void delete(int position) {
 		try {
 			int index = getIndex(position);
-			items[index] = null;
-			markedForDelete[index] = false;
-			size--;
+			deleteIndex(index);
 		} catch(IllegalArgumentException e) {
 		}
+	}
+	
+	public void deleteIndex(int index) {
+		items[index] = null;
+		markedForDelete[index] = false;
+		size--;
 	}
 	
 	public String deleteAllMarkedPlaceholder(String text) {
