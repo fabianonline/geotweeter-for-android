@@ -31,9 +31,11 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -82,8 +84,10 @@ public class NewTweetActivity extends Activity {
 	boolean isServiceBound = false;
 	private ImageButton btnImageManager;
 	private EditText editTweetText;
+	private boolean useTwitpic;
 	
 	public void onCreate(Bundle savedInstanceState) {
+		useTwitpic = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitpic");
 		
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
@@ -93,6 +97,22 @@ public class NewTweetActivity extends Activity {
 		editTweetText = ((EditText)findViewById(R.id.tweet_text));
 		
 		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
+		if (useTwitpic) {
+			editTweetText.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					tweetTextClickListener(v);
+				}
+			});
+			editTweetText.setOnKeyListener(new OnKeyListener() {
+				
+				@Override
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					return tweetTextKeyListener(v, keyCode, event);
+				}
+			});
+		}
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
 		gpsToggle.setOnCheckedChangeListener(new GPSToggleListener(this));
 		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_APP, 0);
@@ -198,6 +218,16 @@ public class NewTweetActivity extends Activity {
 		
 	}
 	
+	protected boolean tweetTextKeyListener(View v, int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	protected void tweetTextClickListener(View v) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	protected void onPause() {
 		super.onPause();
 		/* Remove all GPSListeners. */
@@ -266,22 +296,22 @@ public class NewTweetActivity extends Activity {
 			}
 			
 			int imageIndex = imageAdapter.add(picturePath);
-			if(imageIndex == -1) {
+			if (imageIndex == -1) {
 				Toast.makeText(this, R.string.too_much_images, Toast.LENGTH_SHORT).show();
 			} else {
 				Log.d(LOG, picturePath + ": " + new File(picturePath).length());
 
-				if(imageHoster.equals("twitpic")) {
+				if (imageHoster.equals("twitpic")) {
 					String editText = editTweetText.getText().toString();
 					Log.d(LOG, "String: " + editText + " Length: " + editText.length());
 					String prefix = " ";
-					if(editText.length() == 0 || editText.matches(".*\\s")) {
+					if (editText.length() == 0 || editText.matches(".*\\s")) {
 						prefix = "";
 					}
 					editTweetText.append(prefix + TwitpicApiAccess.getPlaceholder(imageIndex) + " ");
 				}
 
-				if(imageAdapter.getCount() > 1) {
+				if (imageAdapter.getCount() > 1) {
 					btnImageManager.setImageResource(R.drawable.pictures);
 				} else {
 					btnImageManager.setImageResource(R.drawable.picture);
@@ -366,15 +396,15 @@ public class NewTweetActivity extends Activity {
 				if (!delete && start < matcher.end()) {
 					boolean insertion = after > count;
 					if ((insertion && matcher.start() < start) || (!insertion && matcher.start() <= start)) {
-					text = s.toString().replace(matcher.group(), "");
-					start = matcher.start();
-					delete = true;
-					imageAdapter.delete(Integer.parseInt(matcher.group(1)));
-					if (imageAdapter.getCount() == 1) {
-						btnImageManager.setImageResource(R.drawable.picture);
-					} else if (imageAdapter.getCount() == 0){
-						btnImageManager.setVisibility(View.GONE);
-					}
+						text = s.toString().replace(matcher.group(), "");
+						start = matcher.start();
+						delete = true;
+						imageAdapter.delete(Integer.parseInt(matcher.group(1)));
+						if (imageAdapter.getCount() == 1) {
+							btnImageManager.setImageResource(R.drawable.picture);
+						} else if (imageAdapter.getCount() == 0){
+							btnImageManager.setVisibility(View.GONE);
+						}
 					}
 				}
 			}
