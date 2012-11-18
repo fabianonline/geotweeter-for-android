@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.acra.ErrorReporter;
+import org.acra.ACRA;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -70,7 +70,7 @@ public class Utils {
 		try {
 			obj = JSON.parseObject(json, Feature.DisableCircularReferenceDetect);
 		} catch (JSONException ex) {
-			ErrorReporter.getInstance().putCustomData("json", json);
+			ACRA.getErrorReporter().putCustomData("json", json);
 			throw ex;
 		}
 		
