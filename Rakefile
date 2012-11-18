@@ -93,11 +93,11 @@ task :copy_and_modify_files do
 	FileUtils.mkdir($target_dir + "/bin")
 	
 	puts "Setting Version information..."
-    Rake::Task['tag_version'].invoke
-	commit = %x(git describe --tags --always --long --dirty)
+	Rake::Task['tag_version'].invoke
+	commit = %x(git describe --tags --always --dirty)
 	string = File.read($target_dir + "/AndroidManifest.xml")
 	string = string.gsub(/android:versionName="(.+)"/, "android:versionName=\"#{commit.strip}\"")
-    commit_count = %x(git rev-list --all | wc -l)
+	commit_count = %x(git rev-list --all | wc -l)
 	string = string.gsub(/android:versionCode="(.+)"/, "android:versionCode=\"#{commit_count.strip}\"")
 	File.open($target_dir + "/AndroidManifest.xml", "w") {|f| f.write(string)}
 	
