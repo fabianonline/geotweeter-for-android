@@ -367,9 +367,9 @@ public class NewTweetActivity extends Activity {
 					boolean insertion = after > count;
 					if ((insertion && matcher.start() < start) || (!insertion && matcher.start() <= start)) {
 					text = s.toString().replace(matcher.group(), "");
-					start = matcher.start();
+					this.start = matcher.start();
 					delete = true;
-					imageAdapter.delete(Integer.parseInt(matcher.group(1)));
+					imageAdapter.deleteIndex(Integer.parseInt(matcher.group(1)));
 					if (imageAdapter.getCount() == 1) {
 						btnImageManager.setImageResource(R.drawable.picture);
 					} else if (imageAdapter.getCount() == 0){
