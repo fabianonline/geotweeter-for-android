@@ -120,6 +120,9 @@ public class StreamRequest {
 				api.signRequest(request);
 				Response response = request.send();
 				stream = response.getStream();
+				if (stream == null) {
+					Log.d(LOG, "stream is null. Delaying.");
+				} else {
 				InputStreamReader reader = new InputStreamReader(stream);
 				Log.d(LOG, "Waiting for first data.");
 				try {
@@ -134,11 +137,13 @@ public class StreamRequest {
 					// TODO: Connection was killed. If necessary, restart it.
 				}
 				Log.d(LOG, "Stream beendet");
+				}
 				lastDataReceivedAt = 0;
 				lastNewlineReceivedAt = 0;
 				if (!keepRunning) {
 					return;
 				} else {
+					Log.d(LOG, "Delaying stream reconnection by " + reconnectDelay + "ms...");
 					try {
 						Thread.sleep(reconnectDelay);
 					} catch (InterruptedException e) {}
