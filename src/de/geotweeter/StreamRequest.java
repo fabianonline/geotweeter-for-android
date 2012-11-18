@@ -39,6 +39,7 @@ public class StreamRequest {
 	
 	public void start() {
 		if (doRestart) {
+			keepRunning = true;
 			new Thread(thread, "StreamRequestThread").start();
 		} else {
 			Log.d(LOG, "start() called but doRestart is false.");
@@ -123,20 +124,20 @@ public class StreamRequest {
 				if (stream == null) {
 					Log.d(LOG, "stream is null. Delaying.");
 				} else {
-				InputStreamReader reader = new InputStreamReader(stream);
-				Log.d(LOG, "Waiting for first data.");
-				try {
-					while (reader.read(ch) > 0) {
-						lastNewlineReceivedAt = System.currentTimeMillis();
-						buffer += ch[0];
-						if (ch[0]=='\n' || ch[0]=='\r') {
-							processBuffer();
+					InputStreamReader reader = new InputStreamReader(stream);
+					Log.d(LOG, "Waiting for first data.");
+					try {
+						while (reader.read(ch) > 0) {
+							lastNewlineReceivedAt = System.currentTimeMillis();
+							buffer += ch[0];
+							if (ch[0]=='\n' || ch[0]=='\r') {
+								processBuffer();
+							}
 						}
+					} catch (IOException e) {
+						// TODO: Connection was killed. If necessary, restart it.
 					}
-				} catch (IOException e) {
-					// TODO: Connection was killed. If necessary, restart it.
-				}
-				Log.d(LOG, "Stream beendet");
+					Log.d(LOG, "Stream beendet");
 				}
 				lastDataReceivedAt = 0;
 				lastNewlineReceivedAt = 0;
@@ -149,7 +150,12 @@ public class StreamRequest {
 					} catch (InterruptedException e) {}
 					reconnectDelay *= 1.5;
 				}
-				account.start(false);
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						account.start(false);
+					}
+				});
 			}
 		}
 		
