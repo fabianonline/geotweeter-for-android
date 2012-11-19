@@ -108,14 +108,14 @@ public class NewTweetActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					tweetTextClickListener(v);
+					tweetTextClickListener((EditText) v);
 				}
 			});
 			editTweetText.setOnKeyListener(new OnKeyListener() {
 				
 				@Override
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					return tweetTextKeyListener(v, keyCode, event);
+					return tweetTextKeyListener((EditText) v, keyCode, event);
 				}
 			});
 		}
@@ -229,9 +229,27 @@ public class NewTweetActivity extends Activity {
 		return false;
 	}
 
-	protected void tweetTextClickListener(View v) {
-		// TODO Auto-generated method stub
-		
+	protected void tweetTextClickListener(EditText v) { 
+		Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
+		Matcher matcher = p.matcher(v.getText());
+		int position = v.getSelectionStart();
+		if (position != v.getSelectionEnd()) {
+			return;
+		}
+		if (position == -1) {
+			return;
+		}
+		while (matcher.find()) {
+			int start = matcher.start();
+			int end = start + 25;
+			if (start > position) {
+				continue;
+			}
+			if (end < position) {
+				continue;
+			}
+			v.setSelection(start, end);
+		}
 	}
 
 	protected void onPause() {
