@@ -1,18 +1,12 @@
 package de.geotweeter.activities;
 
-import java.util.LinkedList;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import de.geotweeter.R;
 import de.geotweeter.Utils;

@@ -114,8 +114,7 @@ public class StreamRequest {
 			while (true) {
 				Log.d(LOG, "Starting Stream.");
 				buffer = "";
-				char ch[] = new char[1]; 
-				String line;
+				char ch[] = new char[1];
 				OAuthRequest request = new OAuthRequest(Verb.GET, Constants.URI_USER_STREAM);
 				request.addQuerystringParameter("delimited", "length");
 				api.signRequest(request);
@@ -182,10 +181,6 @@ public class StreamRequest {
 					return;
 				}
 			}
-		}
-		
-		public void killTimers() {
-			timer.cancel();
 		}
 	}
 }

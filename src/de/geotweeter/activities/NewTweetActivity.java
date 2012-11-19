@@ -31,6 +31,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +55,7 @@ import android.widget.ToggleButton;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.ImageBaseAdapter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
@@ -120,7 +122,7 @@ public class NewTweetActivity extends Activity {
 			});
 		}
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
-		gpsToggle.setOnCheckedChangeListener(new GPSToggleListener(this));
+		gpsToggle.setOnCheckedChangeListener(new GPSToggleListener());
 		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_APP, 0);
 		gpsToggle.setChecked(prefs.getBoolean("gpsEnabledByDefault", false));
 		((Button)findViewById(R.id.btnSend)).setOnClickListener(new SendTweetListener());
@@ -397,7 +399,6 @@ public class NewTweetActivity extends Activity {
 		private boolean delete;
 		private String text;
 		private int start;
-		private int end;
 		
 		public RemainingCharUpdater(Activity a) { 
 			activity = a;
@@ -448,12 +449,6 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	protected class GPSToggleListener implements OnCheckedChangeListener {
-		private NewTweetActivity activity;
-		
-		public GPSToggleListener(NewTweetActivity a) { 
-			activity = a; 
-		}
-		
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			SharedPreferences prefs = getSharedPreferences(Constants.PREFS_APP, 0);
 			Editor ed = prefs.edit();
@@ -461,7 +456,7 @@ public class NewTweetActivity extends Activity {
 			ed.commit();
 			if (isChecked == true) {
 				lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-				gpslistener = new GPSCoordsListener(activity);
+				gpslistener = new GPSCoordsListener();
 				List<String> providers = lm.getAllProviders();
 				if(providers.contains(LocationManager.GPS_PROVIDER)) {
 					lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, gpslistener);
@@ -474,12 +469,6 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	protected class GPSCoordsListener implements LocationListener {
-		
-		private NewTweetActivity activity;
-		
-		public GPSCoordsListener(NewTweetActivity a) { 
-			activity = a; 
-		}
 		
 		public void onLocationChanged(Location new_location) {
 			/* Wir nehmen die aktuellen Koordinaten, wenn es

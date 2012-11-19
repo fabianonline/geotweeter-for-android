@@ -80,6 +80,7 @@ public class TweetSendService extends Service {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void updateNotification() {
 		if (notification == null) {
 			notification = new Notification();

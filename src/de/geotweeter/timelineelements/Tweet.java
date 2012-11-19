@@ -187,8 +187,6 @@ public class Tweet extends TimelineElement {
 		for (Url url : entities.urls) {
 			PictureService hoster = Utils.getPictureService(url);
 			switch (hoster) {
-			case NONE: 
-				break;
 			case TWITPIC: 
 				try {
 					result.add(TwitpicApiAccess.getUrlPair(url));
@@ -251,6 +249,9 @@ public class Tweet extends TimelineElement {
 				} catch (MalformedURLException e) {
 					break;
 				}
+				break;
+			case NONE:
+			default:
 				break;
 			}
 		}
