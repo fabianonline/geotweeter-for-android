@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -42,6 +43,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 import de.geotweeter.activities.AccountSwitcherRadioButton;
 import de.geotweeter.activities.TimelineActivity;
@@ -464,6 +466,23 @@ public class Account extends Observable implements Serializable {
 							elements.notifyDataSetChanged();
 							setChanged();
 							notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+							
+							LinkedList<Pair<TimelineElement, String>> elementsToDelete = new LinkedList<Pair<TimelineElement, String>>();
+							for (Pair<TimelineElement, String> pair : ((Geotweeter)appContext).notifiedElements) {
+								if (pair.first instanceof DirectMessage) {
+									if (pair.first.getID() <= max_read_dm_id) elementsToDelete.add(pair);
+								} else if (pair.first instanceof Tweet) {
+									if (pair.first.getID() <= max_read_tweet_id) elementsToDelete.add(pair);
+								} else {
+									elementsToDelete.add(pair);
+								}
+							}
+							
+							for (Pair<TimelineElement, String> pair : elementsToDelete) {
+								((Geotweeter)appContext).notifiedElements.remove(pair);
+							}
+							elementsToDelete.clear();
+							((Geotweeter)appContext).updateNotification();
 						}
 					});
 				} catch (UnsupportedEncodingException e) {
@@ -475,10 +494,6 @@ public class Account extends Observable implements Serializable {
 				}
 			}
 		}, "GetMaxReadIDs").start();
-		
-		elements.notifyDataSetChanged();
-		setChanged();
-		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 	}
 	
 	public void setMaxReadIDs(long tweet_id, long mention_id, long dm_id) {
@@ -513,6 +528,23 @@ public class Account extends Observable implements Serializable {
 				}
 			}
 		}, "SetMaxReadIDs").start();
+		
+		LinkedList<Pair<TimelineElement, String>> elementsToDelete = new LinkedList<Pair<TimelineElement, String>>();
+		for (Pair<TimelineElement, String> pair : ((Geotweeter)appContext).notifiedElements) {
+			if (pair.first instanceof DirectMessage) {
+				if (pair.first.getID() <= max_read_dm_id) elementsToDelete.add(pair);
+			} else if (pair.first instanceof Tweet) {
+				if (pair.first.getID() <= max_read_tweet_id) elementsToDelete.add(pair);
+			} else {
+				elementsToDelete.add(pair);
+			}
+		}
+		
+		for (Pair<TimelineElement, String> pair : elementsToDelete) {
+			((Geotweeter)appContext).notifiedElements.remove(pair);
+		}
+		elementsToDelete.clear();
+		((Geotweeter)appContext).updateNotification();
 		
 		elements.notifyDataSetChanged();
 		setChanged();
