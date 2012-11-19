@@ -52,6 +52,8 @@ public class Constants extends Application {
 	
 	public static final int CHECKED_ALPHA_VALUE = 255;
 	public static final int UNCHECKED_ALPHA_VALUE = 127;
+
+	public static final int NOTIFICATION_ID = 13513814;
 	
 	private static class LocationMarker extends Path {
 		

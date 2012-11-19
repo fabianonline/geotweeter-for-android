@@ -1,26 +1,19 @@
 package de.geotweeter;
 
-import com.alibaba.fastjson.JSONException;
+import java.util.List;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.util.Log;
-import android.widget.RemoteViews;
+import android.util.Pair;
 
+import com.alibaba.fastjson.JSONException;
 import com.google.android.gcm.GCMBaseIntentService;
 
-import de.geotweeter.R;
-import de.geotweeter.activities.NewTweetActivity;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
-import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.Tweet;
 
 public class GCMIntentService extends GCMBaseIntentService {
 	private static final String LOG = "GCMIntentService";
@@ -30,10 +23,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.d(LOG, "onError - " + error_id);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onMessage(Context context, Intent intent) {
 		Log.d(LOG, "onMessage");
+		
+		/* Run checks to see if the user will want to see this notification. */
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
 		if (!pref.getBoolean("pref_notifications_enabled", true)) {
 			return;
@@ -71,8 +65,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		if (!t.showNotification()) {
 			return;
 		}
-		
-		int id = t.hashCode();
+
 		String type = intent.getExtras().getString("type");
 		
 		if ("mention".equals(type) && !pref.getBoolean("pref_notifications_types_mentions", true)) {
@@ -85,48 +78,15 @@ public class GCMIntentService extends GCMBaseIntentService {
 			return;
 		}
 		
-		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		CharSequence notificationText = t.getNotificationText(type);
-		Notification notification = new Notification(R.drawable.ic_launcher, notificationText, System.currentTimeMillis());
-		CharSequence contentTitle = t.getNotificationContentTitle(type);
-		CharSequence contentText = t.getNotificationContentText(type);
-		Intent notificationIntent;
-		if (t instanceof Tweet || t instanceof DirectMessage) {
-			notificationIntent = new Intent(this, NewTweetActivity.class);
-			notificationIntent.putExtra("de.geotweeter.reply_to_tweet", t);
-		} else {
-			notificationIntent = new Intent(this, TimelineActivity.class);
-		}
-		PendingIntent contentIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), notificationIntent, 0);
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		
-		RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_with_small_text);
-		contentView.setTextViewText(R.id.txtTitle, contentTitle);
-		contentView.setTextViewText(R.id.txtText, contentText);
-		notification.contentView = contentView;
-		//notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-		notification.contentIntent = contentIntent;
+		/* Add the tweet to the notifications list. */
+		List<Pair<TimelineElement, String>> allNotifications = ((Geotweeter) getApplication()).notifiedElements;
+		allNotifications.add(0, new Pair<TimelineElement, String>(t, type));
 		
-		
-		if (pref.getBoolean("pref_notifications_sound_enabled", true)) {
-			String sound = pref.getString("pref_notifications_sound_ringtone", "DEFAULT_RINGTONE_URI");
-			if (! "".equals(sound)) {
-				notification.sound = Uri.parse(sound);
-			}
-		}
-		
-		if (pref.getBoolean("pref_notifications_vibration_enabled", true)) {
-			notification.vibrate = new long[] {0, 200, 500, 200};
-		}
-		
-		if (pref.getBoolean("pref_notifications_led_enabled", false)) {
-			notification.ledARGB = (int) Long.parseLong(pref.getString("pref_notifications_led_color", "4278190335"));
-			notification.ledOnMS = 200;
-			notification.ledOffMS = 1000;
-			notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-		}
-		notificationManager.notify(id, notification);
+		((Geotweeter) getApplication()).updateNotification();
 	}
+
+	
 
 	@Override
 	protected void onRegistered(Context context, String reg_id) {

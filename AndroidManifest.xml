@@ -76,6 +76,8 @@
         </receiver>
 
         <service android:name=".GCMIntentService" />
+        
+        <receiver android:name=".services.NotificationDeleteReceiver" />
 
         <activity
             android:name=".activities.AccountPrefsActivity"

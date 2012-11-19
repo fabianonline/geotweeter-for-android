@@ -130,6 +130,19 @@ public class NewTweetActivity extends Activity {
 		if (i != null && i.getExtras() != null) {
 			
 			TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
+			Pair<TimelineElement, String> pair_to_delete = null;
+			for (Pair<TimelineElement, String> pair : ((Geotweeter) getApplication()).notifiedElements) {
+				if (pair.first.getClass() == elm.getClass() && pair.first.getID() == elm.getID()) {
+					pair_to_delete = pair;
+					break;
+				}
+			}
+			
+			if (pair_to_delete != null) {
+				((Geotweeter) getApplication()).notifiedElements.remove(pair_to_delete);
+				((Geotweeter) getApplication()).updateNotification();
+			}
+			
 			String reply_string = "";
 			int replyStringSelectionStart = 0;
 			
