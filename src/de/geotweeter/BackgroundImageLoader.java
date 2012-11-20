@@ -46,6 +46,10 @@ public class BackgroundImageLoader {
 
 	
 	public void displayImage(String url, ImageView image_view, boolean store_persistent) {
+		if (url == null) {
+			return;
+		}
+		
 		image_views.put(image_view, url);
 		Bitmap bitmap = bitmap_cache.get(url);
 		
