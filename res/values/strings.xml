@@ -100,7 +100,8 @@
     
     <string name="error_api_access_retry">Fehler beim API-Zugriff. Erneuter Versuch in 10 Sekunden.</string>
     <string name="error_api_access_recurring">Wiederkehrender Fehler beim API-Zugriff. Kein automatischer Neuversuch.</string>
-    <string name="error_protected_tweet">Dieser Tweet ist in Deiner Timeline nicht verfügbar. Das tut uns leid.</string>
+    <string name="error_tweet_protected">Dieser Tweet ist in Deiner Timeline nicht verfügbar. Das tut uns leid.</string>
+    <string name="error_tweet_loading_failed">Tweet konnte nicht abgerufen werden. Sorry.</string>
     
     <string name="pref_image_size_title">Bilder-Größe</string>
     <string-array name="pref_image_size_entries">

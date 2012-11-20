@@ -8,7 +8,7 @@ import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.timelineelements.DirectMessage;
-import de.geotweeter.timelineelements.ProtectedTweet;
+import de.geotweeter.timelineelements.ErrorMessageDisguisedAsTweet;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 
@@ -62,7 +62,11 @@ public class Conversation {
 					try {
 						current = api.getTweet(predecessor_id);
 					} catch (TweetAccessException e) {
-						publishProgress(new ProtectedTweet());
+						publishProgress(new ErrorMessageDisguisedAsTweet(R.string.error_tweet_protected));
+						break;
+					} catch (Exception e) {
+						e.printStackTrace();
+						publishProgress(new ErrorMessageDisguisedAsTweet(R.string.error_tweet_loading_failed));
 						break;
 					}
 				}				

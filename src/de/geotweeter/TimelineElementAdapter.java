@@ -17,7 +17,6 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.geotweeter.activities.TimelineActivity;
-import de.geotweeter.timelineelements.ProtectedTweet;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
@@ -82,110 +81,80 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			TextView txtView;
 			String text;
 			
-			if (tle.getClass() == ProtectedTweet.class) {
-				txtView = (TextView) v.findViewById(R.id.txtText);
-				if (txtView != null) {
-					txtView.setText(R.string.error_protected_tweet);
-				}
-
-				ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
-				if (img != null) {
-					img.setImageResource(R.drawable.loading_image);
-				}
-				
-				txtView = (TextView) v.findViewById(R.id.txtSender);
-				if (txtView != null) {
-					txtView.setText("");
-				}
-				
-				txtView = (TextView) v.findViewById(R.id.txtTimestamp);
-				if (txtView != null) {
-					txtView.setText("");
-				}
-								
-				txtView = (TextView) v.findViewById(R.id.txtPlace);
-				if (txtView != null) {
-					txtView.setVisibility(View.GONE);
-				}
-				
-				txtView = (TextView) v.findViewById(R.id.txtSource);
-				if (txtView != null) {
-					txtView.setVisibility(View.GONE);
-				}
-				
-			} else {
+			txtView = (TextView) v.findViewById(R.id.txtSender);
+			if (txtView != null) {
+				txtView.setText(tle.getSenderString());
+			}
 			
-				txtView = (TextView) v.findViewById(R.id.txtSender);
-				if (txtView != null) {
-					txtView.setText(tle.getSenderString());
+			txtView = (TextView) v.findViewById(R.id.txtTimestamp);
+			if (txtView != null) {
+				txtView.setText(tle.getDateString());
+			}
+			
+			txtView = (TextView) v.findViewById(R.id.txtText);
+			if (txtView != null) { 
+				txtView.setText(tle.getTextForDisplay());
+			}
+			
+			txtView = (TextView) v.findViewById(R.id.txtPlace);
+			if (txtView != null) {
+				text = tle.getPlaceString();
+				if (text == null) {
+					txtView.setVisibility(View.GONE);
+				} else {
+					txtView.setText(text);
+					txtView.setVisibility(View.VISIBLE);
 				}
-				
-				txtView = (TextView) v.findViewById(R.id.txtTimestamp);
-				if (txtView != null) {
-					txtView.setText(tle.getDateString());
+			}
+			
+			txtView = (TextView) v.findViewById(R.id.txtSource);
+			if (txtView != null) {
+				if (is_retweet) {
+					text = "RT by " + retweeter;
+				} else {
+					text = tle.getSourceText();
 				}
-				
-				txtView = (TextView) v.findViewById(R.id.txtText);
-				if (txtView != null) { 
-					txtView.setText(tle.getTextForDisplay());
+				if (text == null) {
+					txtView.setVisibility(View.GONE);
+				} else {
+					txtView.setText(text);
+					txtView.setVisibility(View.VISIBLE);
 				}
-				
-				txtView = (TextView) v.findViewById(R.id.txtPlace);
-				if (txtView != null) {
-					text = tle.getPlaceString();
-					if (text == null) {
-						txtView.setVisibility(View.GONE);
-					} else {
-						txtView.setText(text);
-						txtView.setVisibility(View.VISIBLE);
-					}
-				}
-				
-				txtView = (TextView) v.findViewById(R.id.txtSource);
-				if (txtView != null) {
-					if (is_retweet) {
-						text = "RT by " + retweeter;
-					} else {
-						text = tle.getSourceText();
-					}
-					if (text == null) {
-						txtView.setVisibility(View.GONE);
-					} else {
-						txtView.setText(text);
-						txtView.setVisibility(View.VISIBLE);
-					}
-				}
-				
-				ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
-				if (img != null) {
+			}
+			
+			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
+			if (img != null) {
+				if (tle.getAvatarSource() == null) {
+					img.setImageResource(R.drawable.loading_image);
+				} else {
 					TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(tle.getAvatarSource(), img, true);
 				}
-				
-				List<Pair<URL, URL>> media_list = tle.getMediaList();
-				LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
-				if (!media_list.isEmpty()) {
-					picPreviews.removeAllViews();
-					picPreviews.setVisibility(View.VISIBLE);
-					for (final Pair<URL, URL> url_pair : media_list) {
-						ImageView thumbnail = new ImageView(context);
-						picPreviews.addView(thumbnail);
-						thumbnail.setFocusable(false);
-						thumbnail.getLayoutParams().width = 75;
-						thumbnail.getLayoutParams().height = 75;
-						thumbnail.setScaleType(ScaleType.CENTER_CROP);
-						thumbnail.setImageResource(R.drawable.ic_launcher);
-						TimelineActivity.getBackgroundImageLoader(context).displayImage(url_pair.first.toString(), thumbnail, false);
-						thumbnail.setOnClickListener(new OnClickListener() {
-							
-							@Override
-							public void onClick(View v) {
-								showOverlay(url_pair.second.toString());
-							}
-						});
-					}
-				} else {
-					picPreviews.setVisibility(View.GONE);
+			}
+			
+			List<Pair<URL, URL>> media_list = tle.getMediaList();
+			LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
+			if (media_list != null && !media_list.isEmpty()) {
+				picPreviews.removeAllViews();
+				picPreviews.setVisibility(View.VISIBLE);
+				for (final Pair<URL, URL> url_pair : media_list) {
+					ImageView thumbnail = new ImageView(context);
+					picPreviews.addView(thumbnail);
+					thumbnail.setFocusable(false);
+					thumbnail.getLayoutParams().width = 75;
+					thumbnail.getLayoutParams().height = 75;
+					thumbnail.setScaleType(ScaleType.CENTER_CROP);
+					thumbnail.setImageResource(R.drawable.ic_launcher);
+					TimelineActivity.getBackgroundImageLoader(context).displayImage(url_pair.first.toString(), thumbnail, false);
+					thumbnail.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							showOverlay(url_pair.second.toString());
+						}
+					});
 				}
+			} else {
+				picPreviews.setVisibility(View.GONE);
 			}
 		}
 //		v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
