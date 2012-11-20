@@ -146,7 +146,7 @@ public class Account extends Observable implements Serializable {
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
 			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
-			if (Build.VERSION.SDK_INT >= 11) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				refreshTimeline();
 			} else {
 				refreshTimelinePreAPI11();
@@ -159,7 +159,7 @@ public class Account extends Observable implements Serializable {
 		stream_request.stop(false);
 	}
 	
-	@TargetApi(11)
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void refreshTimeline() {
 		if (tasksRunning == 0) {
 			setChanged();

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.scribe.model.Token;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -25,17 +26,21 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -85,6 +90,7 @@ public class NewTweetActivity extends Activity {
 	private ImageButton btnImageManager;
 	private EditText editTweetText;
 	private boolean useTwitpic;
+	private boolean placeholder_selected = false;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		useTwitpic = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitpic");
@@ -104,13 +110,26 @@ public class NewTweetActivity extends Activity {
 			 * muss hier gar nichts überwacht werden und wir können uns die Funktionen zur
 			 * Laufzeit komplett sparen */ 
 			
-			editTweetText.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					tweetTextClickListener((EditText) v);
-				}
-			});
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+				editTweetText.setOnTouchListener(new OnTouchListener() {
+					
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						return tweetTextTouchListener((EditText) v, event);
+					}
+				});
+			}
+			
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+				editTweetText.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						tweetTextClickListener((EditText) v);
+					}
+				});
+			}
+
 			editTweetText.setOnKeyListener(new OnKeyListener() {
 				
 				@Override
@@ -118,7 +137,9 @@ public class NewTweetActivity extends Activity {
 					return tweetTextKeyListener((EditText) v, keyCode, event);
 				}
 			});
+			
 		}
+		
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
 		gpsToggle.setOnCheckedChangeListener(new GPSToggleListener(this));
 		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_APP, 0);
@@ -224,38 +245,117 @@ public class NewTweetActivity extends Activity {
 		
 	}
 	
-	protected boolean tweetTextKeyListener(View v, int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	protected boolean tweetTextTouchListener(EditText v, MotionEvent event) {
+		placeholder_selected = false;
+		Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
+		Matcher matcher = p.matcher(v.getText());
+		int click_position = v.getOffsetForPosition(event.getX(), event.getY());
+		int sel_start = click_position;
+		int sel_end = click_position;
+		if (sel_start == -1) {
+			return false;
+		}
+		while (matcher.find()) {
+			int pattern_start = matcher.start();
+			int pattern_end = pattern_start + 25;
+			if (pattern_start > sel_end) {
+				continue;
+			}
+			if (pattern_end < sel_start) {
+				continue;
+			}
+			v.setSelection(Math.min(sel_start, pattern_start), Math.max(sel_end, pattern_end));
+			placeholder_selected = true;
+			return true;
+		}
+		return false;
+	}
+
+	protected boolean tweetTextKeyListener(EditText v, int keyCode, KeyEvent event) {
+		if (event.getAction() == KeyEvent.ACTION_UP) {
+			if (placeholder_selected) {
+				placeholder_selected = false;
+				if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+					if (!Selection.moveRight(v.getText(), v.getLayout())) {
+						v.setSelection(v.getText().length());
+					}
+					return true;
+				}
+				if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+					if (!Selection.moveLeft(v.getText(), v.getLayout())) {
+						v.setSelection(0);
+					}
+					return true;
+				}
+				if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+					if (!Selection.moveUp(v.getText(), v.getLayout())) {
+						v.setSelection(v.getSelectionStart());
+					}
+					return true;
+				}
+				if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+					if (!Selection.moveDown(v.getText(), v.getLayout())) {
+						v.setSelection(v.getSelectionEnd());
+					}
+					return true;
+				}
+			}
+			placeholder_selected = false;
+			Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
+			Matcher matcher = p.matcher(v.getText());
+			int sel_start = v.getSelectionStart();
+			int sel_end = v.getSelectionEnd();
+			if (sel_start == -1) {
+				return false;
+			}
+			while (matcher.find()) {
+				int pattern_start = matcher.start();
+				int pattern_end = pattern_start + 25;
+				if (pattern_start > sel_end) {
+					continue;
+				}
+				if (pattern_end < sel_start) {
+					continue;
+				}
+				v.setSelection(Math.min(sel_start, pattern_start), Math.max(sel_end, pattern_end));
+				placeholder_selected = true;
+				return true;
+			}
+		}
 		return false;
 	}
 
 	protected void tweetTextClickListener(EditText v) { 
+		placeholder_selected = false;
 		Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
 		Matcher matcher = p.matcher(v.getText());
-		int position = v.getSelectionStart();
-		if (position != v.getSelectionEnd()) {
-			return;
-		}
-		if (position == -1) {
+		int sel_start = v.getSelectionStart();
+		int sel_end = v.getSelectionEnd();
+		if (sel_start == -1) {
 			return;
 		}
 		while (matcher.find()) {
-			int start = matcher.start();
-			int end = start + 25;
-			if (start > position) {
+			int pattern_start = matcher.start();
+			int pattern_end = pattern_start + 25;
+			if (pattern_start > sel_end) {
 				continue;
 			}
-			if (end < position) {
+			if (pattern_end < sel_start) {
 				continue;
 			}
-			v.setSelection(start, end);
+			v.setSelection(Math.min(sel_start, pattern_start), Math.max(sel_end, pattern_end));
+			placeholder_selected = true;
+			return;
 		}
 	}
 
 	protected void onPause() {
 		super.onPause();
 		/* Remove all GPSListeners. */
-		if (gpslistener!=null && lm!=null) lm.removeUpdates(gpslistener);
+		if (gpslistener != null && lm != null) {
+			lm.removeUpdates(gpslistener);
+		}
 	}
 	
 	protected class AccountChangerListener implements OnClickListener {
