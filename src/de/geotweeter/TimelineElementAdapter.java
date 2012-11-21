@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -163,7 +164,15 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	}
 	
 	protected void showOverlay(String url) {
-		ImageView img_overlay = (ImageView) TimelineActivity.getInstance().findViewById(R.id.img_overlay);
+		ImageView img_overlay = null;
+		try {
+			if (!TimelineActivity.getInstance().isVisible()) {
+				return;
+			}
+			img_overlay = (ImageView) TimelineActivity.getInstance().findViewById(R.id.img_overlay);
+		} catch (NullPointerException e) {
+			return;
+		}
 		TimelineActivity.getBackgroundImageLoader(context).displayImage(url, img_overlay, false);
 		img_overlay.setVisibility(View.VISIBLE);
 	}

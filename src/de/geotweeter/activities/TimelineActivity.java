@@ -60,6 +60,7 @@ public class TimelineActivity extends MapActivity {
 	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
 	private MapView map;
+	private boolean is_visible;
 	private static TimelineActivity instance = null;
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
@@ -361,9 +362,15 @@ public class TimelineActivity extends MapActivity {
 	
 	public void onPause() {
 		super.onPause();
+		is_visible = false;
 		for (Account acct : Account.all_accounts) {
 			acct.persistTweets(getApplicationContext());
 		}
+	}
+	
+	public void onResume() {
+		super.onResume();
+		is_visible = true;
 	}
 	
 	public void setCurrentAccount(Account account) {
@@ -548,5 +555,9 @@ public class TimelineActivity extends MapActivity {
 		public void onClick(View v) {
 			setCurrentAccount(account);
 		}
+	}
+	
+	public boolean isVisible() {
+		return is_visible;
 	}
 }
