@@ -422,34 +422,35 @@ public class NewTweetActivity extends Activity {
 		startActivityForResult(intent, PICTURE_REQUEST_CODE);
 	}
 	
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == PICTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+	protected void onActivityResult(int request_code, int result_code, Intent data) {
+		if (request_code == PICTURE_REQUEST_CODE && result_code == Activity.RESULT_OK) {
 			
 			Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
 			cursor.moveToFirst();
 			String picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
 			cursor.close();
 			
-			String imageHoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter"); 
-			if (imageHoster.equals("twitter")) {
+			String image_hoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter"); 
+			if (image_hoster.equals("twitter")) {
 				// TODO Warnung, dass Bild ausgetauscht wird.
 				imageAdapter.clear();
 			}
 			
-			int imageIndex = imageAdapter.add(picturePath);
-			if (imageIndex == -1) {
+			int image_index = imageAdapter.add(picturePath);
+			if (image_index == -1) {
 				Toast.makeText(this, R.string.too_much_images, Toast.LENGTH_SHORT).show();
 			} else {
 				Log.d(LOG, picturePath + ": " + new File(picturePath).length());
 
-				if (imageHoster.equals("twitpic")) {
+				if (image_hoster.equals("twitpic")) {
 					String editText = editTweetText.getText().toString();
 					Log.d(LOG, "String: " + editText + " Length: " + editText.length());
 					String prefix = " ";
 					if (editText.length() == 0 || editText.matches(".*\\s")) {
 						prefix = "";
 					}
-					editTweetText.append(prefix + TwitpicApiAccess.getPlaceholder(imageIndex) + " ");
+					editTweetText.getText().insert(editTweetText.getSelectionStart(), prefix + TwitpicApiAccess.getPlaceholder(image_index) + " ");
+//					editTweetText.append(prefix + TwitpicApiAccess.getPlaceholder(imageIndex) + " ");
 				}
 
 				if (imageAdapter.getCount() > 1) {
