@@ -231,7 +231,9 @@ public class NewTweetActivity extends Activity {
 			TimelineElementAdapter tea = new TimelineElementAdapter(this, R.layout.timeline_element, 
 																    new ArrayList<TimelineElement>());
 			tea.add(elm);
-			new Conversation(tea, TimelineActivity.current_account, true, false);
+			if (elm.getClass() != DirectMessage.class || TimelineActivity.getInstance() != null) {
+				new Conversation(tea, TimelineActivity.current_account, true, false);
+			}
 			l.setAdapter(tea);
 			
 		}
