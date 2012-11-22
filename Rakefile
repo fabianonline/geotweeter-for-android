@@ -77,7 +77,7 @@ task :copy_and_modify_files do
 	
 	unless $replacements.empty?
 		puts "Performing string replacements..."
-		list = FileList.new($target_dir + "/**/*").exclude("*.keystore")
+		list = FileList.new($target_dir + "/**/*").exclude(/\.keystore$/)
 		list.each do |file|
 			next if File.directory?(file)
 			text = File.read(file)
