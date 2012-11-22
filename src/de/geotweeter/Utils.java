@@ -72,6 +72,9 @@ public class Utils {
 		} catch (JSONException ex) {
 			ACRA.getErrorReporter().putCustomData("json", json);
 			throw ex;
+		} catch (RuntimeException ex) {
+			ACRA.getErrorReporter().putCustomData("json", json);
+			throw ex;
 		}
 		
 		if (obj.containsKey("text") && obj.containsKey("recipient")) {
