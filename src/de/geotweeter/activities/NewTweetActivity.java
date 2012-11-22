@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import org.scribe.model.Token;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -26,7 +25,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
@@ -37,18 +35,15 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -73,6 +68,7 @@ import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 import de.geotweeter.timelineelements.UserMention;
+import de.geotweeter.widgets.ProtectedPlaceholderEditText;
 
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";
@@ -90,9 +86,8 @@ public class NewTweetActivity extends Activity {
 	private TweetSendService service;
 	boolean isServiceBound = false;
 	private ImageButton btnImageManager;
-	private EditText editTweetText;
+	private ProtectedPlaceholderEditText editTweetText;
 	private boolean useTwitpic;
-	private boolean placeholder_selected = false;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		useTwitpic = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitpic");
@@ -102,7 +97,8 @@ public class NewTweetActivity extends Activity {
 		serviceBind();
 		setContentView(R.layout.new_tweet);
 		
-		editTweetText = ((EditText)findViewById(R.id.tweet_text));
+		editTweetText = ((ProtectedPlaceholderEditText)findViewById(R.id.tweet_text));
+		editTweetText.setPlaceholder(Pattern.compile("http://twitpic\\.com/pic(\\d{3})"));
 		
 		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
 		if (useTwitpic) {
@@ -111,32 +107,14 @@ public class NewTweetActivity extends Activity {
 			 * durch den Benutzer zu unterbinden. Ist Twitter selbst als Bilderdienst eingestellt,
 			 * muss hier gar nichts überwacht werden und wir können uns die Funktionen zur
 			 * Laufzeit komplett sparen */ 
+		
+			editTweetText.setPlaceholder(Pattern.compile("http://twitpic\\.com/pic(\\d{3})"));
 			
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-				editTweetText.setOnTouchListener(new OnTouchListener() {
-					
-					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-						return tweetTextTouchListener((EditText) v, event);
-					}
-				});
-			}
-			
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-				editTweetText.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						tweetTextClickListener((EditText) v);
-					}
-				});
-			}
-
 			editTweetText.setOnKeyListener(new OnKeyListener() {
 				
 				@Override
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					return tweetTextKeyListener((EditText) v, keyCode, event);
+					return tweetTextKeyListener((ProtectedPlaceholderEditText) v, keyCode, event);
 				}
 			});
 			
@@ -262,109 +240,45 @@ public class NewTweetActivity extends Activity {
 		
 	}
 	
-	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-	protected boolean tweetTextTouchListener(EditText v, MotionEvent event) {
-		placeholder_selected = false;
-		Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
-		Matcher matcher = p.matcher(v.getText());
-		int click_position = v.getOffsetForPosition(event.getX(), event.getY());
-		int sel_start = click_position;
-		int sel_end = click_position;
-		if (sel_start == -1) {
-			return false;
-		}
-		while (matcher.find()) {
-			int pattern_start = matcher.start();
-			int pattern_end = pattern_start + 25;
-			if (pattern_start > sel_end) {
-				continue;
-			}
-			if (pattern_end < sel_start) {
-				continue;
-			}
-			v.setSelection(Math.min(sel_start, pattern_start), Math.max(sel_end, pattern_end));
-			placeholder_selected = true;
-			return true;
-		}
-		return false;
-	}
-
-	protected boolean tweetTextKeyListener(EditText v, int keyCode, KeyEvent event) {
-		if (event.getAction() == KeyEvent.ACTION_UP) {
-			if (placeholder_selected) {
-				placeholder_selected = false;
-				if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-					if (!Selection.moveRight(v.getText(), v.getLayout())) {
-						v.setSelection(v.getText().length());
-					}
-					return true;
-				}
-				if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-					if (!Selection.moveLeft(v.getText(), v.getLayout())) {
-						v.setSelection(0);
-					}
-					return true;
-				}
+	protected boolean tweetTextKeyListener(ProtectedPlaceholderEditText v, int keyCode, KeyEvent event) {
+		if (event.getAction() == KeyEvent.ACTION_DOWN) {
+			if (v.isPlaceholderSelected()) {
+				v.setDpadAction(keyCode >= KeyEvent.KEYCODE_DPAD_UP && keyCode <= KeyEvent.KEYCODE_DPAD_RIGHT);
 				if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
 					if (!Selection.moveUp(v.getText(), v.getLayout())) {
 						v.setSelection(v.getSelectionStart());
 					}
+					v.setPlaceholderSelected(false);
 					return true;
 				}
 				if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
 					if (!Selection.moveDown(v.getText(), v.getLayout())) {
 						v.setSelection(v.getSelectionEnd());
 					}
+					v.setPlaceholderSelected(false);
+					return true;
+				}
+				if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+					if (Selection.moveLeft(v.getText(), v.getLayout())) {
+						Selection.moveLeft(v.getText(), v.getLayout());
+					} else {
+						v.setSelection(0);
+					}
+					v.setPlaceholderSelected(false);
+					return true;
+				}
+				if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+					if (Selection.moveRight(v.getText(), v.getLayout())) {
+						Selection.moveRight(v.getText(), v.getLayout());
+					} else {
+						v.setSelection(v.getText().length());
+					}
+					v.setPlaceholderSelected(false);
 					return true;
 				}
 			}
-			placeholder_selected = false;
-			Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
-			Matcher matcher = p.matcher(v.getText());
-			int sel_start = v.getSelectionStart();
-			int sel_end = v.getSelectionEnd();
-			if (sel_start == -1) {
-				return false;
-			}
-			while (matcher.find()) {
-				int pattern_start = matcher.start();
-				int pattern_end = pattern_start + 25;
-				if (pattern_start > sel_end) {
-					continue;
-				}
-				if (pattern_end < sel_start) {
-					continue;
-				}
-				v.setSelection(Math.min(sel_start, pattern_start), Math.max(sel_end, pattern_end));
-				placeholder_selected = true;
-				return true;
-			}
 		}
 		return false;
-	}
-
-	protected void tweetTextClickListener(EditText v) { 
-		placeholder_selected = false;
-		Pattern p = Pattern.compile("http://twitpic\\.com/pic(\\d{3})");
-		Matcher matcher = p.matcher(v.getText());
-		int sel_start = v.getSelectionStart();
-		int sel_end = v.getSelectionEnd();
-		if (sel_start == -1) {
-			return;
-		}
-		while (matcher.find()) {
-			int pattern_start = matcher.start();
-			int pattern_end = pattern_start + 25;
-			if (pattern_start > sel_end) {
-				continue;
-			}
-			if (pattern_end < sel_start) {
-				continue;
-			}
-			v.setSelection(Math.min(sel_start, pattern_start), Math.max(sel_end, pattern_end));
-			placeholder_selected = true;
-			return;
-		}
 	}
 
 	protected void onPause() {
