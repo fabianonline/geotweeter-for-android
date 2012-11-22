@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -85,6 +86,8 @@ public class Account extends Observable implements Serializable {
 	private transient Stack<TimelineElementAdapter> timeline_stack;
 	private MessageHashMap dm_conversations;
 	private Map<AccessType, Boolean> accessSuccessful = new HashMap<AccessType, Boolean>();
+
+	private transient ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
 	
 	
 	private enum AccessType {
@@ -171,7 +174,6 @@ public class Account extends Observable implements Serializable {
 			accessSuccessful.put(type, true);
 		}
 		tasksRunning = 4;
-		ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 4, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
 		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.TIMELINE);
 		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.MENTIONS);
 		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.DM_RCVD);
