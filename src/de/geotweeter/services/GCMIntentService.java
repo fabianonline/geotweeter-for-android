@@ -1,4 +1,4 @@
-package de.geotweeter;
+package de.geotweeter.services;
 
 import java.util.List;
 
@@ -11,6 +11,10 @@ import android.util.Pair;
 import com.alibaba.fastjson.JSONException;
 import com.google.android.gcm.GCMBaseIntentService;
 
+import de.geotweeter.Account;
+import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
+import de.geotweeter.Utils;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
 import de.geotweeter.timelineelements.TimelineElement;
