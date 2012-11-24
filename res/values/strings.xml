@@ -111,4 +111,7 @@
         <item>3MB</item>
     </string-array>
     <string name="pref_image_size_summary">Maximalgröße der zu versendenen Bilder. Bei Twitter ist die Maximalgröße begrenzt.</string>
+    
+    <string name="tweetsendservice_finished_sending_single_tweet">Tweet erfolgreich versendet</string>
+    <string name="tweetsendservice_finished_sending_multiple_tweets">Tweets erfolgreich versendet</string>
 </resources>

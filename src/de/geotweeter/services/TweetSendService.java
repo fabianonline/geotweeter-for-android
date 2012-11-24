@@ -18,6 +18,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
@@ -97,6 +98,18 @@ public class TweetSendService extends Service {
 	
 	private void removeNotification() {
 		Log.d(LOG, "Removing notification.");
+		if (notification == null) {
+			notification = new Notification();
+		}
+		
+		if (tweets.size()==1) {
+			notification.tickerText = Geotweeter.getContext().getText(R.string.tweetsendservice_finished_sending_single_tweet);
+		} else {
+			notification.tickerText = Geotweeter.getContext().getText(R.string.tweetsendservice_finished_sending_multiple_tweets);
+		}
+		notification.tickerText = "Tweet erfolgreich gesendet";
+		notification.when = System.currentTimeMillis();
+		notificationManager.notify(Constants.SENDING_TWEET_STATUS_NOTIFICATION_ID, notification);
 		notificationManager.cancel(Constants.SENDING_TWEET_STATUS_NOTIFICATION_ID);
 	}
 	
