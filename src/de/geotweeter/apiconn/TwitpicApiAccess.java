@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 
 import org.apache.http.entity.mime.MultipartEntity;
@@ -48,7 +49,7 @@ public class TwitpicApiAccess {
 		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
 		MultipartEntity entity = new MultipartEntity();
 		entity.addPart("key", new StringBody(Utils.getProperty("twitpic.key")));
-		entity.addPart("message", new StringBody(text));
+		entity.addPart("message", new StringBody(text, Charset.defaultCharset()));
 		
 		ContentBody picture = null;
 		if (imageSize < 0 || image.length() <= imageSize) {
