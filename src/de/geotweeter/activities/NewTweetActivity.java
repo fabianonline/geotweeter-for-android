@@ -141,7 +141,7 @@ public class NewTweetActivity extends Activity {
 			
 			if (pair_to_delete != null) {
 				((Geotweeter) getApplication()).notifiedElements.remove(pair_to_delete);
-				((Geotweeter) getApplication()).updateNotification();
+				((Geotweeter) getApplication()).updateNotification(false);
 			}
 			
 			String reply_string = "";

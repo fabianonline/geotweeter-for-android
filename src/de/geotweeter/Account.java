@@ -483,7 +483,7 @@ public class Account extends Observable implements Serializable {
 								((Geotweeter)appContext).notifiedElements.remove(pair);
 							}
 							elementsToDelete.clear();
-							((Geotweeter)appContext).updateNotification();
+							((Geotweeter)appContext).updateNotification(false);
 						}
 					});
 				} catch (UnsupportedEncodingException e) {
@@ -545,7 +545,7 @@ public class Account extends Observable implements Serializable {
 			((Geotweeter)appContext).notifiedElements.remove(pair);
 		}
 		elementsToDelete.clear();
-		((Geotweeter)appContext).updateNotification();
+		((Geotweeter)appContext).updateNotification(false);
 		
 		elements.notifyDataSetChanged();
 		setChanged();

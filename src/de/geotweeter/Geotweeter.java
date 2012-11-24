@@ -59,7 +59,7 @@ public class Geotweeter extends Application {
 		return myContext;
 	}
 	
-	public void updateNotification() {
+	public void updateNotification(boolean vibrateAndPlaySoundAndStuff) {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
 		List<Pair<TimelineElement, String>> allNotifications = notifiedElements;
@@ -117,23 +117,24 @@ public class Geotweeter extends Application {
 		
 		notification.deleteIntent = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationDeleteReceiver.class), 0);
 		
-		
-		if (pref.getBoolean("pref_notifications_sound_enabled", true)) {
-			String sound = pref.getString("pref_notifications_sound_ringtone", "DEFAULT_RINGTONE_URI");
-			if (! "".equals(sound)) {
-				notification.sound = Uri.parse(sound);
+		if (vibrateAndPlaySoundAndStuff) {
+			if (pref.getBoolean("pref_notifications_sound_enabled", true)) {
+				String sound = pref.getString("pref_notifications_sound_ringtone", "DEFAULT_RINGTONE_URI");
+				if (! "".equals(sound)) {
+					notification.sound = Uri.parse(sound);
+				}
 			}
-		}
-		
-		if (pref.getBoolean("pref_notifications_vibration_enabled", true)) {
-			notification.vibrate = new long[] {0, 200, 500, 200};
-		}
-		
-		if (pref.getBoolean("pref_notifications_led_enabled", false)) {
-			notification.ledARGB = (int) Long.parseLong(pref.getString("pref_notifications_led_color", "4278190335"));
-			notification.ledOnMS = 200;
-			notification.ledOffMS = 1000;
-			notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+			
+			if (pref.getBoolean("pref_notifications_vibration_enabled", true)) {
+				notification.vibrate = new long[] {0, 200, 500, 200};
+			}
+			
+			if (pref.getBoolean("pref_notifications_led_enabled", false)) {
+				notification.ledARGB = (int) Long.parseLong(pref.getString("pref_notifications_led_color", "4278190335"));
+				notification.ledOnMS = 200;
+				notification.ledOffMS = 1000;
+				notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+			}
 		}
 		notificationManager.notify(Constants.NOTIFICATION_ID, notification);
 	}
