@@ -133,7 +133,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 			List<Pair<URL, URL>> media_list = tle.getMediaList();
 			LinearLayout picPreviews = (LinearLayout) v.findViewById(R.id.picPreviews);
-			if (media_list != null && !media_list.isEmpty()) {
+			if (media_list != null && !media_list.isEmpty() && context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_show_img_previews", false)) {
 				picPreviews.removeAllViews();
 				picPreviews.setVisibility(View.VISIBLE);
 				for (final Pair<URL, URL> url_pair : media_list) {
