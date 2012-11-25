@@ -27,6 +27,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -355,6 +356,14 @@ public class NewTweetActivity extends Activity {
 			String picturePath;
 			if(data == null) {
 				picturePath = cameraFileUri.getPath();
+				MediaScannerConnection.scanFile(this,
+						new String[] { picturePath }, null,
+						new MediaScannerConnection.OnScanCompletedListener() {
+					public void onScanCompleted(String path, Uri uri) {
+						Log.i("ExternalStorage", "Scanned " + path + ":");
+						Log.i("ExternalStorage", "-> uri=" + uri);
+					}
+				});
 			} else {
 				Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
 				cursor.moveToFirst();
