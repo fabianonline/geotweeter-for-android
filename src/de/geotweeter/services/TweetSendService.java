@@ -87,11 +87,11 @@ public class TweetSendService extends Service {
 			notification = new Notification();
 		}
 		notification.icon = R.drawable.ic_launcher;
-		notification.tickerText = "Sende Tweet " + (i+1) + "/" + tweets.size();
+		notification.tickerText = Utils.formatString(R.string.tweetsendservice_summary, i+1, tweets.size());
 		notification.when = System.currentTimeMillis();
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		notification.flags |= Notification.FLAG_NO_CLEAR;
-		notification.setLatestEventInfo(getApplicationContext(), notification.tickerText, "Sending...", null);
+		notification.setLatestEventInfo(getApplicationContext(), notification.tickerText, Utils.getString(R.string.tweetsendservice_activity), null);
 		notification.contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
 		notificationManager.notify(Constants.SENDING_TWEET_STATUS_NOTIFICATION_ID, notification);
 	}
@@ -103,11 +103,10 @@ public class TweetSendService extends Service {
 		}
 		
 		if (tweets.size()==1) {
-			notification.tickerText = Geotweeter.getContext().getText(R.string.tweetsendservice_finished_sending_single_tweet);
+			notification.tickerText = Utils.getString(R.string.tweetsendservice_finished_sending_single_tweet);
 		} else {
-			notification.tickerText = Geotweeter.getContext().getText(R.string.tweetsendservice_finished_sending_multiple_tweets);
+			notification.tickerText = Utils.getString(R.string.tweetsendservice_finished_sending_multiple_tweets);
 		}
-		notification.tickerText = "Tweet erfolgreich gesendet";
 		notification.when = System.currentTimeMillis();
 		notificationManager.notify(Constants.SENDING_TWEET_STATUS_NOTIFICATION_ID, notification);
 		notificationManager.cancel(Constants.SENDING_TWEET_STATUS_NOTIFICATION_ID);

@@ -75,7 +75,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".services.GCMIntentService" />
+        <service android:name=".GCMIntentService" />
         
         <receiver android:name=".services.NotificationDeleteReceiver" />
 

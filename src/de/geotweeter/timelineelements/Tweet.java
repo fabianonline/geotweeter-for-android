@@ -85,7 +85,7 @@ public class Tweet extends TimelineElement {
 		if (m.find()) {
 			source = m.group(1);
 		} else {
-			source = "web";
+			source = Utils.getString(R.string.tweet_source_web);
 		}
 	}
 	
@@ -94,7 +94,7 @@ public class Tweet extends TimelineElement {
 	}
 
 	public String getSourceText() {
-		return "via " + source; 
+		return Utils.formatString(R.string.tweet_source, source);
 	}
 	
 	public String getSenderScreenName() {
@@ -114,9 +114,9 @@ public class Tweet extends TimelineElement {
 	@Override
 	public String getNotificationText(String type) {
 		if (type.equals("mention")) {
-			return "Mention von " + user.screen_name + ": " + text;
+			return Utils.formatString(R.string.tweet_notification_text_mention, user.screen_name, text);
 		} else if (type.equals("retweet")) {
-			return user.screen_name + " retweetete: " + text;
+			return Utils.formatString(R.string.tweet_notification_text_retweet, user.screen_name, text);
 		}
 		return "";
 	}
@@ -124,9 +124,9 @@ public class Tweet extends TimelineElement {
 	@Override
 	public String getNotificationContentTitle(String type) {
 		if (type.equals("mention")) {
-			return "Mention von " + user.screen_name;
+			return Utils.formatString(R.string.tweet_notification_content_title_mention, user.screen_name);
 		} else if(type.equals("retweet")) {
-			return "Retweet von " + user.screen_name;
+			return Utils.formatString(R.string.tweet_notification_content_title_retweet, user.screen_name);
 		}
 		return "";
 	}
