@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import de.geotweeter.R;
+import de.geotweeter.Utils;
+
 import android.util.Log;
 import android.util.Pair;
 
@@ -53,22 +56,34 @@ public abstract class TimelineElement implements Serializable {
 			long time = System.currentTimeMillis() - created_at.getTime();
 			time /= 1000;
 			if (time <= 0) {
-				return "gerade eben";
+				return Utils.getString(R.string.timeline_element_timediff_now);
 			}
 			if (time < 60) {
-				return "vor " + time + (time==1? " Sekunde": " Sekunden");
+				if (time==1) {
+					return Utils.getString(R.string.timeline_element_timediff_one_second);
+				} else {
+					return Utils.formatString(R.string.timeline_element_timediff_multiple_seconds, time);
+				}
 			}
 			time /= 60;
 			if (time < 60) {
-				return "vor " + time + (time==1? " Minute": " Minuten");
+				if (time==1) {
+					return Utils.getString(R.string.timeline_element_timediff_one_minute);
+				} else {
+					return Utils.formatString(R.string.timeline_element_timediff_multiple_minutes, time);
+				}
 			}
 			time /= 60;
 			if (time < 24) {
-				return "vor " + time + (time==1? " Stunde": " Stunden");
+				if (time==1) {
+					return Utils.getString(R.string.timeline_element_timediff_one_hour);
+				} else {
+					return Utils.formatString(R.string.timeline_element_timediff_multiple_hours, time);
+				}
 			}
 			time /= 24;
 			if (time < 7) {
-				return "am " + new SimpleDateFormat("EEEE").format(created_at);
+				return Utils.formatString(R.string.timeline_element_timediff_days, new SimpleDateFormat("EEEE").format(created_at));
 			}
 			return new SimpleDateFormat("dd.MM.yy HH:mm").format(created_at);
 			

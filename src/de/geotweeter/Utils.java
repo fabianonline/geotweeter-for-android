@@ -295,6 +295,14 @@ public class Utils {
 
 	    return pos >= 0 ? string.substring( pos + delimiter.length() ) : "";
 	  }
+	
+	public static String formatString(int string_id, Object... args) {
+		return String.format(Geotweeter.getContext().getString(string_id), args);
+	}
+	
+	public static String getString(int string_id) {
+		return Geotweeter.getContext().getString(string_id);
+	}
 
 	
 }

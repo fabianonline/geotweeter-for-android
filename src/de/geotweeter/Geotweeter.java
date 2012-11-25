@@ -98,15 +98,21 @@ public class Geotweeter extends Application {
 		} else {
 			/* Mehrere Notifications */
 			StringBuilder sb = new StringBuilder();
-			if (countTweets > 0) sb.append("" + countTweets + " Mention");
-			if (countTweets > 1) sb.append("s");
+			if (countTweets == 1) {
+				sb.append(Utils.getString(R.string.notification_text_mention_single));
+			} else if (countTweets > 1) {
+				sb.append(Utils.formatString(R.string.notification_text_mention_plural, countTweets));
+			}
 			if (countDMs > 0) {
 				if (sb.length() > 0) sb.append(", ");
-				sb.append("" + countDMs + " DM");
-				if (countDMs > 1) sb.append("s");
+				if (countDMs == 1) {
+					sb.append(Utils.getString(R.string.notification_text_dm_single));
+				} else {
+					sb.append(Utils.formatString(R.string.notification_text_dm_plural, countDMs));
+				}
 			}
 			
-			contentView.setTextViewText(R.id.txtTitle, sb.toString() + ". Neuestes: " + t.getNotificationContentTitle(type));
+			contentView.setTextViewText(R.id.txtTitle, sb.toString() + ". " + Utils.formatString(R.string.notification_text_newest, t.getNotificationContentTitle(type)));
 			
 			contentView.setTextViewText(R.id.txtText, t.getNotificationContentText(type));
 			
