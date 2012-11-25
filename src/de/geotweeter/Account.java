@@ -45,12 +45,12 @@ import android.os.Handler;
 import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
-import de.geotweeter.activities.AccountSwitcherRadioButton;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
+import de.geotweeter.widgets.AccountSwitcherRadioButton;
 
 public class Account extends Observable implements Serializable {
 	

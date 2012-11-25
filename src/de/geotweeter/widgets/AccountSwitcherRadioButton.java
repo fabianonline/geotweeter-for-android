@@ -1,5 +1,5 @@
 
-package de.geotweeter.activities;
+package de.geotweeter.widgets;
 
 import java.util.Observable;
 import java.util.Observer;
