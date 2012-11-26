@@ -2,6 +2,7 @@ package de.geotweeter.timelineelements;
 
 import de.geotweeter.R;
 import de.geotweeter.User;
+import de.geotweeter.Utils;
 import de.geotweeter.activities.TimelineActivity;
 
 public class DirectMessage extends Tweet {
@@ -51,12 +52,12 @@ public class DirectMessage extends Tweet {
 	
 	@Override
 	public String getNotificationText(String type) {
-		return "DM von " + sender.screen_name;
+		return Utils.formatString(R.string.direct_message_notification_text, sender.screen_name);
 	}
 	
 	@Override
 	public String getNotificationContentTitle(String type) {
-		return "DM von " + sender.screen_name;
+		return Utils.formatString(R.string.direct_message_notification_content_title, sender.screen_name);
 	}
 	
 	@Override
@@ -77,9 +78,9 @@ public class DirectMessage extends Tweet {
 	@Override
 	public String getSenderString() {
 		if (sender.id == TimelineActivity.current_account.getUser().id) {
-			return "an " + recipient.getScreenName();
+			return Utils.formatString(R.string.direct_message_to_someone, recipient.getScreenName());
 		} else {
-			return "von " + sender.getScreenName();
+			return Utils.formatString(R.string.direct_message_from_someone, sender.getScreenName());
 		}
 	}
 	

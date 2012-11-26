@@ -83,7 +83,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		List<Pair<TimelineElement, String>> allNotifications = ((Geotweeter) getApplication()).notifiedElements;
 		allNotifications.add(0, new Pair<TimelineElement, String>(t, type));
 		
-		((Geotweeter) getApplication()).updateNotification();
+		((Geotweeter) getApplication()).updateNotification(true);
 	}
 
 	

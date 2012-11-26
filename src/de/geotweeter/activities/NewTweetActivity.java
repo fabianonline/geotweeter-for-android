@@ -1,7 +1,9 @@
 package de.geotweeter.activities;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,8 +27,12 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Selection;
@@ -88,6 +94,7 @@ public class NewTweetActivity extends Activity {
 	private ImageButton btnImageManager;
 	private ProtectedPlaceholderEditText editTweetText;
 	private boolean useTwitpic;
+	private Uri cameraFileUri;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		useTwitpic = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter").equals("twitpic");
@@ -141,7 +148,7 @@ public class NewTweetActivity extends Activity {
 			
 			if (pair_to_delete != null) {
 				((Geotweeter) getApplication()).notifiedElements.remove(pair_to_delete);
-				((Geotweeter) getApplication()).updateNotification();
+				((Geotweeter) getApplication()).updateNotification(false);
 			}
 			
 			String reply_string = "";
@@ -329,20 +336,40 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	public void addImageHandler(View v) {
-		Intent intent = new Intent();
-		intent.setType("image/*");
-		intent.setAction(Intent.ACTION_GET_CONTENT);
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		startActivityForResult(intent, PICTURE_REQUEST_CODE);
+		Intent galleryIntent = new Intent();
+		galleryIntent.setType("image/*");
+		galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+		galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+		Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		cameraFileUri = getOutputMediaFileUri();
+		cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri);
+		List<Intent> intents = new ArrayList<Intent>();
+		intents.add(cameraIntent);
+		
+		Intent chooserIntent = Intent.createChooser(galleryIntent, "Select");
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[] {}));
+		startActivityForResult(chooserIntent, PICTURE_REQUEST_CODE);
 	}
 	
 	protected void onActivityResult(int request_code, int result_code, Intent data) {
 		if (request_code == PICTURE_REQUEST_CODE && result_code == Activity.RESULT_OK) {
-			
-			Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
-			cursor.moveToFirst();
-			String picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-			cursor.close();
+			String picturePath;
+			if(data == null) {
+				picturePath = cameraFileUri.getPath();
+				MediaScannerConnection.scanFile(this,
+						new String[] { picturePath }, null,
+						new MediaScannerConnection.OnScanCompletedListener() {
+					public void onScanCompleted(String path, Uri uri) {
+						Log.i("ExternalStorage", "Scanned " + path + ":");
+						Log.i("ExternalStorage", "-> uri=" + uri);
+					}
+				});
+			} else {
+				Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
+				cursor.moveToFirst();
+				picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+				cursor.close();				
+			}
 			
 			String image_hoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter"); 
 			if (image_hoster.equals("twitter")) {
@@ -375,6 +402,28 @@ public class NewTweetActivity extends Activity {
 				btnImageManager.setVisibility(ImageView.VISIBLE);
 			}
 		}
+	}
+	
+	private static Uri getOutputMediaFileUri(){
+		return Uri.fromFile(getOutputMediaFile());
+	}
+
+	/** Create a File for saving an image or video */
+	private static File getOutputMediaFile(){
+//		File mediaStorageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),"Camera");
+		
+		if (! mediaStorageDir.exists()){
+			if (! mediaStorageDir.mkdirs()){
+				Log.d("MyCameraApp", "failed to create directory");
+				return null;
+			}
+		}
+		
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+		
+		return mediaFile;
 	}
 	
 	public void imageManagerHandler(View v) {

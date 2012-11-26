@@ -53,6 +53,7 @@ import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 import de.geotweeter.timelineelements.Url;
+import de.geotweeter.widgets.AccountSwitcherRadioButton;
 
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
