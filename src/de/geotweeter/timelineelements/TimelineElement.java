@@ -114,5 +114,8 @@ public abstract class TimelineElement implements Serializable {
 	public List<Pair<URL, URL>> getMediaList() {
 		return new ArrayList<Pair<URL, URL>>();
 	}
+	public boolean olderThan(TimelineElement tle) {
+		return (created_at.getTime() < tle.created_at.getTime());
+	}
 	
 }

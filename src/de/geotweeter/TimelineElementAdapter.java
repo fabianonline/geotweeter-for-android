@@ -30,13 +30,21 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	public TimelineElementAdapter(Context context, 
 			int textViewResourceId, List<TimelineElement> objects) {
 		super(context, textViewResourceId, objects);
+		if (objects != null) {
+			Collections.sort(objects, new TLEComparator());
+		}
 		this.items = objects;
 		this.context = context;
 		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 	}
 	
 	public void addAsFirst(TimelineElement t) {
-		items.add(0, t);
+		if (t.olderThan(items.get(0))) {
+			items.add(0, t);
+			Collections.sort(items, new TLEComparator());
+		} else {
+			items.add(0, t);
+		}
 		TimelineActivity.addToAvailableTLE(t);
 		this.notifyDataSetChanged();
 	}

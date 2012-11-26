@@ -213,19 +213,19 @@ public class Account extends Observable implements Serializable {
 				switch (accessType) {
 				case TIMELINE: 
 					Log.d(LOG, "Get home timeline");
-					result.elements = api.getHomeTimeline(0, 0);
+					result.elements = api.getHomeTimeline(max_known_tweet_id, 0);
 					return result;
 				case MENTIONS:
 					Log.d(LOG, "Get mentions");
-					result.elements = api.getMentions(0, 0);
+					result.elements = api.getMentions(max_known_tweet_id, 0);
 					return result;
 				case DM_RCVD:
 					Log.d(LOG, "Get received dm");
-					result.elements = api.getReceivedDMs(0, 0);
+					result.elements = api.getReceivedDMs(max_known_dm_id, 0);
 					return result;
 				case DM_SENT:
 					Log.d(LOG, "Get sent dm");
-					result.elements = api.getSentDMs(0, 0);
+					result.elements = api.getSentDMs(max_known_dm_id, 0);
 					return result;
 				}
 			} catch (OAuthException e) {
@@ -333,7 +333,7 @@ public class Account extends Observable implements Serializable {
 							}
 						}
 					}
-					if (max_known_dm_id==0) {
+					if (max_known_dm_id == 0) {
 						for (List<TimelineElement> array : apiResponses2) {
 							TimelineElement first_element = array.get(0);
 							if (first_element instanceof DirectMessage && first_element.getID() > max_known_dm_id) {

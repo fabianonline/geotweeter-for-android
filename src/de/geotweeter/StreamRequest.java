@@ -8,6 +8,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
@@ -49,6 +50,7 @@ public class StreamRequest {
 	public void stop(boolean restart) {
 		keepRunning = false;
 		this.doRestart = restart;
+		
 		try {
 			if (thread != null && thread.stream != null) {
 				thread.stream.close();
@@ -111,13 +113,13 @@ public class StreamRequest {
 		}
 		
 		public void startRequest() {
-			while (true) {
-				Log.d(LOG, "Starting Stream.");
-				buffer = "";
-				char ch[] = new char[1];
-				OAuthRequest request = new OAuthRequest(Verb.GET, Constants.URI_USER_STREAM);
-				request.addQuerystringParameter("delimited", "length");
-				api.signRequest(request);
+			Log.d(LOG, "Starting Stream.");
+			buffer = "";
+			char ch[] = new char[1];
+			OAuthRequest request = new OAuthRequest(Verb.GET, Constants.URI_USER_STREAM);
+			request.addQuerystringParameter("delimited", "length");
+			api.signRequest(request);
+			try {
 				Response response = request.send();
 				stream = response.getStream();
 				if (stream == null) {
@@ -127,6 +129,9 @@ public class StreamRequest {
 					Log.d(LOG, "Waiting for first data.");
 					try {
 						while (reader.read(ch) > 0) {
+							if (!keepRunning) {
+								return;
+							} 
 							lastNewlineReceivedAt = System.currentTimeMillis();
 							buffer += ch[0];
 							if (ch[0]=='\n' || ch[0]=='\r') {
@@ -138,24 +143,24 @@ public class StreamRequest {
 					}
 					Log.d(LOG, "Stream beendet");
 				}
-				lastDataReceivedAt = 0;
-				lastNewlineReceivedAt = 0;
-				if (!keepRunning) {
-					return;
-				} else {
-					Log.d(LOG, "Delaying stream reconnection by " + reconnectDelay + "ms...");
-					try {
-						Thread.sleep(reconnectDelay);
-					} catch (InterruptedException e) {}
-					reconnectDelay *= 1.5;
-				}
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						account.start(false);
-					}
-				});
+			} catch (OAuthException e) {
+				Log.d(LOG, "No API access. Network may be down. Retrying.");
 			}
+			lastDataReceivedAt = 0;
+			lastNewlineReceivedAt = 0;
+			Log.d(LOG, "Delaying stream reconnection by " + reconnectDelay + "ms...");
+			try {
+				Thread.sleep(reconnectDelay);
+			} catch (InterruptedException e) {
+				/* Shouldn't happen as we don't interrupt this thread */
+			}
+			reconnectDelay *= 1.5;
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					account.start(false);
+				}
+			});
 		}
 		
 		/**
@@ -168,7 +173,7 @@ public class StreamRequest {
 				reconnectDelay = 10000;
 				String text = m.group(2);
 				int bytes = Integer.parseInt(m.group(1));
-				if (text.length()>=bytes) {
+				if (text.length() >= bytes) {
 					buffer = text.substring(bytes);
 					try {
 						account.addTweet(Utils.jsonToNativeObject(text.substring(0, bytes)));
@@ -182,5 +187,6 @@ public class StreamRequest {
 				}
 			}
 		}
+		
 	}
 }
