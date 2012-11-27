@@ -182,7 +182,8 @@ public class TimelineActivity extends MapActivity {
 		if (v.getId() == R.id.timeline) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 			menu.setHeaderTitle(R.string.context_menu_title);
-			final TimelineElement te = current_account.activeTimeline().getItem(info.position);
+			final TimelineElement te = (TimelineElement) timelineListView.getAdapter().getItem(info.position);
+//			final TimelineElement te = current_account.activeTimeline().getItem(info.position);
 			if (te.isReplyable()) {
 				menu.add(R.string.respond_to_tweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					
@@ -292,12 +293,14 @@ public class TimelineActivity extends MapActivity {
 
 	protected void showMapIfApplicable(AdapterView<?> parent, View view,
 			int position, long id) {
-		TimelineElement te = current_account.getElements().getItem(position);
+		TimelineElement te = (TimelineElement) timelineListView.getAdapter().getItem(position);
+//		TimelineElement te = current_account.getElements().getItem(position);
 		if (map.getParent() != null) {
 			FrameLayout mapContainer = (FrameLayout) map.getParent();
 			mapContainer.removeAllViews();
 			RelativeLayout mapAndControls = (RelativeLayout) mapContainer.getParent();
 			mapAndControls.setVisibility(View.GONE);
+			timelineListView.recomputeViewAttributes(view);
 			if (mapAndControls.getParent() == view) {
 				return;
 			}
@@ -346,6 +349,7 @@ public class TimelineActivity extends MapActivity {
 				});
 				
 				mapAndControls.setVisibility(View.VISIBLE);
+				timelineListView.recomputeViewAttributes(view);
 			}
 		}
 	}

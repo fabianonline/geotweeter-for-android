@@ -130,7 +130,7 @@
     
     <string name="timeline_element_timediff_now">gerade eben</string>
     <string name="timeline_element_timediff_one_second">vor 1 Sekunde</string>
-    <string name="timeline_element_timediff_multiple_seconds">vor $1%d Sekunden</string>
+    <string name="timeline_element_timediff_multiple_seconds">vor %1$d Sekunden</string>
     <string name="timeline_element_timediff_one_minute">vor 1 Minute</string>
     <string name="timeline_element_timediff_multiple_minutes">vor %1$d Minuten</string>
     <string name="timeline_element_timediff_one_hour">vor 1 Stunde</string>
