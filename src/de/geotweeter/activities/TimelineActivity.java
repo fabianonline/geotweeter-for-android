@@ -300,7 +300,6 @@ public class TimelineActivity extends MapActivity {
 			mapContainer.removeAllViews();
 			RelativeLayout mapAndControls = (RelativeLayout) mapContainer.getParent();
 			mapAndControls.setVisibility(View.GONE);
-			timelineListView.recomputeViewAttributes(view);
 			if (mapAndControls.getParent() == view) {
 				return;
 			}
@@ -349,7 +348,6 @@ public class TimelineActivity extends MapActivity {
 				});
 				
 				mapAndControls.setVisibility(View.VISIBLE);
-				timelineListView.recomputeViewAttributes(view);
 			}
 		}
 	}
