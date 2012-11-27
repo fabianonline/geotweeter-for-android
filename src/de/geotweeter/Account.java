@@ -90,11 +90,19 @@ public class Account extends Observable implements Serializable {
 
 	private transient ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
 	
-	
 	private enum AccessType {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
 	}
 	
+	/**
+	 * Creates an account object
+	 * 
+	 * @param elements The target container for the account's timeline elements
+	 * @param token The user's access token
+	 * @param user The user object
+	 * @param applicationContext The application context
+	 * @param fetchTimeLine If the account's timeline should be fetched
+	 */
 	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine) {
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
@@ -123,6 +131,11 @@ public class Account extends Observable implements Serializable {
 		}
 	}
 	
+	/**
+	 * Provides access to all available direct message conversations
+	 * 
+	 * @return All direct message conversations
+	 */
 	public MessageHashMap getDMConversations() {
 		return dm_conversations;
 	}
@@ -136,11 +149,21 @@ public class Account extends Observable implements Serializable {
 		stream_request = new StreamRequest(this);
 	}
 		
+	/**
+	 * Setter for the application context
+	 * 
+	 * @param appContext
+	 */
 	public void setAppContext(Context appContext) {
 		this.appContext = appContext;
 	}
 
 	@SuppressWarnings("unused")
+	/**
+	 * Fetches the timeline
+	 * 
+	 * @param loadPersistedTweets true if the timeline should be pre filled with stored timeline elements
+	 */
 	public void start(boolean loadPersistedTweets) {
 		Log.d(LOG, "In start()");
 		if (stream_request != null) {
@@ -161,11 +184,17 @@ public class Account extends Observable implements Serializable {
 		getMaxReadIDs();
 	}
 		
+	/**
+	 * Stops the stream access
+	 */
 	public void stopStream() {
 		stream_request.stop(false);
 	}
 	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	/**
+	 * Gets timeline updates from the twitter API from Android 3.0 onward
+	 */
 	private void refreshTimeline() {
 		if (tasksRunning == 0) {
 			setChanged();
@@ -181,6 +210,9 @@ public class Account extends Observable implements Serializable {
 		new TimelineRefreshTask().executeOnExecutor(exec, AccessType.DM_SENT);
 	}
 
+	/**
+	 * Gets timeline updates from the twitter API below Android 3.0
+	 */
 	private void refreshTimelinePreAPI11() {
 		if (tasksRunning == 0) {
 			setChanged();
@@ -201,6 +233,12 @@ public class Account extends Observable implements Serializable {
 		public ArrayList<TimelineElement> elements;
 	}
 	
+	/**
+	 * AsyncTask which handles any timeline API access tasks
+	 * 
+	 * @author lutz
+	 *
+	 */
 	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, TimelineRefreshResult> {
 	
 		private AccessType accessType;
@@ -238,6 +276,11 @@ public class Account extends Observable implements Serializable {
 		}
 		
 		@SuppressWarnings("unused")
+		/**
+		 * Handles the API responses
+		 * 
+		 * @param result API response
+		 */
 		protected void onPostExecute(TimelineRefreshResult result) {
 			tasksRunning--;
 			
@@ -298,6 +341,12 @@ public class Account extends Observable implements Serializable {
 		
 	}
 		
+	/**
+	 * Puts the API responses in the visible timeline and removes duplicates
+	 * 
+	 * @param apiResponses2 The API responses
+	 * @param do_clip
+	 */
 	protected void parseData(List<ArrayList<TimelineElement>> apiResponses2, boolean do_clip) {
 		final long old_max_known_dm_id = max_known_dm_id;
 		Log.d(LOG, "parseData started.");
@@ -348,6 +397,11 @@ public class Account extends Observable implements Serializable {
 		});
 	}
 
+	/**
+	 * Adds a timeline element to the timeline
+	 * 
+	 * @param elm Timeline element to be added
+	 */
 	public void addTweet(final TimelineElement elm) {
 		Log.d(LOG, "Adding Tweet.");
 		if (elm instanceof DirectMessage) {
@@ -370,6 +424,9 @@ public class Account extends Observable implements Serializable {
 		});
 	}
 
+	/**
+	 * Registers with push service
+	 */
 	public void registerForGCMMessages() {
 		Log.d(LOG, "Registering...");
 		new Thread(new Runnable() {
@@ -397,6 +454,9 @@ public class Account extends Observable implements Serializable {
 		}, "register").start();
 	}
 	
+	/**
+	 * Gets the last read tweet ID from tweetmarker
+	 */
 	public void getMaxReadIDs() {
 		new Thread(new Runnable() {
 			@Override
@@ -461,6 +521,13 @@ public class Account extends Observable implements Serializable {
 		}, "GetMaxReadIDs").start();
 	}
 	
+	/**
+	 * Pushes the actual read tweet ids to tweet marker
+	 * 
+	 * @param tweet_id
+	 * @param mention_id
+	 * @param dm_id
+	 */
 	public void setMaxReadIDs(long tweet_id, long mention_id, long dm_id) {
 		if (tweet_id > this.max_read_tweet_id) {
 			this.max_read_tweet_id = tweet_id;
@@ -516,26 +583,57 @@ public class Account extends Observable implements Serializable {
 		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 	}
 	
+	/**
+	 * Returns the newest read tweet id
+	 * 
+	 * @return
+	 */
 	public long getMaxReadTweetID() {
 		return max_read_tweet_id;
 	}
 	
+	/**
+	 * Returns the account's TimelineElementAdapter
+	 * 
+	 * @return
+	 */
 	public TimelineElementAdapter getElements() {
 		return elements;
 	}
 
+	/**
+	 * Returns the account's user access token
+	 * 
+	 * @return
+	 */
 	public Token getToken() {
 		return token;
 	}
 
+	
+	/**
+	 * Sets the account's user element
+	 * 
+	 * @param user
+	 */
 	public void setUser(User user) {
 		this.user = user;
 	}
 	
+	/**
+	 * Returns the account's user element
+	 * 
+	 * @return
+	 */
 	public User getUser() {
 		return user;
 	}
 
+	/**
+	 * Stores the recent 50 timeline element to persistent memory
+	 * 
+	 * @param context
+	 */
 	public void persistTweets(Context context) {
 		File dir = context.getExternalFilesDir(null);
 		if (!dir.exists()) {
@@ -567,6 +665,11 @@ public class Account extends Observable implements Serializable {
 	}
 	
 	@SuppressWarnings("unchecked")
+	/**
+	 * Gets the last stored timeline elements from persistent memory
+	 * 
+	 * @param context
+	 */
 	public void loadPersistedTweets(Context context) {
 		String fileToLoad = null;
 		File dir = context.getExternalFilesDir(null);
@@ -609,19 +712,39 @@ public class Account extends Observable implements Serializable {
 		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 	}
 	
+	/**
+	 * Returns the TwitterApiAccess object
+	 * 
+	 * @return
+	 */
 	public TwitterApiAccess getApi() {
 		return api;
 	}
 	
+	/**
+	 * Pushes the given timeline to the last visible timelines stack
+	 * 
+	 * @param tea
+	 */
 	public void pushTimeline(TimelineElementAdapter tea) {
 		timeline_stack.push(tea);
 	}
 	
+	/**
+	 * Pops the currently shown timeline from the stack and returns the previous shown. 
+	 * 
+	 * @return
+	 */
 	public TimelineElementAdapter getPrevTimeline() {
 		timeline_stack.pop();
 		return timeline_stack.peek();
 	}
 		
+	/**
+	 * Returns the currently shown timeline from the stack
+	 * 
+	 * @return
+	 */
 	public TimelineElementAdapter activeTimeline() {
 		return timeline_stack.peek();
 	}
@@ -634,6 +757,12 @@ public class Account extends Observable implements Serializable {
 		return size;
 	}
 	
+	/**
+	 * Returns the account object for a given user object
+	 * 
+	 * @param u The according user object
+	 * @return The according account object if available, null otherwise
+	 */
 	public static Account getAccount(User u) {
 		for (Account a : all_accounts) {
 			if (a.getUser().id == u.id) {
