@@ -135,6 +135,7 @@ public class TimelineActivity extends MapActivity {
 					}
 				}
 			} else {
+				Log.d(LOG, "No account authorized. Starting authorization dialog.");
 				Intent addAccountIntent = new Intent(TimelineActivity.this, SettingsAccounts.class);
 				startActivity(addAccountIntent);
 			}

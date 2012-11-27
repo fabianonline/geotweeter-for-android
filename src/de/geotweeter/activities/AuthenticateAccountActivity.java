@@ -15,6 +15,7 @@ import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -22,12 +23,14 @@ import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
 
-import de.geotweeter.R;
 import de.geotweeter.Constants;
+import de.geotweeter.R;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
 
 public class AuthenticateAccountActivity extends Activity {
+
+	public static final String LOG = "AuthenticateAccountActivity";
 
 	final OAuthService os = new ServiceBuilder()
 		.provider(TwitterApi.class)
@@ -81,6 +84,8 @@ public class AuthenticateAccountActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 
+			Log.d(LOG, "Authentication Task executed");
+			
 			final Token requestToken = os.getRequestToken();
 			final String authURL = os.getAuthorizationUrl(requestToken) + "&force_login=true";
 
