@@ -50,11 +50,13 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	}
 	
 	public void addAllAsFirst(List<TimelineElement> elements) {
-		items.addAll(0, elements);
-		Collections.sort(items, new TLEComparator());
 		for (TimelineElement t : elements) {
-			TimelineActivity.addToAvailableTLE(t);
+			if (!TimelineActivity.availableTweets.containsKey(t.getID())) {
+				TimelineActivity.addToAvailableTLE(t);
+				items.add(t);				
+			}
 		}
+		Collections.sort(items, new TLEComparator());
 		this.notifyDataSetChanged();
 	}
 	
