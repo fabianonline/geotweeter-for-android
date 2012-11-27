@@ -304,6 +304,9 @@ public class Account extends Observable implements Serializable {
 		final List<TimelineElement> all_elements = new ArrayList<TimelineElement>();
 
 		for (ArrayList<TimelineElement> list : apiResponses2) {
+			if (list == null) {
+				continue;
+			}
 			if (list.size() == 0) {
 				continue;
 			}
