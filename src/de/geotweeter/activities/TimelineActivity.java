@@ -67,6 +67,13 @@ public class TimelineActivity extends MapActivity {
 	private static ListView timelineListView;
 	public static HashMap<Long,TimelineElement> availableTweets;
 
+	/**
+	 * Initializes the Activity
+	 * 
+	 * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Utils.setDesign(this);
@@ -162,11 +169,19 @@ public class TimelineActivity extends MapActivity {
 		isRunning = true;
 	}
 
+	/** 
+	 * Removes the full size image overlay
+	 * 
+	 * @param v The image overlay
+	 */
 	protected void dismissOverlay(ImageView v) {
 		v.setImageResource(R.drawable.ic_launcher);
 		v.setVisibility(View.GONE);
 	}
 
+	/**
+	 * {@inheritDoc}
+ 	 */
 	@Override
 	public void onBackPressed() {
 		if (current_account.activeTimeline() == current_account.getElements()) {
@@ -177,6 +192,9 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		if (v.getId() == R.id.timeline) {
@@ -277,6 +295,12 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
+	/**
+	 * Opens a URL selected from a context menu
+	 * 
+	 * @param url The URL to be opened by the operating system
+	 * @return true if successful
+	 */
 	protected boolean openURL(String url) {
 		Intent i = new Intent(Intent.ACTION_VIEW);
 		i.setData(Uri.parse(url));
@@ -291,10 +315,17 @@ public class TimelineActivity extends MapActivity {
 		return true;
 	}
 
+	/**
+	 * Shows a map snippet with a marker at the coordinates of a timeline element
+	 * 
+	 * @param parent 
+	 * @param view The timeline element which has been clicked
+	 * @param position The position of the timeline element within the ListView
+	 * @param id 
+	 */
 	protected void showMapIfApplicable(AdapterView<?> parent, View view,
 			int position, long id) {
 		TimelineElement te = (TimelineElement) timelineListView.getAdapter().getItem(position);
-//		TimelineElement te = current_account.getElements().getItem(position);
 		if (map.getParent() != null) {
 			FrameLayout mapContainer = (FrameLayout) map.getParent();
 			mapContainer.removeAllViews();
@@ -352,6 +383,9 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void onDestroy() {
 		super.onDestroy();
 		for (Account acct : Account.all_accounts) {
@@ -364,6 +398,9 @@ public class TimelineActivity extends MapActivity {
 		instance = null;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void onPause() {
 		super.onPause();
 		is_visible = false;
@@ -372,11 +409,19 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void onResume() {
 		super.onResume();
 		is_visible = true;
 	}
 	
+	/**
+	 * Sets the current account and switches to the according timeline
+	 * 
+	 * @param account The account to be set
+	 */
 	public void setCurrentAccount(Account account) {
 		if(current_account != account) {
 			current_account = account;
@@ -386,12 +431,23 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 
+	/**
+	 * Gets the twitter access token for a given user
+	 * 
+	 * @param u The user object whose token is needed
+	 * @return The access token
+	 */
 	private Token getUserToken(User u) {
 		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
 		return new Token(sp.getString("access_token."+String.valueOf(u.id), null), 
 						  sp.getString("access_secret."+String.valueOf(u.id), null));
 	}
 
+	/**
+	 * Returns a list of all authorized user accounts
+	 * 
+	 * @return The list of all authorized user accounts
+	 */
 	private List<User> getAuthUsers() {
 		List<User> result = null;
 		
@@ -406,6 +462,12 @@ public class TimelineActivity extends MapActivity {
 		return result;
 	}
 	
+	/**
+	 * Creates an account object for a given user object which starts the twitter
+	 * API access
+	 * 
+	 * @param u The user object whose account object should be created
+	 */
 	public void createAccount(User u) {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this, 
 				   R.layout.timeline_element, 
@@ -419,6 +481,11 @@ public class TimelineActivity extends MapActivity {
 		addAccount(acc);
 	}
 	
+	/**
+	 * Shows the preceding conversation of a given timeline element
+	 * 
+	 * @param te The conversation endpoint
+	 */
 	public void showConversation(TimelineElement te) {
 		TimelineElementAdapter tea = new TimelineElementAdapter(this, 
 				R.layout.timeline_element, 
@@ -429,6 +496,11 @@ public class TimelineActivity extends MapActivity {
 		l.setAdapter(tea);
 	}
 	
+	/**
+	 * Adds an account object to the activity
+	 * 
+	 * @param acc The account to be added
+	 */
 	public void addAccount(Account acc) {
 		if (current_account == null) {
 			current_account = acc;
@@ -443,14 +515,24 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 
+	/**
+	 * Opens the new tweet acitivity
+	 * 
+	 * @param v
+	 */
 	public void newTweetClickHandler(View v) {
 		startActivity(new Intent(this, NewTweetActivity.class));
 	}
 	
+	/**
+	 * Sets the read marker to the first fully visible timeline element
+	 * 
+	 * @param v
+	 */
 	public void markReadClickHandler(View v) {
 		ListView list = (ListView)findViewById(R.id.timeline);
 		TimelineElementAdapter elements = (TimelineElementAdapter)list.getAdapter();
-		int pos = list.getFirstVisiblePosition()+1;
+		int pos = list.getFirstVisiblePosition() + 1;
 		if (pos == 1) {
 			pos = 0;
 		}
@@ -496,12 +578,18 @@ public class TimelineActivity extends MapActivity {
 		lvList.smoothScrollToPosition(pos);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_timeline, menu);
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -519,16 +607,29 @@ public class TimelineActivity extends MapActivity {
 		return true;
 	}
 
+	/**
+	 * Method is not used but needed to fulfill the MapActivity interface
+	 */
 	@Override
 	protected boolean isRouteDisplayed() {
 		/* Die Methode muss hier hin wegen MapActivity */
 		return false;
 	}
 	
+	/**
+	 * Returns the current activity instance
+	 * 
+	 * @return The current instance
+	 */
 	public static TimelineActivity getInstance() {
 		return instance;
 	}
 	
+	/**
+	 * Checks all accounts for new timeline elements and restarts the accordings streams
+	 * 
+	 * @param v
+	 */
 	public void refreshTimelineClickHandler(View v) {
 		for (Account acct : Account.all_accounts) {
 			acct.stopStream();
@@ -536,6 +637,12 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
+	/**
+	 * Returns the current BackgroundImageLoader instance
+	 * 
+	 * @param context Current application context
+	 * @return BackgroundImageLoader instance
+	 */
 	public static BackgroundImageLoader getBackgroundImageLoader(Context context) {
 		if (background_image_loader == null) {
 			background_image_loader = new BackgroundImageLoader(context);
@@ -543,6 +650,11 @@ public class TimelineActivity extends MapActivity {
 		return background_image_loader;
 	}
 
+	/**
+	 * Adds a timeline element to the map of available timeline elements
+	 * 
+	 * @param t The timeline element to be added
+	 */
 	public static void addToAvailableTLE(TimelineElement t) {
 		availableTweets.put(t.getID(), t);
 	}
@@ -561,6 +673,11 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 	
+	/**
+	 * Returns the current activity visibility status
+	 * 
+	 * @return true if the activity is in the foreground
+	 */
 	public boolean isVisible() {
 		return is_visible;
 	}
