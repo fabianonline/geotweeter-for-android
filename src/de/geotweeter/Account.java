@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -48,6 +49,7 @@ import android.widget.Toast;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.timelineelements.DirectMessage;
+import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 import de.geotweeter.widgets.AccountSwitcherRadioButton;
@@ -74,9 +76,9 @@ public class Account extends Observable implements Serializable {
 	private long max_read_tweet_id = 0;
 	private long max_read_dm_id = 0;
 	private long max_known_tweet_id = 0;
-	private long min_known_tweet_id = -1;
+	private long min_known_tweet_id = Long.MAX_VALUE;
 	private long max_known_dm_id = 0;
-	private long min_known_dm_id = -1;
+	private long min_known_dm_id = Long.MAX_VALUE;
 	private User user;
 	private transient TimelineElementAdapter elements;
 	private long max_read_mention_id = 0;
@@ -264,7 +266,7 @@ public class Account extends Observable implements Serializable {
 			
 			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: " + String.valueOf(System.currentTimeMillis() - startTime) + "ms");
 			if (accessType == AccessType.TIMELINE) {
-				mainTimeline = result.elements;
+				mainTimeline.addAll(result.elements);
 			} else {
 				apiResponses.add(result.elements);
 			}
@@ -300,79 +302,38 @@ public class Account extends Observable implements Serializable {
 		final long old_max_known_dm_id = max_known_dm_id;
 		Log.d(LOG, "parseData started.");
 		final List<TimelineElement> all_elements = new ArrayList<TimelineElement>();
-		long last_id = 0;
-		// remove empty arrays
-		for (int i = apiResponses2.size() - 1; i >= 0; i--) {
-			if (apiResponses2.get(i)==null || apiResponses2.get(i).size()==0) {
-				apiResponses2.remove(i);
-			}
-		}
-		
-		while (apiResponses2.size() > 0) {
-			Date newest_date = null;
-			int newest_index = -1;
-			for (int i = 0; i < apiResponses2.size(); i++) {
-				TimelineElement element = apiResponses2.get(i).get(0);
-				if (newest_date == null || element.getDate().after(newest_date)) {
-					newest_date = element.getDate();
-					newest_index = i;
-				}
-			}
-			TimelineElement element = apiResponses2.get(newest_index).remove(0);
-			if (apiResponses2.get(newest_index).size() == 0) {
-				/* Das primäre Element ist leer. Also brechen wir ab.
-				 * Allerdings muss vorher noch ein bisschen gearbeitet werden... */
-				apiResponses2.remove(newest_index);
 
-				if (newest_index == 0) {
-					if (max_known_tweet_id == 0) {
-						for (List<TimelineElement> array : apiResponses2) {
-							TimelineElement first_element = array.get(0);
-							if (first_element instanceof Tweet && ((Tweet) first_element).id > max_known_tweet_id) {
-								max_known_tweet_id = ((Tweet)first_element).id;
-							}
-						}
-					}
-					if (max_known_dm_id == 0) {
-						for (List<TimelineElement> array : apiResponses2) {
-							TimelineElement first_element = array.get(0);
-							if (first_element instanceof DirectMessage && first_element.getID() > max_known_dm_id) {
-								max_known_dm_id = first_element.getID();
-							}
-						}
-					}
-					Log.d(LOG, "Breaking!");
-					break;
-				}
+		for (ArrayList<TimelineElement> list : apiResponses2) {
+			if (list.size() == 0) {
+				continue;
 			}
-			
-			long element_id = element.getID();
-			
-			if (element_id != last_id) {
-//				if (!(element instanceof DirectMessage) || element_id>old_max_known_dm_id) {
-				if (element_id > old_max_known_dm_id) {
-					all_elements.add(element);
-				}
+			TimelineElement element = list.get(0);
+
+			if (element instanceof DirectMessage) {
+				max_known_dm_id = Math.max(max_known_dm_id, ((DirectMessage) element).id);
+			} else if (element instanceof Tweet) {
+				max_known_tweet_id = Math.max(max_known_tweet_id, ((Tweet) element).id);
 			}
-			last_id = element_id;
-			
-			if (element instanceof Tweet) {
-				if (element_id > max_known_tweet_id) {
-					max_known_tweet_id = element_id;
-				}
-				if (min_known_tweet_id == -1 || element_id < min_known_tweet_id) {
-					min_known_tweet_id = element_id;
-				}
-			} else if (element instanceof DirectMessage) {
-				if (element_id > max_known_dm_id) {
-					max_known_dm_id = element_id;
-				}
-				if (min_known_dm_id == -1 || element_id < min_known_dm_id) {
-					min_known_dm_id = element_id;
+			element = list.get(list.size() - 1);
+			if (element instanceof DirectMessage) {
+				min_known_dm_id = Math.min(min_known_dm_id, ((DirectMessage) element).id);
+			} else if (element instanceof Tweet) {
+				min_known_tweet_id = Math.min(min_known_tweet_id, ((Tweet) element).id);
+			}
+			for (TimelineElement tle : list) {
+				if (!TimelineActivity.availableTweets.containsKey(tle.getID())) {
+					if (tle.getClass() == DirectMessage.class) {
+						if (tle.getID() > old_max_known_dm_id) {
+							all_elements.add(tle);
+						}
+					} else {
+						all_elements.add(tle);
+					}
 				}
 			}
 		}
-		
+		Collections.sort(all_elements, new TLEComparator());
+				
 		Log.d(LOG, "parseData is almost done. " + all_elements.size() + " elements.");
 		handler.post(new Runnable() {
 			@Override

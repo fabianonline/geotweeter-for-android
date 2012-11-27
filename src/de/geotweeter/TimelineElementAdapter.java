@@ -50,8 +50,8 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	}
 	
 	public void addAllAsFirst(List<TimelineElement> elements) {
-		Collections.sort(elements, new TLEComparator());
 		items.addAll(0, elements);
+		Collections.sort(items, new TLEComparator());
 		for (TimelineElement t : elements) {
 			TimelineActivity.addToAvailableTLE(t);
 		}
