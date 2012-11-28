@@ -56,7 +56,7 @@ task :tag_version do
     File.open($target_dir + "/AndroidManifest.xml", "w") {|f| f.write(string)}
 end
 
-task :copy_and_modify_files do
+task :copy_and_modify_files=>[:check_properties] do
 	FileUtils.rm_r($target_dir, :force=>true)
 	puts "Copying files..."
 	list = FileList.new(File.dirname(__FILE__) + '/*').exclude("build_temp").to_a
@@ -116,6 +116,14 @@ task :copy_and_modify_files do
 	File.open($target_dir + "/ant.properties", "w") {|f| f.write(string)}
 	
 	Rake::Task['ant'].invoke
+end
+
+task :check_properties do
+    properties_to_check = %w(twitter.consumer.key twitter.consumer.secret tweetmarker.key google.gcm.sender.id google.gcm.sender.token google.gcm.server.url twitpic.key google.maps.key.development google.maps.key.release crashreport.server.url)
+
+    lines = File.readlines("./res/raw/geotweeter.properties")
+    hash = Hash[ lines.collect {|l| l.strip.split("=", 2)} ]
+    properties_to_check.each {|p| fail "Property '#{p}' is missing or empty in res/raw/geotweeter.properties." unless hash.has_key?(p) && hash[p]}
 end
 
 task :ant do
