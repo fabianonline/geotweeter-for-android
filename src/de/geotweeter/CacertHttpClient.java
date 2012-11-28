@@ -11,8 +11,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 
-import de.geotweeter.R;
-
 import android.content.Context;
 
 /**

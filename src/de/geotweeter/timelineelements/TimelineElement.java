@@ -9,11 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import de.geotweeter.R;
-import de.geotweeter.Utils;
-
 import android.util.Log;
 import android.util.Pair;
+import de.geotweeter.R;
+import de.geotweeter.Utils;
 
 /**
  * Abstract container for any timeline element 

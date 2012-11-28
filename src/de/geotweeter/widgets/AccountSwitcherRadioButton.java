@@ -4,9 +4,6 @@ package de.geotweeter.widgets;
 import java.util.Observable;
 import java.util.Observer;
 
-import de.geotweeter.Account;
-import de.geotweeter.Constants;
-import de.geotweeter.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -15,6 +12,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup.LayoutParams;
+import de.geotweeter.Account;
+import de.geotweeter.Constants;
+import de.geotweeter.R;
 
 /**
  * @author Julian Kuerby

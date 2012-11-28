@@ -18,7 +18,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import de.geotweeter.Constants;
-import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;

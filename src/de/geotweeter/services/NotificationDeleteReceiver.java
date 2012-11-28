@@ -1,10 +1,10 @@
 package de.geotweeter.services;
 
-import de.geotweeter.Geotweeter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import de.geotweeter.Geotweeter;
 
 public class NotificationDeleteReceiver extends BroadcastReceiver {
 	private static final String LOG = "NotificationDeleteReceiver";
