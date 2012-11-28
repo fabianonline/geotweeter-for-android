@@ -31,6 +31,10 @@ import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.Url;
 
+/**
+ * Provides access support for the Twitpic API
+ *
+ */
 public class TwitpicApiAccess {
 	
 	protected final String LOG = "TwitpicApiAccess";
@@ -41,10 +45,25 @@ public class TwitpicApiAccess {
 		MINI, THUMB, LARGE, FULL
 	}
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param twitterToken The twitter credentials to authorize the user
+	 */
 	public TwitpicApiAccess(Token twitterToken) {
 		twitter_api = new TwitterApiAccess(twitterToken);
 	}
 
+	/**
+	 * Uploads an image file to Twitpic
+	 * 
+	 * @param image Image file
+	 * @param text Tweet text
+	 * @param imageSize Image size
+	 * @return URL of the uploaded image
+	 * @throws IOException
+	 * @throws TweetSendException
+	 */
 	public String uploadImage(File image, String text, long imageSize) throws IOException, TweetSendException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, Constants.TWITPIC_URI);
 		MultipartEntity entity = new MultipartEntity();
@@ -96,19 +115,40 @@ public class TwitpicApiAccess {
 		
 	}
 	
+	/**
+	 * Generates URLs for the thumbnail and full size images of a Twitpic picture
+	 * 
+	 * @param url URL from a tweet
+	 * @return Pair of thumbnail and full size URL
+	 * @throws MalformedURLException
+	 */
 	public static Pair<URL, URL> getUrlPair(Url url) throws MalformedURLException {
 		URL screen_url = new URL(url.expanded_url);
 		return new Pair<URL, URL>(new URL("http://twitpic.com/show/mini/" + screen_url.getPath()), 
 				new URL("http://twitpic.com/show/full/" + screen_url.getPath()));
 	}
 	
+	/**
+	 * Generates a placeholder URL to be shown during Tweet edit
+	 * 
+	 * @param index Index to be placed in the placeholder
+	 * @return Placeholder URL
+	 */
 	public static String getPlaceholder(int index) {
 		DecimalFormat df = new DecimalFormat("000");
 		return Constants.TWITPIC + "pic" + df.format(index);
 	}
 	
-	// TODO Whitespaces berücksichtigen
+	/**
+	 * Replaces existing placeholders with the final URLs
+	 * 
+	 * @param text Tweet text
+	 * @param url Final URL
+	 * @param index Placeholder index
+	 * @return Tweet with replaced placeholders
+	 */
 	public static String replacePlaceholder(String text, String url, int index) {
+		// TODO Whitespaces berücksichtigen
 		return text.replace(getPlaceholder(index) , url);
 	}
 	
