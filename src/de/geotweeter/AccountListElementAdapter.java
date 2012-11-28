@@ -12,11 +12,24 @@ import android.widget.TextView;
 import de.geotweeter.R;
 import de.geotweeter.activities.TimelineActivity;
 
+/**
+ * Provides the View for the authenticated accounts list
+ * 
+ * @author Lutz Krumme (@el_emka)
+ *
+ */
 public class AccountListElementAdapter extends ArrayAdapter<Account> {
 
 	private List<Account> items;
 	private Context context;
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param context
+	 * @param textViewResourceId
+	 * @param objects
+	 */
 	public AccountListElementAdapter(Context context, int textViewResourceId,
 			List<Account> objects) {
 		super(context, textViewResourceId, objects);
@@ -24,6 +37,13 @@ public class AccountListElementAdapter extends ArrayAdapter<Account> {
 		this.context = context;
 	}
 	
+	/**
+	 * Provides the UI thread with a view of a certain array position
+	 * 
+	 * @param position The element index whose view should be built
+	 * @param convertView The view object to be designed, will be constructed if null
+	 * @param parent
+	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
 		
