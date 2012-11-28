@@ -186,6 +186,11 @@ public class TimelineActivity extends MapActivity {
  	 */
 	@Override
 	public void onBackPressed() {
+		ImageView img_overlay = (ImageView) findViewById(R.id.img_overlay);
+		if (img_overlay.getVisibility() == View.VISIBLE) {
+			dismissOverlay(img_overlay);
+			return;
+		}
 		if (current_account.activeTimeline() == current_account.getElements()) {
 			super.onBackPressed();
 		} else {
