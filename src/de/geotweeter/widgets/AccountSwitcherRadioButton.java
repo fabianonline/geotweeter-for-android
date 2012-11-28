@@ -29,6 +29,7 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 	private static final int checkedColorDark = Color.WHITE;
 	private static final int checkedColorLight = Color.BLACK;
 	private static final int uncheckedColor = Color.GRAY;
+	private static final int HEIGHT = 48;
 	
 	private final Account account;
 	private final Context context;
@@ -40,10 +41,10 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		this.context = context;
 		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 		
-		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, 48);
-		layout.setMargins(pixelToDIP(5), pixelToDIP(2), pixelToDIP(1), 0);
+		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, HEIGHT);
+		layout.setMargins(convertDipToPixel(5), convertDipToPixel(2), convertDipToPixel(1), 0);
 		setLayoutParams(layout);
-		setPadding(pixelToDIP(35), pixelToDIP(4), pixelToDIP(4), pixelToDIP(4));
+		setPadding(HEIGHT + convertDipToPixel(5), convertDipToPixel(4), convertDipToPixel(4), convertDipToPixel(4));
 		if (useDarkTheme) {
 			setBackgroundResource(R.drawable.listelement_background_dark_dm);
 		} else {
@@ -96,8 +97,13 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		}
 	}
 	
-	private int pixelToDIP(int pixel) {
-		return (int) (pixel * context.getResources().getDisplayMetrics().density + 0.5f);
+	/**
+	 * Computes the number of pixels based on screen density 
+	 * @param dip the densitiy independent pixels to transform to pixels
+	 * @return Number of Pixels representing the densitiy independent pixel
+	 */
+	private int convertDipToPixel(int dip) {
+		return (int) (dip * context.getResources().getDisplayMetrics().density + 0.5f);
 	}
 	
 	private class AlphaBitmapDrawable extends BitmapDrawable {
