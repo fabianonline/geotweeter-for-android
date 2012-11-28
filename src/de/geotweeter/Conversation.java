@@ -12,6 +12,12 @@ import de.geotweeter.timelineelements.ErrorMessageDisguisedAsTweet;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
 
+/**
+ * Retrieves a conversation based on a given endpoint
+ * 
+ * @author Lutz Krumme (@el_emka)
+ *
+ */
 public class Conversation {
 
 	private TimelineElementAdapter tea;
@@ -19,6 +25,14 @@ public class Conversation {
 	private boolean backwards;
 	private MessageHashMap dm_conversations;
 	
+	/**
+	 * Creates the conversation object and starts the retrieval task
+	 * 
+	 * @param tea The timeline containing the conversation endpoint as the only element
+	 * @param current_account The timeline owning account
+	 * @param backwards If true the conversation is shown beginning at its end point
+	 * @param onStack If true the timeline is put on the shown timeline stack
+	 */
 	public Conversation(TimelineElementAdapter tea, Account current_account, boolean backwards, boolean onStack) {
 		this.tea = tea;
 		this.backwards = backwards;
@@ -32,9 +46,18 @@ public class Conversation {
 		}
 	}
 	
+	/**
+	 * Loads the actual conversation
+	 */
 	private class LoadConversationTask extends AsyncTask<TimelineElement, TimelineElement, Void> {
 
 		@Override
+		/**
+		 * Builds the conversation from memory and in case of tweets it fetches
+		 * missing ones from the API
+		 * 
+		 * @param params The conversation endpoint as first element. Other content will be ignored
+		 */
 		protected Void doInBackground(TimelineElement... params) {
 			if (params == null) {
 				throw new NullPointerException("Conversation Task parameters are null");
@@ -75,6 +98,12 @@ public class Conversation {
 			return null;
 		}
 
+		/**
+		 * Gets the respondent of a direct message conversation
+		 * 
+		 * @param current_element Element of the conversation
+		 * @return Twitter id of the respondent
+		 */
 		private long getRespondent(TimelineElement current_element) {
 			assert (current_element.getClass() == DirectMessage.class);
 			DirectMessage current_msg = (DirectMessage) current_element;
@@ -88,6 +117,9 @@ public class Conversation {
 			}
 		}
 
+		/**
+		 * Pushes the timeline element to the conversation timeline
+		 */
 		protected void onProgressUpdate(TimelineElement... params) {
 			if (params[0] == null) {
 				return;
