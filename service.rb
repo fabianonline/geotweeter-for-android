@@ -176,7 +176,7 @@ def stream(hash)
 		client.on_not_acceptable { log screen_name, "Not acceptable. o_O" }
 		client.on_too_long { log screen_name, "Too long. o_O" }
 		client.on_range_unacceptable { log screen_name, "Range unacceptable. o_O" }
-		client.on_rate_limited { log screen_name, "Rate limited. o_O" }
+		client.on_rate_limited { log screen_name, "Rate limited. o_O"; sleep 300 }
 	end
 	$stats[:accounts] += 1
 	$stats[:reg_ids] += config[:reg_ids].count
