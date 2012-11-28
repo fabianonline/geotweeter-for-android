@@ -356,7 +356,6 @@ public class NewTweetActivity extends Activity {
 		
 		// Camera
 		List<Intent> cameraIntents = new ArrayList<Intent>();
-		
 		Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		cameraFileUri = getOutputMediaFileUri();
 		captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri);
@@ -475,7 +474,7 @@ public class NewTweetActivity extends Activity {
 		});
 		
 		new AlertDialog.Builder(this)
-		               .setTitle("Title foo")
+		               .setTitle(R.string.image_gridview_title)
 		               .setView(gridView)
 		               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 		            	   @Override

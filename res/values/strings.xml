@@ -32,6 +32,7 @@
     <string name="set">Setzen</string>
     <string name="cancel">Abbrechen</string>
     <string name="btn_add_image">Bild</string>
+    <string name="image_gridview_title">Bilder</string>
     <string name="delete">Löschen</string>
     <string name="too_much_images">Du kannst kein weiteres Bild zufügen</string>
     <string name="pref_image_hoster_title">Image Hoster</string>
