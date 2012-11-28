@@ -149,6 +149,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 		for (int i = 0; i < SIZE; i++) {
 			items[i] = null;
 		}
+		size = 0;
 //		notifyDataSetChanged();
 	}
 	
