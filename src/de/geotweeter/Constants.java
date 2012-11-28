@@ -5,6 +5,9 @@ import java.util.regex.Pattern;
 import android.app.Application;
 import android.graphics.Path;
 
+/**
+ * General constants storage.
+ */
 public class Constants extends Application {
 
 	public static Object THREAD_LOCK = new Object();
