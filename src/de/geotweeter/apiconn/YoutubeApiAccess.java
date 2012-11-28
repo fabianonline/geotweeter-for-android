@@ -9,6 +9,13 @@ import de.geotweeter.timelineelements.Url;
 
 public class YoutubeApiAccess {
 
+	/**
+	 * Generates URLs for the thumbnail and full size images of a Youtube video
+	 * 
+	 * @param url URL from a tweet
+	 * @return Pair of thumbnail and full size URL
+	 * @throws MalformedURLException
+	 */
 	public static Pair<URL, URL> getUrlPair(Url url) throws MalformedURLException {
 		URL screen_url = new URL(url.expanded_url);
 		if (screen_url.getHost().endsWith("youtu.be")) {
