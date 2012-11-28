@@ -376,7 +376,7 @@ public class NewTweetActivity extends Activity {
 	protected void onActivityResult(int request_code, int result_code, Intent data) {
 		if (request_code == PICTURE_REQUEST_CODE && result_code == Activity.RESULT_OK) {
 			String picturePath;
-			if(data == null) {
+			if(data == null || data.getData() == null) {
 				picturePath = cameraFileUri.getPath();
 				MediaScannerConnection.scanFile(this,
 						new String[] { picturePath }, null,
