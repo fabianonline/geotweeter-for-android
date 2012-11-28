@@ -2,6 +2,7 @@ package de.geotweeter;
 
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
@@ -25,6 +26,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private List<TimelineElement> items;
 	private Context context;
 	private boolean useDarkTheme;
+	private HashMap<Long, TimelineElement> available = new HashMap<Long, TimelineElement>();
 	
 
 	public TimelineElementAdapter(Context context, 
@@ -39,25 +41,29 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	}
 	
 	public void addAsFirst(TimelineElement t) {
-		if (t.olderThan(items.get(0))) {
-			items.add(0, t);
-			Collections.sort(items, new TLEComparator());
-		} else {
-			items.add(0, t);
+		if (!available.containsKey(t.getID())) {
+			if (t.olderThan(items.get(0))) {
+				items.add(0, t);
+				Collections.sort(items, new TLEComparator());
+			} else {
+				items.add(0, t);
+			}
+			available.put(t.getID(), t);
+			TimelineActivity.addToAvailableTLE(t);
+			this.notifyDataSetChanged();			
 		}
-		TimelineActivity.addToAvailableTLE(t);
-		this.notifyDataSetChanged();
 	}
 	
 	public void addAllAsFirst(List<TimelineElement> elements) {
 		for (TimelineElement t : elements) {
-			if (!TimelineActivity.availableTweets.containsKey(t.getID())) {
+			if (!available.containsKey(t.getID())) {
+				available.put(t.getID(), t);
 				TimelineActivity.addToAvailableTLE(t);
 				items.add(t);				
+				Collections.sort(items, new TLEComparator());
+				this.notifyDataSetChanged();
 			}
 		}
-		Collections.sort(items, new TLEComparator());
-		this.notifyDataSetChanged();
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
