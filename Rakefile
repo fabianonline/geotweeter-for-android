@@ -119,7 +119,7 @@ task :copy_and_modify_files=>[:check_properties] do
 end
 
 task :check_properties do
-    properties_to_check = %w(twitter.consumer.key twitter.consumer.secret tweetmarker.key google.gcm.sender.id google.gcm.sender.token google.gcm.server.url twitpic.key google.maps.key.development google.maps.key.release crashreport.server.url)
+    properties_to_check = %w(twitter.consumer.key twitter.consumer.secret tweetmarker.key google.gcm.sender.id google.gcm.sender.token google.gcm.server.url twitpic.key google.maps.key.development google.maps.key.release crashreport.server.url cacert.keystore.passphrase)
 
     lines = File.readlines("./res/raw/geotweeter.properties")
     hash = Hash[ lines.collect {|l| l.strip.split("=", 2)} ]
