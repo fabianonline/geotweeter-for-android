@@ -28,7 +28,13 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private boolean useDarkTheme;
 	private HashMap<Long, TimelineElement> available = new HashMap<Long, TimelineElement>();
 	
-
+	/**
+	 * Constructor
+	 * 
+	 * @param context Current context
+	 * @param textViewResourceId The resource ID for a layout file containing a TextView to use when instantiating views.
+	 * @param objects The objects to be represented
+	 */
 	public TimelineElementAdapter(Context context, 
 			int textViewResourceId, List<TimelineElement> objects) {
 		super(context, textViewResourceId, objects);
@@ -40,6 +46,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 	}
 	
+	/**
+	 * Adds a timeline element to the adapter
+	 * 
+	 * @param t The element to be added
+	 */
 	public void addAsFirst(TimelineElement t) {
 		if (!available.containsKey(t.getID())) {
 			if (t.olderThan(items.get(0))) {
@@ -54,6 +65,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		}
 	}
 	
+	/**
+	 * Adds timeline elements to the adapter
+	 * 
+	 * @param elements The list of elements to be added
+	 */
 	public void addAllAsFirst(List<TimelineElement> elements) {
 		for (TimelineElement t : elements) {
 			if (!available.containsKey(t.getID())) {
@@ -66,6 +82,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
 		TimelineElement tle = (TimelineElement) items.get(position);
@@ -178,6 +197,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		return v;	
 	}
 	
+	/**
+	 * Shows a full size image overlay of the given URL
+	 * 
+	 * @param url The URL of the image to be shown
+	 */
 	protected void showOverlay(String url) {
 		ImageView img_overlay = null;
 		try {
@@ -192,6 +216,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		img_overlay.setVisibility(View.VISIBLE);
 	}
 
+	/**
+	 * Returns the adapter's item list
+	 * 
+	 * @return The adapter's item list
+	 */
 	public List<TimelineElement> getItems() {
 		return items;
 	}
