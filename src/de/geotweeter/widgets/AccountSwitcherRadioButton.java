@@ -4,6 +4,7 @@ package de.geotweeter.widgets;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import de.geotweeter.R;
  * @author Julian Kuerby
  *
  */
+@SuppressLint("ViewConstructor")
 public class AccountSwitcherRadioButton extends RadioButton implements Observer {
 	
 	public enum Message {
