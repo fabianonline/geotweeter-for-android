@@ -189,11 +189,11 @@ public class Account extends Observable implements Serializable {
 	public void stopStream() {
 		stream_request.stop(false);
 	}
-	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+
 	/**
 	 * Gets timeline updates from the twitter API from Android 3.0 onward
 	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void refreshTimeline() {
 		if (tasksRunning == 0) {
 			setChanged();
@@ -227,6 +227,9 @@ public class Account extends Observable implements Serializable {
 		new TimelineRefreshTask().execute(AccessType.DM_SENT);
 	}
 
+	/**
+	 * Keeps the API access result or the thrown exception
+	 */
 	private class TimelineRefreshResult {
 		public Exception e;
 		public ArrayList<TimelineElement> elements;
@@ -234,9 +237,6 @@ public class Account extends Observable implements Serializable {
 	
 	/**
 	 * AsyncTask which handles any timeline API access tasks
-	 * 
-	 * @author lutz
-	 *
 	 */
 	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, TimelineRefreshResult> {
 	
