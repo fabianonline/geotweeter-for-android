@@ -66,7 +66,7 @@ public class TimelineActivity extends MapActivity {
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
 	public static HashMap<Long,TimelineElement> availableTweets;
-
+	
 	/**
 	 * Initializes the Activity
 	 * 
@@ -77,7 +77,9 @@ public class TimelineActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Utils.setDesign(this);
-		availableTweets = new HashMap<Long, TimelineElement>();
+		if (availableTweets == null) {
+			availableTweets = new HashMap<Long, TimelineElement>();
+		}
 		super.onCreate(savedInstanceState);
 		instance = this;
 		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
