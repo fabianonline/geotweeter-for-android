@@ -76,6 +76,9 @@ import de.geotweeter.timelineelements.Tweet;
 import de.geotweeter.timelineelements.UserMention;
 import de.geotweeter.widgets.ProtectedPlaceholderEditText;
 
+/**
+ * Interface to create a new tweet 
+ */
 public class NewTweetActivity extends Activity {
 	private static final String LOG = "NewTweetActivity";
 	private static final int PICTURE_REQUEST_CODE = 123;
@@ -247,6 +250,14 @@ public class NewTweetActivity extends Activity {
 		
 	}
 	
+	/**
+	 * Prevents modification of placeholder URLs with by selecting them comletely
+	 * 
+	 * @param v The EditText
+	 * @param keyCode The key which is pressed
+	 * @param event The event which triggered the event
+	 * @return true if the event was handled
+	 */
 	protected boolean tweetTextKeyListener(ProtectedPlaceholderEditText v, int keyCode, KeyEvent event) {
 		if (event.getAction() == KeyEvent.ACTION_DOWN) {
 			if (v.isPlaceholderSelected()) {
@@ -408,7 +419,11 @@ public class NewTweetActivity extends Activity {
 		return Uri.fromFile(getOutputMediaFile());
 	}
 
-	/** Create a File for saving an image or video */
+	/**
+	 * Create a File for saving an image or video 
+	 * 
+	 * @return The created file
+	 */
 	private static File getOutputMediaFile(){
 //		File mediaStorageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),"Camera");
