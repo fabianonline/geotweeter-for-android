@@ -373,14 +373,25 @@ public class Account extends Observable implements Serializable {
 				min_known_tweet_id = Math.min(min_known_tweet_id, ((Tweet) element).id);
 			}
 			for (TimelineElement tle : list) {
-				if (!TimelineActivity.availableTweets.containsKey(tle.getID())) {
+				if (TimelineActivity.availableTweets != null) {
+					if (!TimelineActivity.availableTweets.containsKey(tle.getID())) {
+						if (tle.getClass() == DirectMessage.class) {
+							if (tle.getID() > old_max_known_dm_id) {
+								all_elements.add(tle);
+							}
+						} else {
+							all_elements.add(tle);
+						}
+					}
+				} else { 
+					/* Shouldn't actually happen... */
 					if (tle.getClass() == DirectMessage.class) {
 						if (tle.getID() > old_max_known_dm_id) {
 							all_elements.add(tle);
 						}
 					} else {
 						all_elements.add(tle);
-					}
+					}					
 				}
 			}
 		}
