@@ -9,6 +9,13 @@ import de.geotweeter.timelineelements.Url;
 
 public class ImgurApiAccess {
 
+	/**
+	 * Generates URLs for the thumbnail and full size images of a Imgur picture
+	 * 
+	 * @param url URL from a tweet
+	 * @return Pair of thumbnail and full size URL
+	 * @throws MalformedURLException
+	 */
 	public static Pair<URL, URL> getUrlPair(Url url) throws MalformedURLException {
 		String expanded_url = url.expanded_url;
 		if (expanded_url.contains("/gallery/")) {
