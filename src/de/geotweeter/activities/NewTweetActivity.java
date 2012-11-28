@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -336,18 +337,29 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	public void addImageHandler(View v) {
+		// Gallery and Filesystem
 		Intent galleryIntent = new Intent();
 		galleryIntent.setType("image/*");
 		galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
 		galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
-		Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		cameraFileUri = getOutputMediaFileUri();
-		cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri);
-		List<Intent> intents = new ArrayList<Intent>();
-		intents.add(cameraIntent);
 		
+		// Camera
+		List<Intent> cameraIntents = new ArrayList<Intent>();
+		
+		Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		cameraFileUri = getOutputMediaFileUri();
+		captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri);
+		List<ResolveInfo> listCam = getPackageManager().queryIntentActivities(captureIntent, 0);
+		for(ResolveInfo res : listCam) {
+			final String packageName = res.activityInfo.packageName;
+			final Intent intent = new Intent(captureIntent);
+			intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+			intent.setPackage(packageName);
+			cameraIntents.add(intent);
+		}
+
 		Intent chooserIntent = Intent.createChooser(galleryIntent, "Select");
-		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[] {}));
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[] {}));
 		startActivityForResult(chooserIntent, PICTURE_REQUEST_CODE);
 	}
 	
@@ -368,7 +380,7 @@ public class NewTweetActivity extends Activity {
 				Cursor cursor = getContentResolver().query(data.getData(), new String[] {MediaStore.Images.Media.DATA}, null, null, null);
 				cursor.moveToFirst();
 				picturePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-				cursor.close();				
+				cursor.close();
 			}
 			
 			String image_hoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter"); 
