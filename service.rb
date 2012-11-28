@@ -105,6 +105,8 @@ def send_gcm(config, data, type)
 end
 
 def stream(hash)
+	return unless $machine_running
+
 	config = $settings[hash]
 	screen_name = config[:screen_name]
 	log screen_name, "Adding new thread."
@@ -192,17 +194,47 @@ def print_stats
 	File.open(File.join(File.dirname(__FILE__), "stats.txt"), "w") {|f| f.write(str)}
 end
 
+$machine_running = false
+
 Thread.new do
-	EM.run do
+	while true
+		begin
+			puts "Starting machine..."
+
+			$stats[:accounts] = 0
+			$stats[:reg_ids] = 0
+
+			em_thread = Thread.new do
+				EM.run do
+				end
+			end
+
+
+			$machine_running = true
+
+			$settings.each do |key, hash|
+				stream(key)
+			end
+
+			em_thread.join
+		rescue Exception=>e
+			$machine_running = false
+
+			puts "Exception caught:"
+			puts e.inspect
+		end
+
+		puts "Sleeping 5 Minutes before restarting the machine."
+		puts
+		puts
+		puts
+		puts
+		sleep 300
 	end
 end
 
 EventMachine::PeriodicTimer.new(60) do
 	print_stats()
-end
-
-$settings.each do |key, hash|
-	stream(key)
 end
 
 update()
