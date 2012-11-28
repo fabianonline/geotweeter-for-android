@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import de.geotweeter.R;
 import de.geotweeter.activities.TimelineActivity;
 
 /**

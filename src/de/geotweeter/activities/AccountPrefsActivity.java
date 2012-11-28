@@ -14,9 +14,9 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
-import de.geotweeter.R;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
+import de.geotweeter.R;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
 

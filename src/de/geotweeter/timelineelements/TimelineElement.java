@@ -9,12 +9,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.util.Log;
+import android.util.Pair;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 
-import android.util.Log;
-import android.util.Pair;
-
+/**
+ * Abstract container for any timeline element 
+ */
 public abstract class TimelineElement implements Serializable {
 	private static final long serialVersionUID = -4794489823636370071L;
 	private static final String LOG = "TimelineElement";
@@ -33,7 +35,11 @@ public abstract class TimelineElement implements Serializable {
 	abstract public int getBackgroundDrawableID(boolean getDarkVersion);
 	abstract public String getSenderString();
 
-	
+	/**
+	 * Gets the creation time stamp
+	 * 
+	 * @return Creation time stamp
+	 */
 	public Date getDate() {
 		if (created_at != null) {
 			return created_at;
@@ -41,6 +47,11 @@ public abstract class TimelineElement implements Serializable {
 		return new Date();
 	}
 	
+	/**
+	 * Sets the creation time stamp
+	 * 
+	 * @param str The time stamp to be set
+	 */
 	public void setCreated_at(String str) {
 		try { 
 			synchronized(parse_lock) {
@@ -51,6 +62,11 @@ public abstract class TimelineElement implements Serializable {
 		}
 	}
 	
+	/**
+	 * Generates the time stamp to be shown in the TimelineElement's view
+	 * 
+	 * @return Time stamp string to be shown
+	 */
 	public String getDateString() {
 		if (tweetTimeStyle.equals("minutes")) {
 			long time = System.currentTimeMillis() - created_at.getTime();
@@ -129,6 +145,7 @@ public abstract class TimelineElement implements Serializable {
 	public List<Pair<URL, URL>> getMediaList() {
 		return new ArrayList<Pair<URL, URL>>();
 	}
+	
 	public boolean olderThan(TimelineElement tle) {
 		return (created_at.getTime() < tle.created_at.getTime());
 	}

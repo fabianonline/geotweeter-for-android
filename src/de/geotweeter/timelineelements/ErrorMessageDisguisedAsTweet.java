@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.util.Pair;
-
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 

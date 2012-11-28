@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import de.geotweeter.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;

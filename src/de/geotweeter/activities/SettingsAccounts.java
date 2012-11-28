@@ -9,9 +9,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import de.geotweeter.R;
 import de.geotweeter.Account;
 import de.geotweeter.AccountListElementAdapter;
+import de.geotweeter.R;
 import de.geotweeter.Utils;
 
 public class SettingsAccounts extends Activity {

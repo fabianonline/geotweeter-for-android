@@ -6,8 +6,6 @@ package de.geotweeter;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.geotweeter.apiconn.TwitpicApiAccess;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import de.geotweeter.apiconn.TwitpicApiAccess;
 
 /**
  * @author Julian Kuerby
