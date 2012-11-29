@@ -16,6 +16,7 @@ import android.widget.RadioGroup.LayoutParams;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
+import de.geotweeter.Utils;
 
 /**
  * @author Julian Kuerby
@@ -44,9 +45,9 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 		
 		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, HEIGHT);
-		layout.setMargins(convertDipToPixel(5), convertDipToPixel(2), convertDipToPixel(1), 0);
+		layout.setMargins(Utils.convertDipToPixel(5), Utils.convertDipToPixel(2), Utils.convertDipToPixel(1), 0);
 		setLayoutParams(layout);
-		setPadding(HEIGHT + convertDipToPixel(5), convertDipToPixel(4), convertDipToPixel(4), convertDipToPixel(4));
+		setPadding(HEIGHT + Utils.convertDipToPixel(5), Utils.convertDipToPixel(4), Utils.convertDipToPixel(4), Utils.convertDipToPixel(4));
 		if (useDarkTheme) {
 			setBackgroundResource(R.drawable.listelement_background_dark_dm);
 		} else {
@@ -97,15 +98,6 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Computes the number of pixels based on screen density 
-	 * @param dip the densitiy independent pixels to transform to pixels
-	 * @return Number of Pixels representing the densitiy independent pixel
-	 */
-	private int convertDipToPixel(int dip) {
-		return (int) (dip * context.getResources().getDisplayMetrics().density + 0.5f);
 	}
 	
 	private class AlphaBitmapDrawable extends BitmapDrawable {

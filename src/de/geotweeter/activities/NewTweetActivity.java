@@ -232,14 +232,17 @@ public class NewTweetActivity extends Activity {
 		LinearLayout lin = (LinearLayout) findViewById(R.id.linLayAccounts);
 		
 		currentAccount = TimelineActivity.current_account;
-		
+
+		int size = Utils.convertDipToPixel(40);
+		int padding = Utils.convertDipToPixel(4);
 		viewToAccounts = new HashMap<View, Account>();
 		for (Account account : accounts) {
 			User user = account.getUser();
 			ImageButton img = new ImageButton(this);
-			img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			img.setLayoutParams(new LayoutParams(size, size));
+			img.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			TimelineActivity.getBackgroundImageLoader(getApplicationContext()).displayImage(user.getAvatarSource(), img, true);
-			img.setPadding(5, 5, 5, 5);
+			img.setPadding(padding, padding, padding, padding);
 			changeLayoutOfAccountButton(img, currentAccount == account);
 			img.setOnClickListener(new AccountChangerListener());
 			lin.addView(img);
@@ -330,7 +333,7 @@ public class NewTweetActivity extends Activity {
 			GradientDrawable gradDraw = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, 
 															 new int[] {highlightColor, bgColor});
 			gradDraw.setGradientType(GradientDrawable.RADIAL_GRADIENT);
-			gradDraw.setGradientRadius(40);
+			gradDraw.setGradientRadius(Utils.convertDipToPixel(30));
 			v.setBackgroundDrawable(gradDraw);
 		} else {
 			v.setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
