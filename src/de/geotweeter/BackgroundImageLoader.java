@@ -12,15 +12,15 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.geotweeter.widgets.AccountSwitcherRadioButton;
+
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 
 /*
  * Vorlage: https://github.com/thest1/LazyList/blob/master/src/com/fedorvlasov/lazylist/ImageLoader.java
@@ -52,6 +52,8 @@ public class BackgroundImageLoader {
 		
 		image_views.put(image_view, url);
 		Bitmap bitmap = bitmap_cache.get(url);
+		
+		Log.d(LOG, "View: " + image_view.toString() + " url: " + url);
 		
 		if (bitmap != null) {
 			image_view.setImageBitmap(bitmap);
@@ -106,25 +108,25 @@ public class BackgroundImageLoader {
 
 	}
 	
-	public void displayImage(String url, RadioButton radioButton, boolean store_persistent) {
+	public void displayImage(String url, AccountSwitcherRadioButton radioButton, boolean store_persistent) {
 		Bitmap bitmap = bitmap_cache.get(url);
 		
 		if (bitmap != null) {
-			radioButton.setButtonDrawable(new AlphaBitmapDrawable(application_context.getResources(), bitmap));
+			radioButton.setButtonBitmap(bitmap_cache.get(url));
 		} else {
 			radioButton.setButtonDrawable(loading_image_id);
 			/* Queue Image to download */
-			executor_service.submit(new RadioButtonImageLoader(url, radioButton, store_persistent));
+			executor_service.submit(new AccountSwitcherRadioButtonImageLoader(url, radioButton, store_persistent));
 		}
 		
 	}
 	
-	public class RadioButtonImageLoader implements Runnable {
+	public class AccountSwitcherRadioButtonImageLoader implements Runnable {
 		String url;
-		RadioButton radioButton;
+		AccountSwitcherRadioButton radioButton;
 		private boolean store_persistent;
 		
-		public RadioButtonImageLoader(String url, RadioButton radioButton, boolean store_persistent) {
+		public AccountSwitcherRadioButtonImageLoader(String url, AccountSwitcherRadioButton radioButton, boolean store_persistent) {
 			this.url = url;
 			this.radioButton = radioButton;
 			this.store_persistent = store_persistent;
@@ -136,7 +138,7 @@ public class BackgroundImageLoader {
 				((Activity)radioButton.getContext()).runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						radioButton.setButtonDrawable(new AlphaBitmapDrawable(application_context.getResources(), bitmap_cache.get(url)));
+						radioButton.setButtonBitmap(bitmap_cache.get(url));
 					}
 				});
 				return;
@@ -151,7 +153,7 @@ public class BackgroundImageLoader {
 				@Override
 				public void run() {
 					if (bmp != null) {
-						radioButton.setButtonDrawable(new AlphaBitmapDrawable(application_context.getResources(), bmp));
+						radioButton.setButtonBitmap(bitmap_cache.get(url));
 					}
 				}
 				
@@ -265,37 +267,4 @@ public class BackgroundImageLoader {
 			}
 		}
 	}
-	
-	private class AlphaBitmapDrawable extends BitmapDrawable {
-		private boolean checked;
-		
-		public AlphaBitmapDrawable(Resources res, Bitmap bitmap) {
-			super(res, bitmap);
-			setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
-			checked = false;
-		}
-
-		@Override
-		protected boolean onStateChange(int[] state) {
-			if(state != null) {
-				for (int s : state) {
-					if (s == android.R.attr.state_checked) {
-						if (!checked) {
-							setAlpha(Constants.CHECKED_ALPHA_VALUE);
-							checked = true;
-							return true;
-						}
-						return false;
-					}
-				}
-			}
-			if (checked) {
-				setAlpha(Constants.UNCHECKED_ALPHA_VALUE);
-				checked = false;
-				return true;
-			}
-			return false;
-		}	
-	}
-
 }
