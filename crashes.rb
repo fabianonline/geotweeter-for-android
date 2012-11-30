@@ -42,7 +42,7 @@ if defined?(::Sinatra) && defined?(::Sinatra::Base)
 			string = "Neuer Crashreport ##{crash.id}. "
 			
 			if (count=Crash.all(:crash_hash=>crash.crash_hash).count) > 1
-				string << "Bekannter Typ (#{url("/crashes/#{crash.crash_hash}")}). Jetzt #{count} Vorkommnisse. "
+				string << "Bekannter Typ ( #{url("/crashes/#{crash.crash_hash}")} ). Jetzt #{count} Vorkommnisse. "
 			else
 				string << "Neuer Typ. Noch keine Vorkommnisse. "
 			end
