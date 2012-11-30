@@ -2,5 +2,5 @@ tmp/*
 .htaccess
 database.db
 geotweeter.properties
-log*.log
+log.*
 
