@@ -38,9 +38,8 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/btnGeo"
         android:ems="10"
-        android:inputType="textMultiLine"
-        android:minLines="3"
-        android:gravity="top" />
+        android:gravity="top"
+        android:inputType="textMultiLine" />
 
     <Button
         android:id="@+id/btnAddImage"
