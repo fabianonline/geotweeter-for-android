@@ -587,13 +587,17 @@ public class NewTweetActivity extends Activity {
 	protected class GPSCoordsListener implements LocationListener {
 		
 		public void onLocationChanged(Location new_location) {
-			/* Wir nehmen die aktuellen Koordinaten, wenn es
+			/* Wir nehmen immer die aktuellen Koordinaten, wenn es
 			 *   a) die ersten Koordinaten sind oder
-			 *   b) die bisherigen Koordinaten nur Netzwerk-genau waren
+			 *   b) die bisherigen Koordinaten nur Netzwerk-genau waren oder
+			 *   c) wir aktuell GPS-Koords bekommen haben.
 			 */
-			if (location == null || 
-					(new_location.getProvider().equals(LocationManager.GPS_PROVIDER) && location.getProvider().equals(LocationManager.NETWORK_PROVIDER))) {
-						location = new_location;
+			boolean caseA = (location == null);
+			boolean caseB = (location.getProvider().equals(LocationManager.NETWORK_PROVIDER));
+			boolean caseC = (new_location.getProvider().equals(LocationManager.GPS_PROVIDER));
+			
+			if (caseA || caseB || caseC) {
+				location = new_location;
 			}
 		}
 		
