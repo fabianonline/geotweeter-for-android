@@ -577,6 +577,9 @@ public class NewTweetActivity extends Activity {
 				if(providers.contains(LocationManager.NETWORK_PROVIDER)) {
 					lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, gpslistener);
 				}
+			} else {
+				Log.d(LOG, "Lösche Koordinaten.");
+				location = null;
 			}
 		}
 	}
