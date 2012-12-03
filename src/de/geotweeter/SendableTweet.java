@@ -10,6 +10,7 @@ public class SendableTweet {
 	public int remainingImages = 0;
 	public Location location = null;
 	public Long reply_to_status_id = null;
+	public String dmRecipient = null;
 	
 	public String imageHoster;
 	public long imageSize;

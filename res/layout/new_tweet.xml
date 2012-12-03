@@ -31,6 +31,15 @@
         android:layout_toLeftOf="@+id/textCharsRemaining"
         android:text="@string/btn_geo" />
 
+    <Button
+        android:id="@+id/btnNoDM"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/btnGeo"
+        android:text="Keine DM"
+        android:visibility="gone" />
+
     <de.geotweeter.widgets.ProtectedPlaceholderEditText
         android:id="@+id/tweet_text"
         android:layout_width="match_parent"
@@ -38,9 +47,8 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/btnGeo"
         android:ems="10"
-        android:inputType="textMultiLine"
-        android:minLines="3"
-        android:gravity="top" />
+        android:gravity="top"
+        android:inputType="textMultiLine" />
 
     <Button
         android:id="@+id/btnAddImage"

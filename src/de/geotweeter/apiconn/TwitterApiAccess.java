@@ -187,16 +187,24 @@ public class TwitterApiAccess {
 	
 	public Tweet sendTweet(SendableTweet tweet) throws OAuthException, TweetSendException {
 		Tweet result = null;
-		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
-		req.addBodyParameter("status", tweet.text);
-		
-		if (tweet.location != null) {
-			req.addBodyParameter("lat", String.valueOf(tweet.location.getLatitude()));
-			req.addBodyParameter("long", String.valueOf(tweet.location.getLongitude()));
-		}
-		
-		if (tweet.reply_to_status_id > 0) {
-			req.addBodyParameter("in_reply_to_status_id", String.valueOf(tweet.reply_to_status_id));
+		OAuthRequest req;
+		if (tweet.dmRecipient == null) {
+			/* Normal tweet (as in 'not a direct message') */
+			req = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
+			if (tweet.location != null) {
+				req.addBodyParameter("lat", String.valueOf(tweet.location.getLatitude()));
+				req.addBodyParameter("long", String.valueOf(tweet.location.getLongitude()));
+			}
+			
+			if (tweet.reply_to_status_id > 0) {
+				req.addBodyParameter("in_reply_to_status_id", String.valueOf(tweet.reply_to_status_id));
+			}
+			req.addBodyParameter("status", tweet.text);
+		} else {
+			/* direct message */
+			req = new OAuthRequest(Verb.POST, Constants.URI_SEND_DIRECT_MESSAGE);
+			req.addBodyParameter("screen_name", tweet.dmRecipient);
+			req.addBodyParameter("text", tweet.text);
 		}
 		
 		service.signRequest(token, req);
