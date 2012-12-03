@@ -31,6 +31,15 @@
         android:layout_toLeftOf="@+id/textCharsRemaining"
         android:text="@string/btn_geo" />
 
+    <Button
+        android:id="@+id/btnNoDM"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/btnGeo"
+        android:text="Keine DM"
+        android:visibility="gone" />
+
     <de.geotweeter.widgets.ProtectedPlaceholderEditText
         android:id="@+id/tweet_text"
         android:layout_width="match_parent"

@@ -51,6 +51,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -89,6 +90,7 @@ public class NewTweetActivity extends Activity {
 	private long reply_to_id;
 //	private String picturePath;
 	private ImageBaseAdapter imageAdapter;
+	private String dmRecipient = null;
 	
 	private Account currentAccount;
 	private HashMap<View, Account> viewToAccounts;
@@ -111,7 +113,7 @@ public class NewTweetActivity extends Activity {
 		editTweetText = ((ProtectedPlaceholderEditText)findViewById(R.id.tweet_text));
 		editTweetText.setPlaceholder(Pattern.compile("http://twitpic\\.com/pic(\\d{3})"));
 		
-		editTweetText.addTextChangedListener(new RemainingCharUpdater(this));
+		editTweetText.addTextChangedListener(new TextChangedListener(this));
 		if (useTwitpic) {
 			
 			/* Diese Funktionen werden benötigt, um Modifikationen von Twitpic-Platzhaltern
@@ -224,8 +226,20 @@ public class NewTweetActivity extends Activity {
 				new Conversation(tea, TimelineActivity.current_account, true, false);
 			}
 			l.setAdapter(tea);
-			
 		}
+		
+		/* "Keine DM"-Button */
+		findViewById(R.id.btnNoDM).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				int oldSelection = editTweetText.getSelectionStart();
+				editTweetText.setText("@" + dmRecipient + " " + editTweetText.getText().toString());
+				editTweetText.setSelection(oldSelection + (dmRecipient.length() + 2));
+				dmRecipient = null;
+				findViewById(R.id.btnNoDM).setVisibility(View.GONE);
+				setTitle(Utils.getString(R.string.new_tweet_activity_title));
+			}
+		});
 		
 		/* Accountauswahl */
 		List<Account> accounts = Account.all_accounts;
@@ -506,14 +520,15 @@ public class NewTweetActivity extends Activity {
 		               .show();
 	}
 	
-	protected class RemainingCharUpdater implements TextWatcher {
+	protected class TextChangedListener implements TextWatcher {
 		
 		private Activity activity;
 		private boolean delete;
 		private String text;
 		private int start;
+		private Pattern findDMPattern = Pattern.compile("^d @?([a-z0-9_]+)\\s(.*)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		
-		public RemainingCharUpdater(Activity a) { 
+		public TextChangedListener(Activity a) { 
 			activity = a;
 			delete = false;
 		}
@@ -549,6 +564,22 @@ public class NewTweetActivity extends Activity {
 				editTweetText.setText(text);
 				editTweetText.setSelection(start);
 			} else {
+				Matcher dmMatcher = findDMPattern.matcher(s.toString());
+				if (dmMatcher.find()) {
+					int oldSelectionStart = editTweetText.getSelectionStart();
+					int oldLength = s.toString().length();
+					activity.setTitle(Utils.formatString(R.string.new_tweet_activity_title_sending_dm, dmMatcher.group(1)));
+					dmRecipient = dmMatcher.group(1);
+					s.replace(0, s.length(), dmMatcher.group(2));
+					editTweetText.setText(dmMatcher.group(2));
+					int newLength = s.toString().length();
+					int newSelectionStart = oldSelectionStart - oldLength + newLength;
+					if (newSelectionStart < 0) newSelectionStart = 0;
+					if (newSelectionStart > s.length()) newSelectionStart = s.length();
+					editTweetText.setSelection(newSelectionStart);
+					activity.findViewById(R.id.btnNoDM).setVisibility(View.VISIBLE);
+				}
+				
 				TextView t = (TextView) activity.findViewById(R.id.textCharsRemaining);
 				int remaining = 140 - Utils.countChars(s.toString());
 				t.setText(String.valueOf(remaining));
@@ -620,6 +651,7 @@ public class NewTweetActivity extends Activity {
 			tweet.remainingImages = imageAdapter.getCount();
 			tweet.location = location;
 			tweet.reply_to_status_id = reply_to_id;
+			tweet.dmRecipient = dmRecipient;
 			tweet.imageHoster = getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_hoster", "twitter");
 			tweet.imageSize = Long.parseLong(getSharedPreferences(Constants.PREFS_APP, 0).getString("pref_image_size", "-1"));
 			service.addSendableTweet(tweet);
