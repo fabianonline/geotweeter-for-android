@@ -1,5 +1,11 @@
 <resources>
 
     <style name="AppTheme" parent="android:Theme.Light" />
+    
+    <style name="GeotweeterThemeDark" parent="android:Theme.Black">
+    </style>
+    
+    <style name="GeotweeterThemeLight" parent="android:Theme.Light">
+    </style>
 
 </resources>

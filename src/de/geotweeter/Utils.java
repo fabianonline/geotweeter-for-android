@@ -17,7 +17,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.util.Log;
 import android.view.View;
 
@@ -154,11 +153,7 @@ public class Utils {
 		SharedPreferences prefs = a.getSharedPreferences(Constants.PREFS_APP, 0);
 		boolean useDarkTheme = prefs.getBoolean("pref_dark_theme", false);
 		if (useDarkTheme) {
-			if (Build.VERSION.SDK_INT < 11) {
-				a.setTheme(android.R.style.Theme_Black);
-			} else {
-				a.setTheme(android.R.style.Theme_Holo);
-			}
+			a.setTheme(R.style.GeotweeterThemeDark);
 		}
 	}
 	
