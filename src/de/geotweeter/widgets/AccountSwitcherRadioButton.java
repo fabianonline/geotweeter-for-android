@@ -36,12 +36,10 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 	private static final int HEIGHT = 48;
 	
 	private final Account account;
-	private final Context context;
 	
 	public AccountSwitcherRadioButton(Context context, Account account) {
 		super(context);
 		this.account = account;
-		this.context = context;
 		
 		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, HEIGHT);
 		layout.setMargins(Utils.convertDipToPixel(5), Utils.convertDipToPixel(2), Utils.convertDipToPixel(1), 0);
