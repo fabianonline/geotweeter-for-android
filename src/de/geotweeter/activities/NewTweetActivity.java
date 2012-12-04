@@ -51,7 +51,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -269,7 +268,7 @@ public class NewTweetActivity extends Activity {
 	}
 	
 	/**
-	 * Prevents modification of placeholder URLs with by selecting them comletely
+	 * Prevents modification of placeholder URLs with by selecting them completely
 	 * 
 	 * @param v The EditText
 	 * @param keyCode The key which is pressed
