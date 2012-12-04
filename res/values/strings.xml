@@ -145,4 +145,7 @@
     <string name="tweet_notification_text_retweet">%1$s retweetete: %2$s</string>
     <string name="tweet_notification_content_title_mention">Mention von %1$s</string>
     <string name="tweet_notification_content_title_retweet">Retweet von %1$s</string>
+    
+    <string name="new_tweet_activity_title">Neuer Tweet</string>
+    <string name="new_tweet_activity_title_sending_dm">DM an %1$s</string>
 </resources>

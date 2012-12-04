@@ -25,6 +25,9 @@ import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.apiconn.YfrogApiAccess;
 import de.geotweeter.apiconn.YoutubeApiAccess;
 
+/**
+ * Representing a single tweet 
+ */
 public class Tweet extends TimelineElement {
 	private static final long serialVersionUID = -6610449879010917836L;
 	@SuppressWarnings("unused")
@@ -42,10 +45,16 @@ public class Tweet extends TimelineElement {
 	private Place place;
 	public Tweet retweeted_status;
 	
+	/**
+	 * Returns the tweet id
+	 */
 	public long getID() {
 		return id;
 	}
 	
+	/**
+	 * Formats the tweet text to be displayes
+	 */
 	public String getTextForDisplay() {
 		if (text_for_display == null) {
 			text_for_display = new String(text);
@@ -80,6 +89,11 @@ public class Tweet extends TimelineElement {
 		return user.getAvatarSource();
 	}
 	
+	/**
+	 * Extracts the twitter client
+	 * 
+	 * @param str
+	 */
 	public void setSource(String str) {
 		Matcher m = Constants.REGEXP_FIND_SOURCE.matcher(str);
 		if (m.find()) {
@@ -136,6 +150,9 @@ public class Tweet extends TimelineElement {
 		return text;
 	}
 	
+	/**
+	 * Returns the tweet view background design
+	 */
 	@Override
 	public int getBackgroundDrawableID(boolean getDarkVersion) {
 		User current_user = TimelineActivity.current_account.getUser();
@@ -150,6 +167,12 @@ public class Tweet extends TimelineElement {
 		}
 	}
 
+	/**
+	 * Returns true if the given user is mentioned
+	 * 
+	 * @param user User whose mention status is to be checked
+	 * @return
+	 */
 	public boolean mentionsUser(User user) {
 		if (entities != null) {
 			for(int i = 0; i < entities.user_mentions.size(); i++ ) {
@@ -174,6 +197,10 @@ public class Tweet extends TimelineElement {
 		return place.getFullName();
 	}
 	
+	/**
+	 * Parses the tweet text for media links and provides a list of URL pairs
+	 * of thumbnail and full size URLs
+	 */
 	public List<Pair<URL, URL>> getMediaList() {
 		List<Pair<URL, URL>> result = new ArrayList<Pair<URL, URL>>();
 		for (Media media : entities.media) {

@@ -41,7 +41,7 @@
         </activity>
         <activity
             android:name=".activities.NewTweetActivity"
-            android:label="@string/title_activity_timeline"
+            android:label="@string/new_tweet_activity_title"
             android:configChanges="keyboardHidden|orientation" >
         </activity>
         <activity
