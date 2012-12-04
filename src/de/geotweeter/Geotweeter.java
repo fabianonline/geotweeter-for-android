@@ -43,11 +43,13 @@ public class Geotweeter extends Application {
 	private static final String LOG = "Geotweeter";
 	private static Geotweeter instance;
 	public List<Pair<TimelineElement, String>> notifiedElements = new ArrayList<Pair<TimelineElement, String>>();
+	private boolean darkTheme;
 	
 	@Override
 	public void onCreate() {
 		Log.d(LOG, "onCreate is running");
 		instance = this;
+		darkTheme = getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 		ACRAConfiguration config = ACRA.getNewDefaultConfig(this);
 		config.setFormUri(Utils.getProperty("crashreport.server.url") + "/send");
 		ACRA.setConfig(config);
@@ -55,6 +57,10 @@ public class Geotweeter extends Application {
 		super.onCreate();
 	}
 	
+	public boolean useDarkTheme() {
+		return darkTheme;
+	}
+
 	public static Geotweeter getInstance() {
 		return instance;
 	}

@@ -15,6 +15,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup.LayoutParams;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 
@@ -36,19 +37,17 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 	
 	private final Account account;
 	private final Context context;
-	private boolean useDarkTheme;
 	
 	public AccountSwitcherRadioButton(Context context, Account account) {
 		super(context);
 		this.account = account;
 		this.context = context;
-		useDarkTheme = context.getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
 		
 		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, HEIGHT);
 		layout.setMargins(Utils.convertDipToPixel(5), Utils.convertDipToPixel(2), Utils.convertDipToPixel(1), 0);
 		setLayoutParams(layout);
 		setPadding(HEIGHT + Utils.convertDipToPixel(5), Utils.convertDipToPixel(4), Utils.convertDipToPixel(4), Utils.convertDipToPixel(4));
-		if (useDarkTheme) {
+		if (Geotweeter.getInstance().useDarkTheme()) {
 			setBackgroundResource(R.drawable.listelement_background_dark_dm);
 		} else {
 			setBackgroundResource(R.drawable.listelement_background_light_dm);
@@ -61,7 +60,7 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked) {
-					if (useDarkTheme) {
+					if (Geotweeter.getInstance().useDarkTheme()) {
 						setTextColor(CHECKED_COLOR_DARK);
 					} else {
 						setTextColor(CHECKED_COLOR_LIGHT);
@@ -85,13 +84,13 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 			if (data == Message.UNREAD) {
 				setText("(" + account.getUnreadTweetsSize() + ")");
 			} else if (data == Message.REFRESH_START) {
-				if(useDarkTheme) {
+				if(Geotweeter.getInstance().useDarkTheme()) {
 					setBackgroundResource(R.drawable.listelement_background_dark_dm);
 				} else {
 					setBackgroundResource(R.drawable.listelement_background_light_dm);
 				}
 			} else if (data == Message.REFRESH_FINISHED) {
-				if(useDarkTheme) {
+				if(Geotweeter.getInstance().useDarkTheme()) {
 					setBackgroundResource(R.drawable.listelement_background_dark_my);
 				} else {
 					setBackgroundResource(R.drawable.listelement_background_light_my);

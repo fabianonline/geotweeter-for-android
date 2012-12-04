@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import org.acra.ACRA;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -150,8 +149,7 @@ public class Utils {
 	}
 	
 	public static void setDesign(Activity a) {
-		SharedPreferences prefs = a.getSharedPreferences(Constants.PREFS_APP, 0);
-		boolean useDarkTheme = prefs.getBoolean("pref_dark_theme", false);
+		boolean useDarkTheme = Geotweeter.getInstance().useDarkTheme();
 		if (useDarkTheme) {
 			a.setTheme(R.style.GeotweeterThemeDark);
 		}
