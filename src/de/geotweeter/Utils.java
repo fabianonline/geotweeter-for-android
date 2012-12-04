@@ -177,7 +177,7 @@ public class Utils {
 		if (properties == null) {
 			properties = new Properties();
 			try {
-				InputStream stream = Geotweeter.getContext().getResources().openRawResource(R.raw.geotweeter);
+				InputStream stream = Geotweeter.getInstance().getResources().openRawResource(R.raw.geotweeter);
 				properties.load(stream);
 				stream.close();
 			} catch (Exception caught_exception) {
@@ -292,11 +292,11 @@ public class Utils {
 	  }
 	
 	public static String formatString(int string_id, Object... args) {
-		return String.format(Geotweeter.getContext().getString(string_id), args);
+		return String.format(Geotweeter.getInstance().getString(string_id), args);
 	}
 	
 	public static String getString(int string_id) {
-		return Geotweeter.getContext().getString(string_id);
+		return Geotweeter.getInstance().getString(string_id);
 	}
 	
 	/**
@@ -305,6 +305,6 @@ public class Utils {
 	 * @return Number of Pixels representing the densitiy independent pixel
 	 */
 	public static int convertDipToPixel(int dip) {
-		return (int) (dip * Geotweeter.getContext().getResources().getDisplayMetrics().density + 0.5f);
+		return (int) (dip * Geotweeter.getInstance().getResources().getDisplayMetrics().density + 0.5f);
 	}
 }
