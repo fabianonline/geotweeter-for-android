@@ -25,7 +25,7 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
+        android:theme="@style/GeotweeterThemeLight"
         android:name=".Geotweeter" >
         <uses-library android:name="com.google.android.maps" />
 

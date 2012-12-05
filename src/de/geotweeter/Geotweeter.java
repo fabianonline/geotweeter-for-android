@@ -41,13 +41,13 @@ import de.geotweeter.timelineelements.Tweet;
                 excludeMatchingSharedPreferencesKeys = {"^access_"})
 public class Geotweeter extends Application {
 	private static final String LOG = "Geotweeter";
-	private static Context myContext;
+	private static Geotweeter instance;
 	public List<Pair<TimelineElement, String>> notifiedElements = new ArrayList<Pair<TimelineElement, String>>();
 	
 	@Override
 	public void onCreate() {
 		Log.d(LOG, "onCreate is running");
-		myContext = this;
+		instance = this;
 		ACRAConfiguration config = ACRA.getNewDefaultConfig(this);
 		config.setFormUri(Utils.getProperty("crashreport.server.url") + "/send");
 		ACRA.setConfig(config);
@@ -55,8 +55,8 @@ public class Geotweeter extends Application {
 		super.onCreate();
 	}
 	
-	public static Context getContext() {
-		return myContext;
+	public static Geotweeter getInstance() {
+		return instance;
 	}
 	
 	public void updateNotification(boolean vibrateAndPlaySoundAndStuff) {

@@ -29,6 +29,6 @@ public class ErrorMessageDisguisedAsTweet extends Tweet {
 	public List<Pair<URL, URL>> getMediaList() { return new LinkedList<Pair<URL,URL>>(); }
 	
 	public String getTextForDisplay() {
-		return Geotweeter.getContext().getString(message_resource_id);
+		return Geotweeter.getInstance().getString(message_resource_id);
 	}
 }
