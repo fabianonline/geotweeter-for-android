@@ -60,6 +60,14 @@ public class Geotweeter extends Application {
 	public boolean useDarkTheme() {
 		return darkTheme;
 	}
+	
+	public void changeTheme(boolean darkTheme) {
+		this.darkTheme = darkTheme;
+	}
+	
+	public void refreshTheme() {
+		darkTheme = getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
+	}
 
 	public static Geotweeter getInstance() {
 		return instance;
