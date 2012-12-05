@@ -270,6 +270,9 @@ public class Account extends Observable implements Serializable {
 			} catch (OAuthException e) {
 				result.e = e;
 				return result;
+			} catch (IllegalStateException e) {
+				result.e = e;
+				return result;
 			}
 			return null;
 		}
