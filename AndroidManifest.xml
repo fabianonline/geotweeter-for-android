@@ -5,7 +5,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="17" />
 
     <permission
         android:name="de.geotweeter.permission.C2D_MESSAGE"
@@ -20,7 +20,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.DUMP" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -32,7 +31,7 @@
         <activity
             android:name=".activities.TimelineActivity"
             android:label="@string/app_name"
-            android:configChanges="keyboardHidden|orientation" >
+            android:configChanges="keyboardHidden|orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +41,7 @@
         <activity
             android:name=".activities.NewTweetActivity"
             android:label="@string/new_tweet_activity_title"
-            android:configChanges="keyboardHidden|orientation" >
+            android:configChanges="keyboardHidden|orientation|screenSize" >
         </activity>
         <activity
             android:name=".activities.GeneralPrefsActivity"
@@ -51,7 +50,7 @@
         <activity
             android:name=".activities.SettingsAccounts"
             android:label="@string/settings_accounts_title"
-            android:configChanges="keyboardHidden|orientation" >
+            android:configChanges="keyboardHidden|orientation|screenSize" >
             <intent-filter>
                 <action android:name=".activities.SettingsAccounts" />
 
@@ -61,7 +60,7 @@
         <activity
             android:name=".activities.AuthenticateAccountActivity"
             android:label="@string/authenticate_account"
-            android:configChanges="keyboardHidden|orientation" >
+            android:configChanges="keyboardHidden|orientation|screenSize" >
         </activity>
 
         <receiver
@@ -82,14 +81,14 @@
         <activity
             android:name=".activities.AccountPrefsActivity"
             android:label="@string/account_prefs"
-            android:configChanges="keyboardHidden|orientation" />
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service android:name=".services.TweetSendService" />
 
         <activity
             android:name=".activities.AboutActivity"
             android:label="@string/menu_about"
-            android:configChanges="keyboardHidden|orientation" >
+            android:configChanges="keyboardHidden|orientation|screenSize" >
             <intent-filter>
                 <action android:name=".activities.AboutActivity" />
 
@@ -103,7 +102,7 @@
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
-            android:configChanges="keyboardHidden|orientation" />
+            android:configChanges="keyboardHidden|orientation|screenSize" />
     </application>
 
 </manifest>
