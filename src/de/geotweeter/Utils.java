@@ -299,8 +299,8 @@ public class Utils {
 	
 	/**
 	 * Computes the number of pixels based on screen density 
-	 * @param dip the densitiy independent pixels to transform to pixels
-	 * @return Number of Pixels representing the densitiy independent pixel
+	 * @param dip the density independent pixels to transform to pixels
+	 * @return Number of Pixels representing the density independent pixel
 	 */
 	public static int convertDipToPixel(int dip) {
 		return (int) (dip * Geotweeter.getInstance().getResources().getDisplayMetrics().density + 0.5f);
