@@ -141,19 +141,22 @@ public class NewTweetActivity extends Activity {
 		Intent i = getIntent();
 		
 		if (i != null && i.getExtras() != null) {
+			TimelineElement elm = null;
 			
-			TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
-			Pair<TimelineElement, String> pair_to_delete = null;
-			for (Pair<TimelineElement, String> pair : ((Geotweeter) getApplication()).notifiedElements) {
-				if (pair.first.getClass() == elm.getClass() && pair.first.getID() == elm.getID()) {
-					pair_to_delete = pair;
-					break;
+			if (i.getExtras().containsKey("de.geotweeter.reply_to_tweet")) {
+				elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
+				Pair<TimelineElement, String> pair_to_delete = null;
+				for (Pair<TimelineElement, String> pair : ((Geotweeter) getApplication()).notifiedElements) {
+					if (pair.first.getClass() == elm.getClass() && pair.first.getID() == elm.getID()) {
+						pair_to_delete = pair;
+						break;
+					}
 				}
-			}
-			
-			if (pair_to_delete != null) {
-				((Geotweeter) getApplication()).notifiedElements.remove(pair_to_delete);
-				((Geotweeter) getApplication()).updateNotification(false);
+				
+				if (pair_to_delete != null) {
+					((Geotweeter) getApplication()).notifiedElements.remove(pair_to_delete);
+					((Geotweeter) getApplication()).updateNotification(false);
+				}
 			}
 			
 			if (elm instanceof DirectMessage) {
@@ -173,7 +176,8 @@ public class NewTweetActivity extends Activity {
 					}
 				
 				}
-				editTweetText.setText("d " + elm.getSenderScreenName() + " ");
+				dmRecipient = elm.getSenderScreenName();
+				editTweetText.setText("");
 				
 			} else if (elm instanceof Tweet) {
 				reply_to_id = elm.getID();
@@ -209,9 +213,8 @@ public class NewTweetActivity extends Activity {
 					}
 				}
 				editTweetText.setText(reply_string);
-				editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
 				try {
-					editTweetText.setSelection(reply_string.length());
+					editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
 				} catch (ArrayIndexOutOfBoundsException ex) {
 					// May happen. Ignore it.
 				}
