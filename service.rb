@@ -204,17 +204,23 @@ Thread.new do
 			$stats[:accounts] = 0
 			$stats[:reg_ids] = 0
 
+			puts "Creating and running thread..."
 			em_thread = Thread.new do
+				puts "  Starting EventMachine..."
 				EM.run do
-				end
+				end rescue nil
 			end
 
 
 			$machine_running = true
 
+			puts "Adding streams..."
+
 			$settings.each do |key, hash|
 				stream(key)
 			end
+
+			puts "Waiting for EventMachine to die."
 
 			em_thread.join
 		rescue Exception=>e
