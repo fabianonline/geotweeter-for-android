@@ -220,6 +220,12 @@ Thread.new do
 				stream(key)
 			end
 
+			puts "Adding Timer for Stats..."
+			EventMachine::PeriodicTimer.new(60) do
+				print_stats()
+			end
+
+
 			puts "Waiting for EventMachine to die."
 
 			em_thread.join
@@ -237,10 +243,6 @@ Thread.new do
 		puts
 		sleep 300
 	end
-end
-
-EventMachine::PeriodicTimer.new(60) do
-	print_stats()
 end
 
 update()
