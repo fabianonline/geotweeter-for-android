@@ -521,7 +521,7 @@ public class NewTweetActivity extends Activity {
 		private boolean delete;
 		private String text;
 		private int start;
-		private Pattern findDMPattern = Pattern.compile("^d @?([a-z0-9_]+)\\s(.*)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+		private Pattern findDMPattern = Pattern.compile("^[dm] @?([a-z0-9_]+)\\s(.*)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		
 		public TextChangedListener(Activity a) { 
 			activity = a;
