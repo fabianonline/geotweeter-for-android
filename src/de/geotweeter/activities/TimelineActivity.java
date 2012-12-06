@@ -317,6 +317,12 @@ public class TimelineActivity extends MapActivity {
 		return true;
 	}
 
+	/**
+	 * Opens the new tweet activity for a reply
+	 * 
+	 * @param te The timeline element to reply to
+	 * @return
+	 */
 	protected boolean respondToTimelineElement(TimelineElement te) {
 		Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
 		replyIntent.putExtra("de.geotweeter.reply_to_tweet", te);
