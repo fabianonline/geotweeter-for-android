@@ -112,7 +112,7 @@ public class NewTweetActivity extends Activity {
 		editTweetText = ((ProtectedPlaceholderEditText)findViewById(R.id.tweet_text));
 		editTweetText.setPlaceholder(Pattern.compile("http://twitpic\\.com/pic(\\d{3})"));
 		
-		editTweetText.addTextChangedListener(new TextChangedListener(this));
+		editTweetText.addTextChangedListener(new TextChangedListener());
 		if (useTwitpic) {
 			
 			/* Diese Funktionen werden benötigt, um Modifikationen von Twitpic-Platzhaltern
@@ -524,14 +524,12 @@ public class NewTweetActivity extends Activity {
 	
 	protected class TextChangedListener implements TextWatcher {
 		
-		private Activity activity;
 		private boolean delete;
 		private String text;
 		private int start;
 		private Pattern findDMPattern = Pattern.compile("^[dm] @?([a-z0-9_]+)\\s(.*)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		
-		public TextChangedListener(Activity a) { 
-			activity = a;
+		public TextChangedListener() {
 			delete = false;
 		}
 		
@@ -570,7 +568,7 @@ public class NewTweetActivity extends Activity {
 				if (dmRecipient == null && dmMatcher.find()) {
 					int oldSelectionStart = editTweetText.getSelectionStart();
 					int oldLength = s.toString().length();
-					activity.setTitle(Utils.formatString(R.string.new_tweet_activity_title_sending_dm, dmMatcher.group(1)));
+					NewTweetActivity.this.setTitle(Utils.formatString(R.string.new_tweet_activity_title_sending_dm, dmMatcher.group(1)));
 					dmRecipient = dmMatcher.group(1);
 					s.replace(0, s.length(), dmMatcher.group(2));
 					editTweetText.setText(dmMatcher.group(2));
@@ -579,10 +577,10 @@ public class NewTweetActivity extends Activity {
 					if (newSelectionStart < 0) newSelectionStart = 0;
 					if (newSelectionStart > s.length()) newSelectionStart = s.length();
 					editTweetText.setSelection(newSelectionStart);
-					activity.findViewById(R.id.btnNoDM).setVisibility(View.VISIBLE);
+					NewTweetActivity.this.findViewById(R.id.btnNoDM).setVisibility(View.VISIBLE);
 				}
 				
-				TextView t = (TextView) activity.findViewById(R.id.textCharsRemaining);
+				TextView t = (TextView) NewTweetActivity.this.findViewById(R.id.textCharsRemaining);
 				int remaining = 140 - Utils.countChars(s.toString());
 				t.setText(String.valueOf(remaining));
 				if (remaining < 0) {
