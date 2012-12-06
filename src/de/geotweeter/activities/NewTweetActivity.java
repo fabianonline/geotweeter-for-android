@@ -560,7 +560,7 @@ public class NewTweetActivity extends Activity {
 				editTweetText.setSelection(start);
 			} else {
 				Matcher dmMatcher = findDMPattern.matcher(s.toString());
-				if (dmMatcher.find()) {
+				if (dmRecipient == null && dmMatcher.find()) {
 					int oldSelectionStart = editTweetText.getSelectionStart();
 					int oldLength = s.toString().length();
 					activity.setTitle(Utils.formatString(R.string.new_tweet_activity_title_sending_dm, dmMatcher.group(1)));
