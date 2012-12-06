@@ -210,7 +210,11 @@ public class NewTweetActivity extends Activity {
 				}
 				editTweetText.setText(reply_string);
 				editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
-//				editTweetText.setSelection(reply_string.length());
+				try {
+					editTweetText.setSelection(reply_string.length());
+				} catch (ArrayIndexOutOfBoundsException ex) {
+					// May happen. Ignore it.
+				}
 			}
 			
 			ListView l = (ListView) findViewById(R.id.timeline);
