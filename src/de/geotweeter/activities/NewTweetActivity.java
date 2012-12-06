@@ -156,9 +156,6 @@ public class NewTweetActivity extends Activity {
 				((Geotweeter) getApplication()).updateNotification(false);
 			}
 			
-			String reply_string = "";
-			int replyStringSelectionStart = 0;
-			
 			if (elm instanceof DirectMessage) {
 				
 				if (TimelineActivity.current_account == null) {
@@ -176,8 +173,7 @@ public class NewTweetActivity extends Activity {
 					}
 				
 				}
-				reply_string = "d " + elm.getSenderScreenName() + " ";
-				replyStringSelectionStart = reply_string.length();
+				editTweetText.setText("d " + elm.getSenderScreenName() + " ");
 				
 			} else if (elm instanceof Tweet) {
 				reply_to_id = elm.getID();
@@ -203,19 +199,19 @@ public class NewTweetActivity extends Activity {
 				if (TimelineActivity.current_account == null) {
 					throw new NullPointerException("There's something rotten in the state of current_account");
 				}
-				reply_string = "@" + elm.getSenderScreenName() + " ";
-				replyStringSelectionStart = reply_string.length();
+				
+				String reply_string = "@" + elm.getSenderScreenName() + " ";
+				int replyStringSelectionStart = reply_string.length();
 				for (UserMention userMention : ((Tweet) elm).entities.user_mentions) {
 					if (    ! (userMention.screen_name.equalsIgnoreCase(TimelineActivity.current_account.getUser().getScreenName())
 							|| userMention.screen_name.equalsIgnoreCase(elm.getSenderScreenName())) ) {
 						reply_string += "@" + userMention.screen_name + " ";
 					}
 				}
+				editTweetText.setText(reply_string);
+				editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
+//				editTweetText.setSelection(reply_string.length());
 			}
-			
-			editTweetText.setText(reply_string);
-			editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
-//			editTweetText.setSelection(reply_string.length());
 			
 			ListView l = (ListView) findViewById(R.id.timeline);
 			TimelineElementAdapter tea = new TimelineElementAdapter(this, R.layout.timeline_element, 
