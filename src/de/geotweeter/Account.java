@@ -310,6 +310,7 @@ public class Account extends Observable implements Serializable {
 			accessSuccessful.put(accessType, true);
 			
 			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: " + String.valueOf(System.currentTimeMillis() - startTime) + "ms");
+
 			if (accessType == AccessType.TIMELINE) {
 				mainTimeline.addAll(result.elements);
 			} else {
@@ -711,6 +712,7 @@ public class Account extends Observable implements Serializable {
 		
 		for (TimelineElement elm : tweets) {
 			if (elm instanceof DirectMessage) {
+				dm_conversations.addMessage((DirectMessage) elm);
 				if (elm.getID() > max_known_dm_id) {
 					max_known_dm_id = elm.getID();
 				}

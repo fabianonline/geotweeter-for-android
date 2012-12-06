@@ -68,8 +68,10 @@ public class Conversation {
 			TimelineElement current_element = params[0];
 			if (current_element.getClass() != Tweet.class) {
 				List<DirectMessage> messages = dm_conversations.getConversation(getRespondent(current_element));
-				for (DirectMessage msg : messages) {
-					publishProgress(msg);
+				if (messages != null) {
+					for (DirectMessage msg : messages) {
+						publishProgress(msg);
+					}
 				}
 				return null;
 			}

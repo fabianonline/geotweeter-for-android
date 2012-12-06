@@ -49,6 +49,9 @@ public class MessageHashMap implements Serializable {
 	 * @param msg Direct message to be added
 	 */
 	public void addMessage(DirectMessage msg) {
+		if (msg == null) {
+			return;
+		}
 		long respondent_id;
 		if (msg.sender.id == owner_id) {
 			respondent_id = msg.recipient.id;
@@ -60,8 +63,12 @@ public class MessageHashMap implements Serializable {
 		List<DirectMessage> existing = data_store.get(respondent_id);
 		if (existing == null) {
 			existing = new ArrayList<DirectMessage>();
+			existing.add(msg);
+		} else {
+			if (!existing.contains(msg)) {
+				existing.add(msg);
+			}
 		}
-		existing.add(msg);
 		Collections.sort(existing, new TLEComparator());
 		data_store.put(respondent_id, existing);
 	}
