@@ -71,6 +71,13 @@ public class Geotweeter extends Application {
 //	
 	public void refreshTheme() {
 		darkTheme = getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
+		if (darkTheme) {
+//			setTheme(R.style.GeotweeterThemeDark);
+			getTheme().applyStyle(R.style.GeotweeterThemeDark, true);
+		} else {
+//			setTheme(R.style.GeotweeterThemeLight);
+			getTheme().applyStyle(R.style.GeotweeterThemeLight, true);
+		}
 	}
 	
 	/**
