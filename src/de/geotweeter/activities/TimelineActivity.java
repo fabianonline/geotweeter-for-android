@@ -42,6 +42,7 @@ import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
 import de.geotweeter.Debug;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
@@ -76,11 +77,12 @@ public class TimelineActivity extends MapActivity {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Utils.setDesign(this);
 		if (availableTweets == null) {
 			availableTweets = new HashMap<Long, TimelineElement>();
 		}
 		super.onCreate(savedInstanceState);
+		Geotweeter.getInstance().refreshTheme();
+		Utils.setDesign(this);
 		instance = this;
 		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
 		setContentView(R.layout.activity_timeline);
