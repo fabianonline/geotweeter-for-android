@@ -57,18 +57,26 @@ public class Geotweeter extends Application {
 		super.onCreate();
 	}
 	
+	/**
+	 * Returns whether the dark theme is used or not
+	 * @return true, when the dark theme is used
+	 */
 	public boolean useDarkTheme() {
 		return darkTheme;
 	}
 	
-	public void changeTheme(boolean darkTheme) {
-		this.darkTheme = darkTheme;
-	}
+//	public void changeTheme(boolean darkTheme) {
+//		this.darkTheme = darkTheme;
+//	}
+//	
+//	public void refreshTheme() {
+//		darkTheme = getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
+//	}
 	
-	public void refreshTheme() {
-		darkTheme = getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
-	}
-
+	/**
+	 * Returns the instance of the Geotweeter-App
+	 * @return the instance of Geotweeter
+	 */
 	public static Geotweeter getInstance() {
 		return instance;
 	}
