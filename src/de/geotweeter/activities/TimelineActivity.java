@@ -77,6 +77,7 @@ public class TimelineActivity extends MapActivity {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.d(LOG, "Start onCreate");
 		if (availableTweets == null) {
 			availableTweets = new HashMap<Long, TimelineElement>();
 		}
@@ -402,15 +403,18 @@ public class TimelineActivity extends MapActivity {
 	 * {@inheritDoc}
 	 */
 	public void onDestroy() {
+		Log.d(LOG, "Start onDestroy");
 		super.onDestroy();
-		for (Account acct : Account.all_accounts) {
-			try {
-				acct.stopStream();
-			} catch (Exception e) {
-				e.printStackTrace();
+		if (instance == this) {
+			for (Account acct : Account.all_accounts) {
+				try {
+					acct.stopStream();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+			instance = null;
 		}
-		instance = null;
 	}
 	
 	/**
