@@ -8,9 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup.LayoutParams;
 import de.geotweeter.Account;
@@ -30,15 +28,12 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 		UNREAD, REFRESH_START, REFRESH_FINISHED
 	}
 	
-	private static final int CHECKED_COLOR_DARK = Color.WHITE;
-	private static final int CHECKED_COLOR_LIGHT = Color.BLACK;
-	private static final int UNCHECKED_COLOR = Color.GRAY;
 	private static final int HEIGHT = 48;
 	
 	private final Account account;
 	
 	public AccountSwitcherRadioButton(Context context, Account account) {
-		super(context);
+		super(context, null, R.attr.accountSwitcherStyle);
 		this.account = account;
 		
 		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT, HEIGHT);
@@ -51,23 +46,6 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 			setBackgroundResource(R.drawable.listelement_background_light_dm);
 		}
 		setText("(" + account.getUnreadTweetsSize() + ")");
-		setTextColor(UNCHECKED_COLOR);
-		
-		setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked) {
-					if (Geotweeter.getInstance().useDarkTheme()) {
-						setTextColor(CHECKED_COLOR_DARK);
-					} else {
-						setTextColor(CHECKED_COLOR_LIGHT);
-					}
-				} else {
-					setTextColor(UNCHECKED_COLOR);
-				}
-			}
-		});
 		
 		account.addObserver(this);
 	}

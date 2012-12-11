@@ -1,11 +1,21 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppTheme" parent="android:Theme.Light" />
     
     <style name="GeotweeterThemeDark" parent="android:Theme.Black">
+        <item name="accountSwitcherStyle">@style/accountSwitcherStyleDark</item>
     </style>
     
     <style name="GeotweeterThemeLight" parent="android:Theme.Light">
+        <item name="accountSwitcherStyle">@style/accountSwitcherStyleLight</item>
+    </style>
+    
+    <style name="accountSwitcherStyleDark" parent="android:Widget.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/account_switcher_text_color_dark</item>
+    </style>
+    
+    <style name="accountSwitcherStyleLight" parent="android:Widget.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/account_switcher_text_color_light</item>
     </style>
 
 </resources>
