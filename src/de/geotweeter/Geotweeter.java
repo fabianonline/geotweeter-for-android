@@ -49,7 +49,7 @@ public class Geotweeter extends Application {
 	public void onCreate() {
 		Log.d(LOG, "onCreate is running");
 		instance = this;
-		darkTheme = getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
+		refreshTheme();
 		ACRAConfiguration config = ACRA.getNewDefaultConfig(this);
 		config.setFormUri(Utils.getProperty("crashreport.server.url") + "/send");
 		ACRA.setConfig(config);
@@ -57,18 +57,33 @@ public class Geotweeter extends Application {
 		super.onCreate();
 	}
 	
+	/**
+	 * Returns whether the dark theme is used or not
+	 * @return true, when the dark theme is used
+	 */
 	public boolean useDarkTheme() {
 		return darkTheme;
 	}
 	
-	public void changeTheme(boolean darkTheme) {
-		this.darkTheme = darkTheme;
-	}
-	
+//	public void changeTheme(boolean darkTheme) {
+//		this.darkTheme = darkTheme;
+//	}
+//	
 	public void refreshTheme() {
 		darkTheme = getSharedPreferences(Constants.PREFS_APP, 0).getBoolean("pref_dark_theme", false);
+		if (darkTheme) {
+//			setTheme(R.style.GeotweeterThemeDark);
+			getTheme().applyStyle(R.style.GeotweeterThemeDark, true);
+		} else {
+//			setTheme(R.style.GeotweeterThemeLight);
+			getTheme().applyStyle(R.style.GeotweeterThemeLight, true);
+		}
 	}
-
+	
+	/**
+	 * Returns the instance of the Geotweeter-App
+	 * @return the instance of Geotweeter
+	 */
 	public static Geotweeter getInstance() {
 		return instance;
 	}

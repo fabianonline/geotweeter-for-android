@@ -112,7 +112,7 @@ public class NewTweetActivity extends Activity {
 		editTweetText = ((ProtectedPlaceholderEditText)findViewById(R.id.tweet_text));
 		editTweetText.setPlaceholder(Pattern.compile("http://twitpic\\.com/pic(\\d{3})"));
 		
-		editTweetText.addTextChangedListener(new TextChangedListener(this));
+		editTweetText.addTextChangedListener(new TextChangedListener());
 		if (useTwitpic) {
 			
 			/* Diese Funktionen werden benötigt, um Modifikationen von Twitpic-Platzhaltern
@@ -141,23 +141,23 @@ public class NewTweetActivity extends Activity {
 		Intent i = getIntent();
 		
 		if (i != null && i.getExtras() != null) {
+			TimelineElement elm = null;
 			
-			TimelineElement elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
-			Pair<TimelineElement, String> pair_to_delete = null;
-			for (Pair<TimelineElement, String> pair : ((Geotweeter) getApplication()).notifiedElements) {
-				if (pair.first.getClass() == elm.getClass() && pair.first.getID() == elm.getID()) {
-					pair_to_delete = pair;
-					break;
+			if (i.getExtras().containsKey("de.geotweeter.reply_to_tweet")) {
+				elm = (TimelineElement) i.getExtras().getSerializable("de.geotweeter.reply_to_tweet");
+				Pair<TimelineElement, String> pair_to_delete = null;
+				for (Pair<TimelineElement, String> pair : ((Geotweeter) getApplication()).notifiedElements) {
+					if (pair.first.getClass() == elm.getClass() && pair.first.getID() == elm.getID()) {
+						pair_to_delete = pair;
+						break;
+					}
+				}
+				
+				if (pair_to_delete != null) {
+					((Geotweeter) getApplication()).notifiedElements.remove(pair_to_delete);
+					((Geotweeter) getApplication()).updateNotification(false);
 				}
 			}
-			
-			if (pair_to_delete != null) {
-				((Geotweeter) getApplication()).notifiedElements.remove(pair_to_delete);
-				((Geotweeter) getApplication()).updateNotification(false);
-			}
-			
-			String reply_string = "";
-			int replyStringSelectionStart = 0;
 			
 			if (elm instanceof DirectMessage) {
 				
@@ -176,8 +176,8 @@ public class NewTweetActivity extends Activity {
 					}
 				
 				}
-				reply_string = "d " + elm.getSenderScreenName() + " ";
-				replyStringSelectionStart = reply_string.length();
+				dmRecipient = elm.getSenderScreenName();
+				editTweetText.setText("");
 				
 			} else if (elm instanceof Tweet) {
 				reply_to_id = elm.getID();
@@ -203,19 +203,22 @@ public class NewTweetActivity extends Activity {
 				if (TimelineActivity.current_account == null) {
 					throw new NullPointerException("There's something rotten in the state of current_account");
 				}
-				reply_string = "@" + elm.getSenderScreenName() + " ";
-				replyStringSelectionStart = reply_string.length();
+				
+				String reply_string = "@" + elm.getSenderScreenName() + " ";
+				int replyStringSelectionStart = reply_string.length();
 				for (UserMention userMention : ((Tweet) elm).entities.user_mentions) {
 					if (    ! (userMention.screen_name.equalsIgnoreCase(TimelineActivity.current_account.getUser().getScreenName())
 							|| userMention.screen_name.equalsIgnoreCase(elm.getSenderScreenName())) ) {
 						reply_string += "@" + userMention.screen_name + " ";
 					}
 				}
+				editTweetText.setText(reply_string);
+				try {
+					editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
+				} catch (ArrayIndexOutOfBoundsException ex) {
+					// May happen. Ignore it.
+				}
 			}
-			
-			editTweetText.setText(reply_string);
-			editTweetText.setSelection(replyStringSelectionStart, reply_string.length());
-//			editTweetText.setSelection(reply_string.length());
 			
 			ListView l = (ListView) findViewById(R.id.timeline);
 			TimelineElementAdapter tea = new TimelineElementAdapter(this, R.layout.timeline_element, 
@@ -521,14 +524,12 @@ public class NewTweetActivity extends Activity {
 	
 	protected class TextChangedListener implements TextWatcher {
 		
-		private Activity activity;
 		private boolean delete;
 		private String text;
 		private int start;
-		private Pattern findDMPattern = Pattern.compile("^d @?([a-z0-9_]+)\\s(.*)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+		private Pattern findDMPattern = Pattern.compile("^[dm] @?([a-z0-9_]+)\\s(.*)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		
-		public TextChangedListener(Activity a) { 
-			activity = a;
+		public TextChangedListener() {
 			delete = false;
 		}
 		
@@ -564,10 +565,10 @@ public class NewTweetActivity extends Activity {
 				editTweetText.setSelection(start);
 			} else {
 				Matcher dmMatcher = findDMPattern.matcher(s.toString());
-				if (dmMatcher.find()) {
+				if (dmRecipient == null && dmMatcher.find()) {
 					int oldSelectionStart = editTweetText.getSelectionStart();
 					int oldLength = s.toString().length();
-					activity.setTitle(Utils.formatString(R.string.new_tweet_activity_title_sending_dm, dmMatcher.group(1)));
+					NewTweetActivity.this.setTitle(Utils.formatString(R.string.new_tweet_activity_title_sending_dm, dmMatcher.group(1)));
 					dmRecipient = dmMatcher.group(1);
 					s.replace(0, s.length(), dmMatcher.group(2));
 					editTweetText.setText(dmMatcher.group(2));
@@ -576,10 +577,10 @@ public class NewTweetActivity extends Activity {
 					if (newSelectionStart < 0) newSelectionStart = 0;
 					if (newSelectionStart > s.length()) newSelectionStart = s.length();
 					editTweetText.setSelection(newSelectionStart);
-					activity.findViewById(R.id.btnNoDM).setVisibility(View.VISIBLE);
+					NewTweetActivity.this.findViewById(R.id.btnNoDM).setVisibility(View.VISIBLE);
 				}
 				
-				TextView t = (TextView) activity.findViewById(R.id.textCharsRemaining);
+				TextView t = (TextView) NewTweetActivity.this.findViewById(R.id.textCharsRemaining);
 				int remaining = 140 - Utils.countChars(s.toString());
 				t.setText(String.valueOf(remaining));
 				if (remaining < 0) {

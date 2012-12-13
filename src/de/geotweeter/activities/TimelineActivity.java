@@ -7,7 +7,9 @@ import java.util.List;
 import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -77,12 +79,13 @@ public class TimelineActivity extends MapActivity {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Geotweeter.getInstance().refreshTheme();
-		Utils.setDesign(this);
+		Log.d(LOG, "Start onCreate");
 		if (availableTweets == null) {
 			availableTweets = new HashMap<Long, TimelineElement>();
 		}
 		super.onCreate(savedInstanceState);
+		Geotweeter.getInstance().refreshTheme();
+		Utils.setDesign(this);
 		instance = this;
 		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
 		setContentView(R.layout.activity_timeline);
@@ -242,20 +245,31 @@ public class TimelineActivity extends MapActivity {
 
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
-							new Thread(new Runnable() {
+							new AlertDialog.Builder(TimelineActivity.this)
+							.setTitle(R.string.dialog_retweet_title)
+							.setMessage(R.string.dialog_retweet_message)
+							.setPositiveButton(R.string.dialog_retweet_positive, new DialogInterface.OnClickListener() {
 
-								public void run() {
-									try {
-										current_account.getApi().retweet(te.getID());
-									} catch (OAuthException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									} catch (RetweetException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									new Thread(new Runnable() {
+
+										public void run() {
+											try {
+												current_account.getApi().retweet(te.getID());
+											} catch (OAuthException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (RetweetException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+										}
+									}).start();
 								}
-							}).start();
+							})
+							.setNegativeButton(R.string.dialog_retweet_negative, null)
+							.show();
 
 							return true;
 						}
@@ -317,6 +331,12 @@ public class TimelineActivity extends MapActivity {
 		return true;
 	}
 
+	/**
+	 * Opens the new tweet activity for a reply
+	 * 
+	 * @param te The timeline element to reply to
+	 * @return
+	 */
 	protected boolean respondToTimelineElement(TimelineElement te) {
 		Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
 		replyIntent.putExtra("de.geotweeter.reply_to_tweet", te);
@@ -396,15 +416,18 @@ public class TimelineActivity extends MapActivity {
 	 * {@inheritDoc}
 	 */
 	public void onDestroy() {
+		Log.d(LOG, "Start onDestroy");
 		super.onDestroy();
-		for (Account acct : Account.all_accounts) {
-			try {
-				acct.stopStream();
-			} catch (Exception e) {
-				e.printStackTrace();
+		if (instance == this) {
+			for (Account acct : Account.all_accounts) {
+				try {
+					acct.stopStream();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+			instance = null;
 		}
-		instance = null;
 	}
 	
 	/**
