@@ -1,7 +1,6 @@
 <resources>
 
     <string name="app_name">Geotweeter</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Einstellungen</string>
     <string name="title_activity_timeline">Geotweeter</string>
     <string name="button_reply">Reply</string>
@@ -152,4 +151,9 @@
     
     <string name="new_tweet_activity_title">Neuer Tweet</string>
     <string name="new_tweet_activity_title_sending_dm">DM an %1$s</string>
+    
+    <string name="dialog_retweet_title">Wirklich retweeten?</string>
+    <string name="dialog_retweet_message">Bist du sicher, dass du retweeten möchtest?</string>
+    <string name="dialog_retweet_positive">Retweeten</string>
+    <string name="dialog_retweet_negative">Nein</string>
 </resources>

@@ -7,7 +7,9 @@ import java.util.List;
 import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -243,20 +245,31 @@ public class TimelineActivity extends MapActivity {
 
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
-							new Thread(new Runnable() {
+							new AlertDialog.Builder(TimelineActivity.this)
+							.setTitle(R.string.dialog_retweet_title)
+							.setMessage(R.string.dialog_retweet_message)
+							.setPositiveButton(R.string.dialog_retweet_positive, new DialogInterface.OnClickListener() {
 
-								public void run() {
-									try {
-										current_account.getApi().retweet(te.getID());
-									} catch (OAuthException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									} catch (RetweetException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									new Thread(new Runnable() {
+
+										public void run() {
+											try {
+												current_account.getApi().retweet(te.getID());
+											} catch (OAuthException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (RetweetException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+										}
+									}).start();
 								}
-							}).start();
+							})
+							.setNegativeButton(R.string.dialog_retweet_negative, null)
+							.show();
 
 							return true;
 						}
