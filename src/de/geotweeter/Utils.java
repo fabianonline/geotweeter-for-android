@@ -152,6 +152,8 @@ public class Utils {
 		boolean useDarkTheme = Geotweeter.getInstance().useDarkTheme();
 		if (useDarkTheme) {
 			a.setTheme(R.style.GeotweeterThemeDark);
+		} else {
+			a.setTheme(R.style.GeotweeterThemeLight);
 		}
 	}
 	
