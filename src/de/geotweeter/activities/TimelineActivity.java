@@ -80,12 +80,12 @@ public class TimelineActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(LOG, "Start onCreate");
+		Geotweeter.getInstance().refreshTheme();
+		Utils.setDesign(this);
 		if (availableTweets == null) {
 			availableTweets = new HashMap<Long, TimelineElement>();
 		}
 		super.onCreate(savedInstanceState);
-		Geotweeter.getInstance().refreshTheme();
-		Utils.setDesign(this);
 		instance = this;
 		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
 		setContentView(R.layout.activity_timeline);
