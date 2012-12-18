@@ -156,7 +156,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				}
 			}
 			
-			ImageView img = (ImageView) v.findViewById(R.id.avatar_image);
+			AsyncImageView img = (AsyncImageView) v.findViewById(R.id.avatar_image);
 			if (img != null) {
 				if (tle.getAvatarSource() == null) {
 					img.setImageResource(R.drawable.loading_image);

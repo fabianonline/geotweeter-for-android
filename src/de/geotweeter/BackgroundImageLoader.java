@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 /*
@@ -45,7 +46,30 @@ public class BackgroundImageLoader {
 	}
 
 	
-	public void displayImage(String url, ImageView image_view, boolean store_persistent) {
+	public void displayImage(String url, AsyncImageView image_view, boolean store_persistent) {
+		if (url == null) {
+			return;
+		}
+		
+		image_views.put(image_view, url);
+		Bitmap bitmap = bitmap_cache.get(url);
+		
+		Log.d(LOG, "View: " + image_view.toString() + " url: " + url);
+		
+		if (bitmap != null) {
+			image_view.setUrl(url);
+			image_view.setImageBitmap(bitmap);
+		} else {
+			image_view.setImageResource(loading_image_id);
+			image_view.setUrl(url);
+			/* Queue Image to download */
+			executor_service.submit(new ImageLoader(url, image_view, store_persistent, true));
+		}
+		
+	}
+	
+	public void displayImage(String url, ImageView image_view,
+			boolean store_persistent) {
 		if (url == null) {
 			return;
 		}
@@ -60,50 +84,85 @@ public class BackgroundImageLoader {
 		} else {
 			image_view.setImageResource(loading_image_id);
 			/* Queue Image to download */
-			executor_service.submit(new ImageLoader(url, image_view, store_persistent));
+			executor_service.submit(new ImageLoader(url, image_view, store_persistent, false));
 		}
-		
 	}
-	
+
 	public class ImageLoader implements Runnable {
 		String url;
 		ImageView image_view;
 		private boolean store_persistent;
+		private boolean is_async;
 		
-		public ImageLoader(String url, ImageView image_view, boolean store_persistent) {
+		public ImageLoader(String url, ImageView image_view, boolean store_persistent, boolean is_async) {
 			this.url = url;
 			this.image_view = image_view;
 			this.store_persistent = store_persistent;
+			this.is_async = is_async;
 		}
 
 		@Override
 		public void run() {
-			if (bitmap_cache.containsKey(url)) {
-				((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						image_view.setImageBitmap(bitmap_cache.get(url));
-					}
-				});
-				return;
-			}
-			//if (imageViewReused(url, image_view)) return;
-			final Bitmap bmp = loadBitmap(url, store_persistent);
-			if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-				Log.d(LOG, "Finished loading " + url);
-			}
-			
-			//if (imageViewReused(url, image_view)) return;
-			((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
-				
-				@Override
-				public void run() {
-					if (bmp != null) {
-						image_view.setImageBitmap(bmp);
-					}
+			if (is_async) {
+				final AsyncImageView img = (AsyncImageView) image_view;
+				if (bitmap_cache.containsKey(url)) {
+					((Activity)img.getContext()).runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (img.getUrl().equals(url)) {
+								img.setImageBitmap(bitmap_cache.get(url));
+							}
+						}
+					});
+					return;
+				}
+				//if (imageViewReused(url, image_view)) return;
+				final Bitmap bmp = loadBitmap(url, store_persistent);
+				if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
+					Log.d(LOG, "Finished loading " + url);
 				}
 				
-			});
+				//if (imageViewReused(url, image_view)) return;
+				((Activity)img.getContext()).runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						if (bmp != null) {
+							if (img.getUrl().equals(url)) {
+								img.setImageBitmap(bmp);
+							}
+						}
+					}
+					
+				});
+			} else {
+				if (bitmap_cache.containsKey(url)) {
+					((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							image_view.setImageBitmap(bitmap_cache.get(url));
+						}
+					});
+					return;
+				}
+				//if (imageViewReused(url, image_view)) return;
+				final Bitmap bmp = loadBitmap(url, store_persistent);
+				if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
+					Log.d(LOG, "Finished loading " + url);
+				}
+				
+				//if (imageViewReused(url, image_view)) return;
+				((Activity)image_view.getContext()).runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						if (bmp != null) {
+							image_view.setImageBitmap(bmp);
+						}
+					}
+					
+				});				
+			}
 		}
 
 	}
