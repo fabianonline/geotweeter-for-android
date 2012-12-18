@@ -197,11 +197,12 @@ public class TimelineActivity extends MapActivity {
 			dismissOverlay(img_overlay);
 			return;
 		}
-		if (current_account.activeTimeline() == current_account.getElements()) {
-			super.onBackPressed();
-		} else {
-			ListView l = (ListView) findViewById(R.id.timeline);
+		ListView l = (ListView) findViewById(R.id.timeline);
+		TimelineElementAdapter tea = current_account.getPrevTimeline();
+		if (tea != null) {
 			l.setAdapter(current_account.getPrevTimeline());
+		} else {
+			super.onBackPressed();
 		}
 	}
 	

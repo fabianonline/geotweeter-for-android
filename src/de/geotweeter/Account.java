@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -751,8 +752,12 @@ public class Account extends Observable implements Serializable {
 	 * @return
 	 */
 	public TimelineElementAdapter getPrevTimeline() {
-		timeline_stack.pop();
-		return timeline_stack.peek();
+		try {
+			timeline_stack.pop();
+			return timeline_stack.peek();
+		} catch (EmptyStackException e) {
+			return null;
+		}
 	}
 		
 	/**
