@@ -12,16 +12,14 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import de.geotweeter.widgets.AccountSwitcherRadioButton;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import de.geotweeter.widgets.AccountSwitcherRadioButton;
 
 /*
  * Vorlage: https://github.com/thest1/LazyList/blob/master/src/com/fedorvlasov/lazylist/ImageLoader.java
@@ -30,7 +28,6 @@ public class BackgroundImageLoader {
 	private Context application_context;
 	private static FileCache file_cache;
 	private Map<String, Bitmap> bitmap_cache = Collections.synchronizedMap(new WeakHashMap<String, Bitmap>());
-	private Map<ImageView, String> image_views = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 	static ExecutorService executor_service = null;
 	final int loading_image_id = R.drawable.loading_image;
 	private static final String LOG = "BackgroundImageLoader";
@@ -51,7 +48,6 @@ public class BackgroundImageLoader {
 			return;
 		}
 		
-		image_views.put(image_view, url);
 		Bitmap bitmap = bitmap_cache.get(url);
 		
 		Log.d(LOG, "View: " + image_view.toString() + " url: " + url);
@@ -74,7 +70,6 @@ public class BackgroundImageLoader {
 			return;
 		}
 		
-		image_views.put(image_view, url);
 		Bitmap bitmap = bitmap_cache.get(url);
 		
 		Log.d(LOG, "View: " + image_view.toString() + " url: " + url);
@@ -219,12 +214,6 @@ public class BackgroundImageLoader {
 			});
 		}
 
-	}
-
-	public boolean imageViewReused(String url, ImageView image_view) {
-		String old_url = image_views.get(image_view);
-		if (old_url==null || !old_url.equals(url)) return true;
-		return false;
 	}
 	
 	public Bitmap getBitmap(String url, boolean store_persistent) {
