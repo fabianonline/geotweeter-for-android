@@ -602,15 +602,18 @@ public class NewTweetActivity extends Activity {
 				lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 				gpslistener = new GPSCoordsListener();
 				List<String> providers = lm.getAllProviders();
-				if(providers.contains(LocationManager.GPS_PROVIDER)) {
+				if (providers.contains(LocationManager.GPS_PROVIDER)) {
 					lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, gpslistener);
 				}
-				if(providers.contains(LocationManager.NETWORK_PROVIDER)) {
+				if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
 					lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, gpslistener);
 				}
 			} else {
 				Log.d(LOG, "Lösche Koordinaten.");
 				location = null;
+				lm.removeUpdates(gpslistener);
+				gpslistener = null;
+				lm = null;
 			}
 		}
 	}
@@ -623,13 +626,32 @@ public class NewTweetActivity extends Activity {
 			 *   b) die bisherigen Koordinaten nur Netzwerk-genau waren oder
 			 *   c) wir aktuell GPS-Koords bekommen haben.
 			 */
-			boolean caseA = (location == null);
-			boolean caseB = (location.getProvider().equals(LocationManager.NETWORK_PROVIDER));
-			boolean caseC = (new_location.getProvider().equals(LocationManager.GPS_PROVIDER));
-			
-			if (caseA || caseB || caseC) {
+			if (new_location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
 				location = new_location;
+				return;
 			}
+			
+			if (location == null) {
+				location = new_location;
+				return;
+			}
+			
+			if (new_location.hasAccuracy() && location.hasAccuracy()) {
+				if (new_location.getAccuracy() < location.getAccuracy()) {
+					location = new_location;
+					return;
+				}
+			}
+			
+			return;
+			
+//			boolean caseA = (location == null);
+//			boolean caseB = (location.getProvider().equals(LocationManager.NETWORK_PROVIDER));
+//			boolean caseC = (new_location.getProvider().equals(LocationManager.GPS_PROVIDER));
+//			
+//			if (caseA || caseB || caseC) {
+//				location = new_location;
+//			}
 		}
 		
 		public void onProviderDisabled(String provider) {}
