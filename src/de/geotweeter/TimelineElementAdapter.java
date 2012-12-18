@@ -91,7 +91,8 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		
 		View v = convertView;
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater) Geotweeter.getInstance().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//			LayoutInflater vi = (LayoutInflater) Geotweeter.getInstance().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.timeline_element, null);
 		}
 		

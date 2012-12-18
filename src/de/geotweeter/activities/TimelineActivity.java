@@ -121,6 +121,7 @@ public class TimelineActivity extends MapActivity {
 				Log.d(LOG, "Refreshing timelines");
 			}
 			for (Account acct : Account.all_accounts) {
+				replaceAdapter(acct);
 				acct.start(true);
 			}
 		}
@@ -511,6 +512,16 @@ public class TimelineActivity extends MapActivity {
 			acc.start(true);
 		}
 		addAccount(acc);
+	}
+	
+	/**
+	 * Replaces the TimelineElementAdapter of the given account with a newly built one
+	 */
+	public void replaceAdapter(Account account) {
+		TimelineElementAdapter tea = new TimelineElementAdapter(this,
+				R.layout.timeline_element,
+				new ArrayList<TimelineElement>());
+		account.setElements(tea);
 	}
 	
 	/**

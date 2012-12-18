@@ -786,5 +786,14 @@ public class Account extends Observable implements Serializable {
 		}
 		return null;
 	}
+
+	/**
+	 * Sets a new TimelineElementAdapter
+	 * 
+	 * @param elements
+	 */
+	public void setElements(TimelineElementAdapter elements) {
+		this.elements = elements;
+	}
 	
 }
