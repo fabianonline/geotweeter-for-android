@@ -200,7 +200,7 @@ public class TimelineActivity extends MapActivity {
 		ListView l = (ListView) findViewById(R.id.timeline);
 		TimelineElementAdapter tea = current_account.getPrevTimeline();
 		if (tea != null) {
-			l.setAdapter(current_account.getPrevTimeline());
+			l.setAdapter(tea);
 		} else {
 			super.onBackPressed();
 		}
