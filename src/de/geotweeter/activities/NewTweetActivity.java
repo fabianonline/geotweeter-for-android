@@ -257,7 +257,7 @@ public class NewTweetActivity extends Activity {
 			ImageButton img = new ImageButton(this);
 			img.setLayoutParams(new LayoutParams(size, size));
 			img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			TimelineActivity.getBackgroundImageLoader(getApplicationContext()).displayImage(user.getAvatarSource(), img, true);
+			Geotweeter.getInstance().getBackgroundImageLoader().displayImage(user.getAvatarSource(), img, true);
 			img.setPadding(padding, padding, padding, padding);
 			changeLayoutOfAccountButton(img, currentAccount == account);
 			img.setOnClickListener(new AccountChangerListener());

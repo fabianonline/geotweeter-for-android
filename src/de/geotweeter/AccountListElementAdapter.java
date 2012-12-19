@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import de.geotweeter.activities.TimelineActivity;
 
 /**
  * Provides the View for the authenticated accounts list
@@ -61,7 +60,7 @@ public class AccountListElementAdapter extends ArrayAdapter<Account> {
 			}
 			ImageView ivAvatar = (ImageView) v.findViewById(R.id.ivAccountAvatar);
 			if (ivAvatar != null) {
-				TimelineActivity.background_image_loader.displayImage(listElement.getUser().getAvatarSource(), ivAvatar, true);
+				Geotweeter.getInstance().getBackgroundImageLoader().displayImage(listElement.getUser().getAvatarSource(), ivAvatar, true);
 			}
 		}
 		

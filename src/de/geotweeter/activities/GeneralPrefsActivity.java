@@ -16,6 +16,7 @@ import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.widget.Toast;
 import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -67,7 +68,7 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 			
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				TimelineActivity.background_image_loader.clearCache();
+				Geotweeter.getInstance().getBackgroundImageLoader().clearCache();
 				Toast.makeText(getApplicationContext(), R.string.pref_image_cache_cleared, Toast.LENGTH_SHORT).show();
 				return true;
 			}
