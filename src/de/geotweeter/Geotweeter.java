@@ -42,8 +42,10 @@ import de.geotweeter.timelineelements.Tweet;
 public class Geotweeter extends Application {
 	private static final String LOG = "Geotweeter";
 	private static Geotweeter instance;
+	
 	public List<Pair<TimelineElement, String>> notifiedElements = new ArrayList<Pair<TimelineElement, String>>();
 	private boolean darkTheme;
+	private BackgroundImageLoader backgroundImageLoader;
 	
 	@Override
 	public void onCreate() {
@@ -54,6 +56,9 @@ public class Geotweeter extends Application {
 		config.setFormUri(Utils.getProperty("crashreport.server.url") + "/send");
 		ACRA.setConfig(config);
 		ACRA.init(this);
+		
+		backgroundImageLoader = new BackgroundImageLoader(getApplicationContext());
+		
 		super.onCreate();
 	}
 	
@@ -86,6 +91,15 @@ public class Geotweeter extends Application {
 	 */
 	public static Geotweeter getInstance() {
 		return instance;
+	}
+	
+	/**
+	 * Returns the current BackgroundImageLoader instance
+	 * 
+	 * @return BackgroundImageLoader instance
+	 */
+	public BackgroundImageLoader getBackgroundImageLoader() {
+		return backgroundImageLoader;
 	}
 	
 	public void updateNotification(boolean vibrateAndPlaySoundAndStuff) {

@@ -161,7 +161,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				if (tle.getAvatarSource() == null) {
 					img.setImageResource(R.drawable.loading_image);
 				} else {
-					TimelineActivity.getBackgroundImageLoader(getContext()).displayImage(tle.getAvatarSource(), img, true);
+					Geotweeter.getInstance().getBackgroundImageLoader().displayImage(tle.getAvatarSource(), img, true);
 				}
 			}
 			
@@ -178,7 +178,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 					thumbnail.getLayoutParams().height = 75;
 					thumbnail.setScaleType(ScaleType.CENTER_CROP);
 					thumbnail.setImageResource(R.drawable.ic_launcher);
-					TimelineActivity.getBackgroundImageLoader(context).displayImage(url_pair.first.toString(), thumbnail, false);
+					Geotweeter.getInstance().getBackgroundImageLoader().displayImage(url_pair.first.toString(), thumbnail, false);
 					thumbnail.setOnClickListener(new OnClickListener() {
 						
 						@Override
@@ -211,7 +211,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		} catch (NullPointerException e) {
 			return;
 		}
-		TimelineActivity.getBackgroundImageLoader(context).displayImage(url, img_overlay, false);
+		Geotweeter.getInstance().getBackgroundImageLoader().displayImage(url, img_overlay, false);
 		img_overlay.setVisibility(View.VISIBLE);
 	}
 

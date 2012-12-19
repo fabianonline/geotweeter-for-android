@@ -8,7 +8,6 @@ import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,7 +39,6 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import de.geotweeter.Account;
-import de.geotweeter.BackgroundImageLoader;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
 import de.geotweeter.Debug;
@@ -61,7 +59,6 @@ import de.geotweeter.widgets.AccountSwitcherRadioButton;
 public class TimelineActivity extends MapActivity {
 	private final String LOG = "TimelineActivity";
 	public static Account current_account = null;
-	public static BackgroundImageLoader background_image_loader = null;
 	public static String reg_id = "";
 	private MapView map;
 	private boolean is_visible;
@@ -89,7 +86,6 @@ public class TimelineActivity extends MapActivity {
 		instance = this;
 		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
 		setContentView(R.layout.activity_timeline);
-		background_image_loader = new BackgroundImageLoader(getApplicationContext());
 		
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
 		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
@@ -163,7 +159,7 @@ public class TimelineActivity extends MapActivity {
 			for (Account account : Account.all_accounts) {
 				
 				AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(this, account);
-				background_image_loader.displayImage(account.getUser().getAvatarSource(), rdBtn, true);
+				Geotweeter.getInstance().getBackgroundImageLoader().displayImage(account.getUser().getAvatarSource(), rdBtn, true);
 				
 				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
 				
@@ -383,7 +379,7 @@ public class TimelineActivity extends MapActivity {
 				mapContainer.addView(map);
 				
 				List<Overlay> overlays = map.getOverlays();
-				Drawable marker = MapOverlay.getLocationMarker(background_image_loader.loadBitmap(tweet.user.profile_image_url_https, true));
+				Drawable marker = MapOverlay.getLocationMarker(Geotweeter.getInstance().getBackgroundImageLoader().loadBitmap(tweet.user.profile_image_url_https, true));
 				MapOverlay overlay = new MapOverlay(marker);
 				OverlayItem overlayItem = new OverlayItem(coords, null, null);
 				overlay.addOverlay(overlayItem);
@@ -679,19 +675,6 @@ public class TimelineActivity extends MapActivity {
 			acct.stopStream();
 			acct.start(false);
 		}
-	}
-	
-	/**
-	 * Returns the current BackgroundImageLoader instance
-	 * 
-	 * @param context Current application context
-	 * @return BackgroundImageLoader instance
-	 */
-	public static BackgroundImageLoader getBackgroundImageLoader(Context context) {
-		if (background_image_loader == null) {
-			background_image_loader = new BackgroundImageLoader(context);
-		}
-		return background_image_loader;
 	}
 
 	/**
