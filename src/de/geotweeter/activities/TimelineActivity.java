@@ -223,7 +223,11 @@ public class TimelineActivity extends MapActivity {
 			}
 			
 			if (te instanceof Tweet) {
-				final Tweet tweet = (Tweet) te;
+				Tweet timelineTweet = (Tweet) te;
+				if (timelineTweet.retweeted_status != null) {
+					timelineTweet = timelineTweet.retweeted_status;
+				}
+				final Tweet tweet = timelineTweet;
 				if (tweet.in_reply_to_status_id != 0 || te instanceof DirectMessage) {
 					menu.add(R.string.show_conversation).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 						
