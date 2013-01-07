@@ -95,7 +95,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.timeline_element, null);
 		}
-		
+
+		v.setBackgroundResource(tle.getBackgroundDrawableID(Geotweeter.getInstance().useDarkTheme()));
+
 		if (tle.getClass() == Tweet.class) {
 			Tweet t = (Tweet) tle;
 			if (t.retweeted_status != null) {
@@ -192,7 +194,6 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			}
 		}
 //		v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
-		v.setBackgroundResource(tle.getBackgroundDrawableID(Geotweeter.getInstance().useDarkTheme()));
 		return v;	
 	}
 	
