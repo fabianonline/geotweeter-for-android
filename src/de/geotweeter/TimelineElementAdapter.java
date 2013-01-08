@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,9 +118,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 
 		View container = v.findViewById(R.id.container);
 		
-		container.setBackgroundResource(tle.getBackgroundDrawableID(Geotweeter.getInstance().useDarkTheme()));
+		int drawableID = tle.getBackgroundDrawableID(Geotweeter.getInstance().useDarkTheme());
+		container.setBackgroundResource(drawableID);
 		
 		LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
+		
 		buttons.setVisibility(View.GONE);
 		buttons.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

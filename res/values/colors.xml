@@ -2,21 +2,21 @@
 <resources>
     <color name="dark_dm_background_end">#663300</color>
     <color name="dark_mention_background_end">#000055</color>
-    <color name="dark_my_background_end">#005500</color>
-    <color name="dark_normal_background_end">#333333</color>
-    <color name="dark_status_background_end">#550055</color>
+    <color name="dark_own_background_end">#005500</color>
+    <color name="dark_read_background_end">#333333</color>
+    <color name="dark_event_background_end">#550055</color>
     <color name="dark_unread_background_end">#660000</color>
     
     <color name="light_dm_background_start">#FFCC00</color>
     <color name="light_dm_background_end">#FFAA00</color>
     <color name="light_mention_background_start">#DDDDFF</color>
     <color name="light_mention_background_end">#BBBBFF</color>
-    <color name="light_my_background_start">#AAFFAA</color>
-    <color name="light_my_background_end">#66FF66</color>
-    <color name="light_normal_background_start">#FFFFFF</color>
-    <color name="light_normal_background_end">#EEEEEE</color>
-    <color name="light_status_background_start">#FF66FF</color>
-    <color name="light_status_background_end">#FF44FF</color>
+    <color name="light_own_background_start">#AAFFAA</color>
+    <color name="light_own_background_end">#66FF66</color>
+    <color name="light_read_background_start">#FFFFFF</color>
+    <color name="light_read_background_end">#EEEEEE</color>
+    <color name="light_event_background_start">#FF66FF</color>
+    <color name="light_event_background_end">#FF44FF</color>
     <color name="light_unread_background_start">#FFDDDD</color>
     <color name="light_unread_background_end">#FFBBBB</color>
     

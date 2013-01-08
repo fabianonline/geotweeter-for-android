@@ -66,10 +66,10 @@ public class AccountSwitcherRadioButton extends RadioButton implements Observer 
 					setBackgroundResource(R.drawable.listelement_background_light_dm);
 				}
 			} else if (data == Message.REFRESH_FINISHED) {
-				if(Geotweeter.getInstance().useDarkTheme()) {
-					setBackgroundResource(R.drawable.listelement_background_dark_my);
+				if (Geotweeter.getInstance().useDarkTheme()) {
+					setBackgroundResource(R.drawable.listelement_background_dark_own);
 				} else {
-					setBackgroundResource(R.drawable.listelement_background_light_my);
+					setBackgroundResource(R.drawable.listelement_background_light_own);
 				}
 			}
 		}
