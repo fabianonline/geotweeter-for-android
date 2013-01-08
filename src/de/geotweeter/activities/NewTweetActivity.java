@@ -48,6 +48,7 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -131,6 +132,9 @@ public class NewTweetActivity extends Activity {
 			});
 			
 		}
+		
+		ArrayAdapter<String> completeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new String[] {"@el_emka", "@fabianonline", "@Rimgar_"});
+		editTweetText.setAdapter(completeAdapter);
 		
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
 		gpsToggle.setOnCheckedChangeListener(new GPSToggleListener());
