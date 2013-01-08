@@ -284,5 +284,10 @@ public class Tweet extends TimelineElement {
 		}
 		return result;
 	}
+
+	@Override
+	public boolean isOwnMessage() {
+		return (this.user.id == TimelineActivity.current_account.getUser().id);
+	}
 	
 }

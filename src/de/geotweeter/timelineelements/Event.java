@@ -58,4 +58,9 @@ public abstract class Event extends TimelineElement {
 	public String getSenderString() {
 		return source.getScreenName();
 	}
+	
+	@Override
+	public boolean isOwnMessage() {
+		return false;
+	}
 }
