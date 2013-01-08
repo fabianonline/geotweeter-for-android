@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import android.R.color;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Pair;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.activities.TimelineActivity;
@@ -121,14 +123,15 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		TLEType type = tle.getType();
 		final boolean darkTheme = Geotweeter.getInstance().useDarkTheme();
 		int drawableID = TimelineElement.getBackgroundGradient(type, darkTheme);
+		int backgroundColor = context.getResources().getColor(TimelineElement.getBackgroundColor(type, darkTheme));
 		container.setBackgroundResource(drawableID);
 		
 		LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
-		buttons.setBackgroundColor(context.getResources().getColor(TimelineElement.getBackgroundColor(type, darkTheme)));
+		buttons.setBackgroundColor(backgroundColor);
 		buttons.setVisibility(View.GONE);
 		buttons.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+		
 		if (tle.getClass() == Tweet.class) {
 			Tweet t = (Tweet) tle;
 			if (t.retweeted_status != null) {
@@ -168,6 +171,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 			View mapAndControls = v.findViewById(R.id.map_and_controls);
 			mapAndControls.setVisibility(View.GONE);
+			mapAndControls.setBackgroundColor(backgroundColor);
 			
 			TextView txtView;
 			String text;
