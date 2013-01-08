@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -306,5 +307,22 @@ public class Utils {
 	 */
 	public static int convertDipToPixel(int dip) {
 		return (int) (dip * Geotweeter.getInstance().getResources().getDisplayMetrics().density + 0.5f);
+	}
+	
+	/**
+	 * Returns a String Comparator which sort alphabetically
+	 * @return an alpabetical String Comparator
+	 */
+	public static Comparator<String> getAlphabeticalStringComparator() {
+		return new Comparator<String>() {
+			@Override
+			public int compare(String lhs, String rhs) {
+				int ignoreCase = lhs.compareToIgnoreCase(rhs);
+				if(ignoreCase == 0) {
+					return lhs.compareTo(rhs);
+				}
+				return ignoreCase;
+			}
+		};
 	}
 }

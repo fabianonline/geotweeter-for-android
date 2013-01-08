@@ -1,6 +1,7 @@
 package de.geotweeter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,7 +64,7 @@ public class Geotweeter extends Application {
 		
 		backgroundImageLoader = new BackgroundImageLoader(getApplicationContext());
 		
-		knownHashtags = new HashSet<String>();
+		knownHashtags = Collections.synchronizedSet(new HashSet<String>());
 		
 		super.onCreate();
 	}
