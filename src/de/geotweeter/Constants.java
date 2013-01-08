@@ -65,6 +65,10 @@ public class Constants extends Application {
 	public static final String ICON_CONV = "";
 	public static final String ICON_DELETE = "";
 	
+	public static enum TLEType {
+		READ, UNREAD, MENTION, OWN, DM, EVENT
+	}
+	
 	private static class LocationMarker extends Path {
 		
 		public LocationMarker() {

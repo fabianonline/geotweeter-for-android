@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import android.util.Log;
 import android.util.Pair;
+import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 
@@ -35,7 +36,8 @@ public abstract class TimelineElement implements Serializable {
 	abstract public int getBackgroundDrawableID(boolean getDarkVersion);
 	abstract public String getSenderString();
 	abstract public boolean isOwnMessage();
-
+	abstract public TLEType getType();
+	
 	/**
 	 * Gets the creation time stamp
 	 * 

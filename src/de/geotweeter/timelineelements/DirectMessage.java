@@ -1,5 +1,6 @@
 package de.geotweeter.timelineelements;
 
+import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
@@ -92,5 +93,10 @@ public class DirectMessage extends Tweet {
 	@Override
 	public boolean isOwnMessage() {
 		return (sender.id == TimelineActivity.current_account.getUser().id);
+	}
+	
+	@Override
+	public TLEType getType() {
+		return TLEType.DM;
 	}
 }

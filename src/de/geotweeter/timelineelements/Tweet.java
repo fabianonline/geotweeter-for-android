@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
 import de.geotweeter.Constants;
+import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
@@ -165,6 +166,21 @@ public class Tweet extends TimelineElement {
 		} else {
 			return getDarkVersion ? R.drawable.listelement_background_dark_read : R.drawable.listelement_background_light_read;
 		}
+	}
+	
+	@Override
+	public TLEType getType() {
+		User current_user = TimelineActivity.current_account.getUser();
+		if (this.user.id == current_user.id) {
+			return TLEType.OWN;
+		}
+		if (this.mentionsUser(current_user)) {
+			return TLEType.MENTION;
+		}
+		if (this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
+			return TLEType.UNREAD;
+		}
+		return TLEType.READ;
 	}
 
 	/**
