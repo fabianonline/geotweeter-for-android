@@ -200,6 +200,10 @@ public class Account extends Observable implements Serializable {
 			setChanged();
 			notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_START);
 		}
+		if (exec.getQueue().remainingCapacity() == 0) {
+			/* API calls are running, so there shouldn't be need for another one */
+			return;
+		}
 		for (AccessType type : AccessType.values()) {
 			accessSuccessful.put(type, true);
 		}
