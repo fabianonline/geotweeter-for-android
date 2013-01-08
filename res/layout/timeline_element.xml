@@ -112,6 +112,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/plus"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="50dp" />
 
             <TextView
@@ -121,6 +122,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/minus"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="50dp" />
 
         </LinearLayout>
