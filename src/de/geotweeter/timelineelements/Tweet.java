@@ -154,19 +154,19 @@ public class Tweet extends TimelineElement {
 	/**
 	 * Returns the tweet view background design
 	 */
-	@Override
-	public int getBackgroundDrawableID(boolean getDarkVersion) {
-		User current_user = TimelineActivity.current_account.getUser();
-		if (this.user.id == current_user.id) {
-			return getDarkVersion ? R.drawable.listelement_background_dark_own : R.drawable.listelement_background_light_own;
-		} else if (this.mentionsUser(current_user)) {
-			return getDarkVersion ? R.drawable.listelement_background_dark_mention : R.drawable.listelement_background_light_mention;
-		} else if (this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
-			return getDarkVersion ? R.drawable.listelement_background_dark_unread : R.drawable.listelement_background_light_unread;
-		} else {
-			return getDarkVersion ? R.drawable.listelement_background_dark_read : R.drawable.listelement_background_light_read;
-		}
-	}
+//	@Override
+//	public int getBackgroundDrawableID(boolean getDarkVersion) {
+//		User current_user = TimelineActivity.current_account.getUser();
+//		if (this.user.id == current_user.id) {
+//			return getDarkVersion ? R.drawable.listelement_background_dark_own : R.drawable.listelement_background_light_own;
+//		} else if (this.mentionsUser(current_user)) {
+//			return getDarkVersion ? R.drawable.listelement_background_dark_mention : R.drawable.listelement_background_light_mention;
+//		} else if (this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
+//			return getDarkVersion ? R.drawable.listelement_background_dark_unread : R.drawable.listelement_background_light_unread;
+//		} else {
+//			return getDarkVersion ? R.drawable.listelement_background_dark_read : R.drawable.listelement_background_light_read;
+//		}
+//	}
 	
 	@Override
 	public TLEType getType() {

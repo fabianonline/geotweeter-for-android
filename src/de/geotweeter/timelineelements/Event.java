@@ -46,14 +46,14 @@ public abstract class Event extends TimelineElement {
 		}
 	}
 	
-	@Override
-	public int getBackgroundDrawableID(boolean getDarkVersion) {
-		if (getDarkVersion) {
-			return R.drawable.listelement_background_dark_event;
-		} else {
-			return R.drawable.listelement_background_light_event;
-		}
-	}
+//	@Override
+//	public int getBackgroundDrawableID(boolean getDarkVersion) {
+//		if (getDarkVersion) {
+//			return R.drawable.listelement_background_dark_event;
+//		} else {
+//			return R.drawable.listelement_background_light_event;
+//		}
+//	}
 	
 	@Override
 	public String getSenderString() {

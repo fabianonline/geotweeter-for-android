@@ -66,10 +66,10 @@ public class DirectMessage extends Tweet {
 		return text;
 	}
 	
-	@Override
-	public int getBackgroundDrawableID(boolean getDarkVersion) {
-		return getDarkVersion ? R.drawable.listelement_background_dark_dm : R.drawable.listelement_background_light_dm;
-	}
+//	@Override
+//	public int getBackgroundDrawableID(boolean getDarkVersion) {
+//		return getDarkVersion ? R.drawable.listelement_background_dark_dm : R.drawable.listelement_background_light_dm;
+//	}
 	
 	@Override
 	public boolean showWithFilter(String filter) {

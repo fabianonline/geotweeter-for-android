@@ -33,7 +33,7 @@ public abstract class TimelineElement implements Serializable {
 	abstract public String getAvatarSource();
 	abstract public long getID();
 	abstract public String getSenderScreenName();
-	abstract public int getBackgroundDrawableID(boolean getDarkVersion);
+//	abstract public int getBackgroundDrawableID(boolean getDarkVersion);
 	abstract public String getSenderString();
 	abstract public boolean isOwnMessage();
 	abstract public TLEType getType();
@@ -151,6 +151,52 @@ public abstract class TimelineElement implements Serializable {
 	
 	public boolean olderThan(TimelineElement tle) {
 		return (created_at.getTime() < tle.created_at.getTime());
+	}
+	
+	public static int getBackgroundGradient(TLEType type, boolean darkVersion) {
+		if (darkVersion) {
+			switch (type) {
+			case DM: return R.drawable.listelement_background_dark_dm;
+			case EVENT: return R.drawable.listelement_background_dark_event;
+			case MENTION: return R.drawable.listelement_background_dark_mention;
+			case OWN: return R.drawable.listelement_background_dark_own;
+			case READ: return R.drawable.listelement_background_dark_read;
+			case UNREAD: return R.drawable.listelement_background_dark_unread;
+			}
+		} else {
+			switch (type) {
+			case DM: return R.drawable.listelement_background_light_dm;
+			case EVENT: return R.drawable.listelement_background_light_event;
+			case MENTION: return R.drawable.listelement_background_light_mention;
+			case OWN: return R.drawable.listelement_background_light_own;
+			case READ: return R.drawable.listelement_background_light_read;
+			case UNREAD: return R.drawable.listelement_background_light_unread;
+			}
+		}
+		return 0;
+	}
+	
+	public static int getBackgroundColor(TLEType type, boolean darkVersion) {
+		if (darkVersion) {
+			switch (type) {
+			case DM: return R.color.dark_dm_background_end;
+			case EVENT: return R.color.dark_event_background_end;
+			case MENTION: return R.color.dark_mention_background_end;
+			case OWN: return R.color.dark_own_background_end;
+			case READ: return R.color.dark_read_background_end;
+			case UNREAD: return R.color.dark_unread_background_end;
+			}
+		} else {
+			switch (type) {
+			case DM: return R.color.light_dm_background_end;
+			case EVENT: return R.color.light_event_background_end;
+			case MENTION: return R.color.light_mention_background_end;
+			case OWN: return R.color.light_own_background_end;
+			case READ: return R.color.light_read_background_end;
+			case UNREAD: return R.color.light_unread_background_end;
+			}
+		}		
+		return 0;
 	}
 	
 }

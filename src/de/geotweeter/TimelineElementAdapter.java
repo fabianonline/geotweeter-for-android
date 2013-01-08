@@ -7,7 +7,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import de.geotweeter.Constants.TLEType;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.Hashtag;
@@ -118,11 +118,13 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 
 		View container = v.findViewById(R.id.container);
 		
-		int drawableID = tle.getBackgroundDrawableID(Geotweeter.getInstance().useDarkTheme());
+		TLEType type = tle.getType();
+		final boolean darkTheme = Geotweeter.getInstance().useDarkTheme();
+		int drawableID = TimelineElement.getBackgroundGradient(type, darkTheme);
 		container.setBackgroundResource(drawableID);
 		
 		LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
-		
+		buttons.setBackgroundColor(context.getResources().getColor(TimelineElement.getBackgroundColor(type, darkTheme)));
 		buttons.setVisibility(View.GONE);
 		buttons.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
