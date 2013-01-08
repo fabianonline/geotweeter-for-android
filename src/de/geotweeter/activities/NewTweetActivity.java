@@ -133,7 +133,7 @@ public class NewTweetActivity extends Activity {
 			
 		}
 		
-		ArrayAdapter<String> completeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new String[] {"@el_emka", "@fabianonline", "@Rimgar_"});
+		ArrayAdapter<String> completeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(Geotweeter.getInstance().getKnownHashtags()));
 		editTweetText.setAdapter(completeAdapter);
 		
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
