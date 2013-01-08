@@ -21,6 +21,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.timelineelements.DirectMessage;
+import de.geotweeter.timelineelements.Hashtag;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
@@ -62,8 +63,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			} else {
 				items.add(0, t);
 			}
-			available.put(t.getID(), t);
-			TimelineActivity.addToAvailableTLE(t);
+			processNewTLE(t);
 			this.notifyDataSetChanged();			
 		}
 	}
@@ -76,11 +76,25 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	public void addAllAsFirst(List<TimelineElement> elements) {
 		for (TimelineElement t : elements) {
 			if (!available.containsKey(t.getID())) {
-				available.put(t.getID(), t);
-				TimelineActivity.addToAvailableTLE(t);
+				processNewTLE(t);
 				items.add(t);				
 				Collections.sort(items, new TLEComparator());
 				this.notifyDataSetChanged();
+			}
+		}
+	}
+	
+	/**
+	 * Processes a TimelineElement
+	 * 
+	 * @param tle The TimelineElement to be processed
+	 */
+	private void processNewTLE(TimelineElement tle) {
+		available.put(tle.getID(), tle);
+		TimelineActivity.addToAvailableTLE(tle);
+		if (tle instanceof Tweet) {
+			for (Hashtag ht : ((Tweet) tle).entities.hashtags) {
+				Geotweeter.getInstance().getKnownHashtags().add("#" + ht.text);
 			}
 		}
 	}

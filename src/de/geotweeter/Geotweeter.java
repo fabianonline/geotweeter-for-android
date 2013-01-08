@@ -1,7 +1,10 @@
 package de.geotweeter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.acra.ACRA;
 import org.acra.ACRAConfiguration;
@@ -47,6 +50,8 @@ public class Geotweeter extends Application {
 	private boolean darkTheme;
 	private BackgroundImageLoader backgroundImageLoader;
 	
+	private Set<String> knownHashtags;
+	
 	@Override
 	public void onCreate() {
 		Log.d(LOG, "onCreate is running");
@@ -58,6 +63,8 @@ public class Geotweeter extends Application {
 		ACRA.init(this);
 		
 		backgroundImageLoader = new BackgroundImageLoader(getApplicationContext());
+		
+		knownHashtags = Collections.synchronizedSet(new HashSet<String>());
 		
 		super.onCreate();
 	}
@@ -214,5 +221,9 @@ public class Geotweeter extends Application {
 			}
 			notification.bigContentView = extendedView;
 		}
+	}
+	
+	public Set<String> getKnownHashtags() {
+		return knownHashtags;
 	}
 }

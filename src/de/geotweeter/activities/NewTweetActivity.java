@@ -3,6 +3,8 @@ package de.geotweeter.activities;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -133,7 +135,9 @@ public class NewTweetActivity extends Activity {
 			
 		}
 		
-		ArrayAdapter<String> completeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new String[] {"@el_emka", "@fabianonline", "@Rimgar_"});
+		List<String> autocompletionList = new ArrayList<String>(Geotweeter.getInstance().getKnownHashtags());
+		Collections.sort(autocompletionList, Utils.getAlphabeticalStringComparator());
+		ArrayAdapter<String> completeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, autocompletionList);
 		editTweetText.setAdapter(completeAdapter);
 		
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
