@@ -5,15 +5,17 @@ import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 
-public class ProtectedPlaceholderEditText extends EditText {
+public class ProtectedPlaceholderEditText extends AutoCompleteTextView {
 
 	private Pattern placeholder;
 	private boolean placeholder_selected;
 	private boolean own_call = false;
 	private boolean dpad_action = false;
+	private String mSeparator = "\\s";
 
 	public ProtectedPlaceholderEditText(Context context) {
 		this(context, (Pattern) null);
@@ -99,5 +101,39 @@ public class ProtectedPlaceholderEditText extends EditText {
 		this.dpad_action = dpad_action;
 	}
 
-	
+	@Override
+	protected void performFiltering(CharSequence text, int keyCode)
+	{
+		String newText = text.toString();
+		if (newText.matches(".*" + mSeparator + "\\S+"))
+		{
+			String[] words = newText.split(mSeparator);
+			if (words.length > 0) {
+				newText = words[words.length - 1];
+				Log.d("ProtectedPlaceholderEditText", "newText = " + newText);
+				if (newText.length() >= getThreshold())
+				{
+					text = newText;
+				}
+			}
+		}
+		super.performFiltering(text, keyCode);
+	}
+
+	@Override
+	protected void replaceText(CharSequence text)
+	{
+		String newText = getText().toString();
+		if (newText.matches(".*" + mSeparator + ".*"))
+		{
+			newText = newText.replaceAll("(" + mSeparator + ")\\S+$", "$1");
+			newText += text.toString();
+		}
+		else
+		{
+			newText = text.toString();
+		}
+		super.replaceText(newText);
+	}
+
 }
