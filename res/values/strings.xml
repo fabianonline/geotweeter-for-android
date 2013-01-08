@@ -4,7 +4,7 @@
     <string name="menu_settings">Einstellungen</string>
     <string name="title_activity_timeline">Geotweeter</string>
     <string name="button_reply">Reply</string>
-    <string name="button_retweet">Retweet</string>
+    <string name="action_retweet">Retweet</string>
     <string name="settings_accounts">Kontoeinstellungen</string>
     <string name="accounts">Konten</string>
     <string name="settings_display">Darstellung</string>
@@ -36,12 +36,13 @@
     <string name="cancel">Abbrechen</string>
     <string name="btn_add_image">Bild</string>
     <string name="image_gridview_title">Bilder</string>
-    <string name="delete">Löschen</string>
+    <string name="action_delete">Löschen</string>
     <string name="too_much_images">Du kannst kein weiteres Bild zufügen</string>
     <string name="pref_image_hoster_title">Image Hoster</string>
     <string name="context_menu_title">Links</string>
-    <string name="respond_to_tweet">Beantworten</string>
-    <string name="show_conversation">Konversation anzeigen</string>
+    <string name="action_reply">Antworten</string>
+    <string name="action_conv">Konversation</string>
+    <string name="action_fav">Favorisieren</string>
     <string-array name="pref_tweet_time_style_entries">
         <item>dd.MM.yy HH:mm</item>
         <item>dd.MM. HH:mm</item>

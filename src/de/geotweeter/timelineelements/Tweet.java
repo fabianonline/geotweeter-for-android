@@ -290,4 +290,12 @@ public class Tweet extends TimelineElement {
 		return (this.user.id == TimelineActivity.current_account.getUser().id);
 	}
 	
+	public boolean isRetweetable() {
+		return !(this.user._protected);
+	}
+	
+	public boolean isConversationEndpoint() {
+		return (this.in_reply_to_status_id != 0);
+	}
+	
 }

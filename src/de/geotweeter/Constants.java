@@ -59,6 +59,11 @@ public class Constants extends Application {
 
 	public static final int NOTIFICATION_ID = 13513814;
 
+	public static final String ICON_REPLY = "";
+	public static final String ICON_RETWEET = "📣";
+	public static final String ICON_FAV = "★";
+	public static final String ICON_CONV = "";
+	public static final String ICON_DELETE = "";
 	
 	private static class LocationMarker extends Path {
 		

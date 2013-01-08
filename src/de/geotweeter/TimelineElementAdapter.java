@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +17,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
@@ -26,6 +29,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private List<TimelineElement> items;
 	private Context context;
 	private HashMap<Long, TimelineElement> available = new HashMap<Long, TimelineElement>();
+	private Typeface tf;
 	
 	/**
 	 * Constructor
@@ -42,6 +46,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		}
 		this.items = objects;
 		this.context = context;
+		tf = Typeface.createFromAsset(context.getAssets(), "fonts/Entypo.otf");
 	}
 	
 	/**
@@ -96,7 +101,14 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			v = vi.inflate(R.layout.timeline_element, null);
 		}
 
-		v.setBackgroundResource(tle.getBackgroundDrawableID(Geotweeter.getInstance().useDarkTheme()));
+		View container = v.findViewById(R.id.container);
+		
+		container.setBackgroundResource(tle.getBackgroundDrawableID(Geotweeter.getInstance().useDarkTheme()));
+		
+		LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
+		buttons.setVisibility(View.GONE);
+		buttons.removeAllViews();
+		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (tle.getClass() == Tweet.class) {
 			Tweet t = (Tweet) tle;
@@ -104,9 +116,33 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				tle = t.retweeted_status;
 				is_retweet = true;
 				retweeter = t.getSenderScreenName();
+				t = t.retweeted_status;
+			}
+			
+			createButton(buttons, inflater, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
+			if (t.isOwnMessage()) {
+				createButton(buttons, inflater, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
+			} else {
+				if (t.isRetweetable()) {
+					createButton(buttons, inflater, Constants.ICON_RETWEET, v.getResources().getString(R.string.action_retweet));
+				}
+				createButton(buttons, inflater, Constants.ICON_FAV, v.getResources().getString(R.string.action_fav));
+			}
+			if (t.isConversationEndpoint()) {
+				createButton(buttons, inflater, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
+			}
+			
+		}
+
+		
+		if (tle.getClass() == DirectMessage.class) {
+			createButton(buttons, inflater, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
+			createButton(buttons, inflater, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
+			if (tle.isOwnMessage()) {
+				createButton(buttons, inflater, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
 			}
 		}
-		
+				
 		if (tle != null) {
 			FrameLayout mapContainer = (FrameLayout) v.findViewById(R.id.map_fragment_container);
 			mapContainer.removeAllViews();
@@ -195,6 +231,19 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		}
 //		v.findViewById(R.id.tweet_element).setOnClickListener(new OnClickListener());
 		return v;	
+	}
+
+	private void createButton(LinearLayout buttons, LayoutInflater inflater, CharSequence icon, CharSequence desc) {
+		LinearLayout button = (LinearLayout) inflater.inflate(R.layout.action_button, null);
+		TextView iconView = (TextView) button.findViewById(R.id.action_icon);
+		iconView.setTypeface(tf);
+		iconView.setText(icon);
+		TextView description = (TextView) button.findViewById(R.id.action_description);
+		description.setText(desc);
+		buttons.addView(button);
+		LinearLayout.LayoutParams params = (LayoutParams) button.getLayoutParams();
+		params.weight = 1.0f;
+		button.setLayoutParams(params);
 	}
 	
 	/**

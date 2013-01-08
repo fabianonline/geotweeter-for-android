@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -61,6 +62,7 @@ public class TimelineActivity extends MapActivity {
 	public static Account current_account = null;
 	public static String reg_id = "";
 	private MapView map;
+	private LinearLayout actionButtons;
 	private boolean is_visible;
 	private static TimelineActivity instance = null;
 	private static boolean isRunning = false;
@@ -127,7 +129,7 @@ public class TimelineActivity extends MapActivity {
 		timelineListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				//view.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xFFFFFFFF, 0xFFCCCCCC }));
+				showActionButtons(parent, view, position, id);
 				showMapIfApplicable(parent, view, position, id);
 			}
 		});
@@ -213,7 +215,7 @@ public class TimelineActivity extends MapActivity {
 			final TimelineElement te = (TimelineElement) timelineListView.getAdapter().getItem(info.position);
 //			final TimelineElement te = current_account.activeTimeline().getItem(info.position);
 			if (te.isReplyable()) {
-				menu.add(R.string.respond_to_tweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				menu.add(R.string.action_reply).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
@@ -229,7 +231,7 @@ public class TimelineActivity extends MapActivity {
 				}
 				final Tweet tweet = timelineTweet;
 				if (tweet.in_reply_to_status_id != 0 || te instanceof DirectMessage) {
-					menu.add(R.string.show_conversation).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					menu.add(R.string.action_conv).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 						
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
@@ -243,7 +245,7 @@ public class TimelineActivity extends MapActivity {
 				        || tweet.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())
 				        || tweet.user._protected)) {
 						
-					menu.add(R.string.button_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					menu.add(R.string.action_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
@@ -414,6 +416,22 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 
+	protected void showActionButtons(AdapterView<?> parent, View view,
+			int position, long id) {
+		if (actionButtons != null) {
+			if (actionButtons.getVisibility() == View.VISIBLE) {
+				actionButtons.setVisibility(View.GONE);
+				if (actionButtons.getParent() == view) {
+					return;
+				}
+			}
+		}
+		
+		actionButtons = (LinearLayout) view.findViewById(R.id.action_buttons);
+		actionButtons.setVisibility(View.VISIBLE);
+	}
+
+	
 	/**
 	 * {@inheritDoc}
 	 */

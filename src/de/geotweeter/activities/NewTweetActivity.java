@@ -505,7 +505,7 @@ public class NewTweetActivity extends Activity {
 		            		   dialog.cancel();
 		            	   }
 		               })
-		               .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+		               .setPositiveButton(R.string.action_delete, new DialogInterface.OnClickListener() {
 		            	   @Override
 		            	   public void onClick(DialogInterface dialog, int which) {
 		            		   editTweetText.setText(imageAdapter.deleteAllMarkedPlaceholder(editTweetText.getText().toString()));

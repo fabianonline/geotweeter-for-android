@@ -85,11 +85,18 @@
 	
 	</RelativeLayout>
 
+	<LinearLayout
+	    android:id="@+id/action_buttons"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:visibility="gone" >
+
+	</LinearLayout>
+
     <RelativeLayout
         android:id="@+id/map_and_controls"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:layout_below="@id/txtPlace"
         android:visibility="gone" >
 
         <LinearLayout
@@ -111,7 +118,6 @@
                 android:id="@+id/zoom_out"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/zoom_in"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/minus"
