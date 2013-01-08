@@ -42,6 +42,11 @@ public class ImageBaseAdapter extends BaseAdapter {
 		size = 0;
 	}
 	
+	/**
+	 * Add an image to the adapter, when it is not full.
+	 * @param path The path to the image
+	 * @return The index, where the path was added. -1, if adapter was full
+	 */
 	public int add(String path) {
 		if(size == SIZE) {
 			return -1;
@@ -55,11 +60,17 @@ public class ImageBaseAdapter extends BaseAdapter {
 		return i;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getCount() {
 		return size;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getItem(int position) {
 		if (0 <= position && position < getCount()) {
@@ -68,26 +79,44 @@ public class ImageBaseAdapter extends BaseAdapter {
 		return null;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
-		return 0;
+		return position;
 	}
 	
+	/**
+	 * Mars an image for deletion
+	 * @param position The position of the item within the adapter's data set that we want to mark.
+	 */
 	public void markForDelete(int position) {
 		markedForDelete[getIndex(position)] = true;
 	}
 	
+
+	
+	/**
+	 * Unmark an image for deletion
+	 * @param position The position of the item within the adapter's data set that we want to unmark.
+	 */
 	public void unmarkForDelete(int position) {
 		markedForDelete[getIndex(position)] = false;
 	}
 	
+	/**
+	 * Unmark all images
+	 */
 	public void unmarkAll() {
 		for(int i = 0; i < markedForDelete.length; i++) {
 			markedForDelete[i] = false;
 		}
 	}
 	
+	/**
+	 * Delete all marked images
+	 */
 	public void deleteMarked() {
 		for (int i = 0; i < markedForDelete.length; i++) {
 			if (markedForDelete[i]) {
@@ -97,6 +126,10 @@ public class ImageBaseAdapter extends BaseAdapter {
 //		notifyDataSetChanged();
 	}
 	
+	/**
+	 * Delete the image on the specific position
+	 * @param position The position of the item we want to delete within the adapter's data set.
+	 */
 	public void delete(int position) {
 		try {
 			int index = getIndex(position);
@@ -105,12 +138,22 @@ public class ImageBaseAdapter extends BaseAdapter {
 		}
 	}
 	
+	/**
+	 * Delete the item at the specific index
+	 * @param index The index of the item we want to delete
+	 */
 	public void deleteIndex(int index) {
 		items[index] = null;
 		markedForDelete[index] = false;
 		size--;
 	}
 	
+	/**
+	 * Delete the placeholders whose images are marked
+	 * 
+	 * @param text The text in which the placeholders should be deleted
+	 * @return The text without the deleted placeholders
+	 */
 	public String deleteAllMarkedPlaceholder(String text) {
 		for (int i = 0; i < markedForDelete.length; i++) {
 			if (markedForDelete[i]) {
@@ -122,6 +165,9 @@ public class ImageBaseAdapter extends BaseAdapter {
 	}
 	
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ImageView imageView;
 		if (convertView == null) {
@@ -140,10 +186,18 @@ public class ImageBaseAdapter extends BaseAdapter {
 		return convertView;
 	}
 	
+	/**
+	 * Returns the adapter's item list
+	 * 
+	 * @return The adapter's item list
+	 */
 	public String[] getItems() {
 		return items;
 	}
 	
+	/**
+	 * Clear the whole adapter
+	 */
 	public void clear() {
 		for (int i = 0; i < SIZE; i++) {
 			items[i] = null;
@@ -152,6 +206,13 @@ public class ImageBaseAdapter extends BaseAdapter {
 //		notifyDataSetChanged();
 	}
 	
+	/**
+	 * Compute the index of the item on the specific position
+	 * 
+	 * @param position The position of the item, whose index we want get
+	 * @return The index of the item on the specific position
+	 * @throws IllegalArgumentException
+	 */
 	private int getIndex(int position) throws IllegalArgumentException {
 		if (0 <= position && position < getCount()) {
 			for (int i = 0; i < items.length; i++) {
