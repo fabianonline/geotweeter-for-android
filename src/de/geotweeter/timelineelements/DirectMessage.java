@@ -88,4 +88,9 @@ public class DirectMessage extends Tweet {
 	public String getPlaceString() {
 		return null;
 	}
+	
+	@Override
+	public boolean isOwnMessage() {
+		return (sender.id == TimelineActivity.current_account.getUser().id);
+	}
 }
