@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import de.geotweeter.Constants.ActionType;
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.timelineelements.DirectMessage;
@@ -124,15 +126,10 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		TLEType type = tle.getType();
 		final boolean darkTheme = Geotweeter.getInstance().useDarkTheme();
 		int drawableID = TimelineElement.getBackgroundGradient(type, darkTheme);
-		int backgroundColor = context.getResources().getColor(TimelineElement.getBackgroundColor(type, darkTheme));
+		int backgroundColorId = context.getResources().getColor(TimelineElement.getBackgroundColor(type, darkTheme));
+		
 		container.setBackgroundResource(drawableID);
-		
-		LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
-		buttons.setBackgroundColor(backgroundColor);
-		buttons.setVisibility(View.GONE);
-		buttons.removeAllViews();
-//		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
+
 		if (tle.getClass() == Tweet.class) {
 			Tweet t = (Tweet) tle;
 			if (t.retweeted_status != null) {
@@ -141,28 +138,39 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				retweeter = t.getSenderScreenName();
 				t = t.retweeted_status;
 			}
-			
-			createButton(buttons, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
-			if (t.isOwnMessage()) {
-				createButton(buttons, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
-			} else {
-				if (t.isRetweetable()) {
-					createButton(buttons, Constants.ICON_RETWEET, v.getResources().getString(R.string.action_retweet));
-				}
-				createButton(buttons, Constants.ICON_FAV, v.getResources().getString(R.string.action_fav));
-			}
-			if (t.isConversationEndpoint()) {
-				createButton(buttons, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
-			}
-			
 		}
-
 		
-		if (tle.getClass() == DirectMessage.class) {
-			createButton(buttons, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
-			createButton(buttons, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
-			if (tle.isOwnMessage()) {
-				createButton(buttons, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
+		if (TimelineActivity.getInstance().isVisible()) {
+			LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
+			buttons.setBackgroundColor(backgroundColorId);
+			buttons.setVisibility(View.GONE);
+			buttons.removeAllViews();
+			
+			if (tle.getClass() == Tweet.class) {
+				Tweet t = (Tweet) tle;
+				
+				createButton(buttons, ActionType.REPLY, tle);
+				if (t.isOwnMessage()) {
+					createButton(buttons, ActionType.DELETE, tle);
+				} else {
+					if (t.isRetweetable()) {
+						createButton(buttons, ActionType.RETWEET, tle);
+					}
+					createButton(buttons, ActionType.FAV, tle);
+				}
+				if (t.isConversationEndpoint()) {
+					createButton(buttons, ActionType.CONV, tle);
+				}
+				
+			}
+	
+			
+			if (tle.getClass() == DirectMessage.class) {
+				createButton(buttons, ActionType.REPLY, tle);
+				createButton(buttons, ActionType.CONV, tle);
+				if (tle.isOwnMessage()) {
+					createButton(buttons, ActionType.DELETE, tle);
+				}
 			}
 		}
 				
@@ -172,7 +180,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			
 			View mapAndControls = v.findViewById(R.id.map_and_controls);
 			mapAndControls.setVisibility(View.GONE);
-			mapAndControls.setBackgroundColor(backgroundColor);
+			mapAndControls.setBackgroundColor(backgroundColorId);
 			
 			TextView txtView;
 			String text;
@@ -261,10 +269,21 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	 * Creates a tweet specific action button
 	 * 
 	 * @param buttons Layout parent
+	 * @param tle 
 	 * @param icon Character representing the icon
 	 * @param desc Visible description of the button
 	 */
-	private void createButton(LinearLayout buttons, CharSequence icon, CharSequence desc) {
+	private void createButton(LinearLayout buttons, final ActionType type, final TimelineElement tle) {
+		CharSequence icon = null, desc = null;
+		Resources res = buttons.getResources();
+		switch (type) {
+		case CONV: icon = Constants.ICON_CONV; desc = res.getString(R.string.action_conv); break;
+		case DELETE: icon = Constants.ICON_DELETE; desc = res.getString(R.string.action_delete); break;
+		case FAV: icon = Constants.ICON_FAV; desc = res.getString(R.string.action_fav); break;
+		case REPLY: icon = Constants.ICON_REPLY; desc = res.getString(R.string.action_reply); break;
+		case RETWEET: icon = Constants.ICON_RETWEET; desc = res.getString(R.string.action_retweet); break;
+		}
+		
 		LinearLayout button = (LinearLayout) inflater.inflate(R.layout.action_button, null);
 		TextView iconView = (TextView) button.findViewById(R.id.action_icon);
 		iconView.setTypeface(tf);
@@ -275,6 +294,14 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		LinearLayout.LayoutParams params = (LayoutParams) button.getLayoutParams();
 		params.weight = 1.0f;
 		button.setLayoutParams(params);
+		
+		button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TimelineActivity.getInstance().actionClick(type, tle);
+			}
+		});
 	}
 	
 	/**

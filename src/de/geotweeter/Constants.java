@@ -69,6 +69,10 @@ public class Constants extends Application {
 		READ, UNREAD, MENTION, OWN, DM, EVENT
 	}
 	
+	public static enum ActionType {
+		REPLY, RETWEET, FAV, CONV, DELETE
+	}
+	
 	private static class LocationMarker extends Path {
 		
 		public LocationMarker() {

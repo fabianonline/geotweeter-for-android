@@ -41,6 +41,7 @@ import com.google.android.maps.OverlayItem;
 
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
+import de.geotweeter.Constants.ActionType;
 import de.geotweeter.Conversation;
 import de.geotweeter.Debug;
 import de.geotweeter.Geotweeter;
@@ -219,7 +220,7 @@ public class TimelineActivity extends MapActivity {
 					
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
-						return respondToTimelineElement(te);
+						return replyTo(te);
 					}
 				}); 
 			}
@@ -250,32 +251,7 @@ public class TimelineActivity extends MapActivity {
 
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
-							new AlertDialog.Builder(TimelineActivity.this)
-							.setTitle(R.string.dialog_retweet_title)
-							.setMessage(R.string.dialog_retweet_message)
-							.setPositiveButton(R.string.dialog_retweet_positive, new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									new Thread(new Runnable() {
-
-										public void run() {
-											try {
-												current_account.getApi().retweet(te.getID());
-											} catch (OAuthException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											} catch (RetweetException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											}
-										}
-									}).start();
-								}
-							})
-							.setNegativeButton(R.string.dialog_retweet_negative, null)
-							.show();
-
+							retweet(te);
 							return true;
 						}
 					});
@@ -342,7 +318,7 @@ public class TimelineActivity extends MapActivity {
 	 * @param te The timeline element to reply to
 	 * @return
 	 */
-	protected boolean respondToTimelineElement(TimelineElement te) {
+	protected boolean replyTo(TimelineElement te) {
 		Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
 		replyIntent.putExtra("de.geotweeter.reply_to_tweet", te);
 		startActivity(replyIntent);
@@ -740,5 +716,54 @@ public class TimelineActivity extends MapActivity {
 	 */
 	public boolean isVisible() {
 		return is_visible;
+	}
+
+	/**
+	 * Identifies and executes action from generic action button
+	 * 
+	 * @param type Action type
+	 * @param tle Referring timeline element id
+	 */
+	public void actionClick(ActionType type, TimelineElement tle) {
+		switch (type) {
+		case CONV: showConversation(tle); break;
+		case DELETE: /* delete(tle); */ break;
+		case FAV: /* fav(tle); */ break;
+		case REPLY: replyTo(tle); break;
+		case RETWEET: retweet(tle); break;
+		}
+	}
+
+	/**
+	 * Shows a confirmation dialog and retweets the timeline element if it is confirmed
+	 * 
+	 * @param te The TLE to be retweeted
+	 */
+	private void retweet(final TimelineElement te) {
+		new AlertDialog.Builder(TimelineActivity.this)
+		.setTitle(R.string.dialog_retweet_title)
+		.setMessage(R.string.dialog_retweet_message)
+		.setPositiveButton(R.string.dialog_retweet_positive, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				new Thread(new Runnable() {
+
+					public void run() {
+						try {
+							current_account.getApi().retweet(te.getID());
+						} catch (OAuthException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (RetweetException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}).start();
+			}
+		})
+		.setNegativeButton(R.string.dialog_retweet_negative, null)
+		.show();
 	}
 }
