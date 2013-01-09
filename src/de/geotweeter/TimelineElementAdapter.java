@@ -28,6 +28,7 @@ import de.geotweeter.timelineelements.Hashtag;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.Tweet;
+import de.geotweeter.timelineelements.UserMention;
 
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private List<TimelineElement> items;
@@ -99,7 +100,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		TimelineActivity.addToAvailableTLE(tle);
 		if (tle instanceof Tweet) {
 			for (Hashtag ht : ((Tweet) tle).entities.hashtags) {
-				Geotweeter.getInstance().getKnownHashtags().add("#" + ht.text);
+				Geotweeter.getInstance().getAutoCompletionContent().add("#" + ht.text);
+			}
+			Geotweeter.getInstance().getAutoCompletionContent().add("@" + tle.getSenderScreenName());
+			for (UserMention mention : ((Tweet) tle).entities.user_mentions) {
+				Geotweeter.getInstance().getAutoCompletionContent().add("@" + mention.screen_name);
 			}
 		}
 	}

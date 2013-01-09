@@ -134,7 +134,7 @@ public class NewTweetActivity extends Activity {
 			
 		}
 		
-		List<String> autocompletionList = new ArrayList<String>(Geotweeter.getInstance().getKnownHashtags());
+		List<String> autocompletionList = new ArrayList<String>(Geotweeter.getInstance().getAutoCompletionContent());
 		Collections.sort(autocompletionList, Utils.getAlphabeticalStringComparator());
 		ArrayAdapter<String> completeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, autocompletionList);
 		editTweetText.setAdapter(completeAdapter);

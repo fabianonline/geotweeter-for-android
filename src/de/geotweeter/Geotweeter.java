@@ -50,7 +50,7 @@ public class Geotweeter extends Application {
 	private boolean darkTheme;
 	private BackgroundImageLoader backgroundImageLoader;
 	
-	private Set<String> knownHashtags;
+	private Set<String> autoCompletionContent;
 	
 	@Override
 	public void onCreate() {
@@ -64,7 +64,9 @@ public class Geotweeter extends Application {
 		
 		backgroundImageLoader = new BackgroundImageLoader(getApplicationContext());
 		
-		knownHashtags = Collections.synchronizedSet(new HashSet<String>());
+		// TODO: Move Account creation to Geotweeter.java
+		
+		autoCompletionContent = Collections.synchronizedSet(new HashSet<String>());
 		
 		super.onCreate();
 	}
@@ -223,7 +225,7 @@ public class Geotweeter extends Application {
 		}
 	}
 	
-	public Set<String> getKnownHashtags() {
-		return knownHashtags;
+	public Set<String> getAutoCompletionContent() {
+		return autoCompletionContent;
 	}
 }
