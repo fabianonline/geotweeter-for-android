@@ -463,24 +463,14 @@ public class Account extends Observable implements Serializable {
 		
 	}
 
-	public void refresh(final TimelineElement tle) {
+	public void refresh(final TimelineElement tle, final TimelineElement newTle) {
 		Log.d(LOG, "Refreshing Tweet.");
 		handler.post(new Runnable() {
 			
 			@Override
 			public void run() {
-				TimelineElement tweet = null;
-				try {
-					tweet = getApi().getTweet(tle.getID());
-				} catch (OAuthException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TweetAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (tweet != null) {
-					elements.replace(tle, tweet);
+				if (newTle != null) {
+					elements.replace(tle, newTle);
 					setChanged();
 					notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
 				}

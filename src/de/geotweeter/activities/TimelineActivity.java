@@ -54,6 +54,7 @@ import de.geotweeter.Utils;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.RetweetException;
+import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -798,19 +799,27 @@ public class TimelineActivity extends MapActivity {
 			
 			@Override
 			public void run() {
+				TimelineElement favedTle = null;
 				try {
 					current_account.getApi().fav(tle.getID());
+					favedTle = current_account.getApi().getTweet(tle.getID());
 				} catch (FavException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (OAuthException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TweetAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				
+				final TimelineElement newTle = favedTle;
 				runOnUiThread(new Runnable() {
 					
 					@Override
 					public void run() {
 						availableTweets.remove(tle.getID());
-						current_account.refresh(tle);
+						current_account.refresh(tle, newTle);
 					}
 				});
 			}
@@ -828,19 +837,30 @@ public class TimelineActivity extends MapActivity {
 
 			@Override
 			public void run() {
+				
+				TimelineElement defavedTle = null;
 				try {
 					current_account.getApi().defav(tle.getID());
+					defavedTle = current_account.getApi().getTweet(tle.getID());
+					
 				} catch (FavException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (OAuthException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TweetAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
+				final TimelineElement newTle = defavedTle;
 				runOnUiThread(new Runnable() {
 					
 					@Override
 					public void run() {
 						availableTweets.remove(tle.getID());
-						current_account.refresh(tle);
+						current_account.refresh(tle, newTle);
 					}
 				});
 
