@@ -442,6 +442,26 @@ public class Account extends Observable implements Serializable {
 			}
 		});
 	}
+	
+	/**
+	 * Removes a timeline element after deletion
+	 * 
+	 * @param tle
+	 */
+	public void remove(final TimelineElement tle) {
+		Log.d(LOG, "Removing Tweet.");
+		handler.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				elements.remove(tle);
+				setChanged();
+				notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+			}
+		});
+		
+	}
+
 
 	/**
 	 * Registers with push service

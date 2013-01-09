@@ -169,9 +169,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				if (tle.getClass() == DirectMessage.class) {
 					createButton(buttons, ActionType.REPLY, tle);
 					createButton(buttons, ActionType.CONV, tle);
-					if (tle.isOwnMessage()) {
+//					if (tle.isOwnMessage()) {
 						createButton(buttons, ActionType.DELETE, tle);
-					}
+//					}
 				}
 			}
 		}

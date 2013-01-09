@@ -32,6 +32,8 @@
     <string name="pref_tweet_time_style_title">Zeitdarstellung</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
+    <string name="no">Nein</string>
+    <string name="yes">Ja</string>
     <string name="set">Setzen</string>
     <string name="cancel">Abbrechen</string>
     <string name="btn_add_image">Bild</string>
@@ -156,5 +158,8 @@
     <string name="dialog_retweet_title">Wirklich retweeten?</string>
     <string name="dialog_retweet_message">Bist du sicher, dass du retweeten möchtest?</string>
     <string name="dialog_retweet_positive">Retweeten</string>
-    <string name="dialog_retweet_negative">Nein</string>
+
+    <string name="dialog_delete_title">Wirklich löschen?</string>
+    <string name="dialog_delete_message">Bist du sicher, dass du den Status löschen möchtest?</string>
+    <string name="dialog_delete_positive">Löschen</string>
 </resources>

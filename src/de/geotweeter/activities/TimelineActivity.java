@@ -1,5 +1,6 @@
 package de.geotweeter.activities;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.exceptions.RetweetException;
+import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -727,11 +729,70 @@ public class TimelineActivity extends MapActivity {
 	public void actionClick(ActionType type, TimelineElement tle) {
 		switch (type) {
 		case CONV: showConversation(tle); break;
-		case DELETE: /* delete(tle); */ break;
-		case FAV: /* fav(tle); */ break;
+		case DELETE: delete(tle); break;
+		case FAV: fav(tle); break;
 		case REPLY: replyTo(tle); break;
 		case RETWEET: retweet(tle); break;
 		}
+	}
+
+	/**
+	 * Deletes the given timeline element on twitter
+	 * 
+	 * @param tle
+	 */
+	private void delete(final TimelineElement tle) {
+		new AlertDialog.Builder(TimelineActivity.this)
+		.setTitle(R.string.dialog_delete_title)
+		.setMessage(R.string.dialog_delete_message)
+		.setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+				new Thread(new Runnable() {
+
+					public void run() {
+						try {
+
+							if (tle.getClass() == DirectMessage.class) {
+								current_account.getApi().destroyMessage(tle.getID());
+							} else {
+								current_account.getApi().destroyTweet(tle.getID());
+							}
+						} catch (OAuthException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (DestroyException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
+								availableTweets.remove(tle.getID());
+								current_account.remove(tle);
+							}
+						});
+					}
+				}).start();
+			}
+		})
+		.setNegativeButton(R.string.no, null)
+		.show();
+	}
+
+	/**
+	 * Toggles the favorite mark of the given TLE
+	 * 
+	 * @param tle
+	 */
+	private void fav(TimelineElement tle) {
+		
 	}
 
 	/**
@@ -763,7 +824,7 @@ public class TimelineActivity extends MapActivity {
 				}).start();
 			}
 		})
-		.setNegativeButton(R.string.dialog_retweet_negative, null)
+		.setNegativeButton(R.string.no, null)
 		.show();
 	}
 }

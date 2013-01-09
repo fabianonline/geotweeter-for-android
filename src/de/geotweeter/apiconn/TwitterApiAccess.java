@@ -2,6 +2,7 @@ package de.geotweeter.apiconn;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +26,11 @@ import de.geotweeter.Constants;
 import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
+import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetAccessException;
-import de.geotweeter.exceptions.TweetDestroyException;
 import de.geotweeter.exceptions.TweetSendException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -277,8 +278,29 @@ public class TwitterApiAccess {
 		return result;
 	}
 	
+	public Tweet destroyMessage(long id) throws UnsupportedEncodingException, DestroyException {
+		Tweet result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_DELETE_DIRECT_MESSAGE);
+		req.addBodyParameter("id", String.valueOf(id));
+		
+		service.signRequest(token, req);
+		
+		Response response;
+		try {
+			response = req.send();
+		} catch (OAuthException ex) {
+			throw new DestroyException();
+		}
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Tweet.class);
+		} else {
+			throw new DestroyException();
+		}
+		return result;
+	}
 	
-	public Tweet destroyTweet(long id) throws OAuthException, TweetDestroyException {
+	public Tweet destroyTweet(long id) throws OAuthException, DestroyException {
 		Tweet result = null;
 		String uri = Constants.URI_DESTROY.replace(":id", String.valueOf(id));
 		OAuthRequest req = new OAuthRequest(Verb.POST, uri);
@@ -289,7 +311,7 @@ public class TwitterApiAccess {
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
-			throw new TweetDestroyException();
+			throw new DestroyException();
 		}
 		
 		return result;
