@@ -1,9 +1,11 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppTheme" parent="android:Theme.Holo.Light" />
     
     <style name="GeotweeterThemeDark" parent="android:Theme.Holo">
         <item name="accountSwitcherStyle">@style/accountSwitcherStyleDark</item>
+        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="android:colorBackground">@color/dark_background</item>
     </style>
     
     <style name="GeotweeterThemeLight" parent="android:Theme.Holo.Light">
