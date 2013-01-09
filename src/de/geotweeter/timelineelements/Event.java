@@ -3,7 +3,6 @@ package de.geotweeter.timelineelements;
 import java.util.Date;
 
 import de.geotweeter.Constants.TLEType;
-import de.geotweeter.R;
 import de.geotweeter.User;
 
 public abstract class Event extends TimelineElement {

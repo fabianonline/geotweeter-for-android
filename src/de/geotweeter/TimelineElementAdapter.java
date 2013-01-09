@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import android.R.color;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Pair;
@@ -19,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.activities.TimelineActivity;
