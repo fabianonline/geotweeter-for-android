@@ -34,6 +34,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	private Context context;
 	private HashMap<Long, TimelineElement> available = new HashMap<Long, TimelineElement>();
 	private Typeface tf;
+	private LayoutInflater inflater;
 	
 	/**
 	 * Constructor
@@ -51,6 +52,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		this.items = objects;
 		this.context = context;
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/Entypo.otf");
+		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
 	/**
@@ -114,8 +116,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		View v = convertView;
 		if (v == null) {
 //			LayoutInflater vi = (LayoutInflater) Geotweeter.getInstance().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.timeline_element, null);
+//			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//			v = vi.inflate(R.layout.timeline_element, null);
+			v = inflater.inflate(R.layout.timeline_element, null);
 		}
 
 		View container = v.findViewById(R.id.container);
@@ -130,7 +133,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		buttons.setBackgroundColor(backgroundColor);
 		buttons.setVisibility(View.GONE);
 		buttons.removeAllViews();
-		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		if (tle.getClass() == Tweet.class) {
 			Tweet t = (Tweet) tle;
@@ -141,27 +144,27 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 				t = t.retweeted_status;
 			}
 			
-			createButton(buttons, inflater, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
+			createButton(buttons, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
 			if (t.isOwnMessage()) {
-				createButton(buttons, inflater, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
+				createButton(buttons, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
 			} else {
 				if (t.isRetweetable()) {
-					createButton(buttons, inflater, Constants.ICON_RETWEET, v.getResources().getString(R.string.action_retweet));
+					createButton(buttons, Constants.ICON_RETWEET, v.getResources().getString(R.string.action_retweet));
 				}
-				createButton(buttons, inflater, Constants.ICON_FAV, v.getResources().getString(R.string.action_fav));
+				createButton(buttons, Constants.ICON_FAV, v.getResources().getString(R.string.action_fav));
 			}
 			if (t.isConversationEndpoint()) {
-				createButton(buttons, inflater, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
+				createButton(buttons, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
 			}
 			
 		}
 
 		
 		if (tle.getClass() == DirectMessage.class) {
-			createButton(buttons, inflater, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
-			createButton(buttons, inflater, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
+			createButton(buttons, Constants.ICON_REPLY, v.getResources().getString(R.string.action_reply));
+			createButton(buttons, Constants.ICON_CONV, v.getResources().getString(R.string.action_conv));
 			if (tle.isOwnMessage()) {
-				createButton(buttons, inflater, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
+				createButton(buttons, Constants.ICON_DELETE, v.getResources().getString(R.string.action_delete));
 			}
 		}
 				
@@ -256,7 +259,14 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		return v;	
 	}
 
-	private void createButton(LinearLayout buttons, LayoutInflater inflater, CharSequence icon, CharSequence desc) {
+	/**
+	 * Creates a tweet specific action button
+	 * 
+	 * @param buttons Layout parent
+	 * @param icon Character representing the icon
+	 * @param desc Visible description of the button
+	 */
+	private void createButton(LinearLayout buttons, CharSequence icon, CharSequence desc) {
 		LinearLayout button = (LinearLayout) inflater.inflate(R.layout.action_button, null);
 		TextView iconView = (TextView) button.findViewById(R.id.action_icon);
 		iconView.setTypeface(tf);
