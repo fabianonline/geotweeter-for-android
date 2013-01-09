@@ -140,36 +140,38 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 			}
 		}
 		
-		if (TimelineActivity.getInstance().isVisible()) {
-			LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
-			buttons.setBackgroundColor(backgroundColorId);
-			buttons.setVisibility(View.GONE);
-			buttons.removeAllViews();
-			
-			if (tle.getClass() == Tweet.class) {
-				Tweet t = (Tweet) tle;
+		if (TimelineActivity.getInstance() != null) {
+			if (TimelineActivity.getInstance().isVisible()) {
+				LinearLayout buttons = (LinearLayout) v.findViewById(R.id.action_buttons);
+				buttons.setBackgroundColor(backgroundColorId);
+				buttons.setVisibility(View.GONE);
+				buttons.removeAllViews();
 				
-				createButton(buttons, ActionType.REPLY, tle);
-				if (t.isOwnMessage()) {
-					createButton(buttons, ActionType.DELETE, tle);
-				} else {
-					if (t.isRetweetable()) {
-						createButton(buttons, ActionType.RETWEET, tle);
+				if (tle.getClass() == Tweet.class) {
+					Tweet t = (Tweet) tle;
+					
+					createButton(buttons, ActionType.REPLY, tle);
+					if (t.isOwnMessage()) {
+						createButton(buttons, ActionType.DELETE, tle);
+					} else {
+						if (t.isRetweetable()) {
+							createButton(buttons, ActionType.RETWEET, tle);
+						}
+						createButton(buttons, ActionType.FAV, tle);
 					}
-					createButton(buttons, ActionType.FAV, tle);
+					if (t.isConversationEndpoint()) {
+						createButton(buttons, ActionType.CONV, tle);
+					}
+					
 				}
-				if (t.isConversationEndpoint()) {
-					createButton(buttons, ActionType.CONV, tle);
-				}
+		
 				
-			}
-	
-			
-			if (tle.getClass() == DirectMessage.class) {
-				createButton(buttons, ActionType.REPLY, tle);
-				createButton(buttons, ActionType.CONV, tle);
-				if (tle.isOwnMessage()) {
-					createButton(buttons, ActionType.DELETE, tle);
+				if (tle.getClass() == DirectMessage.class) {
+					createButton(buttons, ActionType.REPLY, tle);
+					createButton(buttons, ActionType.CONV, tle);
+					if (tle.isOwnMessage()) {
+						createButton(buttons, ActionType.DELETE, tle);
+					}
 				}
 			}
 		}
