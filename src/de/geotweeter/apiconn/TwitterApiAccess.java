@@ -27,6 +27,7 @@ import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
 import de.geotweeter.exceptions.DestroyException;
+import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
@@ -329,6 +330,40 @@ public class TwitterApiAccess {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
 			throw new RetweetException();
+		}
+		
+		return result;
+	}
+	
+	public Tweet fav(long id) throws FavException {
+		Tweet result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_FAV);
+		req.addBodyParameter("id", String.valueOf(id));
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Tweet.class);
+		} else {
+			throw new FavException(false);
+		}
+		
+		return result;
+	}
+	
+	public Tweet defav(long id) throws FavException {
+		Tweet result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_DEFAV);
+		req.addBodyParameter("id", String.valueOf(id));
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Tweet.class);
+		} else {
+			throw new FavException(true);
 		}
 		
 		return result;

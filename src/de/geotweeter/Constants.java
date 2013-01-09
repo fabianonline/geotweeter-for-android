@@ -40,6 +40,8 @@ public class Constants extends Application {
 	public static final String URI_RETWEET               = "https://api.twitter.com/1.1/statuses/retweet/:id.json";
 	public static final String URI_SEND_DIRECT_MESSAGE   = "https://api.twitter.com/1.1/direct_messages/new.json";
 	public static final String URI_DELETE_DIRECT_MESSAGE = "https://api.twitter.com/1.1/direct_messages/destroy.json";
+	public static final String URI_FAV					 = "https://api.twitter.com/1.1/favorites/create.json";
+	public static final String URI_DEFAV				 = "https://api.twitter.com/1.1/favorites/destroy.json";
 	
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 		

@@ -792,7 +792,7 @@ public class TimelineActivity extends MapActivity {
 	 * @param tle
 	 */
 	private void fav(TimelineElement tle) {
-		
+
 	}
 
 	/**
