@@ -802,10 +802,15 @@ public class TimelineActivity extends MapActivity {
 				TimelineElement favedTle = null;
 				try {
 					current_account.getApi().fav(tle.getID());
-					favedTle = current_account.getApi().getTweet(tle.getID());
 				} catch (FavException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (OAuthException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					favedTle = current_account.getApi().getTweet(tle.getID());
 				} catch (OAuthException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -841,11 +846,15 @@ public class TimelineActivity extends MapActivity {
 				TimelineElement defavedTle = null;
 				try {
 					current_account.getApi().defav(tle.getID());
-					defavedTle = current_account.getApi().getTweet(tle.getID());
-					
 				} catch (FavException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (OAuthException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					defavedTle = current_account.getApi().getTweet(tle.getID());
 				} catch (OAuthException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -853,7 +862,6 @@ public class TimelineActivity extends MapActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
 				final TimelineElement newTle = defavedTle;
 				runOnUiThread(new Runnable() {
 					
