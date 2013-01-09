@@ -45,6 +45,7 @@ public class Tweet extends TimelineElement {
 	public long in_reply_to_user_id;
 	private Place place;
 	public Tweet retweeted_status;
+	public boolean favorited;
 	
 	/**
 	 * Returns the tweet id

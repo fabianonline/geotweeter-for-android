@@ -48,6 +48,7 @@ import android.util.Pair;
 import android.widget.Toast;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
+import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -462,6 +463,30 @@ public class Account extends Observable implements Serializable {
 		
 	}
 
+	public void refresh(final TimelineElement tle) {
+		Log.d(LOG, "Refreshing Tweet.");
+		handler.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				TimelineElement tweet = null;
+				try {
+					tweet = getApi().getTweet(tle.getID());
+				} catch (OAuthException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TweetAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (tweet != null) {
+					elements.replace(tle, tweet);
+					setChanged();
+					notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+				}
+			}
+		});
+	}
 
 	/**
 	 * Registers with push service

@@ -45,6 +45,7 @@
     <string name="action_reply">Antworten</string>
     <string name="action_conv">Konversation</string>
     <string name="action_fav">Favorisieren</string>
+    <string name="action_defav">Entfavorisieren</string>
     <string-array name="pref_tweet_time_style_entries">
         <item>dd.MM.yy HH:mm</item>
         <item>dd.MM. HH:mm</item>

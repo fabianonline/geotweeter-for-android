@@ -162,7 +162,11 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 						if (t.isRetweetable()) {
 							createButton(buttons, ActionType.RETWEET, tle);
 						}
-						createButton(buttons, ActionType.FAV, tle);
+						if (t.favorited) {
+							createButton(buttons, ActionType.DEFAV, tle);
+						} else {
+							createButton(buttons, ActionType.FAV, tle);
+						}
 					}
 					if (t.isConversationEndpoint()) {
 						createButton(buttons, ActionType.CONV, tle);
@@ -287,6 +291,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		case CONV: icon = Constants.ICON_CONV; desc = res.getString(R.string.action_conv); break;
 		case DELETE: icon = Constants.ICON_DELETE; desc = res.getString(R.string.action_delete); break;
 		case FAV: icon = Constants.ICON_FAV; desc = res.getString(R.string.action_fav); break;
+		case DEFAV: icon = Constants.ICON_DEFAV; desc = res.getString(R.string.action_defav); break;
 		case REPLY: icon = Constants.ICON_REPLY; desc = res.getString(R.string.action_reply); break;
 		case RETWEET: icon = Constants.ICON_RETWEET; desc = res.getString(R.string.action_retweet); break;
 		}
@@ -337,6 +342,19 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 	 */
 	public List<TimelineElement> getItems() {
 		return items;
+	}
+
+	/**
+	 * Replaces an element in the timeline element list
+	 * 
+	 * @param oldTle
+	 * @param newTle
+	 */
+	public void replace(TimelineElement oldTle, TimelineElement newTle) {
+		if (Collections.replaceAll(items, oldTle, newTle)) {
+			TimelineActivity.addToAvailableTLE(newTle);
+			this.notifyDataSetChanged();
+		}
 	}
 
 

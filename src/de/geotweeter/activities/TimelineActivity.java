@@ -51,8 +51,9 @@ import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
-import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.DestroyException;
+import de.geotweeter.exceptions.FavException;
+import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -731,6 +732,7 @@ public class TimelineActivity extends MapActivity {
 		case CONV: showConversation(tle); break;
 		case DELETE: delete(tle); break;
 		case FAV: fav(tle); break;
+		case DEFAV: defav(tle); break;
 		case REPLY: replyTo(tle); break;
 		case RETWEET: retweet(tle); break;
 		}
@@ -787,14 +789,65 @@ public class TimelineActivity extends MapActivity {
 	}
 
 	/**
-	 * Toggles the favorite mark of the given TLE
+	 * Sets the favorite flag of the given TLE
 	 * 
 	 * @param tle
 	 */
-	private void fav(TimelineElement tle) {
-
+	private void fav(final TimelineElement tle) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					current_account.getApi().fav(tle.getID());
+				} catch (FavException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						availableTweets.remove(tle.getID());
+						current_account.refresh(tle);
+					}
+				});
+			}
+		}).start();
+		
 	}
 
+	/**
+	 * Removes the favorite flag of the given TLE
+	 * 
+	 * @param tle
+	 */
+	private void defav(final TimelineElement tle) {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					current_account.getApi().defav(tle.getID());
+				} catch (FavException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						availableTweets.remove(tle.getID());
+						current_account.refresh(tle);
+					}
+				});
+
+			}
+		}).start();
+	}
+	
 	/**
 	 * Shows a confirmation dialog and retweets the timeline element if it is confirmed
 	 * 

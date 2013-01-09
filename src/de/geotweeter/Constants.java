@@ -65,6 +65,7 @@ public class Constants extends Application {
 	public static final String ICON_REPLY = "";
 	public static final String ICON_RETWEET = "📣";
 	public static final String ICON_FAV = "★";
+	public static final String ICON_DEFAV = "☆";
 	public static final String ICON_CONV = "";
 	public static final String ICON_DELETE = "";
 	
@@ -73,7 +74,7 @@ public class Constants extends Application {
 	}
 	
 	public static enum ActionType {
-		REPLY, RETWEET, FAV, CONV, DELETE
+		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE
 	}
 	
 	private static class LocationMarker extends Path {
