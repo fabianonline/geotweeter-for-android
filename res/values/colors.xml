@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="dark_background">#000000</color>
     <color name="dark_dm_background_end">#663300</color>
     <color name="dark_mention_background_end">#000055</color>
     <color name="dark_own_background_end">#005500</color>
