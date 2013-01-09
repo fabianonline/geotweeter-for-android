@@ -149,10 +149,24 @@ public abstract class TimelineElement implements Serializable {
 		return new ArrayList<Pair<URL, URL>>();
 	}
 	
+	/**
+	 * Compares the age of two timeline elements
+	 * 
+	 * @param tle The element to be compared with
+	 * @return true if the element is older than the given one
+	 */
 	public boolean olderThan(TimelineElement tle) {
 		return (created_at.getTime() < tle.created_at.getTime());
 	}
 	
+	/**
+	 * Returns the background gradient id according to the element type
+	 * and the chosen theme
+	 * 
+	 * @param type Element type
+	 * @param darkVersion 
+	 * @return Background gradient id
+	 */
 	public static int getBackgroundGradient(TLEType type, boolean darkVersion) {
 		if (darkVersion) {
 			switch (type) {
@@ -176,6 +190,14 @@ public abstract class TimelineElement implements Serializable {
 		return 0;
 	}
 	
+	/**
+	 * Returns the background color for the action buttons of a given
+	 * timeline element type
+	 * 
+	 * @param type Element type
+	 * @param darkVersion 
+	 * @return Color id
+	 */
 	public static int getBackgroundColor(TLEType type, boolean darkVersion) {
 		if (darkVersion) {
 			switch (type) {
