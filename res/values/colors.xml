@@ -8,6 +8,7 @@
     <color name="dark_event_background_end">#550055</color>
     <color name="dark_unread_background_end">#660000</color>
     
+    <color name="light_background">#FFFFFF</color>
     <color name="light_dm_background_start">#FFCC00</color>
     <color name="light_dm_background_end">#FFAA00</color>
     <color name="light_mention_background_start">#DDDDFF</color>

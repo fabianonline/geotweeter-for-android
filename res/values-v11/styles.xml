@@ -10,6 +10,8 @@
     
     <style name="GeotweeterThemeLight" parent="android:Theme.Holo.Light">
         <item name="accountSwitcherStyle">@style/accountSwitcherStyleLight</item>
+        <item name="android:windowBackground">@color/light_background</item>
+        <item name="android:colorBackground">@color/light_background</item>
     </style>
 
 </resources>
