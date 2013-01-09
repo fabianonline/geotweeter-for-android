@@ -48,13 +48,17 @@ public class Tweet extends TimelineElement {
 	
 	/**
 	 * Returns the tweet id
+	 * 
+	 * @return Tweet id
 	 */
 	public long getID() {
 		return id;
 	}
 	
 	/**
-	 * Formats the tweet text to be displayes
+	 * Formats the tweet text to be displayed. Short URLs will be replaced here.
+	 * 
+	 * @return Text to be displayed
 	 */
 	public String getTextForDisplay() {
 		if (text_for_display == null) {
@@ -78,7 +82,7 @@ public class Tweet extends TimelineElement {
 	}
 	
 	public void setUser(User u) {
-		if(User.all_users.containsKey(u.id)) {
+		if (User.all_users.containsKey(u.id)) {
 			user = User.all_users.get(u.id);
 		} else {
 			User.all_users.put(u.id, u);
@@ -152,22 +156,10 @@ public class Tweet extends TimelineElement {
 	}
 	
 	/**
-	 * Returns the tweet view background design
+	 * Returns the element type of the tweet for layout reasons
+	 * 
+	 * @return The timeline element type of the tweet
 	 */
-//	@Override
-//	public int getBackgroundDrawableID(boolean getDarkVersion) {
-//		User current_user = TimelineActivity.current_account.getUser();
-//		if (this.user.id == current_user.id) {
-//			return getDarkVersion ? R.drawable.listelement_background_dark_own : R.drawable.listelement_background_light_own;
-//		} else if (this.mentionsUser(current_user)) {
-//			return getDarkVersion ? R.drawable.listelement_background_dark_mention : R.drawable.listelement_background_light_mention;
-//		} else if (this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
-//			return getDarkVersion ? R.drawable.listelement_background_dark_unread : R.drawable.listelement_background_light_unread;
-//		} else {
-//			return getDarkVersion ? R.drawable.listelement_background_dark_read : R.drawable.listelement_background_light_read;
-//		}
-//	}
-	
 	@Override
 	public TLEType getType() {
 		User current_user = TimelineActivity.current_account.getUser();
@@ -216,6 +208,8 @@ public class Tweet extends TimelineElement {
 	/**
 	 * Parses the tweet text for media links and provides a list of URL pairs
 	 * of thumbnail and full size URLs
+	 * 
+	 * @return List of URL pairs
 	 */
 	public List<Pair<URL, URL>> getMediaList() {
 		List<Pair<URL, URL>> result = new ArrayList<Pair<URL, URL>>();
@@ -301,15 +295,28 @@ public class Tweet extends TimelineElement {
 		return result;
 	}
 
+	/**
+	 * Checks if the app user is the tweet sender
+	 * 
+	 * @return true if the app user is the sender
+	 */
 	@Override
 	public boolean isOwnMessage() {
 		return (this.user.id == TimelineActivity.current_account.getUser().id);
 	}
 	
+	/**
+	 * 
+	 * @return true if the tweet can be retweeted
+	 */
 	public boolean isRetweetable() {
 		return !(this.user._protected);
 	}
 	
+	/**
+	 * 
+	 * @return true if the tweet is an answer
+	 */
 	public boolean isConversationEndpoint() {
 		return (this.in_reply_to_status_id != 0);
 	}
