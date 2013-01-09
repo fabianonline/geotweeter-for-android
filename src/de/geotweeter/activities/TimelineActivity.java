@@ -156,7 +156,7 @@ public class TimelineActivity extends MapActivity {
 			timelineListView.setAdapter(current_account.getElements());
 		}
 		
-		if(Account.all_accounts.size() > 1) {
+		if (Account.all_accounts.size() > 1) {
 			RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
 			for (Account account : Account.all_accounts) {
 				
@@ -241,9 +241,10 @@ public class TimelineActivity extends MapActivity {
 					});
 				}
 								
-				if (   ! ( tweet instanceof DirectMessage 
-				        || tweet.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())
-				        || tweet.user._protected)) {
+				if (tweet.isRetweetable()) {
+//				if (   ! ( tweet instanceof DirectMessage 
+//				        || tweet.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())
+//				        || tweet.user._protected)) {
 						
 					menu.add(R.string.action_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
@@ -416,6 +417,14 @@ public class TimelineActivity extends MapActivity {
 		}
 	}
 
+	/**
+	 * Shows the available buttons for the tapped timeline element
+	 * 
+	 * @param parent 
+	 * @param view The timeline element which has been clicked
+	 * @param position The position of the timeline element within the ListView
+	 * @param id 
+	 */
 	protected void showActionButtons(AdapterView<?> parent, View view,
 			int position, long id) {
 		if (actionButtons != null) {
@@ -671,6 +680,8 @@ public class TimelineActivity extends MapActivity {
 
 	/**
 	 * Method is not used but needed to fulfill the MapActivity interface
+	 * 
+	 * @return false
 	 */
 	@Override
 	protected boolean isRouteDisplayed() {

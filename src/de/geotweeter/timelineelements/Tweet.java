@@ -310,7 +310,7 @@ public class Tweet extends TimelineElement {
 	 * @return true if the tweet can be retweeted
 	 */
 	public boolean isRetweetable() {
-		return !(this.user._protected);
+		return !isOwnMessage() || !(this.user._protected);
 	}
 	
 	/**

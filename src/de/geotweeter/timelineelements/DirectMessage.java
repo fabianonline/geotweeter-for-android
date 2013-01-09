@@ -65,12 +65,7 @@ public class DirectMessage extends Tweet {
 	public String getNotificationContentText(String type) {
 		return text;
 	}
-	
-//	@Override
-//	public int getBackgroundDrawableID(boolean getDarkVersion) {
-//		return getDarkVersion ? R.drawable.listelement_background_dark_dm : R.drawable.listelement_background_light_dm;
-//	}
-	
+		
 	@Override
 	public boolean showWithFilter(String filter) {
 		return false;
@@ -98,5 +93,10 @@ public class DirectMessage extends Tweet {
 	@Override
 	public TLEType getType() {
 		return TLEType.DM;
+	}
+	
+	@Override
+	public boolean isRetweetable() {
+		return false;
 	}
 }
