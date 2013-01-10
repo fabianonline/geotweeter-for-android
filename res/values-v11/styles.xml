@@ -6,12 +6,14 @@
         <item name="accountSwitcherStyle">@style/accountSwitcherStyleDark</item>
         <item name="android:windowBackground">@color/dark_background</item>
         <item name="android:colorBackground">@color/dark_background</item>
+        <item name="actionButtonClickedBackground">@drawable/dark_action_button_background</item>
     </style>
     
     <style name="GeotweeterThemeLight" parent="android:Theme.Holo.Light">
         <item name="accountSwitcherStyle">@style/accountSwitcherStyleLight</item>
         <item name="android:windowBackground">@color/light_background</item>
         <item name="android:colorBackground">@color/light_background</item>
+        <item name="actionButtonClickedBackground">@drawable/light_action_button_background</item>
     </style>
 
 </resources>
