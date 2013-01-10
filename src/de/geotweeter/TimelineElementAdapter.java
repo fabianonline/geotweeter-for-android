@@ -305,6 +305,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		buttons.addView(button);
 		LinearLayout.LayoutParams params = (LayoutParams) button.getLayoutParams();
 		params.weight = 1.0f;
+		params.setMargins(Utils.convertDipToPixel(3), 0, Utils.convertDipToPixel(3), Utils.convertDipToPixel(3));
 		button.setLayoutParams(params);
 		
 		button.setOnClickListener(new OnClickListener() {
