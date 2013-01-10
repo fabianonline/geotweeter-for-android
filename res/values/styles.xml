@@ -4,10 +4,12 @@
     
     <style name="GeotweeterThemeDark" parent="android:Theme.Black">
         <item name="accountSwitcherStyle">@style/accountSwitcherStyleDark</item>
+        <item name="actionButtonClickedBackground">@drawable/dark_action_button_background</item>
     </style>
     
     <style name="GeotweeterThemeLight" parent="android:Theme.Light">
         <item name="accountSwitcherStyle">@style/accountSwitcherStyleLight</item>
+        <item name="actionButtonClickedBackground">@drawable/light_action_button_background</item>
     </style>
     
     <style name="accountSwitcherStyleDark" parent="android:Widget.CompoundButton.RadioButton">
