@@ -37,6 +37,7 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -68,6 +69,7 @@ import de.geotweeter.Geotweeter;
 import de.geotweeter.ImageBaseAdapter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
+import de.geotweeter.SpaceTokenizer;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
@@ -115,6 +117,7 @@ public class NewTweetActivity extends Activity {
 		editTweetText.setPlaceholder(Pattern.compile("http://twitpic\\.com/pic(\\d{3})"));
 		
 		editTweetText.addTextChangedListener(new TextChangedListener());
+		
 		if (useTwitpic) {
 			
 			/* Diese Funktionen werden benötigt, um Modifikationen von Twitpic-Platzhaltern
@@ -138,6 +141,9 @@ public class NewTweetActivity extends Activity {
 		Collections.sort(autocompletionList, Utils.getAlphabeticalStringComparator());
 		ArrayAdapter<String> completeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, autocompletionList);
 		editTweetText.setAdapter(completeAdapter);
+		editTweetText.setTokenizer(new SpaceTokenizer());
+		editTweetText.setRawInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+
 		
 		ToggleButton gpsToggle = (ToggleButton)findViewById(R.id.btnGeo);
 		gpsToggle.setOnCheckedChangeListener(new GPSToggleListener());
