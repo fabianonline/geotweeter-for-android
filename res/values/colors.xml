@@ -7,7 +7,7 @@
     <color name="dark_read_background_end">#333333</color>
     <color name="dark_event_background_end">#550055</color>
     <color name="dark_unread_background_end">#660000</color>
-    <color name="dark_action_button_clicked">#AA222222</color>
+    <color name="dark_action_button_clicked">#AA000000</color>
     
     <color name="light_background">#FFFFFF</color>
     <color name="light_dm_background_start">#FFCC00</color>
@@ -22,6 +22,6 @@
     <color name="light_event_background_end">#FF44FF</color>
     <color name="light_unread_background_start">#FFDDDD</color>
     <color name="light_unread_background_end">#FFBBBB</color>
-    <color name="light_action_button_clicked">#88DDDDDD</color>
+    <color name="light_action_button_clicked">#AAFFFFFF</color>
     
 </resources>
