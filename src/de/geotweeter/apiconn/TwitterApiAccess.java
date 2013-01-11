@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -193,6 +194,7 @@ public class TwitterApiAccess {
 		if (tweet.dmRecipient == null) {
 			/* Normal tweet (as in 'not a direct message') */
 			req = new OAuthRequest(Verb.POST, Constants.URI_UPDATE);
+			req.setReadTimeout(20, TimeUnit.SECONDS);
 			if (tweet.location != null) {
 				req.addBodyParameter("lat", String.valueOf(tweet.location.getLatitude()));
 				req.addBodyParameter("long", String.valueOf(tweet.location.getLongitude()));
@@ -214,19 +216,19 @@ public class TwitterApiAccess {
 		Response response;
 		try {
 			response = req.send();
-		} catch (OAuthException ex) {
+		} catch (OAuthException e) {
 			// TODO In the next scribe version will be more differentiated Exception classes for
 			// connection problems and so on. We really should use that.
-			throw new TemporaryTweetSendException();
+			throw new TemporaryTweetSendException(e);
 		}
 		
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
 			if (response.getCode() >= 500) {
-				throw new TemporaryTweetSendException();
+				throw new TemporaryTweetSendException("Server side error");
 			} else {
-				throw new PermanentTweetSendException();
+				throw new PermanentTweetSendException("http error code " + String.valueOf(response.getCode()));
 			}
 		}
 
@@ -260,19 +262,19 @@ public class TwitterApiAccess {
 		Response response;
 		try {
 			response = req.send();
-		} catch (OAuthException ex) {
+		} catch (OAuthException e) {
 			// TODO In the next scribe version will be more differentiated Exception classes for
 			// connection problems and so on. We really should use that.
-			throw new TemporaryTweetSendException();
+			throw new TemporaryTweetSendException(e);
 		}
 		
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
 			if (response.getCode() >= 500)
-				throw new TemporaryTweetSendException();
+				throw new TemporaryTweetSendException("Server side error");
 			else {
-				throw new PermanentTweetSendException();
+				throw new PermanentTweetSendException("http error code " + String.valueOf(response.getCode()));
 			}
 		}
 

@@ -99,7 +99,7 @@ public class TwitpicApiAccess {
 		} catch(OAuthException e) {
 			// TODO In the next scribe version will be more differentiated Exception classes for
 			// connection problems and so on. We really should use that.
-			throw new TemporaryTweetSendException();
+			throw new TemporaryTweetSendException(e);
 		}
 		Log.d(LOG, "Finished Send Twitpic " + image.getName());
 		
@@ -107,9 +107,9 @@ public class TwitpicApiAccess {
 			return JSON.parseObject(response.getBody()).getString("url");
 		} else {
 			if (response.getCode() >= 500) {
-				throw new TemporaryTweetSendException();
+				throw new TemporaryTweetSendException("Server side error");
 			} else {
-				throw new PermanentTweetSendException();
+				throw new PermanentTweetSendException("http error code " + String.valueOf(response.getCode()));
 			}
 		}
 		

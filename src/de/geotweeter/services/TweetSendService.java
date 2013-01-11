@@ -126,7 +126,11 @@ public class TweetSendService extends Service {
 					}
 				} catch (TemporaryTweetSendException e) {
 					Log.d(LOG, "TemporaryTweetSendException fired. Sleeping 60 seconds.");
-					try { Thread.sleep(60000); } catch(InterruptedException e1) {}
+					try { 
+						Thread.sleep(60000); 
+						} catch(InterruptedException e1) {
+							
+						}
 					i--;
 				} catch (Exception e) {
 					// TODO Inform the user
