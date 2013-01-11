@@ -219,15 +219,6 @@ public class TimelineActivity extends MapActivity {
 			menu.setHeaderTitle(R.string.context_menu_title);
 			final TimelineElement te = (TimelineElement) timelineListView.getAdapter().getItem(info.position);
 //			final TimelineElement te = current_account.activeTimeline().getItem(info.position);
-			if (te.isReplyable()) {
-				menu.add(R.string.action_reply).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-					
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						return replyTo(te);
-					}
-				}); 
-			}
 			
 			if (te instanceof Tweet) {
 				Tweet timelineTweet = (Tweet) te;
@@ -300,6 +291,17 @@ public class TimelineActivity extends MapActivity {
 //					}
 				}
 			}
+			
+			if (te.isReplyable()) {
+				menu.add(R.string.action_reply).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						return replyTo(te);
+					}
+				}); 
+			}
+			
 		}
 	}
 	
