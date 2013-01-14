@@ -27,9 +27,11 @@ import com.alibaba.fastjson.parser.Feature;
 import de.geotweeter.Constants;
 import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
+import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
+import de.geotweeter.exceptions.FollowException;
 import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
@@ -371,5 +373,41 @@ public class TwitterApiAccess {
 		
 		return result;
 	}
+	
+	public User follow(long id) throws FollowException {
+		User result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_FOLLOW);
+		req.addBodyParameter("id", String.valueOf(id));
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), User.class);
+		} else {
+			throw new FollowException(false);
+		}
+		
+		return result;
+	}
+	
+	public User unfollow(long id) throws FollowException {
+		User result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_UNFOLLOW);
+		req.addBodyParameter("id", String.valueOf(id));
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), User.class);
+		} else {
+			throw new FollowException(true);
+		}
+		
+		return result;
+	}
+	
+	
 	
 }
