@@ -499,8 +499,7 @@ public class Account extends Observable implements Serializable {
 				} catch(ClientProtocolException e) {
 					e.printStackTrace();
 				} catch(SSLPeerUnverifiedException e) {
-					Log.e(LOG, "Couldn't register account at GCM-server. Maybe you forgot to install CAcert's certificate?");
-					e.printStackTrace();
+					Log.e(LOG, "Couldn't register account at GCM-server. Maybe you forgot to install CAcert's certificate? Message: " + e.getMessage(), e);
 				} catch(IOException e) {
 					e.printStackTrace();
 				}

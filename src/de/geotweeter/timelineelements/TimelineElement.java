@@ -61,7 +61,7 @@ public abstract class TimelineElement implements Serializable {
 				created_at = parseableDateFormat.parse(str);
 			}
 		} catch (ParseException e) {
-			Log.e(LOG, "Unparseable Date: " + str);
+			Log.e(LOG, "Unparseable Date: " + str + " Message: " + e.getMessage(), e);
 		}
 	}
 	

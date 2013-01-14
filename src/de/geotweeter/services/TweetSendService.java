@@ -125,10 +125,7 @@ public class TweetSendService extends Service {
 						tweet.account.getApi().sendTweet(tweet);
 					}
 				} catch (TemporaryTweetSendException e) {
-					Log.d(LOG, "TemporaryTweetSendException fired. Sleeping 60 seconds.");
-					if (!e.getMessage().equals("")) {
-						Log.d(LOG, e.getMessage());
-					}
+					Log.d(LOG, "TemporaryTweetSendException fired. Sleeping 60 seconds. Message: " + e.getMessage(), e);
 					try { 
 						Thread.sleep(60000); 
 						} catch(InterruptedException e1) {
@@ -137,11 +134,7 @@ public class TweetSendService extends Service {
 					i--;
 				} catch (Exception e) {
 					// TODO Inform the user
-					Log.e(LOG, "PermanentTweetException (or another exception) fired. Stopping.");
-					if (!e.getMessage().equals("")) {
-						Log.d(LOG, e.getMessage());
-					}
-					e.printStackTrace();
+					Log.e(LOG, "PermanentTweetException (or another exception) fired. Stopping. Message: " + e.getMessage(), e);
 					break;
 				}
 				i++;

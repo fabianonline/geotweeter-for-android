@@ -144,7 +144,7 @@ public class StreamRequest {
 					Log.d(LOG, "Stream beendet");
 				}
 			} catch (OAuthException e) {
-				Log.d(LOG, "No API access. Network may be down. Retrying.");
+				Log.d(LOG, "No API access. Network may be down. Retrying. Message: " + e.getMessage(), e);
 			}
 			lastDataReceivedAt = 0;
 			lastNewlineReceivedAt = 0;
