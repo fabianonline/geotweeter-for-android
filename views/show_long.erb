@@ -2,6 +2,7 @@
 <br />
 <br />
 <strong>Crash ID:</strong>                        <%= @crash.id %><br />
+<strong>Crashgruppe:</strong>                     <a href="<%= url("/crashes/#{@crash.crash_hash}") %>"><%= @crash.crash_hash %></a><br />
 <strong>Datum:</strong>                           <%= @crash.user_crash_date.strftime("%d.%m.%Y %H:%M:%S") rescue "" %><br />
 <strong>Package:</strong>                         <%= @crash.package_name %><br />
 <strong>Version:</strong>                         <%= @crash.app_version_name %> (<%= @crash.app_version_code %>)<br />
