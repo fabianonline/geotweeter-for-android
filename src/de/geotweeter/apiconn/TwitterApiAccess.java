@@ -3,6 +3,7 @@ package de.geotweeter.apiconn;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -239,7 +240,7 @@ public class TwitterApiAccess {
 		Tweet result = null;
 		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_WITH_MEDIA);
 		MultipartEntity entity = new MultipartEntity();
-		entity.addPart("status", new StringBody(tweet.text));
+		entity.addPart("status", new StringBody(tweet.text, Charset.defaultCharset()));
 		entity.addPart("media", picture);
 		
 		if (tweet.location != null) {
