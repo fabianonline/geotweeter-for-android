@@ -94,6 +94,10 @@ public class Conversation {
 						publishProgress(new ErrorMessageDisguisedAsTweet(R.string.error_tweet_loading_failed));
 						break;
 					}
+					if (current == null) {
+						publishProgress(new ErrorMessageDisguisedAsTweet(R.string.error_tweet_loading_failed));
+						break;
+					}
 				}				
 				publishProgress(current);
 			}
