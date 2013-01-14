@@ -42,6 +42,10 @@ public class Constants extends Application {
 	public static final String URI_DELETE_DIRECT_MESSAGE = "https://api.twitter.com/1.1/direct_messages/destroy.json";
 	public static final String URI_FAV					 = "https://api.twitter.com/1.1/favorites/create.json";
 	public static final String URI_DEFAV				 = "https://api.twitter.com/1.1/favorites/destroy.json";
+	public static final String URI_FOLLOW                = "https://api.twitter.com/1.1/friendships/create.json";
+	public static final String URI_UNFOLLOW              = "https://api.twitter.com/1.1/friendships/destroy.json";
+	public static final String URI_FOLLOWING_LIST        = "https://api.twitter.com/1.1/friends/list.json";
+	public static final String URI_FOLLOWER_LIST		 = "https://api.twitter.com/1.1/followers/list.json";
 	
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 		
