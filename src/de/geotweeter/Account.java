@@ -48,7 +48,6 @@ import android.util.Pair;
 import android.widget.Toast;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
-import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
