@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
@@ -126,6 +127,7 @@ public class TweetSendService extends Service {
 					}
 				} catch (TemporaryTweetSendException e) {
 					Log.d(LOG, "TemporaryTweetSendException fired. Sleeping 60 seconds. Message: " + e.getMessage(), e);
+					Toast.makeText(getApplicationContext(), e.getMessage() + "\n Retrying in 60 seconds", Toast.LENGTH_SHORT).show();
 					try { 
 						Thread.sleep(60000); 
 						} catch(InterruptedException e1) {
@@ -135,6 +137,7 @@ public class TweetSendService extends Service {
 				} catch (Exception e) {
 					// TODO Inform the user
 					Log.e(LOG, "PermanentTweetException (or another exception) fired. Stopping. Message: " + e.getMessage(), e);
+					Toast.makeText(getApplicationContext(), e.getMessage() + "\n stopping", Toast.LENGTH_SHORT).show();
 					break;
 				}
 				i++;

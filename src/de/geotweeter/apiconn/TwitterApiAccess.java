@@ -229,7 +229,7 @@ public class TwitterApiAccess {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
 			if (response.getCode() >= 500) {
-				throw new TemporaryTweetSendException("Server side error");
+				throw new TemporaryTweetSendException("Server side error " + String.valueOf(response.getCode()));
 			} else {
 				throw new PermanentTweetSendException("http error code " + String.valueOf(response.getCode()));
 			}
@@ -275,7 +275,7 @@ public class TwitterApiAccess {
 			result = JSON.parseObject(response.getBody(), Tweet.class);
 		} else {
 			if (response.getCode() >= 500)
-				throw new TemporaryTweetSendException("Server side error");
+				throw new TemporaryTweetSendException("Server side error " + String.valueOf(response.getCode()));
 			else {
 				throw new PermanentTweetSendException("http error code " + String.valueOf(response.getCode()));
 			}
