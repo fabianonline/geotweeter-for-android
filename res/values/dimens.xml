@@ -3,4 +3,5 @@
     <dimen name="icon">40dp</dimen>
     <dimen name="action_button_background_radius">10dp</dimen>
     <dimen name="default_gap">16dp</dimen>
+    <dimen name="floating_icon_gap">5dp</dimen>
 </resources>

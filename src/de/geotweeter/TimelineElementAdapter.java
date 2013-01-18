@@ -304,11 +304,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	 * 
 	 * @param buttons
 	 *            Layout parent
+	 * @param type
+	 *            Button type to be generated
 	 * @param tle
-	 * @param icon
-	 *            Character representing the icon
-	 * @param desc
-	 *            Visible description of the button
 	 */
 	private void createButton(LinearLayout buttons, final ActionType type,
 			final TimelineElement tle) {

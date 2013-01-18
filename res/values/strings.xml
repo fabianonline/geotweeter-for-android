@@ -46,6 +46,12 @@
     <string name="action_conv">Konversation</string>
     <string name="action_fav">Favorisieren</string>
     <string name="action_defav">Entfavorisieren</string>
+    <string name="action_follow">Folgen</string>
+    <string name="action_unfollow">Entfolgen</string>
+    <string name="action_block">Blocken</string>
+    <string name="action_send_dm">DM schicken</string>
+    <string name="action_mark_as_spam">Als Spam melden</string>
+
     <string-array name="pref_tweet_time_style_entries">
         <item>dd.MM.yy HH:mm</item>
         <item>dd.MM. HH:mm</item>
@@ -55,6 +61,7 @@
         <item>Twitter</item>
         <item>Twitpic</item>
     </string-array>
+
     <string name="pref_notifications">Benachrichtigungen</string>
     <string name="pref_notifications_enabled_title">Hauptschalter</string>
     <string name="pref_notifications_enabled_on">Benachrichtigungen sind aktiviert</string>
@@ -67,6 +74,7 @@
     <string name="pref_notifications_led">LED</string>
     <string name="pref_notifications_led_enabled_title">LED benutzen</string>
     <string name="pref_notifications_led_color_title">Farbe</string>
+
     <string-array name="pref_notifications_led_color_entries">
         <item>Blau</item>
         <item>Rot</item>
@@ -78,6 +86,7 @@
         <item>Orange</item>
         <item>Braun</item>
     </string-array>
+
     <string name="pref_notifications_types">Benachrichtigungstypen</string>
     <string name="pref_notifications_types_mentions_from_friends_title">Mentions von Freunden</string>
     <string name="pref_notifications_types_mentions_from_strangers_title">Mentions von Fremden</string>
@@ -93,49 +102,42 @@
     <string name="pref_about">Informationen</string>
     <string name="menu_about">Informationen</string>
     <string name="pref_about_libraries">Verwendete Bibliotheken</string>
-    
     <string name="crash_toast_text">Ups. Der Geotweeter ist abgestürzt. Räume auf…</string>
     <string name="crash_dialog_text">Ein unerwarteter Fehler ist aufgetreten. Bitte hilf uns, diesen Fehler zu beheben, in dem du uns Informationen zu dem Fehler zukommen lässt. Klicke dazu bitte auf "OK". Andernfalls bitte auf "Abbrechen".</string>
     <string name="crash_dialog_comment_prompt">(Optional) Was hast du getan, als der Fehler auftrat?</string>
     <string name="crash_dialog_ok_toast">Fehlerbericht wurde gesendet. Vielen Dank!</string>
-
     <string name="pref_development">Entwicklung</string>
     <string name="pref_development_email">Mail-Adresse für Crashreports</string>
     <string name="pref_development_email_summary">Freiwillig. Damit wird dich nach Crashes erreichen können.</string>
-    
     <string name="pref_clear_image_cache">Bilder-Cache löschen</string>
     <string name="pref_image_cache_cleared">Bilder-Cache gelöscht</string>
-    
     <string name="error_api_access_retry">Fehler beim API-Zugriff. Erneuter Versuch in 10 Sekunden.</string>
     <string name="error_api_access_recurring">Wiederkehrender Fehler beim API-Zugriff. Kein automatischer Neuversuch.</string>
     <string name="error_tweet_protected">Dieser Tweet ist in Deiner Timeline nicht verfügbar. Das tut uns leid.</string>
     <string name="error_tweet_loading_failed">Tweet konnte nicht abgerufen werden. Sorry.</string>
-    
     <string name="pref_image_size_title">Bilder-Größe</string>
+
     <string-array name="pref_image_size_entries">
         <item>Originalgröße</item>
         <item>1MB</item>
         <item>2MB</item>
         <item>3MB</item>
     </string-array>
+
     <string name="pref_image_size_summary">Maximalgröße der zu versendenen Bilder. Bei Twitter ist die Maximalgröße begrenzt.</string>
-    
     <string name="tweetsendservice_summary">Sende Tweet %1$d/%2$d…</string>
     <string name="tweetsendservice_activity">Sende…</string>
     <string name="tweetsendservice_finished_sending_single_tweet">Tweet erfolgreich versendet</string>
     <string name="tweetsendservice_finished_sending_multiple_tweets">Tweets erfolgreich versendet</string>
-    
     <string name="notification_text_mention_single">1 Mention</string>
     <string name="notification_text_mention_plural">%1$d Mentions</string>
     <string name="notification_text_dm_single">1 DM</string>
     <string name="notification_text_dm_plural">%1$d DMs</string>
     <string name="notification_text_newest">Neueste: %1$s</string>
-    
     <string name="direct_message_notification_text">DM von %1$s</string>
     <string name="direct_message_notification_content_title">DM von %1$s</string>
     <string name="direct_message_from_someone">von %1$s</string>
     <string name="direct_message_to_someone">an %1$s</string>
-    
     <string name="timeline_element_timediff_now">gerade eben</string>
     <string name="timeline_element_timediff_one_second">vor 1 Sekunde</string>
     <string name="timeline_element_timediff_multiple_seconds">vor %1$d Sekunden</string>
@@ -145,22 +147,19 @@
     <string name="timeline_element_timediff_multiple_hours">vor %1$d Stunden</string>
     <string name="timeline_element_timediff_days">am %1$s</string>
     <string name="timeline_element_timediff_date_format">dd.MM.yy HH:mm</string>
-    
     <string name="tweet_source_web">web</string>
     <string name="tweet_source">via %1$s</string>
     <string name="tweet_notification_text_mention">Mention von %1$s: %2$s</string>
     <string name="tweet_notification_text_retweet">%1$s retweetete: %2$s</string>
     <string name="tweet_notification_content_title_mention">Mention von %1$s</string>
     <string name="tweet_notification_content_title_retweet">Retweet von %1$s</string>
-    
     <string name="new_tweet_activity_title">Neuer Tweet</string>
     <string name="new_tweet_activity_title_sending_dm">DM an %1$s</string>
-    
     <string name="dialog_retweet_title">Wirklich retweeten?</string>
     <string name="dialog_retweet_message">Bist du sicher, dass du retweeten möchtest?</string>
     <string name="dialog_retweet_positive">Retweeten</string>
-
     <string name="dialog_delete_title">Wirklich löschen?</string>
     <string name="dialog_delete_message">Bist du sicher, dass du den Status löschen möchtest?</string>
     <string name="dialog_delete_positive">Löschen</string>
+
 </resources>

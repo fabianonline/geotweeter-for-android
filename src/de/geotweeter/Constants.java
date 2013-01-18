@@ -72,13 +72,25 @@ public class Constants extends Application {
 	public static final String ICON_DEFAV = "☆";
 	public static final String ICON_CONV = "";
 	public static final String ICON_DELETE = "";
+	public static final String ICON_LOCATION = "";
+	public static final String ICON_BIO = "📖";
+	public static final String ICON_URL = "🔗";
+	public static final String ICON_FOLLOW = "♥";
+	public static final String ICON_UNFOLLOW = "♡";
+	public static final String ICON_SPAM = "⚑";
+	public static final String ICON_DM = "✉";
+	public static final String ICON_BLOCK = "✖";
 	
 	public static enum TLEType {
 		READ, UNREAD, MENTION, OWN, DM, EVENT
 	}
 	
 	public static enum ActionType {
-		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE
+		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE, FOLLOW, UNFOLLOW, SEND_DM, BLOCK, MARK_AS_SPAM
+	}
+	
+	public static enum TimelineType {
+		HOME, FRIENDS, FOLLOWER
 	}
 	
 	private static class LocationMarker extends Path {
