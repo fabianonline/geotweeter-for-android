@@ -99,12 +99,20 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>{
 		available.put(tle.getID(), tle);
 		TimelineActivity.addToAvailableTLE(tle);
 		if (tle instanceof Tweet) {
-			for (Hashtag ht : ((Tweet) tle).entities.hashtags) {
-				Geotweeter.getInstance().getAutoCompletionContent().add("#" + ht.text);
+			try {
+				for (Hashtag ht : ((Tweet) tle).entities.hashtags) {
+					Geotweeter.getInstance().getAutoCompletionContent().add("#" + ht.text);
+				}
+			} catch (NullPointerException e) {
+				// just continue
 			}
 			Geotweeter.getInstance().getAutoCompletionContent().add("@" + tle.getSenderScreenName());
-			for (UserMention mention : ((Tweet) tle).entities.user_mentions) {
-				Geotweeter.getInstance().getAutoCompletionContent().add("@" + mention.screen_name);
+			try {
+				for (UserMention mention : ((Tweet) tle).entities.user_mentions) {
+					Geotweeter.getInstance().getAutoCompletionContent().add("@" + mention.screen_name);
+				}
+			} catch (NullPointerException e) {
+				// Just continue
 			}
 		}
 	}
