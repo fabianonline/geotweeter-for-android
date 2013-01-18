@@ -425,13 +425,13 @@ public class Account extends Observable implements Serializable {
 		Log.d(LOG, "Adding Tweet.");
 		if (elm instanceof DirectMessage) {
 			dm_conversations.addMessage((DirectMessage) elm);
-			if (elm.getID() > max_known_dm_id) {
-				max_known_dm_id = elm.getID();
-			}
-		} else if (elm instanceof Tweet) {
-			if (elm.getID() > max_known_tweet_id) {
-				max_known_tweet_id = elm.getID();
-			}
+//			if (elm.getID() > max_known_dm_id) {
+//				max_known_dm_id = elm.getID();
+//			}
+//		} else if (elm instanceof Tweet) {
+//			if (elm.getID() > max_known_tweet_id) {
+//				max_known_tweet_id = elm.getID();
+//			}
 		}
 		//elements.add(tweet);
 		handler.post(new Runnable() {
