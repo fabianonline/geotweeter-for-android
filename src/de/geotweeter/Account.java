@@ -56,9 +56,6 @@ import de.geotweeter.widgets.AccountSwitcherRadioButton;
 
 public class Account extends Observable implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3681363869066996199L;
 	
 	protected final static Object lock_object = new Object();
