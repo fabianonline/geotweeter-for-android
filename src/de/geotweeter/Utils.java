@@ -43,7 +43,7 @@ public class Utils {
 	private static Properties properties;
 	
 	public enum PictureService {
-		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY, MOBYTO, VIMEO
+		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY, MOBYTO, VIMEO, OWLY
 	}
 	
 	public static int countChars(String str) {
@@ -251,6 +251,11 @@ public class Utils {
 			}
 			if (host.endsWith("moby.to")) {
 				return PictureService.MOBYTO;
+			}
+			if (host.endsWith("ow.ly")) {
+				if (finalUrl.getPath().startsWith("/i/")) {
+					return PictureService.OWLY;
+				}
 			}
 			/* Das wird noch etwas komplizierter hier */
 //			if (host.endsWith("vimeo.com")) {
