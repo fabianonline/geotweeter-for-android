@@ -1,4 +1,4 @@
-package de.geotweeter;
+package de.geotweeter.apiconn.twitter;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import de.geotweeter.UserElement;
 
 public class User extends UserElement implements java.io.Serializable {
 	private static final long serialVersionUID = 2231080355596825396L;

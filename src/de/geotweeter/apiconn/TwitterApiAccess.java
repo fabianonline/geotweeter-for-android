@@ -27,14 +27,16 @@ import com.alibaba.fastjson.parser.Feature;
 import de.geotweeter.Constants;
 import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
-import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.Tweet;
+import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.FollowException;
 import de.geotweeter.exceptions.PermanentTweetSendException;
+import de.geotweeter.exceptions.RelationshipException;
 import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetAccessException;
@@ -453,4 +455,24 @@ public class TwitterApiAccess {
 		return result;
 	}
 
+	public Relationship getRelationship(long source, long target) throws RelationshipException {
+		Relationship result = null;
+		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_FRIENDSHIP_SHOW);
+		req.addQuerystringParameter("source_id", String.valueOf(source));
+		req.addQuerystringParameter("target_id", String.valueOf(target));
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Relationship.class);
+		} else {
+			throw new RelationshipException();
+		}
+		
+		return result;
+	}
+	
+	
+	
 }

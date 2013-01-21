@@ -17,8 +17,8 @@ import android.util.Log;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
-import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.twitter.User;
 
 public class AccountPrefsActivity extends PreferenceActivity {
 

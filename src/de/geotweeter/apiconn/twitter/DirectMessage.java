@@ -2,7 +2,6 @@ package de.geotweeter.apiconn.twitter;
 
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;
-import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.activities.TimelineActivity;
 

@@ -17,8 +17,8 @@ import android.widget.TextView;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
 import de.geotweeter.R;
-import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.twitter.User;
 
 public class UserDetailActivity extends Activity {
 

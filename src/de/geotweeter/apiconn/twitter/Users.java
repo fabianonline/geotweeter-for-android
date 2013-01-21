@@ -1,4 +1,4 @@
-package de.geotweeter;
+package de.geotweeter.apiconn.twitter;
 
 import java.io.Serializable;
 import java.util.ArrayList;

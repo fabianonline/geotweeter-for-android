@@ -25,8 +25,8 @@ import com.alibaba.fastjson.JSON;
 
 import de.geotweeter.Constants;
 import de.geotweeter.R;
-import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.twitter.User;
 
 public class AuthenticateAccountActivity extends Activity {
 

@@ -3,7 +3,6 @@ package de.geotweeter.apiconn.twitter;
 import java.util.Date;
 
 import de.geotweeter.Constants.TLEType;
-import de.geotweeter.User;
 import de.geotweeter.timelineelements.TimelineElement;
 
 public abstract class Event extends TimelineElement {

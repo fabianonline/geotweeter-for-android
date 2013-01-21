@@ -12,7 +12,6 @@ import android.view.View;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;
-import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.Utils.PictureService;
 import de.geotweeter.activities.TimelineActivity;
