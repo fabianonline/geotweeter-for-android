@@ -163,15 +163,19 @@ public class Tweet extends TimelineElement {
 	 */
 	@Override
 	public TLEType getType() {
-		User current_user = TimelineActivity.current_account.getUser();
-		if (this.user.id == current_user.id) {
-			return TLEType.OWN;
-		}
-		if (this.mentionsUser(current_user)) {
-			return TLEType.MENTION;
-		}
-		if (this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
-			return TLEType.UNREAD;
+		try {
+			User current_user = TimelineActivity.current_account.getUser();
+			if (this.user.id == current_user.id) {
+				return TLEType.OWN;
+			}
+			if (this.mentionsUser(current_user)) {
+				return TLEType.MENTION;
+			}
+			if (this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
+				return TLEType.UNREAD;
+			}
+		} catch (NullPointerException e) {
+			
 		}
 		return TLEType.READ;
 	}
