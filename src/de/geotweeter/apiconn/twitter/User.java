@@ -24,6 +24,9 @@ public class User extends UserElement implements java.io.Serializable {
 	public String profile_image_url_https;
 	public String location;
 	public boolean _protected;
+	public int followers_count;
+	public int friends_count;
+	public int statuses_count;
 //	public View[] views = new View[] {};
 	
 	public User() {
@@ -39,6 +42,10 @@ public class User extends UserElement implements java.io.Serializable {
 		description = user.description;
 		profile_image_url_https = user.profile_image_url_https;
 		location = user.location;
+		_protected = user._protected;
+		followers_count = user.followers_count;
+		friends_count = user.friends_count;
+		statuses_count = user.statuses_count;
 	}
 
 	public String getScreenName() { 
