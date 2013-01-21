@@ -32,6 +32,7 @@ import de.geotweeter.apiconn.twitter.DirectMessage;
 import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
+import de.geotweeter.apiconn.twitter.Users;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.FollowException;
@@ -455,24 +456,72 @@ public class TwitterApiAccess {
 		return result;
 	}
 
-	public Relationship getRelationship(long source, long target) throws RelationshipException {
+	public Relationship getRelationship(long source, long target)
+			throws RelationshipException {
 		Relationship result = null;
-		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_FRIENDSHIP_SHOW);
+		OAuthRequest req = new OAuthRequest(Verb.GET,
+				Constants.URI_FRIENDSHIP_SHOW);
 		req.addQuerystringParameter("source_id", String.valueOf(source));
 		req.addQuerystringParameter("target_id", String.valueOf(target));
-		
+
 		service.signRequest(token, req);
 		Response response = req.send();
-		
+
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), Relationship.class);
 		} else {
 			throw new RelationshipException();
 		}
-		
+
 		return result;
 	}
-	
-	
-	
+
+	public Users getFollowers(long id) throws RelationshipException {
+		return getFollowers(id, -1);
+	}
+
+	public Users getFollowers(long id, long cursor)
+			throws RelationshipException {
+		Users result = null;
+		OAuthRequest req = new OAuthRequest(Verb.GET,
+				Constants.URI_FOLLOWER_LIST);
+		req.addQuerystringParameter("user_id", String.valueOf(id));
+		req.addQuerystringParameter("cursor", String.valueOf(cursor));
+
+		service.signRequest(token, req);
+		Response response = req.send();
+
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Users.class);
+		} else {
+			throw new RelationshipException();
+		}
+
+		return result;
+	}
+
+	public Users getFollowing(long id) throws RelationshipException {
+		return getFollowing(id, -1);
+	}
+
+	public Users getFollowing(long id, long cursor)
+			throws RelationshipException {
+		Users result = null;
+		OAuthRequest req = new OAuthRequest(Verb.GET,
+				Constants.URI_FOLLOWING_LIST);
+		req.addQuerystringParameter("user_id", String.valueOf(id));
+		req.addQuerystringParameter("cursor", String.valueOf(cursor));
+
+		service.signRequest(token, req);
+		Response response = req.send();
+
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Users.class);
+		} else {
+			throw new RelationshipException();
+		}
+
+		return result;
+	}
+
 }
