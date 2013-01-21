@@ -201,12 +201,17 @@ public class TimelineActivity extends MapActivity {
 			return;
 		}
 		ListView l = (ListView) findViewById(R.id.timeline);
-		TimelineElementAdapter tea = current_account.getPrevTimeline();
-		if (tea != null) {
-			l.setAdapter(tea);
+		if (current_account != null) {
+			TimelineElementAdapter tea = current_account.getPrevTimeline();
+			if (tea != null) {
+				l.setAdapter(tea);
+			} else {
+				super.onBackPressed();
+			}
 		} else {
 			super.onBackPressed();
 		}
+		
 	}
 	
 	/**
