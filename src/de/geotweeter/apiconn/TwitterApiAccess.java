@@ -529,35 +529,35 @@ public class TwitterApiAccess {
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_SINGLE_USER);
 		req.addQuerystringParameter("user_id", String.valueOf(id));
 		req.addQuerystringParameter("include_entities", "true");
-		
+
 		service.signRequest(token, req);
 		Response response = req.send();
-		
+
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), User.class);
 		} else {
 			throw new UserException();
 		}
-		
+
 		return result;
 	}
-	
+
 	public User getUser(String screenName) throws UserException {
 		User result = null;
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_SINGLE_USER);
 		req.addQuerystringParameter("screen_name", screenName);
 		req.addQuerystringParameter("include_entities", "true");
-		
+
 		service.signRequest(token, req);
 		Response response = req.send();
-		
+
 		if (response.isSuccessful()) {
 			result = JSON.parseObject(response.getBody(), User.class);
 		} else {
 			throw new UserException();
 		}
-		
-		return result;		
+
+		return result;
 	}
-	
+
 }

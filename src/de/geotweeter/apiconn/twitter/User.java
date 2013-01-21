@@ -19,7 +19,7 @@ public class User extends UserElement implements java.io.Serializable {
 	public long id;
 	public String name;
 	public String screen_name;
-	public String url; 
+	public String url;
 	public String description;
 	public String profile_image_url_https;
 	public String location;
@@ -27,12 +27,13 @@ public class User extends UserElement implements java.io.Serializable {
 	public int followers_count;
 	public int friends_count;
 	public int statuses_count;
-//	public View[] views = new View[] {};
-	
+
+	// public View[] views = new View[] {};
+
 	public User() {
-		
+
 	}
-	
+
 	public User(User user) {
 		avatar = user.avatar;
 		id = user.id;
@@ -48,10 +49,10 @@ public class User extends UserElement implements java.io.Serializable {
 		statuses_count = user.statuses_count;
 	}
 
-	public String getScreenName() { 
-		return screen_name; 
+	public String getScreenName() {
+		return screen_name;
 	}
-	
+
 	public String getAvatarSource() {
 		return profile_image_url_https;
 	}
@@ -61,7 +62,8 @@ public class User extends UserElement implements java.io.Serializable {
 		return avatar;
 	}
 
-	public static List<User> getPersistentData(Context context, String[] accounts) {
+	public static List<User> getPersistentData(Context context,
+			String[] accounts) {
 		List<User> result = new ArrayList<User>();
 		for (String id : accounts) {
 			if (!id.equals("")) {
@@ -77,10 +79,11 @@ public class User extends UserElement implements java.io.Serializable {
 		}
 		return result;
 	}
-	
+
 	public void storeUser(Context context) {
 		try {
-			FileOutputStream fout = context.openFileOutput(String.valueOf(id) + ".usr", Context.MODE_PRIVATE);
+			FileOutputStream fout = context.openFileOutput(String.valueOf(id)
+					+ ".usr", Context.MODE_PRIVATE);
 			ObjectOutputStream oout = new ObjectOutputStream(fout);
 			oout.writeObject(this);
 			oout.close();
