@@ -1,4 +1,4 @@
-package de.geotweeter.timelineelements;
+package de.geotweeter.apiconn.twitter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,6 +26,7 @@ import de.geotweeter.apiconn.PlixiApiAccess;
 import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.apiconn.YfrogApiAccess;
 import de.geotweeter.apiconn.YoutubeApiAccess;
+import de.geotweeter.timelineelements.TimelineElement;
 
 /**
  * Representing a single tweet 

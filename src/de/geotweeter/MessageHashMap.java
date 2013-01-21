@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import de.geotweeter.timelineelements.DirectMessage;
+import de.geotweeter.apiconn.twitter.DirectMessage;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 

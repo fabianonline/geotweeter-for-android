@@ -26,10 +26,10 @@ import android.util.Pair;
 import android.widget.RemoteViews;
 import de.geotweeter.activities.NewTweetActivity;
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.services.NotificationDeleteReceiver;
-import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.Tweet;
 
 @ReportsCrashes(formKey                = "",
                 formUri                = "" /* will be overwritten in constructor */,

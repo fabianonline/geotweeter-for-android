@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.util.Pair;
-import de.geotweeter.timelineelements.Url;
+import de.geotweeter.apiconn.twitter.Url;
 
 public class PlixiApiAccess {
 

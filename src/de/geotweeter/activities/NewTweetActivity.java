@@ -74,10 +74,10 @@ import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
 import de.geotweeter.apiconn.TwitpicApiAccess;
+import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.services.TweetSendService;
-import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.Tweet;
 import de.geotweeter.timelineelements.UserMention;
 import de.geotweeter.widgets.ProtectedPlaceholderEditText;
 

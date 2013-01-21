@@ -1,4 +1,4 @@
-package de.geotweeter.timelineelements;
+package de.geotweeter.apiconn.twitter;
 
 public class FavoriteEvent extends Event {
 

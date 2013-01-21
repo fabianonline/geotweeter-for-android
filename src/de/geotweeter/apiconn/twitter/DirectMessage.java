@@ -1,4 +1,4 @@
-package de.geotweeter.timelineelements;
+package de.geotweeter.apiconn.twitter;
 
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;

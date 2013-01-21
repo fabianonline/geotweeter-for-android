@@ -1,8 +1,10 @@
-package de.geotweeter.timelineelements;
+package de.geotweeter.apiconn.twitter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import de.geotweeter.timelineelements.UserMention;
 
 public class Entities implements Serializable {
 

@@ -51,15 +51,15 @@ import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Media;
+import de.geotweeter.apiconn.twitter.Tweet;
+import de.geotweeter.apiconn.twitter.Url;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TweetAccessException;
-import de.geotweeter.timelineelements.DirectMessage;
-import de.geotweeter.timelineelements.Media;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.Tweet;
-import de.geotweeter.timelineelements.Url;
 import de.geotweeter.widgets.AccountSwitcherRadioButton;
 
 public class TimelineActivity extends MapActivity {
@@ -72,14 +72,16 @@ public class TimelineActivity extends MapActivity {
 	private static TimelineActivity instance = null;
 	private static boolean isRunning = false;
 	private static ListView timelineListView;
-	public static HashMap<Long,TimelineElement> availableTweets;
-	
+	public static HashMap<Long, TimelineElement> availableTweets;
+
 	/**
 	 * Initializes the Activity
 	 * 
-	 * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+	 * @param savedInstanceState
+	 *            If the activity is being re-initialized after previously being
+	 *            shut down then this Bundle contains the data it most recently
+	 *            supplied in {@link #onSaveInstanceState}. <b><i>Note:
+	 *            Otherwise it is null.</i></b>
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,24 +93,26 @@ public class TimelineActivity extends MapActivity {
 		}
 		super.onCreate(savedInstanceState);
 		instance = this;
-		map = new MapView(this, Utils.getProperty("google.maps.key.development"));
+		map = new MapView(this,
+				Utils.getProperty("google.maps.key.development"));
 		setContentView(R.layout.activity_timeline);
-		
+
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
-		TimelineElement.tweetTimeStyle = pref.getString("pref_tweet_time_style", "dd.MM.yy HH:mm");
-		
+		TimelineElement.tweetTimeStyle = pref.getString(
+				"pref_tweet_time_style", "dd.MM.yy HH:mm");
+
 		ImageView img_overlay = (ImageView) findViewById(R.id.img_overlay);
 		img_overlay.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				dismissOverlay((ImageView) v);	
+				dismissOverlay((ImageView) v);
 			}
 		});
-		
+
 		timelineListView = (ListView) findViewById(R.id.timeline);
 		registerForContextMenu(timelineListView);
-		
+
 		if (!isRunning) {
 			if (Debug.LOG_TIMELINE_ACTIVITY) {
 				Log.d(LOG, "Create accounts");
@@ -128,17 +132,17 @@ public class TimelineActivity extends MapActivity {
 				acct.start(true);
 			}
 		}
-		
-		
+
 		timelineListView.setScrollingCacheEnabled(false);
 		timelineListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				showActionButtons(parent, view, position, id);
 				showMapIfApplicable(parent, view, position, id);
 			}
 		});
-				
+
 		if (!isRunning) {
 			if (current_account != null) {
 				timelineListView.setAdapter(current_account.getElements());
@@ -146,44 +150,54 @@ public class TimelineActivity extends MapActivity {
 				GCMRegistrar.checkManifest(this);
 				reg_id = GCMRegistrar.getRegistrationId(this);
 				if (reg_id.equals("")) {
-					GCMRegistrar.register(this, Utils.getProperty("google.gcm.sender.id"));
+					GCMRegistrar.register(this,
+							Utils.getProperty("google.gcm.sender.id"));
 				} else {
 					for (Account acct : Account.all_accounts) {
 						acct.registerForGCMMessages();
 					}
 				}
 			} else {
-				Log.d(LOG, "No account authorized. Starting authorization dialog.");
-				Intent addAccountIntent = new Intent(TimelineActivity.this, SettingsAccounts.class);
+				Log.d(LOG,
+						"No account authorized. Starting authorization dialog.");
+				Intent addAccountIntent = new Intent(TimelineActivity.this,
+						SettingsAccounts.class);
 				startActivity(addAccountIntent);
 			}
 		} else {
 			timelineListView.setAdapter(current_account.getElements());
 		}
-		
+
 		if (Account.all_accounts.size() > 1) {
 			RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
 			for (Account account : Account.all_accounts) {
-				
-				AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(this, account);
-				Geotweeter.getInstance().getBackgroundImageLoader().displayImage(account.getUser().getAvatarSource(), rdBtn, true);
-				
-				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(account));
-				
+
+				AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(
+						this, account);
+				Geotweeter
+						.getInstance()
+						.getBackgroundImageLoader()
+						.displayImage(account.getUser().getAvatarSource(),
+								rdBtn, true);
+
+				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(
+						account));
+
 				accountSwitcher.addView(rdBtn);
-				if(account == current_account) {
+				if (account == current_account) {
 					rdBtn.setChecked(true);
 				}
 			}
 		}
-		
+
 		isRunning = true;
 	}
 
-	/** 
+	/**
 	 * Removes the full size image overlay
 	 * 
-	 * @param v The image overlay
+	 * @param v
+	 *            The image overlay
 	 */
 	protected void dismissOverlay(ImageView v) {
 		v.setImageResource(R.drawable.ic_launcher);
@@ -192,7 +206,7 @@ public class TimelineActivity extends MapActivity {
 
 	/**
 	 * {@inheritDoc}
- 	 */
+	 */
 	@Override
 	public void onBackPressed() {
 		ImageView img_overlay = (ImageView) findViewById(R.id.img_overlay);
@@ -211,109 +225,124 @@ public class TimelineActivity extends MapActivity {
 		} else {
 			super.onBackPressed();
 		}
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
 		if (v.getId() == R.id.timeline) {
-			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(R.string.context_menu_title);
-			final TimelineElement te = (TimelineElement) timelineListView.getAdapter().getItem(info.position);
-//			final TimelineElement te = current_account.activeTimeline().getItem(info.position);
-			
+			final TimelineElement te = (TimelineElement) timelineListView
+					.getAdapter().getItem(info.position);
+			// final TimelineElement te =
+			// current_account.activeTimeline().getItem(info.position);
+
 			if (te instanceof Tweet) {
 				Tweet timelineTweet = (Tweet) te;
 				if (timelineTweet.retweeted_status != null) {
 					timelineTweet = timelineTweet.retweeted_status;
 				}
 				final Tweet tweet = timelineTweet;
-//				if (tweet.in_reply_to_status_id != 0 || te instanceof DirectMessage) {
-//					menu.add(R.string.action_conv).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-//						
-//						@Override
-//						public boolean onMenuItemClick(MenuItem item) {
-//							showConversation(tweet);
-//							return true;
-//						}
-//					});
-//				}
-								
-//				if (tweet.isRetweetable()) {
-//				if (   ! ( tweet instanceof DirectMessage 
-//				        || tweet.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())
-//				        || tweet.user._protected)) {
-						
-//					menu.add(R.string.action_retweet).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-//
-//						@Override
-//						public boolean onMenuItemClick(MenuItem item) {
-//							retweet(te);
-//							return true;
-//						}
-//					});
-//				}
-				
+				// if (tweet.in_reply_to_status_id != 0 || te instanceof
+				// DirectMessage) {
+				// menu.add(R.string.action_conv).setOnMenuItemClickListener(new
+				// OnMenuItemClickListener() {
+				//
+				// @Override
+				// public boolean onMenuItemClick(MenuItem item) {
+				// showConversation(tweet);
+				// return true;
+				// }
+				// });
+				// }
+
+				// if (tweet.isRetweetable()) {
+				// if ( ! ( tweet instanceof DirectMessage
+				// ||
+				// tweet.getSenderScreenName().equalsIgnoreCase(current_account.getUser().getScreenName())
+				// || tweet.user._protected)) {
+
+				// menu.add(R.string.action_retweet).setOnMenuItemClickListener(new
+				// OnMenuItemClickListener() {
+				//
+				// @Override
+				// public boolean onMenuItemClick(MenuItem item) {
+				// retweet(te);
+				// return true;
+				// }
+				// });
+				// }
+
 				if (tweet.entities != null) {
 					/* TODO: User-Infoscreen */
-//					if (tweet.entities.user_mentions != null) {
-//						for (UserMention um : tweet.entities.user_mentions) {
-//							menu.add('@' + um.screen_name);
-//						}
-//					}
+					// if (tweet.entities.user_mentions != null) {
+					// for (UserMention um : tweet.entities.user_mentions) {
+					// menu.add('@' + um.screen_name);
+					// }
+					// }
 					if (tweet.entities.urls != null) {
 						for (final Url url : tweet.entities.urls) {
-							menu.add(url.display_url).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-								
-								@Override
-								public boolean onMenuItemClick(MenuItem item) {
-									return openURL(url.url);
-								}
-							});
+							menu.add(url.display_url)
+									.setOnMenuItemClickListener(
+											new OnMenuItemClickListener() {
+
+												@Override
+												public boolean onMenuItemClick(
+														MenuItem item) {
+													return openURL(url.url);
+												}
+											});
 						}
 					}
-					
+
 					if (tweet.entities.media != null) {
 						for (final Media media : tweet.entities.media) {
-							menu.add(media.display_url).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-								
-								@Override
-								public boolean onMenuItemClick(MenuItem item) {
-									return openURL(media.media_url);
-								}
-							});
+							menu.add(media.display_url)
+									.setOnMenuItemClickListener(
+											new OnMenuItemClickListener() {
+
+												@Override
+												public boolean onMenuItemClick(
+														MenuItem item) {
+													return openURL(media.media_url);
+												}
+											});
 						}
 					}
-					
+
 					/* TODO: Twitter-Suche implementieren */
-//					if (tweet.entities.hashtags != null) {
-//						for (Hashtag ht : tweet.entities.hashtags) {
-//							menu.add('#' + ht.text);
-//						}
-//					}
+					// if (tweet.entities.hashtags != null) {
+					// for (Hashtag ht : tweet.entities.hashtags) {
+					// menu.add('#' + ht.text);
+					// }
+					// }
 				}
 			}
-			
+
 			if (te.isReplyable()) {
-				menu.add(R.string.action_reply).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-					
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						return replyTo(te);
-					}
-				}); 
+				menu.add(R.string.action_reply).setOnMenuItemClickListener(
+						new OnMenuItemClickListener() {
+
+							@Override
+							public boolean onMenuItemClick(MenuItem item) {
+								return replyTo(te);
+							}
+						});
 			}
-			
+
 		}
 	}
-	
+
 	/**
 	 * Opens a URL selected from a context menu
 	 * 
-	 * @param url The URL to be opened by the operating system
+	 * @param url
+	 *            The URL to be opened by the operating system
 	 * @return true if successful
 	 */
 	protected boolean openURL(String url) {
@@ -326,79 +355,90 @@ public class TimelineActivity extends MapActivity {
 	/**
 	 * Opens the new tweet activity for a reply
 	 * 
-	 * @param te The timeline element to reply to
+	 * @param te
+	 *            The timeline element to reply to
 	 * @return
 	 */
 	protected boolean replyTo(TimelineElement te) {
-		Intent replyIntent = new Intent(TimelineActivity.this, NewTweetActivity.class);
+		Intent replyIntent = new Intent(TimelineActivity.this,
+				NewTweetActivity.class);
 		replyIntent.putExtra("de.geotweeter.reply_to_tweet", te);
 		startActivity(replyIntent);
 		return true;
 	}
 
 	/**
-	 * Shows a map snippet with a marker at the coordinates of a timeline element
+	 * Shows a map snippet with a marker at the coordinates of a timeline
+	 * element
 	 * 
-	 * @param parent 
-	 * @param view The timeline element which has been clicked
-	 * @param position The position of the timeline element within the ListView
-	 * @param id 
+	 * @param parent
+	 * @param view
+	 *            The timeline element which has been clicked
+	 * @param position
+	 *            The position of the timeline element within the ListView
+	 * @param id
 	 */
 	protected void showMapIfApplicable(AdapterView<?> parent, View view,
 			int position, long id) {
-		TimelineElement te = (TimelineElement) timelineListView.getAdapter().getItem(position);
+		TimelineElement te = (TimelineElement) timelineListView.getAdapter()
+				.getItem(position);
 		if (map.getParent() != null) {
 			FrameLayout mapContainer = (FrameLayout) map.getParent();
 			mapContainer.removeAllViews();
-			RelativeLayout mapAndControls = (RelativeLayout) mapContainer.getParent();
+			RelativeLayout mapAndControls = (RelativeLayout) mapContainer
+					.getParent();
 			mapAndControls.setVisibility(View.GONE);
 			if (mapAndControls.getParent() == view) {
 				return;
 			}
 		}
-		
+
 		if (te instanceof Tweet) {
 			Tweet tweet = (Tweet) te;
 			if (tweet.coordinates != null) {
 				float lon = tweet.coordinates.coordinates.get(0);
 				float lat = tweet.coordinates.coordinates.get(1);
-				GeoPoint coords = new GeoPoint((int) (lat*1e6), (int) (lon*1e6));
-				
+				GeoPoint coords = new GeoPoint((int) (lat * 1e6),
+						(int) (lon * 1e6));
+
 				View mapAndControls = view.findViewById(R.id.map_and_controls);
-				FrameLayout mapContainer = (FrameLayout) view.findViewById(R.id.map_fragment_container);
-				
+				FrameLayout mapContainer = (FrameLayout) view
+						.findViewById(R.id.map_fragment_container);
+
 				TextView zoomIn = (TextView) view.findViewById(R.id.zoom_in);
 				TextView zoomOut = (TextView) view.findViewById(R.id.zoom_out);
-				
+
 				mapContainer.addView(map);
-				
+
 				List<Overlay> overlays = map.getOverlays();
-				Drawable marker = MapOverlay.getLocationMarker(Geotweeter.getInstance().getBackgroundImageLoader().loadBitmap(tweet.user.profile_image_url_https, true));
+				Drawable marker = MapOverlay.getLocationMarker(Geotweeter
+						.getInstance().getBackgroundImageLoader()
+						.loadBitmap(tweet.user.profile_image_url_https, true));
 				MapOverlay overlay = new MapOverlay(marker);
 				OverlayItem overlayItem = new OverlayItem(coords, null, null);
 				overlay.addOverlay(overlayItem);
 				overlays.add(overlay);
-				
+
 				map.setBuiltInZoomControls(false);
 				map.getController().setCenter(coords);
 				map.getController().setZoom(15);
 				map.setVisibility(View.VISIBLE);
-				
+
 				zoomIn.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						map.getController().zoomIn();
 					}
 				});
 				zoomOut.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						map.getController().zoomOut();
 					}
 				});
-				
+
 				mapAndControls.setVisibility(View.VISIBLE);
 			}
 		}
@@ -407,10 +447,12 @@ public class TimelineActivity extends MapActivity {
 	/**
 	 * Shows the available buttons for the tapped timeline element
 	 * 
-	 * @param parent 
-	 * @param view The timeline element which has been clicked
-	 * @param position The position of the timeline element within the ListView
-	 * @param id 
+	 * @param parent
+	 * @param view
+	 *            The timeline element which has been clicked
+	 * @param position
+	 *            The position of the timeline element within the ListView
+	 * @param id
 	 */
 	protected void showActionButtons(AdapterView<?> parent, View view,
 			int position, long id) {
@@ -422,12 +464,11 @@ public class TimelineActivity extends MapActivity {
 				}
 			}
 		}
-		
+
 		actionButtons = (LinearLayout) view.findViewById(R.id.action_buttons);
 		actionButtons.setVisibility(View.VISIBLE);
 	}
 
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -445,7 +486,7 @@ public class TimelineActivity extends MapActivity {
 			instance = null;
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -456,7 +497,7 @@ public class TimelineActivity extends MapActivity {
 			acct.persistTweets(getApplicationContext());
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -464,31 +505,35 @@ public class TimelineActivity extends MapActivity {
 		super.onResume();
 		is_visible = true;
 	}
-	
+
 	/**
 	 * Sets the current account and switches to the according timeline
 	 * 
-	 * @param account The account to be set
+	 * @param account
+	 *            The account to be set
 	 */
 	public void setCurrentAccount(Account account) {
-		if(current_account != account) {
+		if (current_account != account) {
 			current_account = account;
 			ListView l = (ListView) findViewById(R.id.timeline);
 			l.setAdapter(current_account.activeTimeline());
-			Log.d(LOG, "Changed Account: " + current_account.getUser().screen_name);
+			Log.d(LOG, "Changed Account: "
+					+ current_account.getUser().screen_name);
 		}
 	}
 
 	/**
 	 * Gets the twitter access token for a given user
 	 * 
-	 * @param u The user object whose token is needed
+	 * @param u
+	 *            The user object whose token is needed
 	 * @return The access token
 	 */
 	private Token getUserToken(User u) {
 		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
-		return new Token(sp.getString("access_token."+String.valueOf(u.id), null), 
-						  sp.getString("access_secret."+String.valueOf(u.id), null));
+		return new Token(sp.getString("access_token." + String.valueOf(u.id),
+				null), sp.getString("access_secret." + String.valueOf(u.id),
+				null));
 	}
 
 	/**
@@ -498,76 +543,78 @@ public class TimelineActivity extends MapActivity {
 	 */
 	private List<User> getAuthUsers() {
 		List<User> result = null;
-		
+
 		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
 		String accountString = sp.getString("accounts", null);
-		
+
 		if (accountString != null) {
 			String[] accounts = accountString.split(" ");
 			result = User.getPersistentData(getApplicationContext(), accounts);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * Creates an account object for a given user object which starts the twitter
-	 * API access
+	 * Creates an account object for a given user object which starts the
+	 * twitter API access
 	 * 
-	 * @param u The user object whose account object should be created
+	 * @param u
+	 *            The user object whose account object should be created
 	 */
 	public void createAccount(User u) {
-		TimelineElementAdapter ta = new TimelineElementAdapter(this, 
-				   R.layout.timeline_element, 
-				   new ArrayList<TimelineElement>());
+		TimelineElementAdapter ta = new TimelineElementAdapter(this,
+				R.layout.timeline_element, new ArrayList<TimelineElement>());
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
-			acc = new Account(ta, getUserToken(u), u, getApplicationContext(), true);
+			acc = new Account(ta, getUserToken(u), u, getApplicationContext(),
+					true);
 		} else {
 			acc.start(true);
 		}
 		addAccount(acc);
 	}
-	
+
 	/**
-	 * Replaces the TimelineElementAdapter of the given account with a newly built one
+	 * Replaces the TimelineElementAdapter of the given account with a newly
+	 * built one
 	 */
 	public void replaceAdapter(Account account) {
 		TimelineElementAdapter tea = new TimelineElementAdapter(this,
-				R.layout.timeline_element,
-				new ArrayList<TimelineElement>());
+				R.layout.timeline_element, new ArrayList<TimelineElement>());
 		account.setElements(tea);
 	}
-	
+
 	/**
 	 * Shows the preceding conversation of a given timeline element
 	 * 
-	 * @param te The conversation endpoint
+	 * @param te
+	 *            The conversation endpoint
 	 */
 	public void showConversation(TimelineElement te) {
-		TimelineElementAdapter tea = new TimelineElementAdapter(this, 
-				R.layout.timeline_element, 
-				new ArrayList<TimelineElement>());
+		TimelineElementAdapter tea = new TimelineElementAdapter(this,
+				R.layout.timeline_element, new ArrayList<TimelineElement>());
 		tea.add(te);
 		new Conversation(tea, current_account, false, true);
 		ListView l = (ListView) findViewById(R.id.timeline);
 		l.setAdapter(tea);
 	}
-	
+
 	/**
 	 * Adds an account object to the activity
 	 * 
-	 * @param acc The account to be added
+	 * @param acc
+	 *            The account to be added
 	 */
 	public void addAccount(Account acc) {
 		if (current_account == null) {
 			current_account = acc;
-//			elements = acc.getElements().getItems();
+			// elements = acc.getElements().getItems();
 		}
 		if (!reg_id.equals("")) {
 			acc.registerForGCMMessages();
 		}
-		
+
 		if (timelineListView.getAdapter() == null) {
 			timelineListView.setAdapter(acc.getElements());
 		}
@@ -581,15 +628,16 @@ public class TimelineActivity extends MapActivity {
 	public void newTweetClickHandler(View v) {
 		startActivity(new Intent(this, NewTweetActivity.class));
 	}
-	
+
 	/**
 	 * Sets the read marker to the first fully visible timeline element
 	 * 
 	 * @param v
 	 */
 	public void markReadClickHandler(View v) {
-		ListView list = (ListView)findViewById(R.id.timeline);
-		TimelineElementAdapter elements = (TimelineElementAdapter)list.getAdapter();
+		ListView list = (ListView) findViewById(R.id.timeline);
+		TimelineElementAdapter elements = (TimelineElementAdapter) list
+				.getAdapter();
 		int pos = list.getFirstVisiblePosition() + 1;
 		if (pos == 1) {
 			pos = 0;
@@ -605,24 +653,29 @@ public class TimelineActivity extends MapActivity {
 					new_max_read_dm_id = current.getID();
 				}
 			} else if (current instanceof Tweet) {
-				if (new_max_read_mention_id == 0 && ((Tweet)current).mentionsUser(current_account.getUser())) {
+				if (new_max_read_mention_id == 0
+						&& ((Tweet) current).mentionsUser(current_account
+								.getUser())) {
 					new_max_read_mention_id = current.getID();
 				}
 				if (new_max_read_tweet_id == 0) {
 					new_max_read_tweet_id = current.getID();
 				}
 			}
-			if (new_max_read_mention_id>0 && new_max_read_dm_id>0 && new_max_read_tweet_id>0) {
+			if (new_max_read_mention_id > 0 && new_max_read_dm_id > 0
+					&& new_max_read_tweet_id > 0) {
 				break;
 			}
 			pos++;
 		}
-		current_account.setMaxReadIDs(new_max_read_tweet_id, new_max_read_mention_id, new_max_read_dm_id);
+		current_account.setMaxReadIDs(new_max_read_tweet_id,
+				new_max_read_mention_id, new_max_read_dm_id);
 	}
-	
+
 	public void scrollDownHandler(View v) {
-		ListView lvList = (ListView)findViewById(R.id.timeline);
-		TimelineElementAdapter elements = (TimelineElementAdapter) lvList.getAdapter();
+		ListView lvList = (ListView) findViewById(R.id.timeline);
+		TimelineElementAdapter elements = (TimelineElementAdapter) lvList
+				.getAdapter();
 		int pos = 0;
 		while (pos < elements.getCount()) {
 			TimelineElement element = elements.getItem(pos);
@@ -651,16 +704,16 @@ public class TimelineActivity extends MapActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_settings:
-				Intent settingsActivity = new Intent(this,
-						GeneralPrefsActivity.class);
-				startActivity(settingsActivity);
-				return true;
-			
-			case R.id.menu_about:
-				Intent aboutActivity = new Intent(this, AboutActivity.class);
-				startActivity(aboutActivity);
-				return true;
+		case R.id.menu_settings:
+			Intent settingsActivity = new Intent(this,
+					GeneralPrefsActivity.class);
+			startActivity(settingsActivity);
+			return true;
+
+		case R.id.menu_about:
+			Intent aboutActivity = new Intent(this, AboutActivity.class);
+			startActivity(aboutActivity);
+			return true;
 		}
 		return true;
 	}
@@ -675,7 +728,7 @@ public class TimelineActivity extends MapActivity {
 		/* Die Methode muss hier hin wegen MapActivity */
 		return false;
 	}
-	
+
 	/**
 	 * Returns the current activity instance
 	 * 
@@ -684,9 +737,10 @@ public class TimelineActivity extends MapActivity {
 	public static TimelineActivity getInstance() {
 		return instance;
 	}
-	
+
 	/**
-	 * Checks all accounts for new timeline elements and restarts the accordings streams
+	 * Checks all accounts for new timeline elements and restarts the accordings
+	 * streams
 	 * 
 	 * @param v
 	 */
@@ -700,26 +754,27 @@ public class TimelineActivity extends MapActivity {
 	/**
 	 * Adds a timeline element to the map of available timeline elements
 	 * 
-	 * @param t The timeline element to be added
+	 * @param t
+	 *            The timeline element to be added
 	 */
 	public static void addToAvailableTLE(TimelineElement t) {
 		availableTweets.put(t.getID(), t);
 	}
-	
+
 	private class AccountSwitcherOnClickListener implements OnClickListener {
-		
+
 		private Account account;
-		
+
 		public AccountSwitcherOnClickListener(Account account) {
 			this.account = account;
 		}
-		
+
 		@Override
 		public void onClick(View v) {
 			setCurrentAccount(account);
 		}
 	}
-	
+
 	/**
 	 * Returns the current activity visibility status
 	 * 
@@ -732,17 +787,31 @@ public class TimelineActivity extends MapActivity {
 	/**
 	 * Identifies and executes action from generic action button
 	 * 
-	 * @param type Action type
-	 * @param tle Referring timeline element id
+	 * @param type
+	 *            Action type
+	 * @param tle
+	 *            Referring timeline element id
 	 */
 	public void actionClick(ActionType type, TimelineElement tle) {
 		switch (type) {
-		case CONV: showConversation(tle); break;
-		case DELETE: delete(tle); break;
-		case FAV: fav(tle); break;
-		case DEFAV: defav(tle); break;
-		case REPLY: replyTo(tle); break;
-		case RETWEET: retweet(tle); break;
+		case CONV:
+			showConversation(tle);
+			break;
+		case DELETE:
+			delete(tle);
+			break;
+		case FAV:
+			fav(tle);
+			break;
+		case DEFAV:
+			defav(tle);
+			break;
+		case REPLY:
+			replyTo(tle);
+			break;
+		case RETWEET:
+			retweet(tle);
+			break;
 		}
 	}
 
@@ -753,47 +822,52 @@ public class TimelineActivity extends MapActivity {
 	 */
 	private void delete(final TimelineElement tle) {
 		new AlertDialog.Builder(TimelineActivity.this)
-		.setTitle(R.string.dialog_delete_title)
-		.setMessage(R.string.dialog_delete_message)
-		.setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
+				.setTitle(R.string.dialog_delete_title)
+				.setMessage(R.string.dialog_delete_message)
+				.setPositiveButton(R.string.dialog_delete_positive,
+						new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-
-				new Thread(new Runnable() {
-
-					public void run() {
-						try {
-
-							if (tle.getClass() == DirectMessage.class) {
-								current_account.getApi().destroyMessage(tle.getID());
-							} else {
-								current_account.getApi().destroyTweet(tle.getID());
-							}
-						} catch (OAuthException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (DestroyException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (UnsupportedEncodingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						runOnUiThread(new Runnable() {
-							
 							@Override
-							public void run() {
-								availableTweets.remove(tle.getID());
-								current_account.remove(tle);
+							public void onClick(DialogInterface dialog,
+									int which) {
+
+								new Thread(new Runnable() {
+
+									public void run() {
+										try {
+
+											if (tle.getClass() == DirectMessage.class) {
+												current_account.getApi()
+														.destroyMessage(
+																tle.getID());
+											} else {
+												current_account.getApi()
+														.destroyTweet(
+																tle.getID());
+											}
+										} catch (OAuthException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (DestroyException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (UnsupportedEncodingException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+										runOnUiThread(new Runnable() {
+
+											@Override
+											public void run() {
+												availableTweets.remove(tle
+														.getID());
+												current_account.remove(tle);
+											}
+										});
+									}
+								}).start();
 							}
-						});
-					}
-				}).start();
-			}
-		})
-		.setNegativeButton(R.string.no, null)
-		.show();
+						}).setNegativeButton(R.string.no, null).show();
 	}
 
 	/**
@@ -803,7 +877,7 @@ public class TimelineActivity extends MapActivity {
 	 */
 	private void fav(final TimelineElement tle) {
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				TimelineElement favedTle = null;
@@ -827,7 +901,7 @@ public class TimelineActivity extends MapActivity {
 				}
 				final TimelineElement newTle = favedTle;
 				runOnUiThread(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						availableTweets.remove(tle.getID());
@@ -836,7 +910,7 @@ public class TimelineActivity extends MapActivity {
 				});
 			}
 		}).start();
-		
+
 	}
 
 	/**
@@ -849,7 +923,7 @@ public class TimelineActivity extends MapActivity {
 
 			@Override
 			public void run() {
-				
+
 				TimelineElement defavedTle = null;
 				try {
 					current_account.getApi().defav(tle.getID());
@@ -871,7 +945,7 @@ public class TimelineActivity extends MapActivity {
 				}
 				final TimelineElement newTle = defavedTle;
 				runOnUiThread(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						availableTweets.remove(tle.getID());
@@ -882,37 +956,40 @@ public class TimelineActivity extends MapActivity {
 			}
 		}).start();
 	}
-	
+
 	/**
-	 * Shows a confirmation dialog and retweets the timeline element if it is confirmed
+	 * Shows a confirmation dialog and retweets the timeline element if it is
+	 * confirmed
 	 * 
-	 * @param te The TLE to be retweeted
+	 * @param te
+	 *            The TLE to be retweeted
 	 */
 	private void retweet(final TimelineElement te) {
 		new AlertDialog.Builder(TimelineActivity.this)
-		.setTitle(R.string.dialog_retweet_title)
-		.setMessage(R.string.dialog_retweet_message)
-		.setPositiveButton(R.string.dialog_retweet_positive, new DialogInterface.OnClickListener() {
+				.setTitle(R.string.dialog_retweet_title)
+				.setMessage(R.string.dialog_retweet_message)
+				.setPositiveButton(R.string.dialog_retweet_positive,
+						new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				new Thread(new Runnable() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								new Thread(new Runnable() {
 
-					public void run() {
-						try {
-							current_account.getApi().retweet(te.getID());
-						} catch (OAuthException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (RetweetException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}).start();
-			}
-		})
-		.setNegativeButton(R.string.no, null)
-		.show();
+									public void run() {
+										try {
+											current_account.getApi().retweet(
+													te.getID());
+										} catch (OAuthException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (RetweetException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+								}).start();
+							}
+						}).setNegativeButton(R.string.no, null).show();
 	}
 }

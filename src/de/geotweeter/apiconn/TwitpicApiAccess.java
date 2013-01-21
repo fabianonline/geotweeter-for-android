@@ -26,10 +26,10 @@ import com.alibaba.fastjson.JSON;
 
 import de.geotweeter.Constants;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.twitter.Url;
 import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetSendException;
-import de.geotweeter.timelineelements.Url;
 
 /**
  * Provides access support for the Twitpic API

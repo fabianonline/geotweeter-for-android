@@ -26,16 +26,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.FavoriteEvent;
+import de.geotweeter.apiconn.twitter.FollowEvent;
+import de.geotweeter.apiconn.twitter.ListMemberAddedEvent;
+import de.geotweeter.apiconn.twitter.ListMemberRemovedEvent;
+import de.geotweeter.apiconn.twitter.NotShownEvent;
+import de.geotweeter.apiconn.twitter.Tweet;
+import de.geotweeter.apiconn.twitter.Url;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
-import de.geotweeter.timelineelements.DirectMessage;
-import de.geotweeter.timelineelements.FavoriteEvent;
-import de.geotweeter.timelineelements.FollowEvent;
-import de.geotweeter.timelineelements.ListMemberAddedEvent;
-import de.geotweeter.timelineelements.ListMemberRemovedEvent;
-import de.geotweeter.timelineelements.NotShownEvent;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.Tweet;
-import de.geotweeter.timelineelements.Url;
 
 public class Utils {
 	private static int mainSpinnerDisplays = 0;

@@ -7,6 +7,7 @@ import java.util.List;
 import android.util.Pair;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
+import de.geotweeter.apiconn.twitter.Tweet;
 
 public class ErrorMessageDisguisedAsTweet extends Tweet {
 	private final int message_resource_id;

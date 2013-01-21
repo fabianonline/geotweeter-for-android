@@ -6,11 +6,11 @@ import java.util.List;
 import android.os.AsyncTask;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
+import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.exceptions.TweetAccessException;
-import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.ErrorMessageDisguisedAsTweet;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.Tweet;
 
 /**
  * Retrieves a conversation based on a given endpoint

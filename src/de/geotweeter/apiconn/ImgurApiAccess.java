@@ -5,7 +5,7 @@ import java.net.URL;
 
 import android.util.Pair;
 import de.geotweeter.Utils;
-import de.geotweeter.timelineelements.Url;
+import de.geotweeter.apiconn.twitter.Url;
 
 public class ImgurApiAccess {
 

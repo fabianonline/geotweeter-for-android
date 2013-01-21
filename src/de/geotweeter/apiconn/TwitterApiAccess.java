@@ -29,6 +29,8 @@ import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.User;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.FollowException;
@@ -37,9 +39,7 @@ import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.exceptions.TweetSendException;
-import de.geotweeter.timelineelements.DirectMessage;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.Tweet;
 
 public class TwitterApiAccess {
 
