@@ -28,14 +28,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/user_real_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Small Text"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -46,17 +48,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/floating_icon_gap"
-                    android:text="Small Text"
+                    android:text="@string/url_icon"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textSize="@dimen/float_icon" />
+                    android:textSize="@dimen/float_icon"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/user_url"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Small Text"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -68,46 +71,47 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/floating_icon_gap"
-                    android:text="Small Text"
+                    android:text="@string/loc_icon"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textSize="@dimen/float_icon" />
+                    android:textSize="@dimen/float_icon"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/user_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Small Text"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:visibility="gone" />
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="0dp"
         android:layout_marginLeft="@dimen/default_gap"
         android:layout_marginRight="@dimen/default_gap"
-        android:layout_marginTop="@dimen/default_gap" >
+        android:layout_marginTop="@dimen/default_gap"
+        android:layout_weight="1" >
 
         <TextView
             android:id="@+id/user_bio_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/floating_icon_gap"
-            android:text="Small Text"
+            android:text="@string/desc_icon"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="@dimen/float_icon" />
+            android:textSize="@dimen/float_icon"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/user_bio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Small Text"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -115,7 +119,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="visible" >
-
     </LinearLayout>
 
 </LinearLayout>

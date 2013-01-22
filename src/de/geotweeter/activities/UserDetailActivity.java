@@ -190,7 +190,7 @@ public class UserDetailActivity extends Activity {
 			tasksRunning--;
 			if (tasksRunning == 0) {
 				progressDialog.dismiss();
-			}			
+			}
 			showActionButtons(relationship);
 		}
 
@@ -205,12 +205,16 @@ public class UserDetailActivity extends Activity {
 		screenName.setText(user.screen_name);
 		TextView realName = (TextView) findViewById(R.id.user_real_name);
 		realName.setText(user.name);
+		screenName.setVisibility(View.VISIBLE);
+		realName.setVisibility(View.VISIBLE);
 		TextView urlIcon = (TextView) findViewById(R.id.user_url_icon);
 		TextView urlView = (TextView) findViewById(R.id.user_url);
 		if (user.url != null) {
 			urlIcon.setTypeface(tf);
 			urlIcon.setText(Constants.ICON_URL);
 			urlView.setText(user.url);
+			urlIcon.setVisibility(View.VISIBLE);
+			urlView.setVisibility(View.VISIBLE);
 			this.url = user.url;
 			urlView.setOnClickListener(new OnClickListener() {
 
@@ -219,9 +223,6 @@ public class UserDetailActivity extends Activity {
 					openURL(url);
 				}
 			});
-		} else {
-			urlIcon.setVisibility(View.GONE);
-			urlView.setVisibility(View.GONE);
 		}
 		TextView locationIcon = (TextView) findViewById(R.id.user_location_icon);
 		TextView location = (TextView) findViewById(R.id.user_location);
@@ -229,9 +230,8 @@ public class UserDetailActivity extends Activity {
 			locationIcon.setTypeface(tf);
 			locationIcon.setText(Constants.ICON_LOCATION);
 			location.setText(user.location);
-		} else {
-			locationIcon.setVisibility(View.GONE);
-			location.setVisibility(View.GONE);
+			locationIcon.setVisibility(View.VISIBLE);
+			location.setVisibility(View.VISIBLE);
 		}
 		TextView descriptionIcon = (TextView) findViewById(R.id.user_bio_icon);
 		TextView description = (TextView) findViewById(R.id.user_bio);
@@ -239,9 +239,8 @@ public class UserDetailActivity extends Activity {
 			descriptionIcon.setTypeface(tf);
 			descriptionIcon.setText(Constants.ICON_BIO);
 			description.setText(user.description);
-		} else {
-			descriptionIcon.setVisibility(View.GONE);
-			description.setVisibility(View.GONE);
+			descriptionIcon.setVisibility(View.VISIBLE);
+			description.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -249,13 +248,13 @@ public class UserDetailActivity extends Activity {
 		LinearLayout actionButtons = (LinearLayout) findViewById(R.id.user_action_buttons);
 		actionButtons.setVisibility(View.VISIBLE);
 
-		if (relationship.target.following) {
+		if (relationship.target.followed_by) {
 			createButton(actionButtons, ActionType.UNFOLLOW);
 		} else {
 			createButton(actionButtons, ActionType.FOLLOW);
 		}
 
-		if (relationship.target.followed_by) {
+		if (relationship.source.can_dm) {
 			createButton(actionButtons, ActionType.SEND_DM);
 		}
 

@@ -162,5 +162,8 @@
     <string name="dialog_delete_message">Bist du sicher, dass du den Status löschen möchtest?</string>
     <string name="dialog_delete_positive">Löschen</string>
     <string name="user_details">Benutzerdetails</string>
+    <string name="url_icon">urlIcon</string>
+    <string name="loc_icon">locIcon</string>
+    <string name="desc_icon">descIcon</string>
 
 </resources>
