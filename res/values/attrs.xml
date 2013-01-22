@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="accountSwitcherStyle" format="reference"/>
-    <attr name="actionButtonClickedBackground" format="reference"/>
+
+    <attr name="accountSwitcherStyle" format="reference" />
+    <attr name="actionButtonClickedBackground" format="reference" />
+
 </resources>

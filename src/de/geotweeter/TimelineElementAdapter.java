@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -32,10 +34,11 @@ import de.geotweeter.timelineelements.UserMention;
 
 public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	private List<TimelineElement> items;
-	private Context context;
+	private final Context context;
 	private HashMap<Long, TimelineElement> available = new HashMap<Long, TimelineElement>();
 	private Typeface tf;
 	private LayoutInflater inflater;
+	private final Animation ani;
 
 	/**
 	 * Constructor
@@ -51,6 +54,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	public TimelineElementAdapter(Context context, int textViewResourceId,
 			List<TimelineElement> objects) {
 		super(context, textViewResourceId, objects);
+		ani = AnimationUtils.loadAnimation(context, R.animator.image_click);
 		if (objects != null) {
 			Collections.sort(objects, new TLEComparator());
 		}
@@ -260,18 +264,20 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 					Geotweeter.getInstance().getBackgroundImageLoader()
 							.displayImage(tle.getAvatarSource(), img, true);
 				}
-				
+
 				if (TimelineActivity.getInstance() != null) {
 					final String senderScreenName = tle.getSenderScreenName();
-					
+
 					img.setOnClickListener(new OnClickListener() {
-						
+
 						@Override
 						public void onClick(View v) {
-							TimelineActivity.getInstance().userClick(senderScreenName);		
+							v.startAnimation(ani);
+							TimelineActivity.getInstance().userClick(
+									senderScreenName);
 						}
 					});
-					
+
 				}
 			}
 
@@ -301,6 +307,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 
 						@Override
 						public void onClick(View v) {
+							v.startAnimation(ani);
 							showOverlay(url_pair.second.toString());
 						}
 					});

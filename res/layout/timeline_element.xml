@@ -2,96 +2,93 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:descendantFocusability="blocksDescendants" >
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical" >
 
-	<RelativeLayout
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/container"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:padding="5dp" >
-	
-	    <de.geotweeter.AsyncImageView
-	        android:id="@+id/avatar_image"
-	        android:layout_width="40dp"
-	        android:layout_height="40dp"
-	        android:layout_marginRight="5dp"
-	        android:scaleType="fitCenter"
-	        android:src="@drawable/ic_launcher" />
-	
-	    <TextView
-	        android:id="@+id/txtSender"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_toRightOf="@id/avatar_image"
-	        android:text="txtSender"
-	        android:textAppearance="?android:attr/textAppearanceSmall"
-	        android:textStyle="bold" />
-	
-	    <TextView
-	        android:id="@+id/txtText"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@id/txtSender"
-	        android:layout_below="@id/txtSender"
-	        android:text="txtText" />
-	
-	    <TextView
-	        android:id="@+id/txtTimestamp"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentRight="true"
-	        android:layout_alignParentTop="true"
-	        android:text="txtTimestamp"
-	        android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	    <HorizontalScrollView
-	        android:id="@+id/picScroller"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@+id/txtText"
-	        android:layout_below="@+id/txtText"
-	        android:focusable="false" >
-	
-	        <LinearLayout
-	            android:id="@+id/picPreviews"
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"
-	            android:focusable="false"
-	            android:orientation="horizontal"
-	            android:visibility="gone" >
-	
-	        </LinearLayout>
-	    </HorizontalScrollView>
-	
-	    <TextView
-	        android:id="@+id/txtPlace"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@+id/picScroller"
-	        android:layout_toRightOf="@+id/avatar_image"
-	        android:text="txtPlace"
-	        android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	    <TextView
-	        android:id="@+id/txtSource"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignRight="@+id/txtTimestamp"
-	        android:layout_below="@+id/picScroller"
-	        android:text="txtSource"
-	        android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	</RelativeLayout>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
 
-	<LinearLayout
-	    android:id="@+id/action_buttons"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:visibility="gone" >
+        <de.geotweeter.AsyncImageView
+            android:id="@+id/avatar_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_launcher" />
 
-	</LinearLayout>
+        <TextView
+            android:id="@+id/txtSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/avatar_image"
+            android:text="txtSender"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/txtSender"
+            android:layout_below="@id/txtSender"
+            android:text="txtText" />
+
+        <TextView
+            android:id="@+id/txtTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="txtTimestamp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <HorizontalScrollView
+            android:id="@+id/picScroller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/txtText"
+            android:layout_below="@+id/txtText"
+            android:focusable="false" >
+
+            <LinearLayout
+                android:id="@+id/picPreviews"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:orientation="horizontal"
+                android:visibility="gone" >
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/txtPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/picScroller"
+            android:layout_toRightOf="@+id/avatar_image"
+            android:text="txtPlace"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/txtSource"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/txtTimestamp"
+            android:layout_below="@+id/picScroller"
+            android:text="txtSource"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/action_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" >
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/map_and_controls"
@@ -124,7 +121,6 @@
                 android:text="@string/minus"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="50dp" />
-
         </LinearLayout>
 
         <FrameLayout
@@ -133,7 +129,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/zoom_controls" >
-
         </FrameLayout>
     </RelativeLayout>
 
