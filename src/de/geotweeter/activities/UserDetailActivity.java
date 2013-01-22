@@ -50,7 +50,7 @@ public class UserDetailActivity extends Activity {
 		inflater = (LayoutInflater) this
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		tf = Typeface.createFromAsset(this.getAssets(), "fonts/Entypo.otf");
-
+		
 		new getUserDetailsTask().execute(userName);
 		new getUserRelationShipTask().execute(userName);
 	}

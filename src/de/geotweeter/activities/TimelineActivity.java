@@ -1005,8 +1005,14 @@ public class TimelineActivity extends MapActivity {
 						}).setNegativeButton(R.string.no, null).show();
 	}
 
+	/**
+	 * Shows the user info Activity for the given screen name
+	 * 
+	 * @param screenName
+	 */
 	public void userClick(String screenName) {
 		Intent userDetails = new Intent(this, UserDetailActivity.class);
+		userDetails.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 		userDetails.putExtra("user", screenName);
 		startActivity(userDetails);
 	}

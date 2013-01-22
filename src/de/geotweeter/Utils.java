@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 import org.acra.ACRA;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -34,6 +36,7 @@ import de.geotweeter.apiconn.twitter.ListMemberRemovedEvent;
 import de.geotweeter.apiconn.twitter.NotShownEvent;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.Url;
+import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
 import de.geotweeter.timelineelements.TimelineElement;
 
@@ -41,33 +44,41 @@ public class Utils {
 	private static int mainSpinnerDisplays = 0;
 	private static final String LOG = "Utils";
 	private static Properties properties;
-	
+
 	public enum PictureService {
 		NONE, TWITPIC, YFROG, YOUTUBE, IMGUR, INSTAGRAM, LOCKERZ, PLIXI, IMGLY, MOBYTO, VIMEO, OWLY
 	}
-	
+
 	public static int countChars(String str) {
 		str = str.trim();
 		int length = str.length();
 		Pattern p = Pattern.compile("((https?)://[^\n\r ]+)");
 		Matcher m = p.matcher(str);
-		while(m.find()) {
-			/* Original-Link-Länge abziehen und die gekürzten-20-Zeichen hinzuaddieren. */
+		while (m.find()) {
+			/*
+			 * Original-Link-Länge abziehen und die gekürzten-20-Zeichen
+			 * hinzuaddieren.
+			 */
 			length = length - m.group(1).length() + 20;
-			/* War es ein https-Link, packen wir noch ein Zeichen für den gekürzten https-Link dazu. */
-			if (m.group(2).equalsIgnoreCase("https")) { 
+			/*
+			 * War es ein https-Link, packen wir noch ein Zeichen für den
+			 * gekürzten https-Link dazu.
+			 */
+			if (m.group(2).equalsIgnoreCase("https")) {
 				length++;
 			}
 		}
-		
+
 		return length;
 	}
-	
-	public static TimelineElement jsonToNativeObject(String json) throws JSONException, UnknownJSONObjectException {
+
+	public static TimelineElement jsonToNativeObject(String json)
+			throws JSONException, UnknownJSONObjectException {
 		JSONObject obj;
-		
+
 		try {
-			obj = JSON.parseObject(json, Feature.DisableCircularReferenceDetect);
+			obj = JSON
+					.parseObject(json, Feature.DisableCircularReferenceDetect);
 		} catch (JSONException ex) {
 			ACRA.getErrorReporter().putCustomData("json", json);
 			throw ex;
@@ -75,12 +86,13 @@ public class Utils {
 			ACRA.getErrorReporter().putCustomData("json", json);
 			throw ex;
 		}
-		
+
 		if (obj.containsKey("text") && obj.containsKey("recipient")) {
 			return JSON.parseObject(json, DirectMessage.class);
 		}
 		if (obj.containsKey("direct_message")) {
-			return JSON.parseObject(obj.getJSONObject("direct_message").toJSONString(), DirectMessage.class);
+			return JSON.parseObject(obj.getJSONObject("direct_message")
+					.toJSONString(), DirectMessage.class);
 		}
 		if (obj.containsKey("text")) {
 			return JSON.parseObject(json, Tweet.class);
@@ -99,13 +111,14 @@ public class Utils {
 			if (event_type.equals("list_member_removed")) {
 				return JSON.parseObject(json, ListMemberRemovedEvent.class);
 			}
-			if (event_type.equals("block") || event_type.equals("user_update") || event_type.equals("unfavorite")) {
+			if (event_type.equals("block") || event_type.equals("user_update")
+					|| event_type.equals("unfavorite")) {
 				return JSON.parseObject(json, NotShownEvent.class);
 			}
 		}
 		throw new UnknownJSONObjectException();
 	}
-	
+
 	public static void showMainSpinner() {
 		mainSpinnerDisplays++;
 		TimelineActivity ta = TimelineActivity.getInstance();
@@ -125,7 +138,7 @@ public class Utils {
 			});
 		}
 	}
-	
+
 	public static void hideMainSpinner() {
 		mainSpinnerDisplays--;
 		if (mainSpinnerDisplays <= 0) {
@@ -148,7 +161,7 @@ public class Utils {
 			}
 		}
 	}
-	
+
 	public static void setDesign(Activity a) {
 		boolean useDarkTheme = Geotweeter.getInstance().useDarkTheme();
 		if (useDarkTheme) {
@@ -157,59 +170,65 @@ public class Utils {
 			a.setTheme(R.style.GeotweeterThemeLight);
 		}
 	}
-	
+
 	public static Bitmap resizeBitmap(String path, int reqHeight) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(path, options);
 		int imageHeight = options.outHeight;
-		
-		if(imageHeight > reqHeight) {
-//			options.inSampleSize = Math.round( (float) imageHeight / (float) reqHeight);
-			options.inSampleSize = Integer.highestOneBit(imageHeight / reqHeight);
+
+		if (imageHeight > reqHeight) {
+			// options.inSampleSize = Math.round( (float) imageHeight / (float)
+			// reqHeight);
+			options.inSampleSize = Integer.highestOneBit(imageHeight
+					/ reqHeight);
 		}
-		
+
 		options.inJustDecodeBounds = false;
-		
+
 		return BitmapFactory.decodeFile(path, options);
 	}
-	
+
 	public static String getProperty(String key) {
 		if (properties == null) {
 			properties = new Properties();
 			try {
-				InputStream stream = Geotweeter.getInstance().getResources().openRawResource(R.raw.geotweeter);
+				InputStream stream = Geotweeter.getInstance().getResources()
+						.openRawResource(R.raw.geotweeter);
 				properties.load(stream);
 				stream.close();
 			} catch (Exception caught_exception) {
-				RuntimeException exception = new RuntimeException("Could not load file '/raw/geotweeter.properties'.");
+				RuntimeException exception = new RuntimeException(
+						"Could not load file '/raw/geotweeter.properties'.");
 				exception.initCause(caught_exception);
 				throw exception;
 			}
 		}
-		
+
 		if (!properties.containsKey(key)) {
 			throw new RuntimeException("Couldn't find property '" + key + "'");
 		}
 		return properties.getProperty(key);
 	}
-	
-	public static byte[] reduceImageSize(File file, long imageSize) throws IOException {
+
+	public static byte[] reduceImageSize(File file, long imageSize)
+			throws IOException {
 		Log.d(LOG, "Before resizeFile: " + file.length());
 		int scale = (int) (file.length() / imageSize);
-//		scale = 2 * Integer.highestOneBit(scale);
+		// scale = 2 * Integer.highestOneBit(scale);
 		Log.d(LOG, "scale: " + scale);
 		BitmapFactory.Options opt = new BitmapFactory.Options();
 		opt.inSampleSize = scale;
-		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, opt);
+		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file),
+				null, opt);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		
+
 		if (file.getName().endsWith(".png")) {
 			bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
 		} else {
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
 		}
-		
+
 		byte[] bytes = out.toByteArray();
 		Log.d(LOG, "After resizeFile: " + bytes.length);
 		return bytes;
@@ -258,9 +277,9 @@ public class Utils {
 				}
 			}
 			/* Das wird noch etwas komplizierter hier */
-//			if (host.endsWith("vimeo.com")) {
-//				return PictureService.VIMEO;
-//			}
+			// if (host.endsWith("vimeo.com")) {
+			// return PictureService.VIMEO;
+			// }
 			/* More services to follow */
 			return PictureService.NONE;
 		} catch (MalformedURLException e) {
@@ -268,54 +287,62 @@ public class Utils {
 		}
 	}
 
-	  /**
-	   * Returns the substring before the first occurrence of a delimiter. The
-	   * delimiter is not part of the result.
-	   *
-	   * @param string    String to get a substring from.
-	   * @param delimiter String to search for.
-	   * @return          Substring before the first occurrence of the delimiter.
-	   */
-	  public static String substringBefore( String string, String delimiter )
-	  {
-	    int pos = string.indexOf( delimiter );
+	/**
+	 * Returns the substring before the first occurrence of a delimiter. The
+	 * delimiter is not part of the result.
+	 * 
+	 * @param string
+	 *            String to get a substring from.
+	 * @param delimiter
+	 *            String to search for.
+	 * @return Substring before the first occurrence of the delimiter.
+	 */
+	public static String substringBefore(String string, String delimiter) {
+		int pos = string.indexOf(delimiter);
 
-	    return pos >= 0 ? string.substring( 0, pos ) : string;
-	  }
-
-	  /**
-	   * Returns the substring after the first occurrence of a delimiter. The
-	   * delimiter is not part of the result.
-	   * @param string    String to get a substring from.
-	   * @param delimiter String to search for.
-	   * @return          Substring after the last occurrence of the delimiter.
-	   */
-	  public static String substringAfter( String string, String delimiter )
-	  {
-	    int pos = string.indexOf( delimiter );
-
-	    return pos >= 0 ? string.substring( pos + delimiter.length() ) : "";
-	  }
-	
-	public static String formatString(int string_id, Object... args) {
-		return String.format(Geotweeter.getInstance().getString(string_id), args);
+		return pos >= 0 ? string.substring(0, pos) : string;
 	}
-	
+
+	/**
+	 * Returns the substring after the first occurrence of a delimiter. The
+	 * delimiter is not part of the result.
+	 * 
+	 * @param string
+	 *            String to get a substring from.
+	 * @param delimiter
+	 *            String to search for.
+	 * @return Substring after the last occurrence of the delimiter.
+	 */
+	public static String substringAfter(String string, String delimiter) {
+		int pos = string.indexOf(delimiter);
+
+		return pos >= 0 ? string.substring(pos + delimiter.length()) : "";
+	}
+
+	public static String formatString(int string_id, Object... args) {
+		return String.format(Geotweeter.getInstance().getString(string_id),
+				args);
+	}
+
 	public static String getString(int string_id) {
 		return Geotweeter.getInstance().getString(string_id);
 	}
-	
+
 	/**
-	 * Computes the number of pixels based on screen density 
-	 * @param dip the density independent pixels to transform to pixels
+	 * Computes the number of pixels based on screen density
+	 * 
+	 * @param dip
+	 *            the density independent pixels to transform to pixels
 	 * @return Number of Pixels representing the density independent pixel
 	 */
 	public static int convertDipToPixel(int dip) {
-		return (int) (dip * Geotweeter.getInstance().getResources().getDisplayMetrics().density + 0.5f);
+		return (int) (dip
+				* Geotweeter.getInstance().getResources().getDisplayMetrics().density + 0.5f);
 	}
-	
+
 	/**
 	 * Returns a String Comparator which sort alphabetically
+	 * 
 	 * @return an alpabetical String Comparator
 	 */
 	public static Comparator<String> getAlphabeticalStringComparator() {
@@ -323,11 +350,13 @@ public class Utils {
 			@Override
 			public int compare(String lhs, String rhs) {
 				int ignoreCase = lhs.compareToIgnoreCase(rhs);
-				if(ignoreCase == 0) {
+				if (ignoreCase == 0) {
 					return lhs.compareTo(rhs);
 				}
 				return ignoreCase;
 			}
 		};
 	}
+
+
 }
