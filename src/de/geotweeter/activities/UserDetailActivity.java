@@ -1,11 +1,13 @@
 package de.geotweeter.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +18,14 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import de.geotweeter.AsyncImageView;
 import de.geotweeter.Constants;
-import de.geotweeter.Geotweeter;
 import de.geotweeter.Constants.ActionType;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.UserException;
 import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.User;
+import de.geotweeter.exceptions.RelationshipException;
 
 public class UserDetailActivity extends Activity {
 
@@ -30,6 +34,8 @@ public class UserDetailActivity extends Activity {
 	private String url = "";
 	private LayoutInflater inflater;
 	private Typeface tf;
+	private int tasksRunning = 0;
+	private ProgressDialog progressDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,77 +45,14 @@ public class UserDetailActivity extends Activity {
 
 		setContentView(R.layout.user_detail);
 
+		String userName = (String) getIntent().getSerializableExtra("user");
+
 		inflater = (LayoutInflater) this
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		tf = Typeface.createFromAsset(this.getAssets(), "fonts/Entypo.otf");
 
-		User user = (User) getIntent().getSerializableExtra("user");
-		Relationship relationship = (Relationship) getIntent()
-				.getSerializableExtra("relationship");
-
-		AsyncImageView img = (AsyncImageView) findViewById(R.id.user_avatar);
-		Geotweeter.getInstance().getBackgroundImageLoader()
-				.displayImage(user.getAvatarSource(), img, true);
-
-		TextView screenName = (TextView) findViewById(R.id.user_screen_name);
-		screenName.setText(user.screen_name);
-		TextView realName = (TextView) findViewById(R.id.user_real_name);
-		realName.setText(user.name);
-		TextView urlIcon = (TextView) findViewById(R.id.user_url_icon);
-		TextView urlView = (TextView) findViewById(R.id.user_url);
-		if (user.url != null) {
-			urlIcon.setTypeface(tf);
-			urlIcon.setText(Constants.ICON_URL);
-			urlView.setText(user.url);
-			this.url = user.url;
-			urlView.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					openURL(url);
-				}
-			});
-		} else {
-			urlIcon.setVisibility(View.GONE);
-			urlView.setVisibility(View.GONE);
-		}
-		TextView locationIcon = (TextView) findViewById(R.id.user_location_icon);
-		TextView location = (TextView) findViewById(R.id.user_location);
-		if (!user.location.equals("")) {
-			locationIcon.setTypeface(tf);
-			locationIcon.setText(Constants.ICON_LOCATION);
-			location.setText(user.location);
-		} else {
-			locationIcon.setVisibility(View.GONE);
-			location.setVisibility(View.GONE);
-		}
-		TextView descriptionIcon = (TextView) findViewById(R.id.user_bio_icon);
-		TextView description = (TextView) findViewById(R.id.user_bio);
-		if (!user.description.equals("")) {
-			descriptionIcon.setTypeface(tf);
-			descriptionIcon.setText(Constants.ICON_BIO);
-			description.setText(user.description);
-		} else {
-			descriptionIcon.setVisibility(View.GONE);
-			description.setVisibility(View.GONE);
-		}
-
-		LinearLayout actionButtons = (LinearLayout) findViewById(R.id.user_action_buttons);
-		actionButtons.setVisibility(View.VISIBLE);
-
-		if (relationship.target.following) {
-			createButton(actionButtons, ActionType.UNFOLLOW);
-		} else {
-			createButton(actionButtons, ActionType.FOLLOW);
-		}
-
-		if (relationship.target.followed_by) {
-			createButton(actionButtons, ActionType.SEND_DM);
-		}
-
-		createButton(actionButtons, ActionType.BLOCK);
-		createButton(actionButtons, ActionType.MARK_AS_SPAM);
-
+		new getUserDetailsTask().execute(userName);
+		new getUserRelationShipTask().execute(userName);
 	}
 
 	private void createButton(LinearLayout buttons, final ActionType type) {
@@ -181,6 +124,143 @@ public class UserDetailActivity extends Activity {
 		i.setData(Uri.parse(url));
 		startActivity(i);
 		return true;
+	}
+
+	public class getUserDetailsTask extends AsyncTask<String, Boolean, User> {
+
+		protected void onPreExecute() {
+			tasksRunning++;
+			if (progressDialog == null) {
+				progressDialog = ProgressDialog.show(UserDetailActivity.this,
+						"", "Daten werden geladen...");
+			}
+		}
+
+		@Override
+		protected User doInBackground(String... params) {
+			User user = null;
+			try {
+				user = TimelineActivity.current_account.getApi().getUser(
+						params[0]);
+			} catch (UserException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return user;
+		}
+
+		protected void onPostExecute(User result) {
+			tasksRunning--;
+			if (tasksRunning == 0) {
+				progressDialog.dismiss();
+			}
+			showUserDetails(result);
+		}
+
+	}
+
+	public class getUserRelationShipTask extends
+			AsyncTask<String, Boolean, Relationship> {
+
+		protected void onPreExecute() {
+			tasksRunning++;
+			if (progressDialog == null) {
+				progressDialog = ProgressDialog.show(UserDetailActivity.this,
+						"", "Daten werden geladen...");
+			}
+		}
+
+		@Override
+		protected Relationship doInBackground(String... params) {
+			Relationship relationship = null;
+			try {
+				relationship = TimelineActivity.current_account
+						.getApi()
+						.getRelationship(
+								TimelineActivity.current_account.getUser().screen_name,
+								params[0]);
+			} catch (RelationshipException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return relationship;
+		}
+
+		protected void onPostExecute(Relationship relationship) {
+			tasksRunning--;
+			if (tasksRunning == 0) {
+				progressDialog.dismiss();
+			}			
+			showActionButtons(relationship);
+		}
+
+	}
+
+	public void showUserDetails(User user) {
+		AsyncImageView img = (AsyncImageView) findViewById(R.id.user_avatar);
+		Geotweeter.getInstance().getBackgroundImageLoader()
+				.displayImage(user.getAvatarSource(), img, true);
+
+		TextView screenName = (TextView) findViewById(R.id.user_screen_name);
+		screenName.setText(user.screen_name);
+		TextView realName = (TextView) findViewById(R.id.user_real_name);
+		realName.setText(user.name);
+		TextView urlIcon = (TextView) findViewById(R.id.user_url_icon);
+		TextView urlView = (TextView) findViewById(R.id.user_url);
+		if (user.url != null) {
+			urlIcon.setTypeface(tf);
+			urlIcon.setText(Constants.ICON_URL);
+			urlView.setText(user.url);
+			this.url = user.url;
+			urlView.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					openURL(url);
+				}
+			});
+		} else {
+			urlIcon.setVisibility(View.GONE);
+			urlView.setVisibility(View.GONE);
+		}
+		TextView locationIcon = (TextView) findViewById(R.id.user_location_icon);
+		TextView location = (TextView) findViewById(R.id.user_location);
+		if (!user.location.equals("")) {
+			locationIcon.setTypeface(tf);
+			locationIcon.setText(Constants.ICON_LOCATION);
+			location.setText(user.location);
+		} else {
+			locationIcon.setVisibility(View.GONE);
+			location.setVisibility(View.GONE);
+		}
+		TextView descriptionIcon = (TextView) findViewById(R.id.user_bio_icon);
+		TextView description = (TextView) findViewById(R.id.user_bio);
+		if (!user.description.equals("")) {
+			descriptionIcon.setTypeface(tf);
+			descriptionIcon.setText(Constants.ICON_BIO);
+			description.setText(user.description);
+		} else {
+			descriptionIcon.setVisibility(View.GONE);
+			description.setVisibility(View.GONE);
+		}
+	}
+
+	public void showActionButtons(Relationship relationship) {
+		LinearLayout actionButtons = (LinearLayout) findViewById(R.id.user_action_buttons);
+		actionButtons.setVisibility(View.VISIBLE);
+
+		if (relationship.target.following) {
+			createButton(actionButtons, ActionType.UNFOLLOW);
+		} else {
+			createButton(actionButtons, ActionType.FOLLOW);
+		}
+
+		if (relationship.target.followed_by) {
+			createButton(actionButtons, ActionType.SEND_DM);
+		}
+
+		createButton(actionButtons, ActionType.BLOCK);
+		createButton(actionButtons, ActionType.MARK_AS_SPAM);
 	}
 
 }

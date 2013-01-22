@@ -9,13 +9,11 @@ import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -52,19 +50,17 @@ import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.Utils;
-import de.geotweeter.apiconn.UserException;
 import de.geotweeter.apiconn.twitter.DirectMessage;
 import de.geotweeter.apiconn.twitter.Media;
-import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.Url;
 import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
-import de.geotweeter.exceptions.RelationshipException;
 import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.timelineelements.TimelineElement;
+import de.geotweeter.timelineelements.UserMention;
 import de.geotweeter.widgets.AccountSwitcherRadioButton;
 
 public class TimelineActivity extends MapActivity {
@@ -286,11 +282,21 @@ public class TimelineActivity extends MapActivity {
 
 				if (tweet.entities != null) {
 					/* TODO: User-Infoscreen */
-					// if (tweet.entities.user_mentions != null) {
-					// for (UserMention um : tweet.entities.user_mentions) {
-					// menu.add('@' + um.screen_name);
-					// }
-					// }
+					if (tweet.entities.user_mentions != null) {
+						for (final UserMention um : tweet.entities.user_mentions) {
+							menu.add('@' + um.screen_name)
+									.setOnMenuItemClickListener(
+											new OnMenuItemClickListener() {
+
+												@Override
+												public boolean onMenuItemClick(
+														MenuItem item) {
+													userClick(um.screen_name);
+													return true;
+												}
+											});
+						}
+					}
 					if (tweet.entities.urls != null) {
 						for (final Url url : tweet.entities.urls) {
 							menu.add(url.display_url)
@@ -999,51 +1005,9 @@ public class TimelineActivity extends MapActivity {
 						}).setNegativeButton(R.string.no, null).show();
 	}
 
-	public void userClick(String senderScreenName) {
-		new getUserDetailsTask().execute(senderScreenName);
-		
-	}
-	
-	public class getUserDetailsTask extends AsyncTask<String, Boolean, UserRelationship> {
-
-		ProgressDialog progressDialog;
-		
-		protected void onPreExecute() {
-			progressDialog = ProgressDialog.show(TimelineActivity.this, "", "");
-		}
-		
-		@Override
-		protected UserRelationship doInBackground(String... params) {
-			UserRelationship result = new UserRelationship();
-			try {
-				result.user = current_account.getApi().getUser(params[0]);
-				result.relationship = current_account.getApi().getRelationship(current_account.getUser().screen_name, result.user.screen_name);
-			} catch (UserException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RelationshipException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return result;
-		}
-		
-		protected void onPostExecute(UserRelationship result) {
-			progressDialog.dismiss();
-			showUserDetails(result);
-		}
-
-	}
-	
-	public class UserRelationship {
-		public User user;
-		public Relationship relationship;
-	}
-
-	public void showUserDetails(UserRelationship result) {
+	public void userClick(String screenName) {
 		Intent userDetails = new Intent(this, UserDetailActivity.class);
-		userDetails.putExtra("user", result.user);
-		userDetails.putExtra("relationship", result.relationship);
+		userDetails.putExtra("user", screenName);
 		startActivity(userDetails);
 	}
 
