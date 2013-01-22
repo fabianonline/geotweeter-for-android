@@ -14,10 +14,13 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import de.geotweeter.AsyncImageView;
 import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.Constants.ActionType;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
+import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.User;
 
 public class UserDetailActivity extends Activity {
@@ -34,20 +37,29 @@ public class UserDetailActivity extends Activity {
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 
+		setContentView(R.layout.user_detail);
+
 		inflater = (LayoutInflater) this
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		tf = Typeface.createFromAsset(this.getAssets(), "fonts/Entypo.otf");
 
 		User user = (User) getIntent().getSerializableExtra("user");
+		Relationship relationship = (Relationship) getIntent()
+				.getSerializableExtra("relationship");
+
+		AsyncImageView img = (AsyncImageView) findViewById(R.id.user_avatar);
+		Geotweeter.getInstance().getBackgroundImageLoader()
+				.displayImage(user.getAvatarSource(), img, true);
 
 		TextView screenName = (TextView) findViewById(R.id.user_screen_name);
 		screenName.setText(user.screen_name);
 		TextView realName = (TextView) findViewById(R.id.user_real_name);
-		realName.setTag(user.name);
-		if (!user.url.equals("")) {
-			TextView urlIcon = (TextView) findViewById(R.id.user_url_icon);
+		realName.setText(user.name);
+		TextView urlIcon = (TextView) findViewById(R.id.user_url_icon);
+		TextView urlView = (TextView) findViewById(R.id.user_url);
+		if (user.url != null) {
+			urlIcon.setTypeface(tf);
 			urlIcon.setText(Constants.ICON_URL);
-			TextView urlView = (TextView) findViewById(R.id.user_url);
 			urlView.setText(user.url);
 			this.url = user.url;
 			urlView.setOnClickListener(new OnClickListener() {
@@ -57,21 +69,47 @@ public class UserDetailActivity extends Activity {
 					openURL(url);
 				}
 			});
+		} else {
+			urlIcon.setVisibility(View.GONE);
+			urlView.setVisibility(View.GONE);
 		}
+		TextView locationIcon = (TextView) findViewById(R.id.user_location_icon);
+		TextView location = (TextView) findViewById(R.id.user_location);
 		if (!user.location.equals("")) {
-			TextView locationIcon = (TextView) findViewById(R.id.user_location_icon);
+			locationIcon.setTypeface(tf);
 			locationIcon.setText(Constants.ICON_LOCATION);
-			TextView location = (TextView) findViewById(R.id.user_location);
 			location.setText(user.location);
+		} else {
+			locationIcon.setVisibility(View.GONE);
+			location.setVisibility(View.GONE);
 		}
+		TextView descriptionIcon = (TextView) findViewById(R.id.user_bio_icon);
+		TextView description = (TextView) findViewById(R.id.user_bio);
 		if (!user.description.equals("")) {
-			TextView descriptionIcon = (TextView) findViewById(R.id.user_bio_icon);
+			descriptionIcon.setTypeface(tf);
 			descriptionIcon.setText(Constants.ICON_BIO);
-			TextView description = (TextView) findViewById(R.id.user_bio);
 			description.setText(user.description);
+		} else {
+			descriptionIcon.setVisibility(View.GONE);
+			description.setVisibility(View.GONE);
 		}
 
-		setContentView(R.layout.user_detail);
+		LinearLayout actionButtons = (LinearLayout) findViewById(R.id.user_action_buttons);
+		actionButtons.setVisibility(View.VISIBLE);
+
+		if (relationship.target.following) {
+			createButton(actionButtons, ActionType.UNFOLLOW);
+		} else {
+			createButton(actionButtons, ActionType.FOLLOW);
+		}
+
+		if (relationship.target.followed_by) {
+			createButton(actionButtons, ActionType.SEND_DM);
+		}
+
+		createButton(actionButtons, ActionType.BLOCK);
+		createButton(actionButtons, ActionType.MARK_AS_SPAM);
+
 	}
 
 	private void createButton(LinearLayout buttons, final ActionType type) {
@@ -115,6 +153,7 @@ public class UserDetailActivity extends Activity {
 		params.setMargins(Utils.convertDipToPixel(3), 0,
 				Utils.convertDipToPixel(3), Utils.convertDipToPixel(3));
 		button.setLayoutParams(params);
+		button.setVisibility(View.VISIBLE);
 
 		button.setOnClickListener(new OnClickListener() {
 

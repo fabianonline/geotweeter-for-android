@@ -103,6 +103,7 @@
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
             android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".activities.UserDetailActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:description="@string/user_details"></activity>
     </application>
 
 </manifest>

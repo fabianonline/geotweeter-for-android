@@ -46,7 +46,7 @@ public class Constants extends Application {
 	public static final String URI_UNFOLLOW              = "https://api.twitter.com/1.1/friendships/destroy.json";
 	public static final String URI_FOLLOWING_LIST        = "https://api.twitter.com/1.1/friends/list.json";
 	public static final String URI_FOLLOWER_LIST		 = "https://api.twitter.com/1.1/followers/list.json";
-	public static final String URI_FRIENDSHIP_SHOW 		 = "http://api.twitter.com/1.1/friendships/show.json";
+	public static final String URI_FRIENDSHIP_SHOW 		 = "https://api.twitter.com/1.1/friendships/show.json";
 	
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 		

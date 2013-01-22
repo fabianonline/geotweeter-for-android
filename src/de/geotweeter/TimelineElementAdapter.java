@@ -260,6 +260,19 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 					Geotweeter.getInstance().getBackgroundImageLoader()
 							.displayImage(tle.getAvatarSource(), img, true);
 				}
+				
+				if (TimelineActivity.getInstance() != null) {
+					final String senderScreenName = tle.getSenderScreenName();
+					
+					img.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							TimelineActivity.getInstance().userClick(senderScreenName);		
+						}
+					});
+					
+				}
 			}
 
 			List<Pair<URL, URL>> media_list = tle.getMediaList();

@@ -29,6 +29,7 @@ import de.geotweeter.Debug;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
 import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Friendship;
 import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
@@ -458,7 +459,7 @@ public class TwitterApiAccess {
 
 	public Relationship getRelationship(long source, long target)
 			throws RelationshipException {
-		Relationship result = null;
+		Friendship result = null;
 		OAuthRequest req = new OAuthRequest(Verb.GET,
 				Constants.URI_FRIENDSHIP_SHOW);
 		req.addQuerystringParameter("source_id", String.valueOf(source));
@@ -468,13 +469,34 @@ public class TwitterApiAccess {
 		Response response = req.send();
 
 		if (response.isSuccessful()) {
-			result = JSON.parseObject(response.getBody(), Relationship.class);
+			result = JSON.parseObject(response.getBody(), Friendship.class);
 		} else {
 			throw new RelationshipException();
 		}
 
-		return result;
+		return result.relationship;
 	}
+	
+	public Relationship getRelationship(String source, String target)
+			throws RelationshipException {
+		Friendship result = null;
+		OAuthRequest req = new OAuthRequest(Verb.GET,
+				Constants.URI_FRIENDSHIP_SHOW);
+		req.addQuerystringParameter("source_screen_name", source);
+		req.addQuerystringParameter("target_screen_name", target);
+
+		service.signRequest(token, req);
+		Response response = req.send();
+
+		if (response.isSuccessful()) {
+			result = JSON.parseObject(response.getBody(), Friendship.class);
+		} else {
+			throw new RelationshipException();
+		}
+
+		return result.relationship;
+	}
+
 
 	public Users getFollowers(long id) throws RelationshipException {
 		return getFollowers(id, -1);
@@ -523,7 +545,7 @@ public class TwitterApiAccess {
 
 		return result;
 	}
-
+	
 	public User getUser(long id) throws UserException {
 		User result = null;
 		OAuthRequest req = new OAuthRequest(Verb.GET, Constants.URI_SINGLE_USER);

@@ -47,7 +47,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/floating_icon_gap"
                     android:text="Small Text"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textSize="@dimen/float_icon" />
 
                 <TextView
                     android:id="@+id/user_url"
@@ -68,7 +69,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/floating_icon_gap"
                     android:text="Small Text"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textSize="@dimen/float_icon" />
 
                 <TextView
                     android:id="@+id/user_location"
@@ -96,7 +98,8 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/floating_icon_gap"
             android:text="Small Text"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="@dimen/float_icon" />
 
         <TextView
             android:id="@+id/user_bio"
@@ -110,7 +113,8 @@
     <LinearLayout
         android:id="@+id/user_action_buttons"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:visibility="visible" >
 
     </LinearLayout>
 
