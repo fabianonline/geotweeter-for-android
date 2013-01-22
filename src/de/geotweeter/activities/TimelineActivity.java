@@ -9,11 +9,13 @@ import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -505,11 +507,21 @@ public class TimelineActivity extends MapActivity {
 	public void onPause() {
 		super.onPause();
 		is_visible = false;
-		for (Account acct : Account.all_accounts) {
-			acct.persistTweets(getApplicationContext());
-		}
+		new PersistTweetsTask().execute(getApplicationContext());
 	}
 
+	private class PersistTweetsTask extends AsyncTask<Context, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Context... params) {
+			for (Account acct : Account.all_accounts) {
+				acct.persistTweets(params[0]);
+			}
+			return null;
+		}
+		
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
