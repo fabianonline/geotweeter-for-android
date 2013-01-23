@@ -101,7 +101,7 @@ public class Account extends Observable implements Serializable {
 	 * @param applicationContext The application context
 	 * @param fetchTimeLine If the account's timeline should be fetched
 	 */
-	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine) {
+	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine, Handler handler) {
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		for (AccessType type : AccessType.values()) {
@@ -110,10 +110,14 @@ public class Account extends Observable implements Serializable {
 		api = new TwitterApiAccess(token);
 		this.token = token;
 		this.user = user;
-		handler = new Handler();
+		if (handler == null) {
+			handler = new Handler();
+		} else {
+			this.handler = handler;
+		}
 		this.elements = elements;
 		this.appContext = applicationContext;
-		stream_request = new StreamRequest(this);
+		stream_request = new StreamRequest(this, handler);
 		dm_conversations = new MessageHashMap(user.id);
 		
 		all_accounts.add(this);
@@ -144,7 +148,7 @@ public class Account extends Observable implements Serializable {
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		api = new TwitterApiAccess(token);
 		handler = new Handler();
-		stream_request = new StreamRequest(this);
+		stream_request = new StreamRequest(this, handler);
 	}
 		
 	/**

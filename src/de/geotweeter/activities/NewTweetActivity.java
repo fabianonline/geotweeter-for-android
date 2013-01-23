@@ -33,6 +33,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -179,7 +180,7 @@ public class NewTweetActivity extends Activity {
 					List<User> auth_users = getAuthUsers();
 					if (auth_users != null) {
 						for (User u : auth_users) {
-							Account acct = createAccount(u);
+							Account acct = createAccount(u, null);
 							if (dm.recipient.id == acct.getUser().id) {
 								TimelineActivity.current_account = acct;
 							}
@@ -200,7 +201,7 @@ public class NewTweetActivity extends Activity {
 						List<User> auth_users = getAuthUsers();
 						if (auth_users != null) {
 							for (User u : auth_users) {
-								Account acct = createAccount(u);
+								Account acct = createAccount(u, null);
 								for (UserMention um : tweet.entities.user_mentions) {
 									if (um.id == acct.getUser().id) {
 										TimelineActivity.current_account = acct;
@@ -748,13 +749,13 @@ public class NewTweetActivity extends Activity {
 		return result;
 	}
 	
-	public Account createAccount(User u) {
+	public Account createAccount(User u, Handler handler) {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this, 
 				   R.layout.timeline_element, 
 				   new ArrayList<TimelineElement>());
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
-			acc = new Account(ta, getUserToken(u), u, getApplicationContext(), false);
+			acc = new Account(ta, getUserToken(u), u, getApplicationContext(), false, handler);
 		}
 		return acc;
 	}

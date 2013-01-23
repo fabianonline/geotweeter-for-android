@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -116,27 +117,6 @@ public class TimelineActivity extends MapActivity {
 
 		timelineListView = (ListView) findViewById(R.id.timeline);
 		registerForContextMenu(timelineListView);
-
-		if (!isRunning) {
-			if (Debug.LOG_TIMELINE_ACTIVITY) {
-				Log.d(LOG, "Create accounts");
-			}
-			List<User> auth_users = getAuthUsers();
-			if (auth_users != null) {
-				for (User u : auth_users) {
-					createAccount(u);
-				}
-			}
-		} else {
-			if (Debug.LOG_TIMELINE_ACTIVITY) {
-				Log.d(LOG, "Refreshing timelines");
-			}
-			for (Account acct : Account.all_accounts) {
-				replaceAdapter(acct);
-				acct.start(true);
-			}
-		}
-
 		timelineListView.setScrollingCacheEnabled(false);
 		timelineListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -148,50 +128,21 @@ public class TimelineActivity extends MapActivity {
 		});
 
 		if (!isRunning) {
-			if (current_account != null) {
-				timelineListView.setAdapter(current_account.getElements());
-				GCMRegistrar.checkDevice(this);
-				GCMRegistrar.checkManifest(this);
-				reg_id = GCMRegistrar.getRegistrationId(this);
-				if (reg_id.equals("")) {
-					GCMRegistrar.register(this,
-							Utils.getProperty("google.gcm.sender.id"));
-				} else {
-					for (Account acct : Account.all_accounts) {
-						acct.registerForGCMMessages();
-					}
-				}
-			} else {
-				Log.d(LOG,
-						"No account authorized. Starting authorization dialog.");
-				Intent addAccountIntent = new Intent(TimelineActivity.this,
-						SettingsAccounts.class);
-				startActivity(addAccountIntent);
+			if (Debug.LOG_TIMELINE_ACTIVITY) {
+				Log.d(LOG, "Create accounts");
 			}
+
+			new GetAccountTask().execute(new Handler());
+
 		} else {
-			timelineListView.setAdapter(current_account.getElements());
-		}
-
-		if (Account.all_accounts.size() > 1) {
-			RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
-			for (Account account : Account.all_accounts) {
-
-				AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(
-						this, account);
-				Geotweeter
-						.getInstance()
-						.getBackgroundImageLoader()
-						.displayImage(account.getUser().getAvatarSource(),
-								rdBtn, true);
-
-				rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(
-						account));
-
-				accountSwitcher.addView(rdBtn);
-				if (account == current_account) {
-					rdBtn.setChecked(true);
-				}
+			if (Debug.LOG_TIMELINE_ACTIVITY) {
+				Log.d(LOG, "Refreshing timelines");
 			}
+			for (Account acct : Account.all_accounts) {
+				replaceAdapter(acct);
+				acct.start(true);
+			}
+			timelineListView.setAdapter(current_account.getElements());
 		}
 
 		isRunning = true;
@@ -519,9 +470,83 @@ public class TimelineActivity extends MapActivity {
 			}
 			return null;
 		}
-		
+
 	}
-	
+
+	private class GetAccountTask extends AsyncTask<Handler, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Handler... params) {
+			List<User> authenticatedUsers = getAuthUsers();
+			if (authenticatedUsers != null) {
+				for (User u : authenticatedUsers) {
+					createAccount(u, params[0]);
+				}
+			}
+
+			if (current_account != null) {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						timelineListView.setAdapter(current_account
+								.getElements());
+					}
+				});
+				GCMRegistrar.checkDevice(TimelineActivity.this);
+				GCMRegistrar.checkManifest(TimelineActivity.this);
+				reg_id = GCMRegistrar.getRegistrationId(TimelineActivity.this);
+				if (reg_id.equals("")) {
+					GCMRegistrar.register(TimelineActivity.this,
+							Utils.getProperty("google.gcm.sender.id"));
+				} else {
+					for (Account acct : Account.all_accounts) {
+						acct.registerForGCMMessages();
+					}
+				}
+			} else {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Log.d(LOG,
+								"No account authorized. Starting authorization dialog.");
+						Intent addAccountIntent = new Intent(
+								TimelineActivity.this, SettingsAccounts.class);
+						startActivity(addAccountIntent);
+					}
+				});
+				return null;
+
+			}
+
+			if (authenticatedUsers.size() > 1) {
+				final RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
+				for (final Account account : Account.all_accounts) {
+
+					final AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(
+							TimelineActivity.this, account);
+					Geotweeter
+							.getInstance()
+							.getBackgroundImageLoader()
+							.displayImage(account.getUser().getAvatarSource(),
+									rdBtn, true);
+
+					rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(
+							account));
+
+					runOnUiThread(new Runnable() {
+						public void run() {
+							accountSwitcher.addView(rdBtn);
+							if (account == current_account) {
+								rdBtn.setChecked(true);
+							}
+						}
+					});
+				}
+			}
+
+			return null;
+		}
+
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -585,18 +610,24 @@ public class TimelineActivity extends MapActivity {
 	 * 
 	 * @param u
 	 *            The user object whose account object should be created
+	 * @param handler
 	 */
-	public void createAccount(User u) {
+	public void createAccount(User u, Handler handler) {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this,
 				R.layout.timeline_element, new ArrayList<TimelineElement>());
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
 			acc = new Account(ta, getUserToken(u), u, getApplicationContext(),
-					true);
+					true, handler);
 		} else {
 			acc.start(true);
 		}
-		addAccount(acc);
+		final Account finalAcc = acc;
+		runOnUiThread(new Runnable() {
+			public void run() {
+				addAccount(finalAcc);
+			}
+		});
 	}
 
 	/**

@@ -27,14 +27,15 @@ public class StreamRequest {
 	
 	private StreamRequestThread thread = new StreamRequestThread();
 	private boolean keepRunning = true;
-	private Handler handler = new Handler();
+	private Handler handler;// = new Handler();
 	private static final String LOG = "StreamRequest";
 	private boolean doRestart = true;
 	
 	protected Account account;
 	
-	public StreamRequest(Account account) {
+	public StreamRequest(Account account, Handler handler) {
 		this.account = account;
+		this.handler = handler;
 		api = new TwitterApiAccess(account.getToken());
 	}
 	

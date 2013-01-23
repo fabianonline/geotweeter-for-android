@@ -152,7 +152,7 @@ public class AuthenticateAccountActivity extends Activity {
 		@Override
 		protected void onPostExecute(User u) {
 			if (u != null) {
-				TimelineActivity.getInstance().createAccount(u);
+				TimelineActivity.getInstance().createAccount(u, null);
 			}
 			self.finish();
 		}
