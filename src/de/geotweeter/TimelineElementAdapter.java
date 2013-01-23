@@ -73,9 +73,13 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	 */
 	public void addAsFirst(TimelineElement t) {
 		if (!available.containsKey(t.getID())) {
-			if (t.olderThan(items.get(0))) {
-				items.add(0, t);
-				Collections.sort(items, new TLEComparator());
+			if (!items.isEmpty()) {
+				if (t.olderThan(items.get(0))) {
+					items.add(0, t);
+					Collections.sort(items, new TLEComparator());
+				} else {
+					items.add(0, t);
+				}
 			} else {
 				items.add(0, t);
 			}

@@ -15,6 +15,7 @@ import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -152,7 +153,7 @@ public class AuthenticateAccountActivity extends Activity {
 		@Override
 		protected void onPostExecute(User u) {
 			if (u != null) {
-				TimelineActivity.getInstance().createAccount(u, null);
+				TimelineActivity.getInstance().createAccount(u, new Handler());
 			}
 			self.finish();
 		}
