@@ -672,6 +672,9 @@ public class TimelineActivity extends MapActivity {
 		} else {
 			acc.start(true);
 		}
+		if (current_account == null) {
+			current_account = acc;
+		}
 		final Account finalAcc = acc;
 		runOnUiThread(new Runnable() {
 			public void run() {
@@ -712,10 +715,6 @@ public class TimelineActivity extends MapActivity {
 	 *            The account to be added
 	 */
 	public void addAccount(Account acc) {
-		if (current_account == null) {
-			current_account = acc;
-			// elements = acc.getElements().getItems();
-		}
 		if (!reg_id.equals("")) {
 			acc.registerForGCMMessages();
 		}
