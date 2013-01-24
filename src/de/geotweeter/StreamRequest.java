@@ -153,7 +153,7 @@ public class StreamRequest {
 							}
 						}
 					} catch (IOException e) {
-						// Connection was killed. If necessary, restart it.
+						// Connection was killed or corrupted. Restarting stream.
 					}
 					Log.d(LOG, "Stream beendet");
 				}
@@ -184,8 +184,9 @@ public class StreamRequest {
 		/**
 		 * Processes the stream's buffer (as in
 		 * "looks for seperate JSON objects and parses them").
+		 * @throws IOException 
 		 */
-		public void processBuffer() {
+		public void processBuffer() throws IOException {
 			Matcher m;
 			while ((m = part_finder_pattern.matcher(buffer)) != null
 					&& m.find()) {
@@ -199,9 +200,9 @@ public class StreamRequest {
 						account.addTweet(Utils.jsonToNativeObject(text
 								.substring(0, bytes)));
 					} catch (UnknownJSONObjectException ex) {
-						// Ignore it.
+						throw new IOException();
 					} catch (JSONException ex) {
-						// Ignore it.
+						throw new IOException();
 					}
 				} else {
 					return;
