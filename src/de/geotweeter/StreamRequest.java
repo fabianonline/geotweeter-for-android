@@ -102,7 +102,7 @@ public class StreamRequest {
 						Log.d("StreamCheckDataTimeoutTask", "Running. " + (System.currentTimeMillis() - lastDataReceivedAt));
 					}
 					if (lastDataReceivedAt > 0 && (System.currentTimeMillis() - lastDataReceivedAt) > 600000) {
-						// We didn't get a single tweet for more than 10 minutes -> reconnect.
+						// We didn't get anything for more than 10 minutes -> reconnect.
 						try {
 							stream.close();
 						} catch (IOException e) {}
@@ -130,6 +130,7 @@ public class StreamRequest {
 					Log.d(LOG, "Waiting for first data.");
 					try {
 						while (reader.read(ch) > 0) {
+							reconnectDelay = 10000;
 							if (!keepRunning) {
 								return;
 							} 
@@ -156,6 +157,7 @@ public class StreamRequest {
 				/* Shouldn't happen as we don't interrupt this thread */
 			}
 			reconnectDelay *= 1.5;
+			reconnectDelay = Math.min(reconnectDelay, 300000);
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
