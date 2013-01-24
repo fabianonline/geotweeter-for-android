@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
-    <ImageView
+    <de.geotweeter.AsyncImageView
         android:id="@+id/ivAccountAvatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -7,20 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
  * Provides the View for the authenticated accounts list
  * 
  * @author Lutz Krumme (@el_emka)
- *
+ * 
  */
 public class AccountListElementAdapter extends ArrayAdapter<Account> {
 
 	private List<Account> items;
 	private Context context;
-	
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -34,37 +33,45 @@ public class AccountListElementAdapter extends ArrayAdapter<Account> {
 		this.items = objects;
 		this.context = context;
 	}
-	
+
 	/**
 	 * Provides the UI thread with a view of a certain array position
 	 * 
-	 * @param position The element index whose view should be built
-	 * @param convertView The view object to be designed, will be constructed if null
+	 * @param position
+	 *            The element index whose view should be built
+	 * @param convertView
+	 *            The view object to be designed, will be constructed if null
 	 * @param parent
 	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
-		
+
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.account_list_element, null);
 		}
-		
-//		UserElement listElement = (UserElement)items.get(position);
-		Account listElement = (Account)items.get(position);
-		
+
+		// UserElement listElement = (UserElement)items.get(position);
+		Account listElement = (Account) items.get(position);
+
 		if (listElement != null) {
-			TextView tvScreenName = (TextView) v.findViewById(R.id.tvScreenName);
+			TextView tvScreenName = (TextView) v
+					.findViewById(R.id.tvScreenName);
 			if (tvScreenName != null) {
 				tvScreenName.setText(listElement.getUser().getScreenName());
 			}
-			ImageView ivAvatar = (ImageView) v.findViewById(R.id.ivAccountAvatar);
+			AsyncImageView ivAvatar = (AsyncImageView) v
+					.findViewById(R.id.ivAccountAvatar);
 			if (ivAvatar != null) {
-				Geotweeter.getInstance().getBackgroundImageLoader().displayImage(listElement.getUser().getAvatarSource(), ivAvatar, true);
+				Geotweeter
+						.getInstance()
+						.getBackgroundImageLoader()
+						.displayImage(listElement.getUser().getAvatarSource(),
+								ivAvatar, true);
 			}
 		}
-		
-		
+
 		return v;
 	}
 
