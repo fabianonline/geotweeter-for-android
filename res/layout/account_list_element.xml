@@ -7,8 +7,8 @@
 
     <de.geotweeter.AsyncImageView
         android:id="@+id/ivAccountAvatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:src="@drawable/ic_launcher" />
 
     <LinearLayout
@@ -31,7 +31,6 @@
             android:text="@string/tap_for_settings"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#808080" />
-
     </LinearLayout>
 
 </LinearLayout>
