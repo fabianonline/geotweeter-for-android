@@ -51,6 +51,7 @@ import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.apiconn.twitter.DirectMessage;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
+import de.geotweeter.exceptions.BadConnectionException;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.widgets.AccountSwitcherMessage;
@@ -291,7 +292,7 @@ public class Account extends Observable implements Serializable {
 			} catch (OAuthException e) {
 				result.e = e;
 				return result;
-			} catch (IllegalStateException e) {
+			} catch (BadConnectionException e) {
 				result.e = e;
 				return result;
 			}

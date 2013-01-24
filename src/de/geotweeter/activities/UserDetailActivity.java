@@ -1,8 +1,10 @@
 package de.geotweeter.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -25,17 +27,21 @@ import de.geotweeter.Utils;
 import de.geotweeter.apiconn.UserException;
 import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.User;
+import de.geotweeter.exceptions.BadConnectionException;
 import de.geotweeter.exceptions.RelationshipException;
 
 public class UserDetailActivity extends Activity {
 
 	private final String LOG = "UserDetailActivity";
+	private BadConnectionException bce = null;
+	private String userName = "";
 
 	private String url = "";
 	private LayoutInflater inflater;
 	private Typeface tf;
 	private int tasksRunning = 0;
 	private ProgressDialog progressDialog;
+	private AlertDialog connectionDlg;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,14 +51,19 @@ public class UserDetailActivity extends Activity {
 
 		setContentView(R.layout.user_detail);
 
-		String userName = (String) getIntent().getSerializableExtra("user");
+		userName = (String) getIntent().getSerializableExtra("user");
 
 		inflater = (LayoutInflater) this
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		tf = Typeface.createFromAsset(this.getAssets(), "fonts/Entypo.otf");
-		
-		new getUserDetailsTask().execute(userName);
-		new getUserRelationShipTask().execute(userName);
+
+		startRequestTasks();
+	}
+
+	private void startRequestTasks() {
+		bce = null;
+		new getUserDetailsTask().execute();
+		new getUserRelationShipTask().execute();
 	}
 
 	private void createButton(LinearLayout buttons, final ActionType type) {
@@ -126,25 +137,27 @@ public class UserDetailActivity extends Activity {
 		return true;
 	}
 
-	public class getUserDetailsTask extends AsyncTask<String, Boolean, User> {
+	public class getUserDetailsTask extends AsyncTask<Void, Boolean, User> {
 
 		protected void onPreExecute() {
 			tasksRunning++;
-			if (progressDialog == null) {
+			if (progressDialog == null || progressDialog.isShowing()) {
 				progressDialog = ProgressDialog.show(UserDetailActivity.this,
 						"", "Daten werden geladen...");
 			}
 		}
 
 		@Override
-		protected User doInBackground(String... params) {
+		protected User doInBackground(Void... params) {
 			User user = null;
 			try {
 				user = TimelineActivity.current_account.getApi().getUser(
-						params[0]);
+						userName);
 			} catch (UserException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (BadConnectionException e) {
+				bce = e;
 			}
 			return user;
 		}
@@ -153,6 +166,10 @@ public class UserDetailActivity extends Activity {
 			tasksRunning--;
 			if (tasksRunning == 0) {
 				progressDialog.dismiss();
+				if (bce != null) {
+					showBadConnectionDlg();
+					return;
+				}
 			}
 			showUserDetails(result);
 		}
@@ -160,28 +177,30 @@ public class UserDetailActivity extends Activity {
 	}
 
 	public class getUserRelationShipTask extends
-			AsyncTask<String, Boolean, Relationship> {
+			AsyncTask<Void, Boolean, Relationship> {
 
 		protected void onPreExecute() {
 			tasksRunning++;
-			if (progressDialog == null) {
+			if (progressDialog == null || progressDialog.isShowing()) {
 				progressDialog = ProgressDialog.show(UserDetailActivity.this,
 						"", "Daten werden geladen...");
 			}
 		}
 
 		@Override
-		protected Relationship doInBackground(String... params) {
+		protected Relationship doInBackground(Void... params) {
 			Relationship relationship = null;
 			try {
 				relationship = TimelineActivity.current_account
 						.getApi()
 						.getRelationship(
 								TimelineActivity.current_account.getUser().screen_name,
-								params[0]);
+								userName);
 			} catch (RelationshipException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (BadConnectionException e) {
+				bce = e;
 			}
 			return relationship;
 		}
@@ -190,6 +209,10 @@ public class UserDetailActivity extends Activity {
 			tasksRunning--;
 			if (tasksRunning == 0) {
 				progressDialog.dismiss();
+				if (bce != null) {
+					showBadConnectionDlg();
+					return;
+				}
 			}
 			showActionButtons(relationship);
 		}
@@ -241,6 +264,38 @@ public class UserDetailActivity extends Activity {
 			description.setText(user.description);
 			descriptionIcon.setVisibility(View.VISIBLE);
 			description.setVisibility(View.VISIBLE);
+		}
+	}
+
+	public void showBadConnectionDlg() {
+		
+		connectionDlg = new AlertDialog.Builder(this)
+				.setMessage(R.string.error_connection_retry_dlg)
+				.setPositiveButton(R.string.yes,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								startRequestTasks();
+							}
+						})
+				.setNegativeButton(R.string.no,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								finish();
+							}
+						}).show();
+
+	}
+	
+	public void onPause() {
+		super.onPause();
+		if (progressDialog != null) {
+			progressDialog.dismiss();
 		}
 	}
 

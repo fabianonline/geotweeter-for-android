@@ -36,6 +36,7 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.android.maps.GeoPoint;
@@ -59,6 +60,7 @@ import de.geotweeter.apiconn.twitter.Media;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.Url;
 import de.geotweeter.apiconn.twitter.User;
+import de.geotweeter.exceptions.BadConnectionException;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.RetweetException;
@@ -957,6 +959,11 @@ public class TimelineActivity extends MapActivity {
 										} catch (UnsupportedEncodingException e) {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
+										} catch (BadConnectionException e) {
+											Toast.makeText(TimelineActivity.this,
+													R.string.error_connection_action,
+													Toast.LENGTH_SHORT).show();
+											return;
 										}
 										runOnUiThread(new Runnable() {
 
@@ -992,6 +999,11 @@ public class TimelineActivity extends MapActivity {
 				} catch (OAuthException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (BadConnectionException e) {
+					Toast.makeText(TimelineActivity.this,
+							R.string.error_connection_action,
+							Toast.LENGTH_SHORT).show();
+					return;
 				}
 				try {
 					favedTle = current_account.getApi().getTweet(tle.getID());
@@ -999,6 +1011,9 @@ public class TimelineActivity extends MapActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (TweetAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadConnectionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -1036,6 +1051,11 @@ public class TimelineActivity extends MapActivity {
 				} catch (OAuthException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (BadConnectionException e) {
+					Toast.makeText(TimelineActivity.this,
+							R.string.error_connection_action,
+							Toast.LENGTH_SHORT).show();
+					return;
 				}
 				try {
 					defavedTle = current_account.getApi().getTweet(tle.getID());
@@ -1043,6 +1063,9 @@ public class TimelineActivity extends MapActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (TweetAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadConnectionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -1089,6 +1112,11 @@ public class TimelineActivity extends MapActivity {
 										} catch (RetweetException e) {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
+										} catch (BadConnectionException e) {
+											Toast.makeText(TimelineActivity.this,
+													R.string.error_connection_action,
+													Toast.LENGTH_SHORT).show();
+											return;
 										}
 									}
 								}).start();
