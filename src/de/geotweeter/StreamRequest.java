@@ -22,23 +22,23 @@ import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
 
 public class StreamRequest {
-	
+
 	private transient TwitterApiAccess api;
-	
+
 	private StreamRequestThread thread = new StreamRequestThread();
 	private boolean keepRunning = true;
 	private Handler handler;// = new Handler();
 	private static final String LOG = "StreamRequest";
 	private boolean doRestart = true;
-	
+
 	protected Account account;
-	
+
 	public StreamRequest(Account account, Handler handler) {
 		this.account = account;
 		this.handler = handler;
 		api = new TwitterApiAccess(account.getToken());
 	}
-	
+
 	public void start() {
 		if (doRestart) {
 			keepRunning = true;
@@ -47,11 +47,11 @@ public class StreamRequest {
 			Log.d(LOG, "start() called but doRestart is false.");
 		}
 	}
-	
+
 	public void stop(boolean restart) {
 		keepRunning = false;
 		this.doRestart = restart;
-		
+
 		try {
 			if (thread != null && thread.stream != null) {
 				thread.stream.close();
@@ -64,17 +64,18 @@ public class StreamRequest {
 			thread.timer.cancel();
 		}
 	}
-	
+
 	private class StreamRequestThread implements Runnable {
 		private static final String LOG = "StreamRequestThread";
-		private final Pattern part_finder_pattern = Pattern.compile("([0-9]+)([\n\r]+.+)$", Pattern.DOTALL);
+		private final Pattern part_finder_pattern = Pattern.compile(
+				"([0-9]+)([\n\r]+.+)$", Pattern.DOTALL);
 		public InputStream stream;
 		String buffer = "";
 		private long lastNewlineReceivedAt = 0;
 		private long lastDataReceivedAt = 0;
 		private Timer timer = null;
 		private long reconnectDelay = 10000;
-		
+
 		public void run() {
 			if (timer != null) {
 				timer.cancel();
@@ -84,40 +85,51 @@ public class StreamRequest {
 				@Override
 				public void run() {
 					if (Debug.LOG_STREAM_CHECKS) {
-						Log.d("StreamCheckNewlineTimeoutTask", "Running. " + (System.currentTimeMillis() - lastNewlineReceivedAt));
+						Log.d("StreamCheckNewlineTimeoutTask",
+								"Running. "
+										+ (System.currentTimeMillis() - lastNewlineReceivedAt));
 					}
-					if (lastNewlineReceivedAt > 0 && (System.currentTimeMillis() - lastNewlineReceivedAt) > 40000) {
-						// We should get a newline every 30 seconds. If that didn't happen -> reconnect.
+					if (lastNewlineReceivedAt > 0
+							&& (System.currentTimeMillis() - lastNewlineReceivedAt) > 40000) {
+						// We should get a newline every 30 seconds. If that
+						// didn't happen -> reconnect.
 						try {
 							stream.close();
-						} catch (IOException e) {}
+						} catch (IOException e) {
+						}
 					}
 				}
 			}, 0, 15000);
-			
+
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
 					if (Debug.LOG_STREAM_CHECKS) {
-						Log.d("StreamCheckDataTimeoutTask", "Running. " + (System.currentTimeMillis() - lastDataReceivedAt));
+						Log.d("StreamCheckDataTimeoutTask",
+								"Running. "
+										+ (System.currentTimeMillis() - lastDataReceivedAt));
 					}
-					if (lastDataReceivedAt > 0 && (System.currentTimeMillis() - lastDataReceivedAt) > 600000) {
-						// We didn't get anything for more than 10 minutes -> reconnect.
+					if (lastDataReceivedAt > 0
+							&& (System.currentTimeMillis() - lastDataReceivedAt) > 600000) {
+						// We didn't get anything for more than 10 minutes ->
+						// reconnect.
 						try {
 							stream.close();
-						} catch (IOException e) {}
+						} catch (IOException e) {
+						}
 					}
 				}
 			}, 0, 60000);
-			
+
 			startRequest();
 		}
-		
+
 		public void startRequest() {
 			Log.d(LOG, "Starting Stream.");
 			buffer = "";
 			char ch[] = new char[1];
-			OAuthRequest request = new OAuthRequest(Verb.GET, Constants.URI_USER_STREAM);
+			OAuthRequest request = new OAuthRequest(Verb.GET,
+					Constants.URI_USER_STREAM);
 			request.addQuerystringParameter("delimited", "length");
 			api.signRequest(request);
 			try {
@@ -133,24 +145,27 @@ public class StreamRequest {
 							reconnectDelay = 10000;
 							if (!keepRunning) {
 								return;
-							} 
+							}
 							lastNewlineReceivedAt = System.currentTimeMillis();
 							buffer += ch[0];
-							if (ch[0]=='\n' || ch[0]=='\r') {
+							if (ch[0] == '\n' || ch[0] == '\r') {
 								processBuffer();
 							}
 						}
 					} catch (IOException e) {
-						// TODO: Connection was killed. If necessary, restart it.
+						// Connection was killed. If necessary, restart it.
 					}
 					Log.d(LOG, "Stream beendet");
 				}
 			} catch (OAuthException e) {
-				Log.d(LOG, "No API access. Network may be down. Retrying. Message: " + e.getMessage(), e);
+				Log.d(LOG,
+						"No API access. Network may be down. Retrying. Message: "
+								+ e.getMessage(), e);
 			}
 			lastDataReceivedAt = 0;
 			lastNewlineReceivedAt = 0;
-			Log.d(LOG, "Delaying stream reconnection by " + reconnectDelay + "ms...");
+			Log.d(LOG, "Delaying stream reconnection by " + reconnectDelay
+					+ "ms...");
 			try {
 				Thread.sleep(reconnectDelay);
 			} catch (InterruptedException e) {
@@ -165,13 +180,15 @@ public class StreamRequest {
 				}
 			});
 		}
-		
+
 		/**
-		 * Processes the stream's buffer (as in "looks for seperate JSON objects and parses them").
+		 * Processes the stream's buffer (as in
+		 * "looks for seperate JSON objects and parses them").
 		 */
 		public void processBuffer() {
 			Matcher m;
-			while ((m = part_finder_pattern.matcher(buffer))!=null && m.find()) {
+			while ((m = part_finder_pattern.matcher(buffer)) != null
+					&& m.find()) {
 				lastDataReceivedAt = System.currentTimeMillis();
 				reconnectDelay = 10000;
 				String text = m.group(2);
@@ -179,7 +196,8 @@ public class StreamRequest {
 				if (text.length() >= bytes) {
 					buffer = text.substring(bytes);
 					try {
-						account.addTweet(Utils.jsonToNativeObject(text.substring(0, bytes)));
+						account.addTweet(Utils.jsonToNativeObject(text
+								.substring(0, bytes)));
 					} catch (UnknownJSONObjectException ex) {
 						// Ignore it.
 					} catch (JSONException ex) {
@@ -190,6 +208,6 @@ public class StreamRequest {
 				}
 			}
 		}
-		
+
 	}
 }
