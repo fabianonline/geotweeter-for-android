@@ -53,18 +53,19 @@ import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
+import de.geotweeter.widgets.AccountSwitcherMessage;
 import de.geotweeter.widgets.AccountSwitcherRadioButton;
 
 public class Account extends Observable implements Serializable {
-	
+
 	private static final long serialVersionUID = -3681363869066996199L;
-	
+
 	protected final static Object lock_object = new Object();
 	protected final String LOG = "Account";
-	
+
 	public static List<Account> all_accounts = new ArrayList<Account>();
 	private transient int tasksRunning = 0;
-	
+
 	protected transient ArrayList<TimelineElement> mainTimeline;
 	protected transient List<ArrayList<TimelineElement>> apiResponses;
 
@@ -86,22 +87,29 @@ public class Account extends Observable implements Serializable {
 	private MessageHashMap dm_conversations;
 	private Map<AccessType, Boolean> accessSuccessful = new HashMap<AccessType, Boolean>();
 
-	private transient ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
-	
+	private transient ThreadPoolExecutor exec = new ThreadPoolExecutor(4, 8, 0,
+			TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
+
 	private enum AccessType {
 		TIMELINE, MENTIONS, DM_RCVD, DM_SENT
 	}
-	
+
 	/**
 	 * Creates an account object
 	 * 
-	 * @param elements The target container for the account's timeline elements
-	 * @param token The user's access token
-	 * @param user The user object
-	 * @param applicationContext The application context
-	 * @param fetchTimeLine If the account's timeline should be fetched
+	 * @param elements
+	 *            The target container for the account's timeline elements
+	 * @param token
+	 *            The user's access token
+	 * @param user
+	 *            The user object
+	 * @param applicationContext
+	 *            The application context
+	 * @param fetchTimeLine
+	 *            If the account's timeline should be fetched
 	 */
-	public Account(TimelineElementAdapter elements, Token token, User user, Context applicationContext, boolean fetchTimeLine, Handler handler) {
+	public Account(TimelineElementAdapter elements, Token token, User user,
+			Context applicationContext, boolean fetchTimeLine, Handler handler) {
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
 		for (AccessType type : AccessType.values()) {
@@ -119,12 +127,12 @@ public class Account extends Observable implements Serializable {
 		this.appContext = applicationContext;
 		stream_request = new StreamRequest(this, handler);
 		dm_conversations = new MessageHashMap(user.id);
-		
+
 		all_accounts.add(this);
-		
+
 		timeline_stack = new Stack<TimelineElementAdapter>();
 		timeline_stack.push(elements);
-		
+
 		if (fetchTimeLine) {
 			if (Debug.LOG_ACCOUNT) {
 				Log.d(LOG, "Fetch timelines from API for " + user.screen_name);
@@ -132,7 +140,7 @@ public class Account extends Observable implements Serializable {
 			start(true);
 		}
 	}
-	
+
 	/**
 	 * Provides access to all available direct message conversations
 	 * 
@@ -142,7 +150,8 @@ public class Account extends Observable implements Serializable {
 		return dm_conversations;
 	}
 
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream in) throws IOException,
+			ClassNotFoundException {
 		in.defaultReadObject();
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
@@ -150,7 +159,7 @@ public class Account extends Observable implements Serializable {
 		handler = new Handler();
 		stream_request = new StreamRequest(this, handler);
 	}
-		
+
 	/**
 	 * Setter for the application context
 	 * 
@@ -175,7 +184,8 @@ public class Account extends Observable implements Serializable {
 			loadPersistedTweets(appContext);
 		}
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
-			Log.d(LOG, "TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
+			Log.d(LOG,
+					"TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				refreshTimeline();
@@ -185,7 +195,7 @@ public class Account extends Observable implements Serializable {
 		}
 		getMaxReadIDs();
 	}
-		
+
 	/**
 	 * Stops the stream access
 	 */
@@ -200,7 +210,8 @@ public class Account extends Observable implements Serializable {
 	private void refreshTimeline() {
 		if (tasksRunning == 0) {
 			setChanged();
-			notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_START);
+			notifyObservers(new AccountSwitcherMessage(
+					AccountSwitcherRadioButton.Message.REFRESH_START, -1));
 		}
 		if (exec.getQueue().remainingCapacity() == 0) {
 			/* API calls are running, so there shouldn't be need for another one */
@@ -222,7 +233,8 @@ public class Account extends Observable implements Serializable {
 	private void refreshTimelinePreAPI11() {
 		if (tasksRunning == 0) {
 			setChanged();
-			notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_START);
+			notifyObservers(new AccountSwitcherMessage(
+					AccountSwitcherRadioButton.Message.REFRESH_START, -1));
 		}
 		for (AccessType type : AccessType.values()) {
 			accessSuccessful.put(type, true);
@@ -241,15 +253,16 @@ public class Account extends Observable implements Serializable {
 		public Exception e;
 		public ArrayList<TimelineElement> elements;
 	}
-	
+
 	/**
 	 * AsyncTask which handles any timeline API access tasks
 	 */
-	private class TimelineRefreshTask extends AsyncTask<AccessType, Void, TimelineRefreshResult> {
-	
+	private class TimelineRefreshTask extends
+			AsyncTask<AccessType, Void, TimelineRefreshResult> {
+
 		private AccessType accessType;
 		private long startTime;
-		
+
 		@Override
 		protected TimelineRefreshResult doInBackground(AccessType... params) {
 			accessType = params[0];
@@ -257,9 +270,10 @@ public class Account extends Observable implements Serializable {
 			TimelineRefreshResult result = new TimelineRefreshResult();
 			try {
 				switch (accessType) {
-				case TIMELINE: 
+				case TIMELINE:
 					Log.d(LOG, "Get home timeline");
-					result.elements = api.getHomeTimeline(max_known_tweet_id, 0);
+					result.elements = api
+							.getHomeTimeline(max_known_tweet_id, 0);
 					return result;
 				case MENTIONS:
 					Log.d(LOG, "Get mentions");
@@ -283,7 +297,7 @@ public class Account extends Observable implements Serializable {
 			}
 			return null;
 		}
-		
+
 		@SuppressWarnings("unused")
 		/**
 		 * Handles the API responses
@@ -292,13 +306,15 @@ public class Account extends Observable implements Serializable {
 		 */
 		protected void onPostExecute(TimelineRefreshResult result) {
 			tasksRunning--;
-			
+
 			if (result.e != null) {
 				if (accessSuccessful.get(accessType)) {
-					Log.d(LOG, "Get " + accessType.toString() + " failed. Retrying in 10 seconds");
-					Toast.makeText(appContext, R.string.error_api_access_retry, Toast.LENGTH_SHORT).show();
+					Log.d(LOG, "Get " + accessType.toString()
+							+ " failed. Retrying in 10 seconds");
+					Toast.makeText(appContext, R.string.error_api_access_retry,
+							Toast.LENGTH_SHORT).show();
 					handler.postDelayed(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							accessSuccessful.put(accessType, false);
@@ -306,29 +322,35 @@ public class Account extends Observable implements Serializable {
 							new TimelineRefreshTask().execute(accessType);
 						}
 					}, 10000);
-				return;
+					return;
 				} else {
-					Log.d(LOG, "Recurring error in " + accessType.toString() + " access. Not Retrying");
-					Toast.makeText(appContext, R.string.error_api_access_recurring, Toast.LENGTH_SHORT).show();
+					Log.d(LOG, "Recurring error in " + accessType.toString()
+							+ " access. Not Retrying");
+					Toast.makeText(appContext,
+							R.string.error_api_access_recurring,
+							Toast.LENGTH_SHORT).show();
 					return;
 				}
 			}
-			
+
 			accessSuccessful.put(accessType, true);
-			
-			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: " + String.valueOf(System.currentTimeMillis() - startTime) + "ms");
+
+			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: "
+					+ String.valueOf(System.currentTimeMillis() - startTime)
+					+ "ms");
 
 			if (accessType == AccessType.TIMELINE) {
 				mainTimeline.addAll(result.elements);
 			} else {
 				apiResponses.add(result.elements);
 			}
-			
-			if (accessType == AccessType.DM_RCVD || accessType == AccessType.DM_SENT) {
+
+			if (accessType == AccessType.DM_RCVD
+					|| accessType == AccessType.DM_SENT) {
 				dm_conversations.addMessages(result.elements);
 			}
-			
-			if (tasksRunning == 0) { 
+
+			if (tasksRunning == 0) {
 				if (mainTimeline == null) {
 					mainTimeline = new ArrayList<TimelineElement>();
 				}
@@ -336,28 +358,33 @@ public class Account extends Observable implements Serializable {
 					apiResponses.add(0, mainTimeline);
 				}
 				parseData(apiResponses, false);
-				
+
 				if (Debug.ENABLED && Debug.SKIP_START_STREAM) {
-					Log.d(LOG, "Not starting stream - Debug.SKIP_START_STREAM is true.");
+					Log.d(LOG,
+							"Not starting stream - Debug.SKIP_START_STREAM is true.");
 				} else {
 					stream_request.start();
 				}
-				
+
 				setChanged();
-				notifyObservers(AccountSwitcherRadioButton.Message.REFRESH_FINISHED);
+				notifyObservers(new AccountSwitcherMessage(
+						AccountSwitcherRadioButton.Message.REFRESH_FINISHED,
+						getUnreadTweetsSize()));
 			}
 
 		}
-		
+
 	}
-		
+
 	/**
 	 * Puts the API responses in the visible timeline and removes duplicates
 	 * 
-	 * @param apiResponses2 The API responses
+	 * @param apiResponses2
+	 *            The API responses
 	 * @param do_clip
 	 */
-	protected void parseData(List<ArrayList<TimelineElement>> apiResponses2, boolean do_clip) {
+	protected void parseData(List<ArrayList<TimelineElement>> apiResponses2,
+			boolean do_clip) {
 		final long old_max_known_dm_id = max_known_dm_id;
 		Log.d(LOG, "parseData started.");
 		final List<TimelineElement> all_elements = new ArrayList<TimelineElement>();
@@ -372,19 +399,24 @@ public class Account extends Observable implements Serializable {
 			TimelineElement element = list.get(0);
 
 			if (element instanceof DirectMessage) {
-				max_known_dm_id = Math.max(max_known_dm_id, ((DirectMessage) element).id);
+				max_known_dm_id = Math.max(max_known_dm_id,
+						((DirectMessage) element).id);
 			} else if (element instanceof Tweet) {
-				max_known_tweet_id = Math.max(max_known_tweet_id, ((Tweet) element).id);
+				max_known_tweet_id = Math.max(max_known_tweet_id,
+						((Tweet) element).id);
 			}
 			element = list.get(list.size() - 1);
 			if (element instanceof DirectMessage) {
-				min_known_dm_id = Math.min(min_known_dm_id, ((DirectMessage) element).id);
+				min_known_dm_id = Math.min(min_known_dm_id,
+						((DirectMessage) element).id);
 			} else if (element instanceof Tweet) {
-				min_known_tweet_id = Math.min(min_known_tweet_id, ((Tweet) element).id);
+				min_known_tweet_id = Math.min(min_known_tweet_id,
+						((Tweet) element).id);
 			}
 			for (TimelineElement tle : list) {
 				if (TimelineActivity.availableTweets != null) {
-					if (!TimelineActivity.availableTweets.containsKey(tle.getID())) {
+					if (!TimelineActivity.availableTweets.containsKey(tle
+							.getID())) {
 						if (tle.getClass() == DirectMessage.class) {
 							if (tle.getID() > old_max_known_dm_id) {
 								all_elements.add(tle);
@@ -393,7 +425,7 @@ public class Account extends Observable implements Serializable {
 							all_elements.add(tle);
 						}
 					}
-				} else { 
+				} else {
 					/* Shouldn't actually happen... */
 					if (tle.getClass() == DirectMessage.class) {
 						if (tle.getID() > old_max_known_dm_id) {
@@ -401,19 +433,22 @@ public class Account extends Observable implements Serializable {
 						}
 					} else {
 						all_elements.add(tle);
-					}					
+					}
 				}
 			}
 		}
 		Collections.sort(all_elements, new TLEComparator());
-				
-		Log.d(LOG, "parseData is almost done. " + all_elements.size() + " elements.");
+
+		Log.d(LOG, "parseData is almost done. " + all_elements.size()
+				+ " elements.");
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				elements.addAllAsFirst(all_elements);
 				setChanged();
-				notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+				notifyObservers(new AccountSwitcherMessage(
+						AccountSwitcherRadioButton.Message.UNREAD,
+						getUnreadTweetsSize()));
 			}
 		});
 	}
@@ -421,30 +456,33 @@ public class Account extends Observable implements Serializable {
 	/**
 	 * Adds a timeline element to the timeline
 	 * 
-	 * @param elm Timeline element to be added
+	 * @param elm
+	 *            Timeline element to be added
 	 */
 	public void addTweet(final TimelineElement elm) {
 		Log.d(LOG, "Adding Tweet.");
 		if (elm instanceof DirectMessage) {
 			dm_conversations.addMessage((DirectMessage) elm);
-//			if (elm.getID() > max_known_dm_id) {
-//				max_known_dm_id = elm.getID();
-//			}
-//		} else if (elm instanceof Tweet) {
-//			if (elm.getID() > max_known_tweet_id) {
-//				max_known_tweet_id = elm.getID();
-//			}
+			// if (elm.getID() > max_known_dm_id) {
+			// max_known_dm_id = elm.getID();
+			// }
+			// } else if (elm instanceof Tweet) {
+			// if (elm.getID() > max_known_tweet_id) {
+			// max_known_tweet_id = elm.getID();
+			// }
 		}
-		//elements.add(tweet);
+		// elements.add(tweet);
 		handler.post(new Runnable() {
 			public void run() {
 				elements.addAsFirst(elm);
 				setChanged();
-				notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+				notifyObservers(new AccountSwitcherMessage(
+						AccountSwitcherRadioButton.Message.UNREAD,
+						getUnreadTweetsSize()));
 			}
 		});
 	}
-	
+
 	/**
 	 * Removes a timeline element after deletion
 	 * 
@@ -453,27 +491,31 @@ public class Account extends Observable implements Serializable {
 	public void remove(final TimelineElement tle) {
 		Log.d(LOG, "Removing Tweet.");
 		handler.post(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				elements.remove(tle);
 				setChanged();
-				notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+				notifyObservers(new AccountSwitcherMessage(
+						AccountSwitcherRadioButton.Message.UNREAD,
+						getUnreadTweetsSize()));
 			}
 		});
-		
+
 	}
 
 	public void refresh(final TimelineElement tle, final TimelineElement newTle) {
 		Log.d(LOG, "Refreshing Tweet.");
 		handler.post(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if (newTle != null) {
 					elements.replace(tle, newTle);
 					setChanged();
-					notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+					notifyObservers(new AccountSwitcherMessage(
+							AccountSwitcherRadioButton.Message.UNREAD,
+							getUnreadTweetsSize()));
 				}
 			}
 		});
@@ -487,27 +529,38 @@ public class Account extends Observable implements Serializable {
 		new Thread(new Runnable() {
 			public void run() {
 				HttpClient http_client = new CacertHttpClient(appContext);
-				HttpPost http_post = new HttpPost(Utils.getProperty("google.gcm.server.url") + "/register");
+				HttpPost http_post = new HttpPost(
+						Utils.getProperty("google.gcm.server.url")
+								+ "/register");
 				try {
-					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(5);
-					name_value_pair.add(new BasicNameValuePair("reg_id", TimelineActivity.reg_id));
-					name_value_pair.add(new BasicNameValuePair("token", getToken().getToken()));
-					name_value_pair.add(new BasicNameValuePair("secret", getToken().getSecret()));
-					name_value_pair.add(new BasicNameValuePair("screen_name", getUser().getScreenName()));
-					name_value_pair.add(new BasicNameValuePair("protocol_version", "1"));
-					http_post.setEntity(new UrlEncodedFormEntity(name_value_pair));
+					List<NameValuePair> name_value_pair = new ArrayList<NameValuePair>(
+							5);
+					name_value_pair.add(new BasicNameValuePair("reg_id",
+							TimelineActivity.reg_id));
+					name_value_pair.add(new BasicNameValuePair("token",
+							getToken().getToken()));
+					name_value_pair.add(new BasicNameValuePair("secret",
+							getToken().getSecret()));
+					name_value_pair.add(new BasicNameValuePair("screen_name",
+							getUser().getScreenName()));
+					name_value_pair.add(new BasicNameValuePair(
+							"protocol_version", "1"));
+					http_post.setEntity(new UrlEncodedFormEntity(
+							name_value_pair));
 					http_client.execute(http_post);
-				} catch(ClientProtocolException e) {
+				} catch (ClientProtocolException e) {
 					e.printStackTrace();
-				} catch(SSLPeerUnverifiedException e) {
-					Log.e(LOG, "Couldn't register account at GCM-server. Maybe you forgot to install CAcert's certificate? Message: " + e.getMessage(), e);
-				} catch(IOException e) {
+				} catch (SSLPeerUnverifiedException e) {
+					Log.e(LOG,
+							"Couldn't register account at GCM-server. Maybe you forgot to install CAcert's certificate? Message: "
+									+ e.getMessage(), e);
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}, "register").start();
 	}
-	
+
 	/**
 	 * Gets the last read tweet ID from tweetmarker
 	 */
@@ -516,52 +569,66 @@ public class Account extends Observable implements Serializable {
 			@Override
 			public void run() {
 				OAuthRequest oauth_request = api.getVerifiedCredentials();
-								
+
 				try {
 					HttpClient http_client = new DefaultHttpClient();
-					HttpGet http_get = new HttpGet(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
-					http_get.addHeader("X-Auth-Service-Provider", Constants.URI_VERIFY_CREDENTIALS);
-					http_get.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
+					HttpGet http_get = new HttpGet(
+							Constants.URI_TWEETMARKER_LASTREAD
+									+ user.getScreenName() + "&api_key="
+									+ Utils.getProperty("tweetmarker.key"));
+					http_get.addHeader("X-Auth-Service-Provider",
+							Constants.URI_VERIFY_CREDENTIALS);
+					http_get.addHeader("X-Verify-Credentials-Authorization",
+							oauth_request.getHeaders().get("Authorization"));
 					HttpResponse response = http_client.execute(http_get);
 					if (response.getEntity() == null) {
 						return;
 					}
-					String[] parts = EntityUtils.toString(response.getEntity()).split(",");
+					String[] parts = EntityUtils.toString(response.getEntity())
+							.split(",");
 					try {
 						max_read_tweet_id = Long.parseLong(parts[0]);
-					} catch (NumberFormatException ex) {}
+					} catch (NumberFormatException ex) {
+					}
 					try {
 						max_read_mention_id = Long.parseLong(parts[1]);
-					} catch (NumberFormatException ex) {}
+					} catch (NumberFormatException ex) {
+					}
 					try {
 						max_read_dm_id = Long.parseLong(parts[2]);
 						if (max_known_dm_id == 0) {
 							max_known_dm_id = max_read_dm_id;
 						}
-					} catch (NumberFormatException ex) {}
+					} catch (NumberFormatException ex) {
+					}
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
 							elements.notifyDataSetChanged();
 							setChanged();
-							notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
-							
+							notifyObservers(new AccountSwitcherMessage(
+									AccountSwitcherRadioButton.Message.UNREAD,
+									getUnreadTweetsSize()));
+
 							LinkedList<Pair<TimelineElement, String>> elementsToDelete = new LinkedList<Pair<TimelineElement, String>>();
-							for (Pair<TimelineElement, String> pair : ((Geotweeter)appContext).notifiedElements) {
+							for (Pair<TimelineElement, String> pair : ((Geotweeter) appContext).notifiedElements) {
 								if (pair.first instanceof DirectMessage) {
-									if (pair.first.getID() <= max_read_dm_id) elementsToDelete.add(pair);
+									if (pair.first.getID() <= max_read_dm_id)
+										elementsToDelete.add(pair);
 								} else if (pair.first instanceof Tweet) {
-									if (pair.first.getID() <= max_read_tweet_id) elementsToDelete.add(pair);
+									if (pair.first.getID() <= max_read_tweet_id)
+										elementsToDelete.add(pair);
 								} else {
 									elementsToDelete.add(pair);
 								}
 							}
-							
+
 							for (Pair<TimelineElement, String> pair : elementsToDelete) {
-								((Geotweeter)appContext).notifiedElements.remove(pair);
+								((Geotweeter) appContext).notifiedElements
+										.remove(pair);
 							}
 							elementsToDelete.clear();
-							((Geotweeter)appContext).updateNotification(false);
+							((Geotweeter) appContext).updateNotification(false);
 						}
 					});
 				} catch (UnsupportedEncodingException e) {
@@ -574,7 +641,7 @@ public class Account extends Observable implements Serializable {
 			}
 		}, "GetMaxReadIDs").start();
 	}
-	
+
 	/**
 	 * Pushes the actual read tweet ids to tweet marker
 	 * 
@@ -586,24 +653,30 @@ public class Account extends Observable implements Serializable {
 		if (tweet_id > this.max_read_tweet_id) {
 			this.max_read_tweet_id = tweet_id;
 		}
-		if (mention_id > this.max_read_mention_id ) {
+		if (mention_id > this.max_read_mention_id) {
 			this.max_read_mention_id = mention_id;
 		}
 		if (dm_id > this.max_read_dm_id) {
 			this.max_read_dm_id = dm_id;
 		}
-		
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				OAuthRequest oauth_request = api.getVerifiedCredentials();
-								
+
 				try {
 					HttpClient http_client = new DefaultHttpClient();
-					HttpPost http_post = new HttpPost(Constants.URI_TWEETMARKER_LASTREAD + user.getScreenName() + "&api_key=" + Utils.getProperty("tweetmarker.key"));
-					http_post.addHeader("X-Auth-Service-Provider", Constants.URI_VERIFY_CREDENTIALS);
-					http_post.addHeader("X-Verify-Credentials-Authorization", oauth_request.getHeaders().get("Authorization"));
-					http_post.setEntity(new StringEntity(""+max_read_tweet_id+","+max_read_mention_id+","+max_read_dm_id));
+					HttpPost http_post = new HttpPost(
+							Constants.URI_TWEETMARKER_LASTREAD
+									+ user.getScreenName() + "&api_key="
+									+ Utils.getProperty("tweetmarker.key"));
+					http_post.addHeader("X-Auth-Service-Provider",
+							Constants.URI_VERIFY_CREDENTIALS);
+					http_post.addHeader("X-Verify-Credentials-Authorization",
+							oauth_request.getHeaders().get("Authorization"));
+					http_post.setEntity(new StringEntity("" + max_read_tweet_id
+							+ "," + max_read_mention_id + "," + max_read_dm_id));
 					http_client.execute(http_post);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
@@ -614,29 +687,33 @@ public class Account extends Observable implements Serializable {
 				}
 			}
 		}, "SetMaxReadIDs").start();
-		
+
 		LinkedList<Pair<TimelineElement, String>> elementsToDelete = new LinkedList<Pair<TimelineElement, String>>();
-		for (Pair<TimelineElement, String> pair : ((Geotweeter)appContext).notifiedElements) {
+		for (Pair<TimelineElement, String> pair : ((Geotweeter) appContext).notifiedElements) {
 			if (pair.first instanceof DirectMessage) {
-				if (pair.first.getID() <= max_read_dm_id) elementsToDelete.add(pair);
+				if (pair.first.getID() <= max_read_dm_id)
+					elementsToDelete.add(pair);
 			} else if (pair.first instanceof Tweet) {
-				if (pair.first.getID() <= max_read_tweet_id) elementsToDelete.add(pair);
+				if (pair.first.getID() <= max_read_tweet_id)
+					elementsToDelete.add(pair);
 			} else {
 				elementsToDelete.add(pair);
 			}
 		}
-		
+
 		for (Pair<TimelineElement, String> pair : elementsToDelete) {
-			((Geotweeter)appContext).notifiedElements.remove(pair);
+			((Geotweeter) appContext).notifiedElements.remove(pair);
 		}
 		elementsToDelete.clear();
-		((Geotweeter)appContext).updateNotification(false);
-		
+		((Geotweeter) appContext).updateNotification(false);
+
 		elements.notifyDataSetChanged();
 		setChanged();
-		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+		notifyObservers(new AccountSwitcherMessage(
+				AccountSwitcherRadioButton.Message.UNREAD,
+				getUnreadTweetsSize()));
 	}
-	
+
 	/**
 	 * Returns the newest read tweet id
 	 * 
@@ -645,7 +722,7 @@ public class Account extends Observable implements Serializable {
 	public long getMaxReadTweetID() {
 		return max_read_tweet_id;
 	}
-	
+
 	/**
 	 * Returns the account's TimelineElementAdapter
 	 * 
@@ -664,7 +741,6 @@ public class Account extends Observable implements Serializable {
 		return token;
 	}
 
-	
 	/**
 	 * Sets the account's user element
 	 * 
@@ -673,7 +749,7 @@ public class Account extends Observable implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
 	/**
 	 * Returns the account's user element
 	 * 
@@ -693,31 +769,32 @@ public class Account extends Observable implements Serializable {
 		if (!dir.exists()) {
 			dir = context.getCacheDir();
 		}
-		
+
 		dir = new File(dir, Constants.PATH_TIMELINE_DATA);
-		
+
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		
+
 		List<TimelineElement> last_tweets = new ArrayList<TimelineElement>(50);
-		for (int i=0; i<elements.getCount(); i++) {
+		for (int i = 0; i < elements.getCount(); i++) {
 			if (i >= 100) {
 				break;
 			}
 			last_tweets.add(elements.getItem(i));
 		}
-		
+
 		try {
-			FileOutputStream fout = new FileOutputStream(dir.getPath() + File.separator + String.valueOf(getUser().id));
+			FileOutputStream fout = new FileOutputStream(dir.getPath()
+					+ File.separator + String.valueOf(getUser().id));
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 			oos.writeObject(last_tweets);
 			oos.close();
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	/**
 	 * Gets the last stored timeline elements from persistent memory
@@ -730,15 +807,16 @@ public class Account extends Observable implements Serializable {
 		if (!dir.exists()) {
 			dir = context.getCacheDir();
 		}
-		
+
 		dir = new File(dir, Constants.PATH_TIMELINE_DATA);
-		
-		fileToLoad = dir.getPath() + File.separator + String.valueOf(getUser().id);
-		
+
+		fileToLoad = dir.getPath() + File.separator
+				+ String.valueOf(getUser().id);
+
 		if (!(new File(fileToLoad).exists())) {
 			return;
 		}
-		
+
 		List<TimelineElement> tweets;
 		try {
 			FileInputStream fin = new FileInputStream(fileToLoad);
@@ -749,7 +827,7 @@ public class Account extends Observable implements Serializable {
 			ex.printStackTrace();
 			return;
 		}
-		
+
 		for (TimelineElement elm : tweets) {
 			if (elm instanceof DirectMessage) {
 				dm_conversations.addMessage((DirectMessage) elm);
@@ -764,9 +842,11 @@ public class Account extends Observable implements Serializable {
 		}
 		elements.addAllAsFirst(tweets);
 		setChanged();
-		notifyObservers(AccountSwitcherRadioButton.Message.UNREAD);
+		notifyObservers(new AccountSwitcherMessage(
+				AccountSwitcherRadioButton.Message.UNREAD,
+				getUnreadTweetsSize()));
 	}
-	
+
 	/**
 	 * Returns the TwitterApiAccess object
 	 * 
@@ -775,7 +855,7 @@ public class Account extends Observable implements Serializable {
 	public TwitterApiAccess getApi() {
 		return api;
 	}
-	
+
 	/**
 	 * Pushes the given timeline to the last visible timelines stack
 	 * 
@@ -784,9 +864,10 @@ public class Account extends Observable implements Serializable {
 	public void pushTimeline(TimelineElementAdapter tea) {
 		timeline_stack.push(tea);
 	}
-	
+
 	/**
-	 * Pops the currently shown timeline from the stack and returns the previous shown. 
+	 * Pops the currently shown timeline from the stack and returns the previous
+	 * shown.
 	 * 
 	 * @return
 	 */
@@ -798,7 +879,7 @@ public class Account extends Observable implements Serializable {
 			return null;
 		}
 	}
-		
+
 	/**
 	 * Returns the currently shown timeline from the stack
 	 * 
@@ -807,19 +888,24 @@ public class Account extends Observable implements Serializable {
 	public TimelineElementAdapter activeTimeline() {
 		return timeline_stack.peek();
 	}
-	
+
 	public int getUnreadTweetsSize() {
 		List<TimelineElement> tweets = elements.getItems();
+		if (tweets == null) {
+			return -1;
+		}
 		int size = 0;
-		for (; size < tweets.size() && tweets.get(size).getID() > max_read_tweet_id; size++) {
+		for (; size < tweets.size()
+				&& tweets.get(size).getID() > max_read_tweet_id; size++) {
 		}
 		return size;
 	}
-	
+
 	/**
 	 * Returns the account object for a given user object
 	 * 
-	 * @param u The according user object
+	 * @param u
+	 *            The according user object
 	 * @return The according account object if available, null otherwise
 	 */
 	public static Account getAccount(User u) {
@@ -839,5 +925,5 @@ public class Account extends Observable implements Serializable {
 	public void setElements(TimelineElementAdapter elements) {
 		this.elements = elements;
 	}
-	
+
 }

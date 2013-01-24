@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.scribe.exceptions.OAuthException;
 import org.scribe.model.Token;
@@ -478,7 +479,31 @@ public class TimelineActivity extends MapActivity {
 		@Override
 		protected Void doInBackground(Handler... params) {
 			List<User> authenticatedUsers = getAuthUsers();
+			Map<User, AccountSwitcherRadioButton> switcherGroup = new HashMap<User, AccountSwitcherRadioButton>();
 			if (authenticatedUsers != null) {
+				if (authenticatedUsers.size() > 1) {
+					final RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
+
+					for (User u : authenticatedUsers) {
+
+						// final AccountSwitcherRadioButton rdBtn = new
+						// AccountSwitcherRadioButton(
+						// TimelineActivity.this, account);
+						final AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(
+								TimelineActivity.this);
+						switcherGroup.put(u, rdBtn);
+						Geotweeter.getInstance().getBackgroundImageLoader()
+								.displayImage(u.getAvatarSource(), rdBtn, true);
+
+						runOnUiThread(new Runnable() {
+							public void run() {
+								accountSwitcher.addView(rdBtn);
+							}
+						});
+
+					}
+				}
+
 				for (User u : authenticatedUsers) {
 					createAccount(u, params[0]);
 				}
@@ -517,29 +542,52 @@ public class TimelineActivity extends MapActivity {
 			}
 
 			if (authenticatedUsers.size() > 1) {
-				final RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
-				for (final Account account : Account.all_accounts) {
-
-					final AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(
-							TimelineActivity.this, account);
-					Geotweeter
-							.getInstance()
-							.getBackgroundImageLoader()
-							.displayImage(account.getUser().getAvatarSource(),
-									rdBtn, true);
-
-					rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(
-							account));
-
-					runOnUiThread(new Runnable() {
-						public void run() {
-							accountSwitcher.addView(rdBtn);
-							if (account == current_account) {
-								rdBtn.setChecked(true);
-							}
-						}
-					});
+				for (Account account : Account.all_accounts) {
+					final AccountSwitcherRadioButton switcherButton = switcherGroup
+							.get(account.getUser());
+					switcherButton
+							.setOnClickListener(new AccountSwitcherOnClickListener(
+									account));
+					account.addObserver(switcherButton);
+					if (account == current_account) {
+						runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
+								switcherButton.setChecked(true);							}
+						});
+					}
 				}
+
+				// final RadioGroup accountSwitcher = (RadioGroup)
+				// findViewById(R.id.rdGrpAccount);
+				// for (final Account account : Account.all_accounts) {
+				//
+				// // final AccountSwitcherRadioButton rdBtn = new
+				// // AccountSwitcherRadioButton(
+				// // TimelineActivity.this, account);
+				// final AccountSwitcherRadioButton rdBtn = new
+				// AccountSwitcherRadioButton(
+				// TimelineActivity.this);
+				//
+				// Geotweeter
+				// .getInstance()
+				// .getBackgroundImageLoader()
+				// .displayImage(account.getUser().getAvatarSource(),
+				// rdBtn, true);
+				//
+				// rdBtn.setOnClickListener(new AccountSwitcherOnClickListener(
+				// account));
+				// account.addObserver(rdBtn);
+				// runOnUiThread(new Runnable() {
+				// public void run() {
+				// accountSwitcher.addView(rdBtn);
+				// if (account == current_account) {
+				// rdBtn.setChecked(true);
+				// }
+				// }
+				// });
+				// }
 			}
 
 			return null;
