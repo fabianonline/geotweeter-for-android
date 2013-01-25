@@ -3,17 +3,17 @@
     android:id="@+id/user_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:orientation="vertical" >
 
     <include
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
         android:layout_weight="1"
         layout="@layout/user_detail" />
 
     <include
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
         android:layout_weight="1"
         layout="@layout/user_timeline" />
 

@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -49,7 +50,7 @@ public class UserDetailActivity extends Activity {
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.user_detail);
+		setContentView(R.layout.user_info);
 
 		userName = (String) getIntent().getSerializableExtra("user");
 
@@ -141,7 +142,7 @@ public class UserDetailActivity extends Activity {
 
 		protected void onPreExecute() {
 			tasksRunning++;
-			if (progressDialog == null || progressDialog.isShowing()) {
+			if (progressDialog == null || !progressDialog.isShowing()) {
 				progressDialog = ProgressDialog.show(UserDetailActivity.this,
 						"", "Daten werden geladen...");
 			}
@@ -181,7 +182,7 @@ public class UserDetailActivity extends Activity {
 
 		protected void onPreExecute() {
 			tasksRunning++;
-			if (progressDialog == null || progressDialog.isShowing()) {
+			if (progressDialog == null || !progressDialog.isShowing()) {
 				progressDialog = ProgressDialog.show(UserDetailActivity.this,
 						"", "Daten werden geladen...");
 			}
@@ -268,7 +269,7 @@ public class UserDetailActivity extends Activity {
 	}
 
 	public void showBadConnectionDlg() {
-		
+
 		connectionDlg = new AlertDialog.Builder(this)
 				.setMessage(R.string.error_connection_retry_dlg)
 				.setPositiveButton(R.string.yes,
@@ -291,11 +292,14 @@ public class UserDetailActivity extends Activity {
 						}).show();
 
 	}
-	
+
 	public void onPause() {
 		super.onPause();
 		if (progressDialog != null) {
 			progressDialog.dismiss();
+		}
+		if (connectionDlg != null) {
+			connectionDlg.dismiss();
 		}
 	}
 
@@ -315,6 +319,31 @@ public class UserDetailActivity extends Activity {
 
 		createButton(actionButtons, ActionType.BLOCK);
 		createButton(actionButtons, ActionType.MARK_AS_SPAM);
+	}
+	
+	public void onConfigurationChanged(Configuration newConfig) {
+		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			LinearLayout userLayout = (LinearLayout) findViewById(R.id.user_layout);
+			userLayout.setOrientation(LinearLayout.HORIZONTAL);
+			LinearLayout userDetail = (LinearLayout) findViewById(R.id.user_detail_root);
+			LayoutParams params = (LayoutParams) userDetail.getLayoutParams();
+			params.width = 0;
+			params.height = LayoutParams.MATCH_PARENT;
+			userDetail.setLayoutParams(params);
+			LinearLayout userTimeline = (LinearLayout) findViewById(R.id.user_timeline_root);
+			userTimeline.setLayoutParams(params);
+		} else {
+			LinearLayout userLayout = (LinearLayout) findViewById(R.id.user_layout);
+			userLayout.setOrientation(LinearLayout.VERTICAL);
+			LinearLayout userDetail = (LinearLayout) findViewById(R.id.user_detail_root);
+			LayoutParams params = (LayoutParams) userDetail.getLayoutParams();
+			params.height = 0;
+			params.width = LayoutParams.MATCH_PARENT;
+			userDetail.setLayoutParams(params);
+			LinearLayout userTimeline = (LinearLayout) findViewById(R.id.user_timeline_root);
+			userTimeline.setLayoutParams(params);	
+		}
+		super.onConfigurationChanged(newConfig);
 	}
 
 }
