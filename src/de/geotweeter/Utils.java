@@ -32,6 +32,7 @@ import de.geotweeter.apiconn.twitter.FollowEvent;
 import de.geotweeter.apiconn.twitter.ListMemberAddedEvent;
 import de.geotweeter.apiconn.twitter.ListMemberRemovedEvent;
 import de.geotweeter.apiconn.twitter.NotShownEvent;
+import de.geotweeter.apiconn.twitter.StreamDeleteRequest;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.Url;
 import de.geotweeter.exceptions.UnknownJSONObjectException;
@@ -87,13 +88,16 @@ public class Utils {
 		if (obj.containsKey("text") && obj.containsKey("recipient")) {
 			return JSON.parseObject(json, DirectMessage.class);
 		}
+		
 		if (obj.containsKey("direct_message")) {
 			return JSON.parseObject(obj.getJSONObject("direct_message")
 					.toJSONString(), DirectMessage.class);
 		}
+		
 		if (obj.containsKey("text")) {
 			return JSON.parseObject(json, Tweet.class);
 		}
+		
 		if (obj.containsKey("event")) {
 			String event_type = obj.getString("event");
 			if (event_type.equals("follow")) {
@@ -113,6 +117,11 @@ public class Utils {
 				return JSON.parseObject(json, NotShownEvent.class);
 			}
 		}
+		
+		if (obj.containsKey("delete")) {
+			return JSON.parseObject(json, StreamDeleteRequest.class);
+		}
+		
 		throw new UnknownJSONObjectException();
 	}
 

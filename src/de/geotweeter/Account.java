@@ -49,6 +49,7 @@ import android.widget.Toast;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.StreamDeleteRequest;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.exceptions.BadConnectionException;
@@ -464,15 +465,11 @@ public class Account extends Observable implements Serializable {
 		Log.d(LOG, "Adding Tweet.");
 		if (elm instanceof DirectMessage) {
 			dm_conversations.addMessage((DirectMessage) elm);
-			// if (elm.getID() > max_known_dm_id) {
-			// max_known_dm_id = elm.getID();
-			// }
-			// } else if (elm instanceof Tweet) {
-			// if (elm.getID() > max_known_tweet_id) {
-			// max_known_tweet_id = elm.getID();
-			// }
 		}
-		// elements.add(tweet);
+		if (elm instanceof StreamDeleteRequest) {
+			remove(TimelineActivity.availableTweets.get(elm.getID()));
+			return;
+		}
 		handler.post(new Runnable() {
 			public void run() {
 				elements.addAsFirst(elm);

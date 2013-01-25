@@ -83,7 +83,7 @@ public class Constants extends Application {
 	public static final String ICON_BLOCK = "✖";
 	
 	public static enum TLEType {
-		READ, UNREAD, MENTION, OWN, DM, EVENT
+		READ, UNREAD, MENTION, OWN, DM, EVENT, DELETE
 	}
 	
 	public static enum ActionType {
