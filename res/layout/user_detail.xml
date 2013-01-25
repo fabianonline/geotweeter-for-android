@@ -5,80 +5,120 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/default_gap"
-        android:layout_marginRight="@dimen/default_gap"
-        android:layout_marginTop="@dimen/default_gap" >
-
-        <de.geotweeter.AsyncImageView
-            android:id="@+id/user_avatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="@dimen/default_gap"
-            android:src="@drawable/loading_image" />
+        android:layout_height="0dp"
+        android:layout_weight="1" >
 
         <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/user_screen_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/user_real_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Small Text"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:visibility="gone" />
-
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/default_gap"
+                android:layout_marginRight="@dimen/default_gap"
+                android:layout_marginTop="@dimen/default_gap" >
 
-                <TextView
-                    android:id="@+id/user_url_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/floating_icon_gap"
-                    android:text="@string/url_icon"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textSize="@dimen/float_icon"
-                    android:visibility="gone" />
+                <de.geotweeter.AsyncImageView
+                    android:id="@+id/user_avatar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="@dimen/default_gap"
+                    android:src="@drawable/loading_image" />
 
-                <TextView
-                    android:id="@+id/user_url"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Small Text"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:visibility="gone" />
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/user_screen_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Medium Text"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/user_real_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Small Text"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:id="@+id/user_url_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/floating_icon_gap"
+                            android:text="@string/url_icon"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textSize="@dimen/float_icon"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/user_url"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Small Text"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:id="@+id/user_location_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/floating_icon_gap"
+                            android:text="@string/loc_icon"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textSize="@dimen/float_icon"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/user_location"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Small Text"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/default_gap"
+                android:layout_marginRight="@dimen/default_gap"
+                android:layout_marginTop="@dimen/default_gap"
+                android:layout_weight="1" >
 
                 <TextView
-                    android:id="@+id/user_location_icon"
+                    android:id="@+id/user_bio_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/floating_icon_gap"
-                    android:text="@string/loc_icon"
+                    android:text="@string/desc_icon"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textSize="@dimen/float_icon"
                     android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/user_location"
+                    android:id="@+id/user_bio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Small Text"
@@ -86,40 +126,14 @@
                     android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="@dimen/default_gap"
-        android:layout_marginRight="@dimen/default_gap"
-        android:layout_marginTop="@dimen/default_gap"
-        android:layout_weight="1" >
-
-        <TextView
-            android:id="@+id/user_bio_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/floating_icon_gap"
-            android:text="@string/desc_icon"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="@dimen/float_icon"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/user_bio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Small Text"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="gone" />
-    </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/user_action_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="visible" >
+
     </LinearLayout>
 
 </LinearLayout>
