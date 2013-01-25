@@ -153,7 +153,7 @@ public class StreamRequest {
 							}
 						}
 					} catch (IOException e) {
-						// Connection was killed or corrupted. Restarting stream.
+						Log.d(LOG, "Corrupt data. Restarting Stream.");
 					}
 					Log.d(LOG, "Stream beendet");
 				}
@@ -200,7 +200,7 @@ public class StreamRequest {
 						account.addTweet(Utils.jsonToNativeObject(text
 								.substring(0, bytes)));
 					} catch (UnknownJSONObjectException ex) {
-						throw new IOException();
+						/* Nothing interesting for us */
 					} catch (JSONException ex) {
 						throw new IOException();
 					}
