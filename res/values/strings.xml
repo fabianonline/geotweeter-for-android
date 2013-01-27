@@ -131,6 +131,8 @@
     <string name="tweetsendservice_activity">Sende…</string>
     <string name="tweetsendservice_finished_sending_single_tweet">Tweet erfolgreich versendet</string>
     <string name="tweetsendservice_finished_sending_multiple_tweets">Tweets erfolgreich versendet</string>
+    <string name="tweetsendservice_temporary_exception">Tweetversand schlug fehl. Nächster Versuch nach 60 Sekunden.</string>
+    <string name="tweetsendservice_permanent_exception">Tweet kann nicht versendet werden. Hier klicken für Optionen.</string>
     <string name="notification_text_mention_single">1 Mention</string>
     <string name="notification_text_mention_plural">%1$d Mentions</string>
     <string name="notification_text_dm_single">1 DM</string>

@@ -23,6 +23,7 @@ import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
+import de.geotweeter.activities.NewTweetActivity;
 import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetSendException;
@@ -82,24 +83,40 @@ public class TweetSendService extends Service {
 			new Thread(tweetSenderThread, "TweetSenderThread").start();
 		}
 	}
+	
+	private void updateNotification() {
+		updateNotification(null, null, null);
+	}
+	
+	private void updateNotification(String header, String text) {
+		updateNotification(header, text, null);
+	}
 
 	@SuppressWarnings("deprecation")
-	private void updateNotification() {
+	private void updateNotification(String header, String text, PendingIntent pendingIntent) {
 		if (notification == null) {
 			notification = new Notification();
 		}
 		notification.icon = R.drawable.ic_launcher;
-		notification.tickerText = Utils.formatString(
+		if (header==null) {
+			notification.tickerText = Utils.formatString(
 				R.string.tweetsendservice_summary, i + 1, tweets.size());
+		} else {
+			notification.tickerText = header;
+		}
 		notification.when = System.currentTimeMillis();
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 		notification.setLatestEventInfo(getApplicationContext(),
 				notification.tickerText,
-				Utils.getString(R.string.tweetsendservice_activity), null);
-		notification.contentIntent = PendingIntent.getActivity(
-				getApplicationContext(), 0, new Intent(),
-				PendingIntent.FLAG_UPDATE_CURRENT);
+				text!=null?text:Utils.getString(R.string.tweetsendservice_activity), null);
+		if (pendingIntent != null) {
+			notification.contentIntent = pendingIntent;
+		} else {
+			notification.contentIntent = PendingIntent.getActivity(
+					getApplicationContext(), 0, new Intent(),
+					PendingIntent.FLAG_UPDATE_CURRENT);
+		}
 		notificationManager.notify(
 				Constants.SENDING_TWEET_STATUS_NOTIFICATION_ID, notification);
 	}
@@ -142,14 +159,9 @@ public class TweetSendService extends Service {
 							"TemporaryTweetSendException fired. Sleeping 60 seconds. Message: "
 									+ e.getMessage(), e);
 					handler.post(new Runnable() {
-
 						@Override
 						public void run() {
-							Toast.makeText(
-									getApplicationContext(),
-									e.getMessage()
-											+ "\n Retrying in 60 seconds",
-									Toast.LENGTH_SHORT).show();
+							updateNotification("Temporärer Fehler", Utils.getString(R.string.tweetsendservice_temporary_exception));
 						}
 					});
 					try {
@@ -163,13 +175,15 @@ public class TweetSendService extends Service {
 					Log.e(LOG,
 							"PermanentTweetException (or another exception) fired. Stopping. Message: "
 									+ e.getMessage(), e);
+					final SendableTweet sendableTweet = tweet;
+					
 					handler.post(new Runnable() {
-
 						@Override
 						public void run() {
-							Toast.makeText(getApplicationContext(),
-									e.getMessage() + "\n stopping",
-									Toast.LENGTH_SHORT).show();
+							Intent intent = new Intent(getApplicationContext(), NewTweetActivity.class);
+							intent.putExtra("de.geotweeter.sendable_tweet", sendableTweet);
+							PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+							updateNotification("Permanenter Fehler", Utils.getString(R.string.tweetsendservice_permanent_exception), pi);
 						}
 					});
 					break;
