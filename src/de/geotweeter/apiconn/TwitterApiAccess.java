@@ -45,6 +45,7 @@ import de.geotweeter.exceptions.RetweetException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.exceptions.TweetSendException;
+import de.geotweeter.exceptions.UserException;
 import de.geotweeter.timelineelements.TimelineElement;
 
 public class TwitterApiAccess {
@@ -558,7 +559,7 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.RELATIONSHIP);
 			}
 		} else {
-			throw new RelationshipException();
+			throw new RelationshipException(RequestType.RELATIONSHIP, response.getCode());
 		}
 
 		return result.relationship;
@@ -582,65 +583,69 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.RELATIONSHIP);
 			}
 		} else {
-			throw new RelationshipException();
+			throw new RelationshipException(RequestType.RELATIONSHIP, response.getCode());
 		}
 
 		return result.relationship;
 	}
 
-	public Users getFollowers(long id) throws RelationshipException,
+	public Users getFollowers(String screenName) throws RelationshipException,
 			BadConnectionException {
-		return getFollowers(id, -1);
+		return getFollowers(screenName, -1);
 	}
 
-	public Users getFollowers(long id, long cursor)
+	public Users getFollowers(String screenName, long cursor)
 			throws RelationshipException, BadConnectionException {
 		Users result = null;
 		OAuthRequest req = new OAuthRequest(Verb.GET,
 				Constants.URI_FOLLOWER_LIST);
-		req.addQuerystringParameter("user_id", String.valueOf(id));
+		req.addQuerystringParameter("screen_name", screenName);
 		req.addQuerystringParameter("cursor", String.valueOf(cursor));
+		req.addQuerystringParameter("skip_status", "false");
 
 		service.signRequest(token, req);
 		Response response = req.send();
 
 		if (response.isSuccessful()) {
 			try {
+				String json = response.getBody();
 				result = JSON.parseObject(response.getBody(), Users.class);
 			} catch (IllegalStateException e) {
 				throw new BadConnectionException(RequestType.FOLLOWERS);
 			}
 		} else {
-			throw new RelationshipException();
+			throw new RelationshipException(RequestType.FOLLOWERS, response.getCode());
 		}
 
 		return result;
 	}
 
-	public Users getFollowing(long id) throws RelationshipException,
+	public Users getFollowing(String screenName) throws RelationshipException,
 			BadConnectionException {
-		return getFollowing(id, -1);
+		return getFollowing(screenName, -1);
 	}
 
-	public Users getFollowing(long id, long cursor)
+	public Users getFollowing(String screenName, long cursor)
 			throws RelationshipException, BadConnectionException {
 		Users result = null;
 		OAuthRequest req = new OAuthRequest(Verb.GET,
 				Constants.URI_FOLLOWING_LIST);
-		req.addQuerystringParameter("user_id", String.valueOf(id));
+		req.addQuerystringParameter("screen_name", screenName);
 		req.addQuerystringParameter("cursor", String.valueOf(cursor));
+		req.addQuerystringParameter("skip_status", "false");
 
 		service.signRequest(token, req);
 		Response response = req.send();
 
 		if (response.isSuccessful()) {
 			try {
+				String json = response.getBody();
 				result = JSON.parseObject(response.getBody(), Users.class);
 			} catch (IllegalStateException e) {
 				throw new BadConnectionException(RequestType.FRIENDS);
 			}
 		} else {
-			throw new RelationshipException();
+			throw new RelationshipException(RequestType.FRIENDS, response.getCode());
 		}
 
 		return result;
@@ -662,7 +667,7 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.SINGLE_USER);
 			}
 		} else {
-			throw new UserException();
+			throw new UserException(RequestType.SINGLE_USER, response.getCode());
 		}
 
 		return result;
@@ -685,7 +690,7 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.SINGLE_USER);
 			}
 		} else {
-			throw new UserException();
+			throw new UserException(RequestType.SINGLE_USER, response.getCode());
 		}
 
 		return result;

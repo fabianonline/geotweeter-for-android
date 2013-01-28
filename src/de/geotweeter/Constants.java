@@ -89,9 +89,9 @@ public class Constants extends Application {
 	public static enum ActionType {
 		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE, FOLLOW, UNFOLLOW, SEND_DM, BLOCK, MARK_AS_SPAM
 	}
-	
+		
 	public static enum TimelineType {
-		HOME, FRIENDS, FOLLOWER
+		USER_TWEETS, FRIENDS, FOLLOWER
 	}
 	
 	private static class LocationMarker extends Path {

@@ -71,7 +71,7 @@ public class DirectMessage extends Tweet {
 	}
 	
 	@Override
-	public String getSenderString() {
+	public String getSenderName() {
 		if (sender.id == TimelineActivity.current_account.getUser().id) {
 			return Utils.formatString(R.string.direct_message_to_someone, recipient.getScreenName());
 		} else {

@@ -1,5 +1,12 @@
 package de.geotweeter.activities;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.scribe.exceptions.OAuthException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -13,23 +20,33 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
 import android.widget.TextView;
 import de.geotweeter.AsyncImageView;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
+import de.geotweeter.Constants.TimelineType;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
+import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.Utils;
-import de.geotweeter.apiconn.UserException;
 import de.geotweeter.apiconn.twitter.Relationship;
+import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
+import de.geotweeter.apiconn.twitter.Users;
 import de.geotweeter.exceptions.BadConnectionException;
+import de.geotweeter.exceptions.BadConnectionException.RequestType;
 import de.geotweeter.exceptions.RelationshipException;
+import de.geotweeter.exceptions.UserException;
+import de.geotweeter.timelineelements.ProtectedAccount;
+import de.geotweeter.timelineelements.SilentAccount;
+import de.geotweeter.timelineelements.TimelineElement;
 
 public class UserDetailActivity extends Activity {
 
@@ -43,6 +60,16 @@ public class UserDetailActivity extends Activity {
 	private int tasksRunning = 0;
 	private ProgressDialog progressDialog;
 	private AlertDialog connectionDlg;
+	private AlertDialog exceptionDlg;
+	private TimelineElementAdapter tea;
+	private Map<TimelineType, List<TimelineElement>> timelines = new HashMap<TimelineType, List<TimelineElement>>();
+	private Map<TimelineType, LinearLayout> timelineButtons = new HashMap<TimelineType, LinearLayout>();
+	private int activeTimelineButtonColor;
+	private int inactiveTimelineButtonColor;
+	private int availablePrimaryTextColor;
+	private int unavailablePrimaryTextColor;
+	private int availableSecondaryTextColor;
+	private int unavailableSecondaryTextColor;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,16 +85,105 @@ public class UserDetailActivity extends Activity {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		tf = Typeface.createFromAsset(this.getAssets(), "fonts/Entypo.otf");
 
+		if (Geotweeter.getInstance().useDarkTheme()) {
+			activeTimelineButtonColor = getResources().getColor(
+					R.color.dark_read_background_end);
+			inactiveTimelineButtonColor = getResources().getColor(
+					R.color.dark_background);
+			availablePrimaryTextColor = getResources().getColor(
+					android.R.color.primary_text_dark);
+			availableSecondaryTextColor = getResources().getColor(
+					android.R.color.secondary_text_dark);
+			unavailablePrimaryTextColor = getResources().getColor(
+					R.color.dark_inactive_button_text);
+			unavailableSecondaryTextColor = getResources().getColor(
+					R.color.dark_inactive_button_text);
+		} else {
+			activeTimelineButtonColor = getResources().getColor(
+					R.color.light_read_background_end);
+			inactiveTimelineButtonColor = getResources().getColor(
+					R.color.light_background);
+			availablePrimaryTextColor = getResources().getColor(
+					android.R.color.primary_text_light);
+			availableSecondaryTextColor = getResources().getColor(
+					android.R.color.secondary_text_light);
+			unavailablePrimaryTextColor = getResources().getColor(
+					R.color.light_inactive_button_text);
+			unavailableSecondaryTextColor = getResources().getColor(
+					R.color.light_inactive_button_text);
+		}
+
+		LinearLayout buttons = (LinearLayout) findViewById(R.id.user_timeline_buttons);
+		for (TimelineType type : TimelineType.values()) {
+			generateTimelineButton(buttons, type);
+		}
+
 		startRequestTasks();
+		startTimelineTasks();
+	}
+
+	private void startTimelineTasks() {
+		new GetTimelineTask().execute(TimelineType.USER_TWEETS);
+		new GetTimelineTask().execute(TimelineType.FRIENDS);
+		new GetTimelineTask().execute(TimelineType.FOLLOWER);
 	}
 
 	private void startRequestTasks() {
 		bce = null;
-		new getUserDetailsTask().execute();
-		new getUserRelationShipTask().execute();
+		new GetUserDetailsTask().execute();
+		new GetUserRelationShipTask().execute();
 	}
 
-	private void createButton(LinearLayout buttons, final ActionType type) {
+	private void generateTimelineButton(LinearLayout buttons,
+			final TimelineType type) {
+		CharSequence count = null, desc = null;
+		Resources res = buttons.getResources();
+		count = "?";
+		LinearLayout button = null;
+		switch (type) {
+		case USER_TWEETS:
+			button = (LinearLayout) findViewById(R.id.user_timeline_button);
+			desc = res.getString(R.string.tweets);
+			break;
+		case FRIENDS:
+			button = (LinearLayout) findViewById(R.id.user_friends_button);
+			desc = res.getString(R.string.friends);
+			break;
+		case FOLLOWER:
+			button = (LinearLayout) findViewById(R.id.user_followers_button);
+			desc = res.getString(R.string.follower);
+			break;
+		}
+
+		TextView countView = (TextView) button.findViewById(R.id.action_icon);
+		countView.setText(count);
+		countView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20.0f);
+		countView.setTextColor(unavailablePrimaryTextColor);
+		TextView description = (TextView) button
+				.findViewById(R.id.action_description);
+		description.setText(desc);
+		description.setTextColor(unavailableSecondaryTextColor);
+
+		LinearLayout.LayoutParams params = (LayoutParams) button
+				.getLayoutParams();
+		params.weight = 1.0f;
+		params.setMargins(Utils.convertDipToPixel(3), 0,
+				Utils.convertDipToPixel(3), Utils.convertDipToPixel(3));
+		button.setLayoutParams(params);
+
+		timelineButtons.put(type, button);
+
+	}
+
+	protected void timelineClick(TimelineType type) {
+		tea = new TimelineElementAdapter(this, R.layout.timeline_element,
+				new ArrayList<TimelineElement>());
+		tea.addAllAsFirst(timelines.get(type), false);
+		ListView timeline = (ListView) findViewById(R.id.user_timeline);
+		timeline.setAdapter(tea);
+	}
+
+	private void createActionButton(LinearLayout buttons, final ActionType type) {
 		CharSequence icon = null, desc = null;
 		Resources res = buttons.getResources();
 		switch (type) {
@@ -138,7 +254,9 @@ public class UserDetailActivity extends Activity {
 		return true;
 	}
 
-	public class getUserDetailsTask extends AsyncTask<Void, Boolean, User> {
+	public class GetUserDetailsTask extends AsyncTask<Void, Boolean, User> {
+
+		UserException ue = null;
 
 		protected void onPreExecute() {
 			tasksRunning++;
@@ -155,8 +273,7 @@ public class UserDetailActivity extends Activity {
 				user = TimelineActivity.current_account.getApi().getUser(
 						userName);
 			} catch (UserException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ue = e;
 			} catch (BadConnectionException e) {
 				bce = e;
 			}
@@ -171,14 +288,20 @@ public class UserDetailActivity extends Activity {
 					showBadConnectionDlg();
 					return;
 				}
+				if (ue != null) {
+					showAccessExceptionDlg(ue.type, ue.httpCode);
+				}
 			}
 			showUserDetails(result);
+			fillTimelineButtons(result);
 		}
 
 	}
 
-	public class getUserRelationShipTask extends
+	public class GetUserRelationShipTask extends
 			AsyncTask<Void, Boolean, Relationship> {
+
+		RelationshipException re = null;
 
 		protected void onPreExecute() {
 			tasksRunning++;
@@ -198,8 +321,7 @@ public class UserDetailActivity extends Activity {
 								TimelineActivity.current_account.getUser().screen_name,
 								userName);
 			} catch (RelationshipException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				re = e;
 			} catch (BadConnectionException e) {
 				bce = e;
 			}
@@ -214,8 +336,116 @@ public class UserDetailActivity extends Activity {
 					showBadConnectionDlg();
 					return;
 				}
+				if (re != null) {
+					showAccessExceptionDlg(re.type, re.httpCode);
+				}
 			}
 			showActionButtons(relationship);
+		}
+
+	}
+
+	public class GetTimelineTask extends
+			AsyncTask<TimelineType, Void, TimelineElementAdapter> {
+
+		@Override
+		protected TimelineElementAdapter doInBackground(TimelineType... params) {
+			final TimelineType type = params[0];
+			Users userlist = null;
+			List<TimelineElement> tles = null;
+			try {
+				switch (type) {
+				case USER_TWEETS:
+					tles = TimelineActivity.current_account.getApi()
+							.getUserTimeline(userName);
+					break;
+				case FRIENDS:
+					userlist = TimelineActivity.current_account.getApi()
+							.getFollowing(userName);
+					break;
+				case FOLLOWER:
+					userlist = TimelineActivity.current_account.getApi()
+							.getFollowers(userName);
+					break;
+				}
+				if (userlist != null) {
+					tles = new ArrayList<TimelineElement>();
+					for (User user : userlist.users) {
+						if (user._protected) {
+							Tweet tweet = new ProtectedAccount(user);
+							tles.add(tweet);
+						} else if (user.status == null) {
+							Tweet tweet = new SilentAccount(user);
+							tles.add(tweet);
+						} else {
+							Tweet tweet = user.status;
+							tweet.user = user;
+							if (tweet.retweeted_status != null) {
+								tweet.maskRetweetedStatus = true;
+							}
+							tles.add(tweet);
+						}
+					}
+				}
+
+				timelines.put(type, tles);
+
+				final LinearLayout timelineButton = timelineButtons.get(type);
+				final TextView elementCounter = (TextView) timelineButton
+						.findViewById(R.id.action_icon);
+				final TextView elementDescription = (TextView) timelineButton
+						.findViewById(R.id.action_description);
+
+				timelineButton.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						timelineClick(type);
+						for (LinearLayout view : timelineButtons.values()) {
+							view.setBackgroundColor(inactiveTimelineButtonColor);
+						}
+						v.setBackgroundColor(activeTimelineButtonColor);
+					}
+				});
+
+				runOnUiThread(new Runnable() {
+					public void run() {
+						elementCounter.setTextColor(availablePrimaryTextColor);
+						elementDescription
+								.setTextColor(availableSecondaryTextColor);
+					}
+				});
+
+				if (type == TimelineType.USER_TWEETS) {
+					tea = new TimelineElementAdapter(UserDetailActivity.this,
+							R.layout.timeline_element,
+							new ArrayList<TimelineElement>());
+					tea.addAllAsFirst(tles, false);
+					final ListView timeline = (ListView) findViewById(R.id.user_timeline);
+					runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							timeline.setAdapter(tea);
+							timelineButtons.get(TimelineType.USER_TWEETS)
+									.setBackgroundColor(
+											activeTimelineButtonColor);
+						}
+					});
+
+				}
+
+			} catch (OAuthException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (BadConnectionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RelationshipException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
 		}
 
 	}
@@ -268,6 +498,35 @@ public class UserDetailActivity extends Activity {
 		}
 	}
 
+	public void fillTimelineButtons(User user) {
+		LinearLayout timelineButtons = (LinearLayout) findViewById(R.id.user_timeline_buttons);
+		timelineButtons.setVisibility(View.VISIBLE);
+
+		setTimelineButtonValue(TimelineType.USER_TWEETS, user.statuses_count);
+		setTimelineButtonValue(TimelineType.FRIENDS, user.friends_count);
+		setTimelineButtonValue(TimelineType.FOLLOWER, user.followers_count);
+
+	}
+
+	private void setTimelineButtonValue(TimelineType type, int count) {
+		// TODO Auto-generated method stub
+		LinearLayout button = null;
+		switch (type) {
+		case USER_TWEETS:
+			button = (LinearLayout) findViewById(R.id.user_timeline_button);
+			break;
+		case FRIENDS:
+			button = (LinearLayout) findViewById(R.id.user_friends_button);
+			break;
+		case FOLLOWER:
+			button = (LinearLayout) findViewById(R.id.user_followers_button);
+			break;
+		}
+
+		TextView countView = (TextView) button.findViewById(R.id.action_icon);
+		countView.setText(String.valueOf(count));
+	}
+
 	public void showBadConnectionDlg() {
 
 		connectionDlg = new AlertDialog.Builder(this)
@@ -293,6 +552,45 @@ public class UserDetailActivity extends Activity {
 
 	}
 
+	public void showAccessExceptionDlg(RequestType type, int httpCode) {
+
+		int exceptionMessageId;
+
+		switch (type) {
+		case RELATIONSHIP:
+			exceptionMessageId = R.string.error_get_relationship;
+			break;
+		case FOLLOWERS:
+			exceptionMessageId = R.string.error_get_followers;
+			break;
+		case FRIENDS:
+			exceptionMessageId = R.string.error_get_friends;
+			break;
+		case SINGLE_USER:
+			exceptionMessageId = R.string.error_get_user;
+			break;
+		default:
+			exceptionMessageId = R.string.error_general;
+		}
+
+		String exceptionMessage = getString(exceptionMessageId) + "\n "
+				+ getString(R.string.http_code) + ": "
+				+ String.valueOf(httpCode);
+
+		exceptionDlg = new AlertDialog.Builder(this)
+				.setMessage(exceptionMessage)
+				.setNeutralButton(R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO Auto-generated method stub
+
+							}
+						}).show();
+
+	}
+
 	public void onPause() {
 		super.onPause();
 		if (progressDialog != null) {
@@ -301,6 +599,9 @@ public class UserDetailActivity extends Activity {
 		if (connectionDlg != null) {
 			connectionDlg.dismiss();
 		}
+		if (exceptionDlg != null) {
+			exceptionDlg.dismiss();
+		}
 	}
 
 	public void showActionButtons(Relationship relationship) {
@@ -308,19 +609,19 @@ public class UserDetailActivity extends Activity {
 		actionButtons.setVisibility(View.VISIBLE);
 
 		if (relationship.target.followed_by) {
-			createButton(actionButtons, ActionType.UNFOLLOW);
+			createActionButton(actionButtons, ActionType.UNFOLLOW);
 		} else {
-			createButton(actionButtons, ActionType.FOLLOW);
+			createActionButton(actionButtons, ActionType.FOLLOW);
 		}
 
 		if (relationship.source.can_dm) {
-			createButton(actionButtons, ActionType.SEND_DM);
+			createActionButton(actionButtons, ActionType.SEND_DM);
 		}
 
-		createButton(actionButtons, ActionType.BLOCK);
-		createButton(actionButtons, ActionType.MARK_AS_SPAM);
+		createActionButton(actionButtons, ActionType.BLOCK);
+		createActionButton(actionButtons, ActionType.MARK_AS_SPAM);
 	}
-	
+
 	public void onConfigurationChanged(Configuration newConfig) {
 		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			LinearLayout userLayout = (LinearLayout) findViewById(R.id.user_layout);
@@ -341,7 +642,7 @@ public class UserDetailActivity extends Activity {
 			params.width = LayoutParams.MATCH_PARENT;
 			userDetail.setLayoutParams(params);
 			LinearLayout userTimeline = (LinearLayout) findViewById(R.id.user_timeline_root);
-			userTimeline.setLayoutParams(params);	
+			userTimeline.setLayoutParams(params);
 		}
 		super.onConfigurationChanged(newConfig);
 	}

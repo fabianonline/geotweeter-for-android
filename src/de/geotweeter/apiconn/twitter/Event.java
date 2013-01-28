@@ -55,7 +55,7 @@ public abstract class Event extends TimelineElement {
 //	}
 	
 	@Override
-	public String getSenderString() {
+	public String getSenderName() {
 		return source.getScreenName();
 	}
 	

@@ -76,8 +76,8 @@ public class Conversation {
 				return null;
 			}
 			Tweet current = (Tweet) current_element;
-			while (current.in_reply_to_status_id != 0) {
-				long predecessor_id = current.in_reply_to_status_id;
+			while (current.inReplyToStatusId != 0) {
+				long predecessor_id = current.inReplyToStatusId;
 				try {
 					current = (Tweet) TimelineActivity.availableTweets.get(predecessor_id);
 				} catch (NullPointerException e) {

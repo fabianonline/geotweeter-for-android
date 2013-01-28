@@ -35,7 +35,7 @@ public class StreamDeleteRequest extends TimelineElement implements Serializable
 		return null;
 	}
 	@Override
-	public String getSenderString() {
+	public String getSenderName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
