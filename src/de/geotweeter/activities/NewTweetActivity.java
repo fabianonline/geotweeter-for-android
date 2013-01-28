@@ -188,6 +188,21 @@ public class NewTweetActivity extends Activity {
 					((Geotweeter) getApplication()).updateNotification(false);
 				}
 			}
+			
+			if (i.getExtras().containsKey("de.geotweeter.sendable_tweet")) {
+				SendableTweet tweet = ((SendableTweet) i.getSerializableExtra("de.geotweeter.sendable_tweet"));
+				
+				if (tweet.dmRecipient != null) {
+					dmRecipient = tweet.dmRecipient;
+					NewTweetActivity.this.setTitle(Utils.formatString(
+							R.string.new_tweet_activity_title_sending_dm,
+							dmRecipient));
+					NewTweetActivity.this.findViewById(R.id.btnNoDM)
+						.setVisibility(View.VISIBLE);
+				}
+				editTweetText.setText(tweet.text);
+				reply_to_id = tweet.reply_to_status_id;
+			}
 
 			if (elm instanceof DirectMessage) {
 
@@ -257,11 +272,13 @@ public class NewTweetActivity extends Activity {
 			ListView l = (ListView) findViewById(R.id.timeline);
 			TimelineElementAdapter tea = new TimelineElementAdapter(this,
 					R.layout.timeline_element, new ArrayList<TimelineElement>());
-			tea.add(elm);
-			if (elm.getClass() != DirectMessage.class
-					|| TimelineActivity.getInstance() != null) {
-				new Conversation(tea, TimelineActivity.current_account, true,
-						false);
+			if (elm != null) {
+				tea.add(elm);
+				if (elm.getClass() != DirectMessage.class
+						|| TimelineActivity.getInstance() != null) {
+					new Conversation(tea, TimelineActivity.current_account, true,
+							false);
+				}
 			}
 			l.setAdapter(tea);
 		}

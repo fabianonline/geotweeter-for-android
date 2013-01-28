@@ -1,8 +1,11 @@
 package de.geotweeter;
 
+import java.io.Serializable;
+
 import android.location.Location;
 
-public class SendableTweet {
+public class SendableTweet implements Serializable {
+	private static final long serialVersionUID = -2671715618529883934L;
 	public String text;
 	public Account account;
 //	public String imagePath = null;
