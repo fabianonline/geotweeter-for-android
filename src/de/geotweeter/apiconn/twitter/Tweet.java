@@ -28,7 +28,7 @@ import de.geotweeter.apiconn.YoutubeApiAccess;
 import de.geotweeter.timelineelements.TimelineElement;
 
 /**
- * Representing a single tweet 
+ * Representing a single tweet
  */
 public class Tweet extends TimelineElement {
 	private static final long serialVersionUID = -6610449879010917836L;
@@ -36,17 +36,26 @@ public class Tweet extends TimelineElement {
 	private static final String LOG = "Tweet";
 	public Coordinates coordinates;
 	public String text;
-	public String text_for_display = null;
+	public String textForDisplay = null;
 	public long id;
 	public User user;
 	public View view;
 	public String source;
 	public Entities entities;
-	public long in_reply_to_status_id;
-	public long in_reply_to_user_id;
+	public long inReplyToStatusId;
+	public long inReplyToUserId;
 	private Place place;
 	public Tweet retweeted_status;
 	public boolean favorited;
+	public boolean maskRetweetedStatus = false;
+
+	public Tweet() {
+	}
+
+	public Tweet(User user) {
+		this();
+		this.user = user;
+	}
 	
 	/**
 	 * Returns the tweet id
@@ -56,33 +65,39 @@ public class Tweet extends TimelineElement {
 	public long getID() {
 		return id;
 	}
-	
+
 	/**
 	 * Formats the tweet text to be displayed. Short URLs will be replaced here.
 	 * 
 	 * @return Text to be displayed
 	 */
 	public String getTextForDisplay() {
-		if (text_for_display == null) {
-			text_for_display = new String(text);
+		if (textForDisplay == null) {
+			textForDisplay = "";
+			if (text != null) {
+				textForDisplay = new String(text);
+			}
 			if (entities != null) {
 				if (entities.urls != null) {
 					for (Url url : entities.urls) {
-						text_for_display = text_for_display.replace(url.url, url.display_url);
+						textForDisplay = textForDisplay.replace(url.url,
+								url.display_url);
 					}
 				}
 				if (entities.media != null) {
 					for (Media media : entities.media) {
-						text_for_display = text_for_display.replace(media.url, media.display_url);
+						textForDisplay = textForDisplay.replace(media.url,
+								media.display_url);
 					}
 				}
 
 			}
-			text_for_display = text_for_display.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
+			textForDisplay = textForDisplay.replace("&lt;", "<")
+					.replace("&gt;", ">").replace("&amp;", "&");
 		}
-		return text_for_display;
+		return textForDisplay;
 	}
-	
+
 	public void setUser(User u) {
 		if (User.all_users.containsKey(u.id)) {
 			user = User.all_users.get(u.id);
@@ -91,11 +106,11 @@ public class Tweet extends TimelineElement {
 			user = u;
 		}
 	}
-	
+
 	public String getAvatarSource() {
 		return user.getAvatarSource();
 	}
-	
+
 	/**
 	 * Extracts the twitter client
 	 * 
@@ -109,54 +124,63 @@ public class Tweet extends TimelineElement {
 			source = Utils.getString(R.string.tweet_source_web);
 		}
 	}
-	
-	public Drawable getAvatarDrawable() { 
-		return user.avatar; 
+
+	public Drawable getAvatarDrawable() {
+		return user.avatar;
 	}
 
 	public String getSourceText() {
 		return Utils.formatString(R.string.tweet_source, source);
 	}
-	
+
 	public String getSenderScreenName() {
+		if (user == null) {
+			return "Da fouque?";
+		}
 		return user.getScreenName();
 	}
-	
+
 	@Override
 	public boolean isReplyable() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean showNotification() {
 		return true;
 	}
-	
+
 	@Override
 	public String getNotificationText(String type) {
 		if (type.equals("mention")) {
-			return Utils.formatString(R.string.tweet_notification_text_mention, user.screen_name, text);
+			return Utils.formatString(R.string.tweet_notification_text_mention,
+					user.screen_name, text);
 		} else if (type.equals("retweet")) {
-			return Utils.formatString(R.string.tweet_notification_text_retweet, user.screen_name, text);
+			return Utils.formatString(R.string.tweet_notification_text_retweet,
+					user.screen_name, text);
 		}
 		return "";
 	}
-	
+
 	@Override
 	public String getNotificationContentTitle(String type) {
 		if (type.equals("mention")) {
-			return Utils.formatString(R.string.tweet_notification_content_title_mention, user.screen_name);
-		} else if(type.equals("retweet")) {
-			return Utils.formatString(R.string.tweet_notification_content_title_retweet, user.screen_name);
+			return Utils.formatString(
+					R.string.tweet_notification_content_title_mention,
+					user.screen_name);
+		} else if (type.equals("retweet")) {
+			return Utils.formatString(
+					R.string.tweet_notification_content_title_retweet,
+					user.screen_name);
 		}
 		return "";
 	}
-	
+
 	@Override
 	public String getNotificationContentText(String type) {
 		return text;
 	}
-	
+
 	/**
 	 * Returns the element type of the tweet for layout reasons
 	 * 
@@ -176,7 +200,7 @@ public class Tweet extends TimelineElement {
 				return TLEType.UNREAD;
 			}
 		} catch (NullPointerException e) {
-			
+
 		}
 		return TLEType.READ;
 	}
@@ -184,12 +208,13 @@ public class Tweet extends TimelineElement {
 	/**
 	 * Returns true if the given user is mentioned
 	 * 
-	 * @param user User whose mention status is to be checked
+	 * @param user
+	 *            User whose mention status is to be checked
 	 * @return
 	 */
 	public boolean mentionsUser(User user) {
 		if (entities != null) {
-			for(int i = 0; i < entities.user_mentions.size(); i++ ) {
+			for (int i = 0; i < entities.user_mentions.size(); i++) {
 				if (entities.user_mentions.get(i).id == user.id) {
 					return true;
 				}
@@ -199,10 +224,13 @@ public class Tweet extends TimelineElement {
 	}
 
 	@Override
-	public String getSenderString() {
-		return user.getScreenName();
+	public String getSenderName() {
+		if (user == null) {
+			return "Da fouque?";
+		}
+		return user.name;
 	}
-	
+
 	@Override
 	public String getPlaceString() {
 		if (place == null) {
@@ -210,27 +238,37 @@ public class Tweet extends TimelineElement {
 		}
 		return place.getFullName();
 	}
-	
+
 	/**
-	 * Parses the tweet text for media links and provides a list of URL pairs
-	 * of thumbnail and full size URLs
+	 * Parses the tweet text for media links and provides a list of URL pairs of
+	 * thumbnail and full size URLs
 	 * 
 	 * @return List of URL pairs
 	 */
 	public List<Pair<URL, URL>> getMediaList() {
 		List<Pair<URL, URL>> result = new ArrayList<Pair<URL, URL>>();
+		if (entities == null) {
+			return result;
+		}
+		if (entities.media == null) {
+			return result;
+		}
 		for (Media media : entities.media) {
 			try {
-				Pair<URL, URL> urls = new Pair<URL, URL>(new URL(media.media_url + ":thumb"), new URL(media.media_url));
+				Pair<URL, URL> urls = new Pair<URL, URL>(new URL(
+						media.media_url + ":thumb"), new URL(media.media_url));
 				result.add(urls);
 			} catch (MalformedURLException e) {
 				continue;
 			}
 		}
+		if (entities.urls == null) {
+			return result;
+		}
 		for (Url url : entities.urls) {
 			PictureService hoster = Utils.getPictureService(url);
 			switch (hoster) {
-			case TWITPIC: 
+			case TWITPIC:
 				try {
 					result.add(TwitpicApiAccess.getUrlPair(url));
 				} catch (MalformedURLException e) {
@@ -315,23 +353,31 @@ public class Tweet extends TimelineElement {
 	 */
 	@Override
 	public boolean isOwnMessage() {
-		return (this.user.id == TimelineActivity.current_account.getUser().id);
+		try {
+			return (this.user.id == TimelineActivity.current_account.getUser().id);
+		} catch (Exception e) {
+			return false;
+		}
 	}
-	
+
 	/**
 	 * 
 	 * @return true if the tweet can be retweeted
 	 */
 	public boolean isRetweetable() {
-		return !isOwnMessage() || !(this.user._protected);
+		try {
+			return !isOwnMessage() || !(this.user._protected);
+		} catch (Exception e) {
+			return false;
+		}
 	}
-	
+
 	/**
 	 * 
 	 * @return true if the tweet is an answer
 	 */
 	public boolean isConversationEndpoint() {
-		return (this.in_reply_to_status_id != 0);
+		return (this.inReplyToStatusId != 0);
 	}
-	
+
 }

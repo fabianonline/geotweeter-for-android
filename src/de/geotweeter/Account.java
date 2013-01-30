@@ -446,7 +446,7 @@ public class Account extends Observable implements Serializable {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				elements.addAllAsFirst(all_elements);
+				elements.addAllAsFirst(all_elements, true);
 				setChanged();
 				notifyObservers(new AccountSwitcherMessage(
 						AccountSwitcherRadioButton.Message.UNREAD,
@@ -838,7 +838,7 @@ public class Account extends Observable implements Serializable {
 				}
 			}
 		}
-		elements.addAllAsFirst(tweets);
+		elements.addAllAsFirst(tweets, true);
 		setChanged();
 		notifyObservers(new AccountSwitcherMessage(
 				AccountSwitcherRadioButton.Message.UNREAD,

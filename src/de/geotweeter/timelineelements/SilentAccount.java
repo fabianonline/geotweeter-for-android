@@ -8,25 +8,32 @@ import android.util.Pair;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.apiconn.twitter.Tweet;
+import de.geotweeter.apiconn.twitter.User;
 
-public class ErrorMessageDisguisedAsTweet extends Tweet {
-	private final int message_resource_id;
+public class SilentAccount extends Tweet {
 
-	private static final long serialVersionUID = -9192797986117349031L;
-
-	public ErrorMessageDisguisedAsTweet(int message_resource_id) {
-		this.message_resource_id = message_resource_id;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5763816499571748587L;
+	
+	public SilentAccount(User user) {
+		this.user = user;
 	}
-
+	
 	public int getBackgroundDrawableID(boolean getDarkVersion) {
 		return getDarkVersion ? R.drawable.listelement_background_dark_unread
 				: R.drawable.listelement_background_light_unread;
 	}
 
 	public String getSenderName() {
-		return "";
+		return user.getScreenName();
 	}
-
+	
+	public String getSenderScreenName() {
+		return user.getScreenName();
+	}
+	
 	public String getDateString() {
 		return "";
 	}
@@ -40,14 +47,16 @@ public class ErrorMessageDisguisedAsTweet extends Tweet {
 	}
 
 	public String getAvatarSource() {
-		return null;
+		return user.getAvatarSource();
 	}
-
+	
 	public List<Pair<URL, URL>> getMediaList() {
 		return new LinkedList<Pair<URL, URL>>();
 	}
 
 	public String getTextForDisplay() {
-		return Geotweeter.getInstance().getString(message_resource_id);
+		return Geotweeter.getInstance().getString(R.string.user_silent);
 	}
+
+	
 }

@@ -28,6 +28,8 @@ import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.twitter.DirectMessage;
 import de.geotweeter.apiconn.twitter.Hashtag;
 import de.geotweeter.apiconn.twitter.Tweet;
+import de.geotweeter.timelineelements.ProtectedAccount;
+import de.geotweeter.timelineelements.SilentAccount;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 import de.geotweeter.timelineelements.UserMention;
@@ -39,6 +41,10 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	private Typeface tf;
 	private LayoutInflater inflater;
 	private final Animation ani;
+
+	private enum TLEHandlingType {
+		SPECIAL, KNOWN, NORMAL
+	}
 
 	/**
 	 * Constructor
@@ -94,12 +100,24 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	 * @param elements
 	 *            The list of elements to be added
 	 */
-	public void addAllAsFirst(List<TimelineElement> elements) {
+	public void addAllAsFirst(List<TimelineElement> elements, boolean sort) {
 		for (TimelineElement t : elements) {
-			if (!available.containsKey(t.getID())) {
+			
+			TLEHandlingType type = TLEHandlingType.NORMAL;
+			if (t instanceof SilentAccount || t instanceof ProtectedAccount) {
+				type = TLEHandlingType.SPECIAL;
+			} else if (available.containsKey(t.getID())) {
+				type = TLEHandlingType.KNOWN;
+			}
+
+			switch (type) {
+			case NORMAL:
 				processNewTLE(t);
+			case SPECIAL:
 				items.add(t);
-				Collections.sort(items, new TLEComparator());
+				if (sort) {
+					Collections.sort(items, new TLEComparator());
+				}
 				this.notifyDataSetChanged();
 			}
 		}
@@ -162,7 +180,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 
 		if (tle.getClass() == Tweet.class) {
 			Tweet t = (Tweet) tle;
-			if (t.retweeted_status != null) {
+			if (t.retweeted_status != null && !t.maskRetweetedStatus) {
 				tle = t.retweeted_status;
 				is_retweet = true;
 				retweeter = t.getSenderScreenName();
@@ -220,7 +238,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 
 			txtView = (TextView) v.findViewById(R.id.txtSender);
 			if (txtView != null) {
-				txtView.setText(tle.getSenderString());
+				txtView.setText(tle.getSenderScreenName());
 			}
 
 			txtView = (TextView) v.findViewById(R.id.txtTimestamp);

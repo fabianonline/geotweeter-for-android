@@ -27,6 +27,7 @@ public class User extends UserElement implements java.io.Serializable {
 	public int followers_count;
 	public int friends_count;
 	public int statuses_count;
+	public Tweet status;
 
 	// public View[] views = new View[] {};
 
@@ -47,6 +48,7 @@ public class User extends UserElement implements java.io.Serializable {
 		followers_count = user.followers_count;
 		friends_count = user.friends_count;
 		statuses_count = user.statuses_count;
+		status = user.status;
 	}
 
 	public String getScreenName() {

@@ -6,6 +6,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <LinearLayout
+        android:id="@+id/user_timeline_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible" >
+
+        <include
+            android:id="@+id/user_timeline_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/action_button" />
+
+        <include
+            android:id="@+id/user_friends_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/action_button" />
+
+        <include
+            android:id="@+id/user_followers_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/action_button" />
+        
+    </LinearLayout>
+
     <ListView
         android:id="@+id/user_timeline"
         android:layout_width="match_parent"

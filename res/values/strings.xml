@@ -34,6 +34,7 @@
     <string name="minus">-</string>
     <string name="no">Nein</string>
     <string name="yes">Ja</string>
+    <string name="ok">OK</string>
     <string name="set">Setzen</string>
     <string name="cancel">Abbrechen</string>
     <string name="btn_add_image">Bild</string>
@@ -49,6 +50,7 @@
     <string name="action_follow">Folgen</string>
     <string name="action_unfollow">Entfolgen</string>
     <string name="action_block">Blocken</string>
+    <string name="action_unblock">Entblocken</string>
     <string name="action_send_dm">DM schicken</string>
     <string name="action_mark_as_spam">Als Spam melden</string>
 
@@ -117,6 +119,15 @@
     <string name="error_tweet_loading_failed">Tweet konnte nicht abgerufen werden. Sorry.</string>
     <string name="error_connection_action">Aktion konnte wegen eines Verbindungsfehlers nicht ausgeführt werden.</string>
     <string name="error_connection_retry_dlg">Verbindungsprobleme! Abruf wiederholen?</string>
+    <string name="error_get_relationship">Problem bei Abruf der Beziehung</string>
+    <string name="error_get_followers">Problem bei Abruf der Follower</string>
+    <string name="error_get_friends">Problem bei Abruf der Freunde</string>
+    <string name="error_general">Unbekannter Fehler (Wirklich!)</string>
+    <string name="error_get_user">Problem bei Abruf der Userdetails</string>
+    <string name="error_user_action">Aktion konnte nicht durchgeführt werden.</string>
+    <string name="error_get_user_timeline_1">Fehler beim Abruf der</string>
+    <string name="error_get_user_timeline_2">. Abruf wiederholen?</string>
+    <string name="http_code">HTTP-Code</string>
     <string name="pref_image_size_title">Bilder-Größe</string>
 
     <string-array name="pref_image_size_entries">
@@ -166,8 +177,14 @@
     <string name="dialog_delete_message">Bist du sicher, dass du den Status löschen möchtest?</string>
     <string name="dialog_delete_positive">Löschen</string>
     <string name="user_details">Benutzerdetails</string>
+    <string name="user_protected">Dieser Account ist geschützt</string>
+    <string name="user_silent">Dieser Account hat noch nichts getwittert</string>
     <string name="url_icon">urlIcon</string>
     <string name="loc_icon">locIcon</string>
     <string name="desc_icon">descIcon</string>
+    
+    <string name="tweets">Tweets</string>
+    <string name="follower">Follower</string>
+    <string name="friends">Freunde</string>
 
 </resources>

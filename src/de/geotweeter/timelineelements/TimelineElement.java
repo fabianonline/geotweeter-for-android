@@ -40,7 +40,7 @@ public abstract class TimelineElement implements Serializable {
 	abstract public String getSenderScreenName();
 
 	// abstract public int getBackgroundDrawableID(boolean getDarkVersion);
-	abstract public String getSenderString();
+	abstract public String getSenderName();
 
 	abstract public boolean isOwnMessage();
 
