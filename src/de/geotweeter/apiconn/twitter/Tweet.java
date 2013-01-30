@@ -42,8 +42,8 @@ public class Tweet extends TimelineElement {
 	public View view;
 	public String source;
 	public Entities entities;
-	public long inReplyToStatusId;
-	public long inReplyToUserId;
+	public long in_reply_to_status_id;
+	public long in_reply_to_user_id;
 	private Place place;
 	public Tweet retweeted_status;
 	public boolean favorited;
@@ -377,7 +377,7 @@ public class Tweet extends TimelineElement {
 	 * @return true if the tweet is an answer
 	 */
 	public boolean isConversationEndpoint() {
-		return (this.inReplyToStatusId != 0);
+		return (this.in_reply_to_status_id != 0);
 	}
 
 }
