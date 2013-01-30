@@ -3,6 +3,8 @@
 require 'rubygems'
 require 'bundler'
 require 'digest/sha2'
+require 'base64'
+require 'zlib'
 Bundler.require
 
 Thread.abort_on_exception = true
@@ -25,7 +27,9 @@ CONSUMER_SECRET = $properties['twitter.consumer.secret']
 def update()
 	(lines = IO.readlines("command.txt")) rescue return
 	lines.each do |line|
-		command, token, secret, reg_id, screen_name = *line.split(" ")
+		command, token, secret, reg_id, screen_name, version = *line.split(" ")
+		version ||= 0
+		version = "v" + version
 		(id = token.split("-")[0].to_i) rescue next
 		if command=="add"
 			next unless reg_id && reg_id.length>5
@@ -33,24 +37,22 @@ def update()
 				$settings[id][:screen_name] = screen_name
 				$settings[id][:token] = token
 				$settings[id][:secret] = secret
-				if $settings[id].has_key?(:reg_ids) && $settings[id][:reg_ids].include?(reg_id)
-					log screen_name, "Not adding client: Already known."
-					$stats[:re_registrations] += 1
-					next
-				end
-				$settings[id][:reg_ids] << reg_id
-				log(screen_name, "Adding new reg_id")
-				$stats[:reg_ids] += 1
+				$settings[id][:reg_ids] = {} unless $settings[id].has_key?(:reg_ids)
+				$settings[id][:reg_ids].each_value {|s| $stats[:reg_ids]-=s.count; s.delete(reg_id); $stats[:reg_ids]+=s.count}
+				$settings[id][:reg_ids][version] = [] unless $settings[id][:reg_ids].has_key?(version)
+				$settings[id][:reg_ids][version] << reg_id
+				log screen_name, "Not adding user: Already known."
+				$stats[:re_registrations] += 1
 			else
-				hash = {:token=>token, :secret=>secret, :reg_ids=>[reg_id], :screen_name=>screen_name, :user_id=>id}
+				hash = {:token=>token, :secret=>secret, :reg_ids=>{version=>[reg_id]}, :screen_name=>screen_name, :user_id=>id}
 				$settings[id] = hash
 				log(screen_name, "Adding stream")
 				stream(id)
 			end
 		elsif command=="del"
 			next unless $settings.has_key? id
-			$stats[:reg_ids] -= 1 if $settings[id][:reg_ids].delete(reg_id)
-			if $settings[id][:reg_ids].empty?
+			$stats[:reg_ids] -= 1 if $settings[id][:reg_ids].any?{|s| s[1].delete(reg_id)}
+			if $settings[id][:reg_ids].empty? || $settings[id][:reg_ids].all?{|s| s[1].empty?}
 				$settings.delete id
 				log(screen_name, "Stream fhas no more reg_ids left.")
 				$settings[id][:client].connection.stop if $settings[id][:client]
@@ -74,30 +76,40 @@ def save_settings
 	File.open(File.join(File.dirname(__FILE__), "settings.yml"), "w") {|f| f.write YAML.dump(copy)}
 end
 
-def send_gcm(config, data, type)
-	result = $gcm_sender.send(config[:reg_ids], {:data=>{:type=>type, :data=>data.to_json, :user_id=>config[:user_id]}})
+def prepare_gcm(config, event_data, type)
+	data = ""
+	if config[:reg_ids].has_key?("v0") && !config[:reg_ids]["v0"].empty?
+		send_gcm(config, event_data.to_json, "v0", type)
+	end
+	if config[:reg_ids].has_key?("v1") && !config[:reg_ids]["v1"].empty?
+		data = Base64.encode64(Zlib::Deflate.deflate(data.to_json))
+		send_gcm(config, data, "v1", type)
+	end
+end
+
+def send_gcm(config, data, version, type)
+	result = $gcm_sender.send(config[:reg_ids][version], {:data=>{:type=>type, :data=>data, :user_id=>config[:user_id]}})
 	result = JSON.parse(result.body)
-	unless result["success"]==config[:reg_ids].count
-		log "ERROR! Success was #{result['success']}, expected #{config[:reg_ids].count}"
+	unless result["success"]==config[:reg_ids][version].count
+		log "ERROR! Success was #{result['success']}, expected #{config[:reg_ids][version].count}"
 		not_registered_reg_ids = []
 		result['results'].each_with_index do |res, id|
 			if res['error']=="NotRegistered"
-				not_registered_reg_ids << config[:reg_ids][id]
+				not_registered_reg_ids << config[:reg_ids][version][id]
 			end
 		end
 		
 		not_registered_reg_ids.each do |reg_id|
-			config[:reg_ids].delete reg_id
+			config[:reg_ids][version].delete reg_id
 			log "ERROR: Not Registered Device - removing."
 			$stats[:reg_ids] -= 1
 		end
 		
 		save_settings unless not_registered_reg_ids.empty?
 		
-		unless result["success"]==(config[:reg_ids].count - not_registered_reg_ids.count)
+		unless result["success"]==(config[:reg_ids][version].count - not_registered_reg_ids.count)
 			log "ERROR: #{result.inspect}"
-			log "ERROR: Sent data packet length was: #{data.to_json.length}"
-			log "ERROR: Send data packet was: #{data.to_json}"
+			log "ERROR: Sent data packet length was: #{data.length}"
 		end
 	end
 	$stats[:gcms_successful] += result['success'].to_i
@@ -134,23 +146,23 @@ def stream(hash)
 			
 			if data.has_key?("text") && data.has_key?("recipient") && data["recipient_id"]==config[:user_id]
 				log screen_name, "DM."
-				send_gcm(config, data, "dm")
+				prepare_gcm(config, data, "dm")
 				$stats[:dms] += 1
 			elsif data.has_key?("text")
 				if data["entities"]["user_mentions"].any?{|mention| mention["id"]==config[:user_id]}
 					log screen_name, "Mention. #{data["text"]}"
-					send_gcm(config, data, "mention")
+					prepare_gcm(config, data, "mention")
 					$stats[:mentions] += 1
 				elsif data.has_key?("rewteeted_status") && data["retweeted_status"]["user"]["id"]==config[:user_id]
 					log hash, "Retweet"
-					send_gcm(config, data, "retweet")
+					prepare_gcm(config, data, "retweet")
 					$stats[:mentions] += 1
 				else
 					$stats[:normal_tweets] += 1
 				end
 			elsif data.has_key?("event") && data["event"]=="favorite" && data["source"]["id"]!=config[:user_id]
 				log screen_name, "Favorited"
-				send_gcm(config, data, "favorite")
+				prepare_gcm(config, data, "favorite")
 				$stats[:favorites] += 1
 			end
 		end
@@ -179,7 +191,7 @@ def stream(hash)
 		client.on_rate_limited { log screen_name, "Rate limited. o_O"; sleep 300 }
 	end
 	$stats[:accounts] += 1
-	$stats[:reg_ids] += config[:reg_ids].count
+	$stats[:reg_ids] += config[:reg_ids].collect{|r| r[1].count}.inject(&:+)
 end
 
 def log(screen_name, string=nil)
