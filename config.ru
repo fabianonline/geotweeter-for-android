@@ -1,6 +1,5 @@
-require 'rubygems'
-require 'rack'
-require 'sinatra'
+$groups_to_require = [:webservice]
+require 'lib/core.rb'
 
-require './web_interface'
+require './webservice.rb'
 run Sinatra::Application
