@@ -303,7 +303,7 @@ public class BackgroundImageLoader {
 
 		public FileCache(Context context) {
 			cache_dir = context.getExternalFilesDir(null);
-			if (!cache_dir.exists()) {
+			if (cache_dir == null || !cache_dir.exists()) {
 				cache_dir = context.getCacheDir();
 			}
 			cache_dir = new File(cache_dir, Constants.PATH_AVATAR_IMAGES);
