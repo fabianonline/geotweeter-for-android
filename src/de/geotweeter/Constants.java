@@ -68,6 +68,7 @@ public class Constants extends Application {
 	public static final int UNCHECKED_ALPHA_VALUE = 127;
 
 	public static final int NOTIFICATION_ID = 13513814;
+	public static final int GCM_VERSION = 1;
 
 	public static final String ICON_REPLY = "";
 	public static final String ICON_RETWEET = "📣";

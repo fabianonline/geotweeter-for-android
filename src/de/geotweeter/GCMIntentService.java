@@ -1,10 +1,14 @@
 package de.geotweeter;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
+import java.util.zip.InflaterInputStream;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 
@@ -53,9 +57,35 @@ public class GCMIntentService extends GCMBaseIntentService {
 			}
 		}
 		
+		String data = intent.getExtras().getString("data");
+		String version = intent.getExtras().getString("version");
+		
+		if ("1".equals(version)) {
+			byte[] bytes = Base64.decode(data, Base64.DEFAULT);
+			StringBuilder string = new StringBuilder();
+			try {
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+				InputStream in = new InflaterInputStream(byteStream);
+				byte[] buffer = new byte[128];
+				int len;
+				while ((len = in.read(buffer)) > 0) {
+					string.append(new String(buffer, 0, len));
+				}
+			} catch (Exception ex) {
+				Log.d(LOG, "Exception! " + ex.toString());
+				return;
+			}
+			data = string.toString();
+		} else if ("0".equals(version) || version==null) {
+			// do nothing - data is already in the correct format
+		} else {
+			Log.e(LOG, "Too new version from GCM: " + version);
+			return;
+		}
+		
 		TimelineElement t;
 		try {
-			t = Utils.jsonToNativeObject(intent.getExtras().getString("data"));
+			t = Utils.jsonToNativeObject(data);
 		} catch (JSONException e) {
 			return;
 		} catch (UnknownJSONObjectException e) {
