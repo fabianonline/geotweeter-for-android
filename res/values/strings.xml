@@ -50,6 +50,7 @@
     <string name="action_follow">Folgen</string>
     <string name="action_unfollow">Entfolgen</string>
     <string name="action_block">Blocken</string>
+    <string name="action_unblock">Entblocken</string>
     <string name="action_send_dm">DM schicken</string>
     <string name="action_mark_as_spam">Als Spam melden</string>
 
@@ -123,6 +124,9 @@
     <string name="error_get_friends">Problem bei Abruf der Freunde</string>
     <string name="error_general">Unbekannter Fehler (Wirklich!)</string>
     <string name="error_get_user">Problem bei Abruf der Userdetails</string>
+    <string name="error_user_action">Aktion konnte nicht durchgeführt werden.</string>
+    <string name="error_get_user_timeline_1">Fehler beim Abruf der</string>
+    <string name="error_get_user_timeline_2">. Abruf wiederholen?</string>
     <string name="http_code">HTTP-Code</string>
     <string name="pref_image_size_title">Bilder-Größe</string>
 

@@ -44,6 +44,8 @@ public class Constants extends Application {
 	public static final String URI_DEFAV                 = "https://api.twitter.com/1.1/favorites/destroy.json";
 	public static final String URI_FOLLOW                = "https://api.twitter.com/1.1/friendships/create.json";
 	public static final String URI_UNFOLLOW              = "https://api.twitter.com/1.1/friendships/destroy.json";
+	public static final String URI_BLOCK                 = "https://api.twitter.com/1.1/blocks/create.json";
+	public static final String URI_UNBLOCK               = "https://api.twitter.com/1.1/blocks/destroy.json";
 	public static final String URI_FOLLOWING_LIST        = "https://api.twitter.com/1.1/friends/list.json";
 	public static final String URI_FOLLOWER_LIST		 = "https://api.twitter.com/1.1/followers/list.json";
 	public static final String URI_FRIENDSHIP_SHOW 		 = "https://api.twitter.com/1.1/friendships/show.json";
@@ -80,14 +82,15 @@ public class Constants extends Application {
 	public static final String ICON_UNFOLLOW = "♡";
 	public static final String ICON_SPAM = "⚑";
 	public static final String ICON_DM = "✉";
-	public static final String ICON_BLOCK = "✖";
+	public static final String ICON_BLOCK = "👎";
+	public static final String ICON_UNBLOCK = "👍";
 	
 	public static enum TLEType {
 		READ, UNREAD, MENTION, OWN, DM, EVENT, DELETE
 	}
 	
 	public static enum ActionType {
-		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE, FOLLOW, UNFOLLOW, SEND_DM, BLOCK, MARK_AS_SPAM
+		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE, FOLLOW, UNFOLLOW, SEND_DM, BLOCK, MARK_AS_SPAM, UNBLOCK
 	}
 		
 	public static enum TimelineType {

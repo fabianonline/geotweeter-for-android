@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.acra.ACRA;
 import org.scribe.exceptions.OAuthException;
 
 import android.app.Activity;
@@ -42,6 +43,8 @@ import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.apiconn.twitter.Users;
 import de.geotweeter.exceptions.BadConnectionException;
 import de.geotweeter.exceptions.BadConnectionException.RequestType;
+import de.geotweeter.exceptions.BlockException;
+import de.geotweeter.exceptions.FollowException;
 import de.geotweeter.exceptions.RelationshipException;
 import de.geotweeter.exceptions.UserException;
 import de.geotweeter.timelineelements.ProtectedAccount;
@@ -50,6 +53,7 @@ import de.geotweeter.timelineelements.TimelineElement;
 
 public class UserDetailActivity extends Activity {
 
+	public static User user;
 	private final String LOG = "UserDetailActivity";
 	private BadConnectionException bce = null;
 	private String userName = "";
@@ -64,6 +68,7 @@ public class UserDetailActivity extends Activity {
 	private TimelineElementAdapter tea;
 	private Map<TimelineType, List<TimelineElement>> timelines = new HashMap<TimelineType, List<TimelineElement>>();
 	private Map<TimelineType, LinearLayout> timelineButtons = new HashMap<TimelineType, LinearLayout>();
+	private Map<ActionType, LinearLayout> actionButtons = new HashMap<ActionType, LinearLayout>();
 	private int activeTimelineButtonColor;
 	private int inactiveTimelineButtonColor;
 	private int availablePrimaryTextColor;
@@ -134,6 +139,12 @@ public class UserDetailActivity extends Activity {
 		new GetUserRelationShipTask().execute();
 	}
 
+	@SuppressWarnings({ "unchecked" })
+	private void executeTask(@SuppressWarnings("rawtypes") AsyncTask task,
+			Object... params) {
+		task.execute(params);
+	}
+
 	private void generateTimelineButton(LinearLayout buttons,
 			final TimelineType type) {
 		CharSequence count = null, desc = null;
@@ -157,7 +168,7 @@ public class UserDetailActivity extends Activity {
 
 		TextView countView = (TextView) button.findViewById(R.id.action_icon);
 		countView.setText(count);
-		countView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20.0f);
+		countView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15.0f);
 		countView.setTextColor(unavailablePrimaryTextColor);
 		TextView description = (TextView) button
 				.findViewById(R.id.action_description);
@@ -167,6 +178,7 @@ public class UserDetailActivity extends Activity {
 		LinearLayout.LayoutParams params = (LayoutParams) button
 				.getLayoutParams();
 		params.weight = 1.0f;
+		params.width = 0;
 		params.setMargins(Utils.convertDipToPixel(3), 0,
 				Utils.convertDipToPixel(3), Utils.convertDipToPixel(3));
 		button.setLayoutParams(params);
@@ -183,7 +195,31 @@ public class UserDetailActivity extends Activity {
 		timeline.setAdapter(tea);
 	}
 
-	private void createActionButton(LinearLayout buttons, final ActionType type) {
+	private LinearLayout createSpinnerButton(LinearLayout buttons,
+			Integer position) {
+		LinearLayout button = (LinearLayout) inflater.inflate(
+				R.layout.spinner_button, null);
+
+		if (position != null) {
+			buttons.addView(button, position);
+		} else {
+			buttons.addView(button);
+		}
+
+		LinearLayout.LayoutParams params = (LayoutParams) button
+				.getLayoutParams();
+		params.weight = 1.0f;
+		params.width = 0;
+		params.setMargins(Utils.convertDipToPixel(3), 0,
+				Utils.convertDipToPixel(3), Utils.convertDipToPixel(3));
+		button.setLayoutParams(params);
+		button.setVisibility(View.VISIBLE);
+
+		return button;
+	}
+
+	private void createActionButton(LinearLayout buttons,
+			final ActionType type, Integer position) {
 		CharSequence icon = null, desc = null;
 		Resources res = buttons.getResources();
 		switch (type) {
@@ -203,6 +239,10 @@ public class UserDetailActivity extends Activity {
 			icon = Constants.ICON_BLOCK;
 			desc = res.getString(R.string.action_block);
 			break;
+		case UNBLOCK:
+			icon = Constants.ICON_UNBLOCK;
+			desc = res.getString(R.string.action_unblock);
+			break;
 		case MARK_AS_SPAM:
 			icon = Constants.ICON_SPAM;
 			desc = res.getString(R.string.action_mark_as_spam);
@@ -217,10 +257,15 @@ public class UserDetailActivity extends Activity {
 		TextView description = (TextView) button
 				.findViewById(R.id.action_description);
 		description.setText(desc);
-		buttons.addView(button);
+		if (position != null) {
+			buttons.addView(button, position);
+		} else {
+			buttons.addView(button);
+		}
 		LinearLayout.LayoutParams params = (LayoutParams) button
 				.getLayoutParams();
 		params.weight = 1.0f;
+		params.width = 0;
 		params.setMargins(Utils.convertDipToPixel(3), 0,
 				Utils.convertDipToPixel(3), Utils.convertDipToPixel(3));
 		button.setLayoutParams(params);
@@ -233,9 +278,325 @@ public class UserDetailActivity extends Activity {
 				actionClick(type);
 			}
 		});
+
+		actionButtons.put(type, button);
 	}
 
 	protected void actionClick(ActionType type) {
+		switch (type) {
+		case FOLLOW:
+			executeTask(new FollowUserTask(), user.id);
+			break;
+		case UNFOLLOW:
+			executeTask(new UnfollowUserTask(), user.id);
+			break;
+		case BLOCK:
+			executeTask(new BlockTask(), user.id);
+			break;
+		case UNBLOCK:
+			executeTask(new UnblockTask(), user.id);
+			break;
+		case MARK_AS_SPAM:
+			markSpamUser();
+			break;
+		case SEND_DM:
+			sendMessage();
+			break;
+		}
+	}
+
+	public class UnblockTask extends AsyncTask<Object, Void, Exception> {
+
+		LinearLayout buttons;
+		LinearLayout spinner;
+		Object[] params;
+
+		protected void onPreExecute() {
+			LinearLayout blockButton = actionButtons.get(ActionType.UNBLOCK);
+			buttons = (LinearLayout) blockButton.getParent();
+
+			int buttonIndex = buttons.indexOfChild(blockButton);
+
+			buttons.removeViewAt(buttonIndex);
+			actionButtons.remove(ActionType.UNBLOCK);
+
+			spinner = createSpinnerButton(buttons, buttonIndex);
+
+			// spinner = new ProgressBar(buttons.getContext(), null,
+			// android.R.attr.progressBarStyleSmall);
+			// buttons.addView(spinner, buttonIndex);
+		}
+
+		@Override
+		protected Exception doInBackground(Object... params) {
+			this.params = params;
+			try {
+				TimelineActivity.current_account.getApi().unblock(
+						(Long) params[0]);
+			} catch (BlockException e) {
+				return e;
+			} catch (BadConnectionException e) {
+				return e;
+			}
+			return null;
+		}
+
+		protected void onPostExecute(Exception result) {
+			if (result == null) {
+				int buttonIndex = buttons.indexOfChild(spinner);
+				buttons.removeViewAt(buttonIndex);
+				createActionButton(buttons, ActionType.BLOCK, buttonIndex);
+			} else {
+				if (result instanceof BadConnectionException) {
+					showBadConnectionDlg(new FollowUserTask(), params);
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.UNBLOCK, buttonIndex);
+					return;
+				} else {
+					exceptionDlg = new AlertDialog.Builder(
+							UserDetailActivity.this)
+							.setMessage(R.string.error_user_action)
+							.setNeutralButton(R.string.ok,
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											finish();
+										}
+									}).show();
+
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.UNBLOCK, buttonIndex);
+				}
+			}
+		}
+
+	}
+
+	public class BlockTask extends AsyncTask<Object, Void, Exception> {
+
+		LinearLayout buttons;
+		LinearLayout spinner;
+		Object[] params;
+
+		protected void onPreExecute() {
+			LinearLayout blockButton = actionButtons.get(ActionType.BLOCK);
+			buttons = (LinearLayout) blockButton.getParent();
+
+			int buttonIndex = buttons.indexOfChild(blockButton);
+
+			buttons.removeViewAt(buttonIndex);
+			actionButtons.remove(ActionType.BLOCK);
+
+			spinner = createSpinnerButton(buttons, buttonIndex);
+		}
+
+		@Override
+		protected Exception doInBackground(Object... params) {
+			this.params = params;
+			try {
+				TimelineActivity.current_account.getApi().block(
+						(Long) params[0]);
+			} catch (BlockException e) {
+				return e;
+			} catch (BadConnectionException e) {
+				return e;
+			}
+			return null;
+		}
+
+		protected void onPostExecute(Exception result) {
+			if (result == null) {
+				int buttonIndex = buttons.indexOfChild(spinner);
+				buttons.removeViewAt(buttonIndex);
+				createActionButton(buttons, ActionType.UNBLOCK, buttonIndex);
+
+				LinearLayout unfollowButton = actionButtons
+						.get(ActionType.UNFOLLOW);
+				buttonIndex = buttons.indexOfChild(unfollowButton);
+
+				buttons.removeViewAt(buttonIndex);
+				actionButtons.remove(ActionType.UNFOLLOW);
+				createActionButton(buttons, ActionType.FOLLOW, buttonIndex);
+
+				LinearLayout messageButton = actionButtons
+						.get(ActionType.SEND_DM);
+				buttonIndex = buttons.indexOfChild(messageButton);
+				buttons.removeViewAt(buttonIndex);
+				actionButtons.remove(ActionType.SEND_DM);
+			} else {
+				if (result instanceof BadConnectionException) {
+					showBadConnectionDlg(new FollowUserTask(), params);
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.BLOCK, buttonIndex);
+					return;
+				} else {
+					exceptionDlg = new AlertDialog.Builder(
+							UserDetailActivity.this)
+							.setMessage(R.string.error_user_action)
+							.setNeutralButton(R.string.ok,
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											finish();
+										}
+									}).show();
+
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.BLOCK, buttonIndex);
+				}
+			}
+		}
+	}
+
+	public class FollowUserTask extends AsyncTask<Object, Void, Exception> {
+
+		LinearLayout buttons;
+		LinearLayout spinner;
+		Object[] params;
+
+		protected void onPreExecute() {
+			LinearLayout followButton = actionButtons.get(ActionType.FOLLOW);
+			buttons = (LinearLayout) followButton.getParent();
+
+			int buttonIndex = buttons.indexOfChild(followButton);
+
+			buttons.removeViewAt(buttonIndex);
+			actionButtons.remove(ActionType.FOLLOW);
+			
+			spinner = createSpinnerButton(buttons, buttonIndex);
+		}
+
+		@Override
+		protected Exception doInBackground(Object... params) {
+			this.params = params;
+			try {
+				TimelineActivity.current_account.getApi().follow(
+						(Long) params[0]);
+			} catch (FollowException e) {
+				return e;
+			} catch (BadConnectionException e) {
+				return e;
+			}
+			return null;
+		}
+
+		protected void onPostExecute(Exception result) {
+			if (result == null) {
+				int buttonIndex = buttons.indexOfChild(spinner);
+				buttons.removeViewAt(buttonIndex);
+				createActionButton(buttons, ActionType.UNFOLLOW, buttonIndex);
+			} else {
+				if (result instanceof BadConnectionException) {
+					showBadConnectionDlg(new FollowUserTask(), params);
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.FOLLOW, buttonIndex);
+					return;
+				} else {
+					exceptionDlg = new AlertDialog.Builder(
+							UserDetailActivity.this)
+							.setMessage(R.string.error_user_action)
+							.setNeutralButton(R.string.ok,
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											finish();
+										}
+									}).show();
+
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.FOLLOW, buttonIndex);
+				}
+			}
+		}
+	}
+
+	public class UnfollowUserTask extends AsyncTask<Object, Void, Exception> {
+
+		LinearLayout buttons;
+		LinearLayout spinner;
+		Object[] params;
+
+		protected void onPreExecute() {
+			LinearLayout unfollowButton = actionButtons
+					.get(ActionType.UNFOLLOW);
+			buttons = (LinearLayout) unfollowButton.getParent();
+
+			int buttonIndex = buttons.indexOfChild(unfollowButton);
+
+			buttons.removeViewAt(buttonIndex);
+			actionButtons.remove(ActionType.UNFOLLOW);
+			
+			spinner = createSpinnerButton(buttons, buttonIndex);
+		}
+
+		@Override
+		protected Exception doInBackground(Object... params) {
+			this.params = params;
+			try {
+				TimelineActivity.current_account.getApi().unfollow(
+						(Long) params[0]);
+			} catch (FollowException e) {
+				return e;
+			} catch (BadConnectionException e) {
+				return e;
+			}
+			return null;
+		}
+
+		protected void onPostExecute(Exception result) {
+			if (result == null) {
+				int buttonIndex = buttons.indexOfChild(spinner);
+				buttons.removeViewAt(buttonIndex);
+				createActionButton(buttons, ActionType.FOLLOW, buttonIndex);
+			} else {
+				if (result instanceof BadConnectionException) {
+					showBadConnectionDlg(new UnfollowUserTask(), params);
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.UNFOLLOW,
+							buttonIndex);
+					return;
+				} else {
+					exceptionDlg = new AlertDialog.Builder(
+							UserDetailActivity.this)
+							.setMessage(R.string.error_user_action)
+							.setNeutralButton(R.string.ok,
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											finish();
+										}
+									}).show();
+
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.UNFOLLOW,
+							buttonIndex);
+				}
+			}
+		}
+	}
+
+	private void sendMessage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void markSpamUser() {
 		// TODO Auto-generated method stub
 
 	}
@@ -292,6 +653,7 @@ public class UserDetailActivity extends Activity {
 					showAccessExceptionDlg(ue.type, ue.httpCode);
 				}
 			}
+			UserDetailActivity.user = result;
 			showUserDetails(result);
 			fillTimelineButtons(result);
 		}
@@ -346,11 +708,15 @@ public class UserDetailActivity extends Activity {
 	}
 
 	public class GetTimelineTask extends
-			AsyncTask<TimelineType, Void, TimelineElementAdapter> {
+			AsyncTask<TimelineType, Void, Exception> {
+
+		TimelineType[] params;
+		TimelineType type;
 
 		@Override
-		protected TimelineElementAdapter doInBackground(TimelineType... params) {
-			final TimelineType type = params[0];
+		protected Exception doInBackground(TimelineType... params) {
+			type = params[0];
+			this.params = params;
 			Users userlist = null;
 			List<TimelineElement> tles = null;
 			try {
@@ -436,18 +802,51 @@ public class UserDetailActivity extends Activity {
 				}
 
 			} catch (OAuthException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return e;
 			} catch (BadConnectionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return e;
 			} catch (RelationshipException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return e;
 			}
 			return null;
 		}
 
+		protected void onPostExecute(Exception e) {
+			if (e != null) {
+				if (e instanceof BadConnectionException) {
+					Resources r = getResources();
+					String timelineType = "";
+					switch (type) {
+					case USER_TWEETS:
+						timelineType = r.getString(R.string.tweets);
+						break;
+					case FOLLOWER:
+						timelineType = r.getString(R.string.follower);
+						break;
+					case FRIENDS:
+						timelineType = r.getString(R.string.friends);
+						break;
+					}
+					String message = r
+							.getString(R.string.error_get_user_timeline_1)
+							+ " "
+							+ timelineType
+							+ r.getString(R.string.error_get_user_timeline_2);
+					showBadConnectionDlg(message, new GetTimelineTask(), params);
+				} else {
+					int httpCode = -1;
+					if (e instanceof RelationshipException) {
+						httpCode = ((RelationshipException) e).httpCode;
+					}
+					ACRA.getErrorReporter().putCustomData("Error location",
+							"Get user detail timelines");
+					ACRA.getErrorReporter().putCustomData("Timeline type",
+							type.toString());
+					ACRA.getErrorReporter().handleSilentException(e);
+					showAccessExceptionDlg(RequestType.UNSPECIFIED, httpCode);
+				}
+			}
+		}
 	}
 
 	public void showUserDetails(User user) {
@@ -552,6 +951,42 @@ public class UserDetailActivity extends Activity {
 
 	}
 
+	public void showBadConnectionDlg(
+			@SuppressWarnings("rawtypes") final AsyncTask task,
+			final Object[] params) {
+
+		showBadConnectionDlg(
+				getResources().getString(R.string.error_connection_retry_dlg),
+				task, params);
+	}
+
+	public void showBadConnectionDlg(String message,
+			@SuppressWarnings("rawtypes") final AsyncTask task,
+			final Object[] params) {
+
+		connectionDlg = new AlertDialog.Builder(this)
+				.setMessage(message)
+				.setPositiveButton(R.string.yes,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								executeTask(task, params);
+							}
+						})
+				.setNegativeButton(R.string.no,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								finish();
+							}
+						}).show();
+
+	}
+
 	public void showAccessExceptionDlg(RequestType type, int httpCode) {
 
 		int exceptionMessageId;
@@ -584,8 +1019,7 @@ public class UserDetailActivity extends Activity {
 
 							@Override
 							public void onClick(DialogInterface arg0, int arg1) {
-								// TODO Auto-generated method stub
-
+								UserDetailActivity.this.finish();
 							}
 						}).show();
 
@@ -609,17 +1043,21 @@ public class UserDetailActivity extends Activity {
 		actionButtons.setVisibility(View.VISIBLE);
 
 		if (relationship.target.followed_by) {
-			createActionButton(actionButtons, ActionType.UNFOLLOW);
+			createActionButton(actionButtons, ActionType.UNFOLLOW, null);
 		} else {
-			createActionButton(actionButtons, ActionType.FOLLOW);
+			createActionButton(actionButtons, ActionType.FOLLOW, null);
 		}
 
 		if (relationship.source.can_dm) {
-			createActionButton(actionButtons, ActionType.SEND_DM);
+			createActionButton(actionButtons, ActionType.SEND_DM, null);
 		}
 
-		createActionButton(actionButtons, ActionType.BLOCK);
-		createActionButton(actionButtons, ActionType.MARK_AS_SPAM);
+		if (relationship.source.blocking) {
+			createActionButton(actionButtons, ActionType.UNBLOCK, null);
+		} else {
+			createActionButton(actionButtons, ActionType.BLOCK, null);
+		}
+		createActionButton(actionButtons, ActionType.MARK_AS_SPAM, null);
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {

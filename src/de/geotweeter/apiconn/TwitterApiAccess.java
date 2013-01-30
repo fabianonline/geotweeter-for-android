@@ -36,6 +36,7 @@ import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.apiconn.twitter.Users;
 import de.geotweeter.exceptions.BadConnectionException;
 import de.geotweeter.exceptions.BadConnectionException.RequestType;
+import de.geotweeter.exceptions.BlockException;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
 import de.geotweeter.exceptions.FollowException;
@@ -498,10 +499,54 @@ public class TwitterApiAccess {
 		return result;
 	}
 
+	public User block(long id) throws BlockException, BadConnectionException {
+		User result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_BLOCK);
+		req.addBodyParameter("user_id", String.valueOf(id));
+		req.addBodyParameter("skip_status", "t");
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			try {
+				result = JSON.parseObject(response.getBody(), User.class);
+			} catch (IllegalStateException e) {
+				throw new BadConnectionException(RequestType.BLOCK);
+			}
+		} else {
+			throw new BlockException(false);
+		}
+		
+		return result;
+	}
+
+	public User unblock(long id) throws BlockException, BadConnectionException {
+		User result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_UNBLOCK);
+		req.addBodyParameter("user_id", String.valueOf(id));
+		req.addBodyParameter("skip_status", "t");
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			try {
+				result = JSON.parseObject(response.getBody(), User.class);
+			} catch (IllegalStateException e) {
+				throw new BadConnectionException(RequestType.UNBLOCK);
+			}
+		} else {
+			throw new BlockException(true);
+		}
+		
+		return result;
+	}
+
 	public User follow(long id) throws FollowException, BadConnectionException {
 		User result = null;
 		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_FOLLOW);
-		req.addBodyParameter("id", String.valueOf(id));
+		req.addBodyParameter("user_id", String.valueOf(id));
 
 		service.signRequest(token, req);
 		Response response = req.send();
@@ -523,7 +568,7 @@ public class TwitterApiAccess {
 			BadConnectionException {
 		User result = null;
 		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_UNFOLLOW);
-		req.addBodyParameter("id", String.valueOf(id));
+		req.addBodyParameter("user_id", String.valueOf(id));
 
 		service.signRequest(token, req);
 		Response response = req.send();
