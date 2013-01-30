@@ -542,7 +542,7 @@ public class Account extends Observable implements Serializable {
 					name_value_pair.add(new BasicNameValuePair("screen_name",
 							getUser().getScreenName()));
 					name_value_pair.add(new BasicNameValuePair(
-							"protocol_version", "1"));
+							"version", String.valueOf(Constants.GCM_VERSION)));
 					http_post.setEntity(new UrlEncodedFormEntity(
 							name_value_pair));
 					http_client.execute(http_post);
