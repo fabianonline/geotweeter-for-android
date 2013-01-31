@@ -176,6 +176,8 @@
     <string name="dialog_delete_title">Wirklich löschen?</string>
     <string name="dialog_delete_message">Bist du sicher, dass du den Status löschen möchtest?</string>
     <string name="dialog_delete_positive">Löschen</string>
+    <string name="dialog_spam_message">Account wirklich als Spam melden?</string>
+    <string name="dialog_spam_positive">Spam!</string>
     <string name="user_details">Benutzerdetails</string>
     <string name="user_protected">Dieser Account ist geschützt</string>
     <string name="user_silent">Dieser Account hat noch nichts getwittert</string>

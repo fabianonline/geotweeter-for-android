@@ -46,6 +46,7 @@ import de.geotweeter.exceptions.BadConnectionException.RequestType;
 import de.geotweeter.exceptions.BlockException;
 import de.geotweeter.exceptions.FollowException;
 import de.geotweeter.exceptions.RelationshipException;
+import de.geotweeter.exceptions.SpamException;
 import de.geotweeter.exceptions.UserException;
 import de.geotweeter.timelineelements.ProtectedAccount;
 import de.geotweeter.timelineelements.SilentAccount;
@@ -136,7 +137,7 @@ public class UserDetailActivity extends Activity {
 	private void startRequestTasks() {
 		bce = null;
 		new GetUserDetailsTask().execute();
-		new GetUserRelationShipTask().execute();
+		new GetUserRelationshipTask().execute();
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -243,7 +244,7 @@ public class UserDetailActivity extends Activity {
 			icon = Constants.ICON_UNBLOCK;
 			desc = res.getString(R.string.action_unblock);
 			break;
-		case MARK_AS_SPAM:
+		case REPORT_SPAM:
 			icon = Constants.ICON_SPAM;
 			desc = res.getString(R.string.action_mark_as_spam);
 			break;
@@ -296,12 +297,71 @@ public class UserDetailActivity extends Activity {
 		case UNBLOCK:
 			executeTask(new UnblockTask(), user.id);
 			break;
-		case MARK_AS_SPAM:
+		case REPORT_SPAM:
 			markSpamUser();
 			break;
 		case SEND_DM:
 			sendMessage();
 			break;
+		}
+	}
+
+	public class ReportSpamTask extends AsyncTask<Object, Void, Exception> {
+
+		LinearLayout buttons;
+		LinearLayout spinner;
+		Object[] params;
+
+		protected void onPreExecute() {
+			LinearLayout followButton = actionButtons
+					.get(ActionType.REPORT_SPAM);
+			buttons = (LinearLayout) followButton.getParent();
+
+			int buttonIndex = buttons.indexOfChild(followButton);
+
+			buttons.removeViewAt(buttonIndex);
+			actionButtons.remove(ActionType.REPORT_SPAM);
+
+			spinner = createSpinnerButton(buttons, buttonIndex);
+		}
+
+		@Override
+		protected Exception doInBackground(Object... params) {
+			this.params = params;
+			try {
+				TimelineActivity.current_account.getApi().reportSpam(
+						(Long) params[0]);
+			} catch (BadConnectionException e) {
+				return e;
+			} catch (SpamException e) {
+				return e;
+			}
+			return null;
+		}
+
+		protected void onPostExecute(Exception result) {
+			if (result == null) {
+				UserDetailActivity.this.finish();
+			} else {
+				if (result instanceof BadConnectionException) {
+					showBadConnectionDlg(new FollowUserTask(), params);
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.REPORT_SPAM,
+							buttonIndex);
+					return;
+				} else {
+					exceptionDlg = new AlertDialog.Builder(
+							UserDetailActivity.this)
+							.setMessage(R.string.error_user_action)
+							.setNeutralButton(R.string.ok, null).show();
+
+					int buttonIndex = buttons.indexOfChild(spinner);
+					buttons.removeViewAt(buttonIndex);
+					createActionButton(buttons, ActionType.REPORT_SPAM,
+							buttonIndex);
+				}
+			}
 		}
 	}
 
@@ -321,10 +381,6 @@ public class UserDetailActivity extends Activity {
 			actionButtons.remove(ActionType.UNBLOCK);
 
 			spinner = createSpinnerButton(buttons, buttonIndex);
-
-			// spinner = new ProgressBar(buttons.getContext(), null,
-			// android.R.attr.progressBarStyleSmall);
-			// buttons.addView(spinner, buttonIndex);
 		}
 
 		@Override
@@ -357,15 +413,7 @@ public class UserDetailActivity extends Activity {
 					exceptionDlg = new AlertDialog.Builder(
 							UserDetailActivity.this)
 							.setMessage(R.string.error_user_action)
-							.setNeutralButton(R.string.ok,
-									new DialogInterface.OnClickListener() {
-
-										@Override
-										public void onClick(
-												DialogInterface arg0, int arg1) {
-											finish();
-										}
-									}).show();
+							.setNeutralButton(R.string.ok, null).show();
 
 					int buttonIndex = buttons.indexOfChild(spinner);
 					buttons.removeViewAt(buttonIndex);
@@ -438,15 +486,7 @@ public class UserDetailActivity extends Activity {
 					exceptionDlg = new AlertDialog.Builder(
 							UserDetailActivity.this)
 							.setMessage(R.string.error_user_action)
-							.setNeutralButton(R.string.ok,
-									new DialogInterface.OnClickListener() {
-
-										@Override
-										public void onClick(
-												DialogInterface arg0, int arg1) {
-											finish();
-										}
-									}).show();
+							.setNeutralButton(R.string.ok, null).show();
 
 					int buttonIndex = buttons.indexOfChild(spinner);
 					buttons.removeViewAt(buttonIndex);
@@ -504,15 +544,7 @@ public class UserDetailActivity extends Activity {
 					exceptionDlg = new AlertDialog.Builder(
 							UserDetailActivity.this)
 							.setMessage(R.string.error_user_action)
-							.setNeutralButton(R.string.ok,
-									new DialogInterface.OnClickListener() {
-
-										@Override
-										public void onClick(
-												DialogInterface arg0, int arg1) {
-											finish();
-										}
-									}).show();
+							.setNeutralButton(R.string.ok, null).show();
 
 					int buttonIndex = buttons.indexOfChild(spinner);
 					buttons.removeViewAt(buttonIndex);
@@ -572,15 +604,7 @@ public class UserDetailActivity extends Activity {
 					exceptionDlg = new AlertDialog.Builder(
 							UserDetailActivity.this)
 							.setMessage(R.string.error_user_action)
-							.setNeutralButton(R.string.ok,
-									new DialogInterface.OnClickListener() {
-
-										@Override
-										public void onClick(
-												DialogInterface arg0, int arg1) {
-											finish();
-										}
-									}).show();
+							.setNeutralButton(R.string.ok, null).show();
 
 					int buttonIndex = buttons.indexOfChild(spinner);
 					buttons.removeViewAt(buttonIndex);
@@ -598,8 +622,16 @@ public class UserDetailActivity extends Activity {
 	}
 
 	private void markSpamUser() {
-		// TODO Auto-generated method stub
+		new AlertDialog.Builder(UserDetailActivity.this)
+				.setMessage(R.string.dialog_spam_message)
+				.setPositiveButton(R.string.dialog_spam_positive,
+						new DialogInterface.OnClickListener() {
 
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								new ReportSpamTask().execute(user.id);
+							}
+						}).setNegativeButton(R.string.no, null).show();
 	}
 
 	/**
@@ -661,7 +693,7 @@ public class UserDetailActivity extends Activity {
 
 	}
 
-	public class GetUserRelationShipTask extends
+	public class GetUserRelationshipTask extends
 			AsyncTask<Void, Boolean, Relationship> {
 
 		RelationshipException re = null;
@@ -939,16 +971,7 @@ public class UserDetailActivity extends Activity {
 									int which) {
 								startRequestTasks();
 							}
-						})
-				.setNegativeButton(R.string.no,
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								finish();
-							}
-						}).show();
+						}).setNegativeButton(R.string.no, null).show();
 
 	}
 
@@ -975,16 +998,7 @@ public class UserDetailActivity extends Activity {
 									int which) {
 								executeTask(task, params);
 							}
-						})
-				.setNegativeButton(R.string.no,
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								finish();
-							}
-						}).show();
+						}).setNegativeButton(R.string.no, null).show();
 
 	}
 
@@ -1058,7 +1072,7 @@ public class UserDetailActivity extends Activity {
 		} else {
 			createActionButton(actionButtons, ActionType.BLOCK, null);
 		}
-		createActionButton(actionButtons, ActionType.MARK_AS_SPAM, null);
+		createActionButton(actionButtons, ActionType.REPORT_SPAM, null);
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {

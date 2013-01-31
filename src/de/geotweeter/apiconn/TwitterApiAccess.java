@@ -43,6 +43,7 @@ import de.geotweeter.exceptions.FollowException;
 import de.geotweeter.exceptions.PermanentTweetSendException;
 import de.geotweeter.exceptions.RelationshipException;
 import de.geotweeter.exceptions.RetweetException;
+import de.geotweeter.exceptions.SpamException;
 import de.geotweeter.exceptions.TemporaryTweetSendException;
 import de.geotweeter.exceptions.TweetAccessException;
 import de.geotweeter.exceptions.TweetSendException;
@@ -499,6 +500,27 @@ public class TwitterApiAccess {
 		return result;
 	}
 
+	public User reportSpam(long id) throws SpamException, BadConnectionException {
+		User result = null;
+		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_REPORT_SPAM);
+		req.addBodyParameter("user_id", String.valueOf(id));
+		
+		service.signRequest(token, req);
+		Response response = req.send();
+		
+		if (response.isSuccessful()) {
+			try {
+				result = JSON.parseObject(response.getBody(), User.class);
+			} catch (IllegalStateException e) {
+				throw new BadConnectionException(RequestType.REPORT_SPAM);
+			}
+		} else {
+			throw new SpamException(response.getCode());
+		}
+		
+		return result;
+	}
+	
 	public User block(long id) throws BlockException, BadConnectionException {
 		User result = null;
 		OAuthRequest req = new OAuthRequest(Verb.POST, Constants.URI_BLOCK);
@@ -515,7 +537,7 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.BLOCK);
 			}
 		} else {
-			throw new BlockException(false);
+			throw new BlockException(false, response.getCode());
 		}
 		
 		return result;
@@ -537,7 +559,7 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.UNBLOCK);
 			}
 		} else {
-			throw new BlockException(true);
+			throw new BlockException(true, response.getCode());
 		}
 		
 		return result;
@@ -558,7 +580,7 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.FOLLOW);
 			}
 		} else {
-			throw new FollowException(false);
+			throw new FollowException(false, response.getCode());
 		}
 
 		return result;
@@ -580,7 +602,7 @@ public class TwitterApiAccess {
 				throw new BadConnectionException(RequestType.UNFOLLOW);
 			}
 		} else {
-			throw new FollowException(true);
+			throw new FollowException(true, response.getCode());
 		}
 
 		return result;

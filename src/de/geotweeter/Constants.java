@@ -49,6 +49,7 @@ public class Constants extends Application {
 	public static final String URI_FOLLOWING_LIST        = "https://api.twitter.com/1.1/friends/list.json";
 	public static final String URI_FOLLOWER_LIST		 = "https://api.twitter.com/1.1/followers/list.json";
 	public static final String URI_FRIENDSHIP_SHOW 		 = "https://api.twitter.com/1.1/friendships/show.json";
+	public static final String URI_REPORT_SPAM           = "https://api.twitter.com/1.1/users/report_spam.json";
 	
 	public static final String URI_TWEETMARKER_LASTREAD = "https://api.tweetmarker.net/v1/lastread?collection=timeline,mentions,messages&username=";
 		
@@ -91,7 +92,7 @@ public class Constants extends Application {
 	}
 	
 	public static enum ActionType {
-		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE, FOLLOW, UNFOLLOW, SEND_DM, BLOCK, MARK_AS_SPAM, UNBLOCK
+		REPLY, RETWEET, FAV, DEFAV, CONV, DELETE, FOLLOW, UNFOLLOW, SEND_DM, BLOCK, REPORT_SPAM, UNBLOCK
 	}
 		
 	public static enum TimelineType {
