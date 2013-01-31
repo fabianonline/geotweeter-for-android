@@ -168,119 +168,137 @@ public class NewTweetActivity extends Activity {
 		Intent i = getIntent();
 
 		if (i != null && i.getExtras() != null) {
-			TimelineElement elm = null;
 
-			if (i.getExtras().containsKey("de.geotweeter.reply_to_tweet")) {
-				elm = (TimelineElement) i.getExtras().getSerializable(
-						"de.geotweeter.reply_to_tweet");
-				Pair<TimelineElement, String> pair_to_delete = null;
-				for (Pair<TimelineElement, String> pair : ((Geotweeter) getApplication()).notifiedElements) {
-					if (pair.first.getClass() == elm.getClass()
-							&& pair.first.getID() == elm.getID()) {
-						pair_to_delete = pair;
-						break;
-					}
-				}
+			if (i.getExtras().containsKey("de.geotweeter.send_dm_to")) {
+				String recipient = (String) i.getExtras().getSerializable(
+						"de.geotweeter.send_dm_to");
+				dmRecipient = recipient;
+				NewTweetActivity.this.setTitle(Utils.formatString(
+						R.string.new_tweet_activity_title_sending_dm,
+						dmRecipient));
+				NewTweetActivity.this.findViewById(R.id.btnNoDM).setVisibility(
+						View.VISIBLE);
+			} else {
 
-				if (pair_to_delete != null) {
-					((Geotweeter) getApplication()).notifiedElements
-							.remove(pair_to_delete);
-					((Geotweeter) getApplication()).updateNotification(false);
-				}
-			}
-			
-			if (i.getExtras().containsKey("de.geotweeter.sendable_tweet")) {
-				SendableTweet tweet = ((SendableTweet) i.getSerializableExtra("de.geotweeter.sendable_tweet"));
-				
-				if (tweet.dmRecipient != null) {
-					dmRecipient = tweet.dmRecipient;
-					NewTweetActivity.this.setTitle(Utils.formatString(
-							R.string.new_tweet_activity_title_sending_dm,
-							dmRecipient));
-					NewTweetActivity.this.findViewById(R.id.btnNoDM)
-						.setVisibility(View.VISIBLE);
-				}
-				editTweetText.setText(tweet.text);
-				reply_to_id = tweet.reply_to_status_id;
-			}
+				TimelineElement elm = null;
 
-			if (elm instanceof DirectMessage) {
-
-				if (TimelineActivity.current_account == null) {
-					DirectMessage dm = (DirectMessage) elm;
-					List<User> auth_users = getAuthUsers();
-					if (auth_users != null) {
-						for (User u : auth_users) {
-							Account acct = createAccount(u, new Handler());
-							if (dm.recipient.id == acct.getUser().id) {
-								TimelineActivity.current_account = acct;
-							}
+				if (i.getExtras().containsKey("de.geotweeter.reply_to_tweet")) {
+					elm = (TimelineElement) i.getExtras().getSerializable(
+							"de.geotweeter.reply_to_tweet");
+					Pair<TimelineElement, String> pair_to_delete = null;
+					for (Pair<TimelineElement, String> pair : ((Geotweeter) getApplication()).notifiedElements) {
+						if (pair.first.getClass() == elm.getClass()
+								&& pair.first.getID() == elm.getID()) {
+							pair_to_delete = pair;
+							break;
 						}
-					} else {
-						throw new NullPointerException("auth_users is null");
 					}
 
+					if (pair_to_delete != null) {
+						((Geotweeter) getApplication()).notifiedElements
+								.remove(pair_to_delete);
+						((Geotweeter) getApplication())
+								.updateNotification(false);
+					}
 				}
-				dmRecipient = elm.getSenderScreenName();
-				editTweetText.setText("");
 
-			} else if (elm instanceof Tweet) {
-				reply_to_id = elm.getID();
-				if (TimelineActivity.current_account == null) {
-					Tweet tweet = (Tweet) elm;
-					if (tweet.entities.user_mentions != null) {
+				if (i.getExtras().containsKey("de.geotweeter.sendable_tweet")) {
+					SendableTweet tweet = ((SendableTweet) i
+							.getSerializableExtra("de.geotweeter.sendable_tweet"));
+
+					if (tweet.dmRecipient != null) {
+						dmRecipient = tweet.dmRecipient;
+						NewTweetActivity.this.setTitle(Utils.formatString(
+								R.string.new_tweet_activity_title_sending_dm,
+								dmRecipient));
+						NewTweetActivity.this.findViewById(R.id.btnNoDM)
+								.setVisibility(View.VISIBLE);
+					}
+					editTweetText.setText(tweet.text);
+					reply_to_id = tweet.reply_to_status_id;
+				}
+
+				if (elm instanceof DirectMessage) {
+
+					if (TimelineActivity.current_account == null) {
+						DirectMessage dm = (DirectMessage) elm;
 						List<User> auth_users = getAuthUsers();
 						if (auth_users != null) {
 							for (User u : auth_users) {
 								Account acct = createAccount(u, new Handler());
-								for (UserMention um : tweet.entities.user_mentions) {
-									if (um.id == acct.getUser().id) {
-										TimelineActivity.current_account = acct;
-										break;
-									}
+								if (dm.recipient.id == acct.getUser().id) {
+									TimelineActivity.current_account = acct;
 								}
 							}
 						} else {
 							throw new NullPointerException("auth_users is null");
 						}
+
+					}
+					dmRecipient = elm.getSenderScreenName();
+					editTweetText.setText("");
+
+				} else if (elm instanceof Tweet) {
+					reply_to_id = elm.getID();
+					if (TimelineActivity.current_account == null) {
+						Tweet tweet = (Tweet) elm;
+						if (tweet.entities.user_mentions != null) {
+							List<User> auth_users = getAuthUsers();
+							if (auth_users != null) {
+								for (User u : auth_users) {
+									Account acct = createAccount(u,
+											new Handler());
+									for (UserMention um : tweet.entities.user_mentions) {
+										if (um.id == acct.getUser().id) {
+											TimelineActivity.current_account = acct;
+											break;
+										}
+									}
+								}
+							} else {
+								throw new NullPointerException(
+										"auth_users is null");
+							}
+						}
+					}
+					if (TimelineActivity.current_account == null) {
+						throw new NullPointerException(
+								"There's something rotten in the state of current_account");
+					}
+
+					String reply_string = "@" + elm.getSenderScreenName() + " ";
+					int replyStringSelectionStart = reply_string.length();
+					for (UserMention userMention : ((Tweet) elm).entities.user_mentions) {
+						if (!(userMention.screen_name
+								.equalsIgnoreCase(TimelineActivity.current_account
+										.getUser().getScreenName()) || userMention.screen_name
+								.equalsIgnoreCase(elm.getSenderScreenName()))) {
+							reply_string += "@" + userMention.screen_name + " ";
+						}
+					}
+					editTweetText.setText(reply_string);
+					try {
+						editTweetText.setSelection(replyStringSelectionStart,
+								reply_string.length());
+					} catch (ArrayIndexOutOfBoundsException ex) {
+						// May happen. Ignore it.
 					}
 				}
-				if (TimelineActivity.current_account == null) {
-					throw new NullPointerException(
-							"There's something rotten in the state of current_account");
-				}
 
-				String reply_string = "@" + elm.getSenderScreenName() + " ";
-				int replyStringSelectionStart = reply_string.length();
-				for (UserMention userMention : ((Tweet) elm).entities.user_mentions) {
-					if (!(userMention.screen_name
-							.equalsIgnoreCase(TimelineActivity.current_account
-									.getUser().getScreenName()) || userMention.screen_name
-							.equalsIgnoreCase(elm.getSenderScreenName()))) {
-						reply_string += "@" + userMention.screen_name + " ";
+				ListView l = (ListView) findViewById(R.id.timeline);
+				TimelineElementAdapter tea = new TimelineElementAdapter(this,
+						R.layout.timeline_element,
+						new ArrayList<TimelineElement>());
+				if (elm != null) {
+					tea.add(elm);
+					if (elm.getClass() != DirectMessage.class
+							|| TimelineActivity.getInstance() != null) {
+						new Conversation(tea, TimelineActivity.current_account,
+								true, false);
 					}
 				}
-				editTweetText.setText(reply_string);
-				try {
-					editTweetText.setSelection(replyStringSelectionStart,
-							reply_string.length());
-				} catch (ArrayIndexOutOfBoundsException ex) {
-					// May happen. Ignore it.
-				}
+				l.setAdapter(tea);
 			}
-
-			ListView l = (ListView) findViewById(R.id.timeline);
-			TimelineElementAdapter tea = new TimelineElementAdapter(this,
-					R.layout.timeline_element, new ArrayList<TimelineElement>());
-			if (elm != null) {
-				tea.add(elm);
-				if (elm.getClass() != DirectMessage.class
-						|| TimelineActivity.getInstance() != null) {
-					new Conversation(tea, TimelineActivity.current_account, true,
-							false);
-				}
-			}
-			l.setAdapter(tea);
 		}
 
 		/* "Keine DM"-Button */

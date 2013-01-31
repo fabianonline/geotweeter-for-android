@@ -470,7 +470,7 @@ public class UserDetailActivity extends Activity {
 
 			buttons.removeViewAt(buttonIndex);
 			actionButtons.remove(ActionType.FOLLOW);
-			
+
 			spinner = createSpinnerButton(buttons, buttonIndex);
 		}
 
@@ -537,7 +537,7 @@ public class UserDetailActivity extends Activity {
 
 			buttons.removeViewAt(buttonIndex);
 			actionButtons.remove(ActionType.UNFOLLOW);
-			
+
 			spinner = createSpinnerButton(buttons, buttonIndex);
 		}
 
@@ -592,8 +592,9 @@ public class UserDetailActivity extends Activity {
 	}
 
 	private void sendMessage() {
-		// TODO Auto-generated method stub
-
+		Intent replyIntent = new Intent(this, NewTweetActivity.class);
+		replyIntent.putExtra("de.geotweeter.send_dm_to", user.screen_name);
+		startActivity(replyIntent);
 	}
 
 	private void markSpamUser() {
