@@ -481,7 +481,7 @@ public class TimelineActivity extends MapActivity {
 		@Override
 		protected Void doInBackground(Handler... params) {
 			List<User> authenticatedUsers = getAuthUsers();
-			Map<User, AccountSwitcherRadioButton> switcherGroup = new HashMap<User, AccountSwitcherRadioButton>();
+			Map<Long, AccountSwitcherRadioButton> switcherGroup = new HashMap<Long, AccountSwitcherRadioButton>();
 			if (authenticatedUsers != null) {
 				if (authenticatedUsers.size() > 1) {
 					final RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
@@ -493,7 +493,7 @@ public class TimelineActivity extends MapActivity {
 						// TimelineActivity.this, account);
 						final AccountSwitcherRadioButton rdBtn = new AccountSwitcherRadioButton(
 								TimelineActivity.this);
-						switcherGroup.put(u, rdBtn);
+						switcherGroup.put(u.id, rdBtn);
 						Geotweeter.getInstance().getBackgroundImageLoader()
 								.displayImage(u.getAvatarSource(), rdBtn, true);
 
@@ -504,6 +504,7 @@ public class TimelineActivity extends MapActivity {
 						});
 
 					}
+					Log.d("TimlineActivity", switcherGroup.toString()); //Aus Gründen!
 				}
 
 				for (User u : authenticatedUsers) {
@@ -546,7 +547,7 @@ public class TimelineActivity extends MapActivity {
 			if (authenticatedUsers.size() > 1) {
 				for (Account account : Account.all_accounts) {
 					final AccountSwitcherRadioButton switcherButton = switcherGroup
-							.get(account.getUser());
+							.get(account.getUser().id);
 					switcherButton
 							.setOnClickListener(new AccountSwitcherOnClickListener(
 									account));
