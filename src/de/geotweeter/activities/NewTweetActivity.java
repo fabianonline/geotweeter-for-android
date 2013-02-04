@@ -512,6 +512,15 @@ public class NewTweetActivity extends Activity {
 				// TODO Warnung, dass Bild ausgetauscht wird.
 				imageAdapter.clear();
 				twitterImageIncluded = true;
+
+				TextView remainingChars = (TextView) NewTweetActivity.this
+						.findViewById(R.id.textCharsRemaining);
+				int remaining = Integer.parseInt((String) remainingChars
+						.getText());
+				remaining = remaining
+						- Geotweeter.config.twitter.characters_reserved_per_media;
+				remainingChars.setText(String.valueOf(remaining));
+
 			}
 
 			int image_index = imageAdapter.add(picturePath);
@@ -630,7 +639,18 @@ public class NewTweetActivity extends Activity {
 											.setImageResource(R.drawable.picture);
 								} else if (imageAdapter.getCount() == 0) {
 									btnImageManager.setVisibility(View.GONE);
-									twitterImageIncluded = false;
+									if (twitterImageIncluded) {
+										twitterImageIncluded = false;
+										TextView remainingChars = (TextView) NewTweetActivity.this
+												.findViewById(R.id.textCharsRemaining);
+										int remaining = Integer
+												.parseInt((String) remainingChars
+														.getText());
+										remaining = remaining
+												+ Geotweeter.config.twitter.characters_reserved_per_media;
+										remainingChars.setText(String
+												.valueOf(remaining));
+									}
 								}
 							}
 						}).setOnCancelListener(new OnCancelListener() {
