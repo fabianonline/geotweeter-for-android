@@ -47,7 +47,6 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import de.geotweeter.Account;
-import de.geotweeter.Configuration;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
 import de.geotweeter.Conversation;
@@ -471,6 +470,8 @@ public class TimelineActivity extends MapActivity {
 
 		@Override
 		protected Void doInBackground(Context... params) {
+			Utils.writeObjectToFile(getApplicationContext(), Geotweeter.config,
+					Constants.PREFS_CONFIG);
 			for (Account acct : Account.all_accounts) {
 				acct.persistTweets(params[0]);
 			}
@@ -517,10 +518,12 @@ public class TimelineActivity extends MapActivity {
 			}
 
 			if (current_account != null) {
-				if (!DateUtils.isToday(Configuration.twitterTimestamp)) {
+				if (!DateUtils.isToday(Geotweeter.config.twitterTimestamp)) {
 					try {
-						Configuration.twitter = current_account.getApi()
+						Geotweeter.config.twitter = current_account.getApi()
 								.getConfiguration();
+						Geotweeter.config.twitterTimestamp = System
+								.currentTimeMillis();
 					} catch (APIRequestException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

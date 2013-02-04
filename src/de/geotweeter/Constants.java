@@ -13,6 +13,7 @@ public class Constants extends Application {
 	public static Object THREAD_LOCK = new Object();
 
 	public static final String PREFS_APP = "geotweeter_general";
+	public static final String PREFS_CONFIG = "geotweeter_config";
 	public static final String PREFS_ACCOUNTS = "geotweeter_accounts";
 
 	public static final String OAUTH_CALLBACK = "oauth://twitter";

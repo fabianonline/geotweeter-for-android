@@ -3,8 +3,12 @@ package de.geotweeter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Comparator;
@@ -15,6 +19,7 @@ import java.util.regex.Pattern;
 import org.acra.ACRA;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -58,7 +63,7 @@ public class Utils {
 			 * hinzuaddieren.
 			 */
 			length = length - m.group(1).length()
-					+ Configuration.twitter.short_url_length;
+					+ Geotweeter.config.twitter.short_url_length;
 			/*
 			 * War es ein https-Link, packen wir noch ein Zeichen für den
 			 * gekürzten https-Link dazu.
@@ -363,6 +368,77 @@ public class Utils {
 				return ignoreCase;
 			}
 		};
+	}
+
+	/**
+	 * Writes a given Object to a file with the given name
+	 * 
+	 * @param context
+	 * @param object
+	 * @param filename
+	 */
+	public static void writeObjectToFile(Context context, Object object,
+			String filename) {
+
+		ObjectOutputStream objectOut = null;
+		try {
+
+			FileOutputStream fileOut = context.openFileOutput(filename,
+					Activity.MODE_PRIVATE);
+			objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(object);
+			fileOut.getFD().sync();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (objectOut != null) {
+				try {
+					objectOut.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Reads the given File and returns its contents as an Object
+	 * 
+	 * @param context
+	 *            Application Context
+	 * @param filename
+	 *            File to be read
+	 * @return Object parsed from given file
+	 */
+	public static Object readObjectFromFile(Context context, String filename) {
+
+		ObjectInputStream objectIn = null;
+		Object object = null;
+		try {
+
+			FileInputStream fileIn = context.getApplicationContext()
+					.openFileInput(filename);
+			objectIn = new ObjectInputStream(fileIn);
+			object = objectIn.readObject();
+
+		} catch (FileNotFoundException e) {
+			// Do nothing
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			if (objectIn != null) {
+				try {
+					objectIn.close();
+				} catch (IOException e) {
+					// do nowt
+				}
+			}
+		}
+
+		return object;
 	}
 
 }

@@ -64,7 +64,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.geotweeter.Account;
-import de.geotweeter.Configuration;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
 import de.geotweeter.Geotweeter;
@@ -722,7 +721,7 @@ public class NewTweetActivity extends Activity {
 				int remaining = 140 - Utils.countChars(s.toString());
 				if (twitterImageIncluded) {
 					remaining = remaining
-							- Configuration.twitter.characters_reserved_per_media;
+							- Geotweeter.config.twitter.characters_reserved_per_media;
 				}
 				t.setText(String.valueOf(remaining));
 				if (remaining < 0) {

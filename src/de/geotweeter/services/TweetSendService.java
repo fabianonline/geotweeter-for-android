@@ -18,8 +18,8 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import de.geotweeter.Configuration;
 import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.Utils;
@@ -220,7 +220,7 @@ public class TweetSendService extends Service {
 		long imageSize = tweet.imageSize;
 		if (imageHoster.equals("twitter")) {
 			if (imageSize < 0) {
-				imageSize = Configuration.twitter.photo_size_limit;
+				imageSize = Geotweeter.config.twitter.photo_size_limit;
 			}
 
 			ContentBody picture = null;
