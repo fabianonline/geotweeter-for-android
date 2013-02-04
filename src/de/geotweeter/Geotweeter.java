@@ -62,8 +62,7 @@ public class Geotweeter extends Application {
 		ACRA.setConfig(config);
 		ACRA.init(this);
 		
-		backgroundImageLoader = new BackgroundImageLoader(getApplicationContext());
-		
+		backgroundImageLoader = new BackgroundImageLoader(getApplicationContext());		
 		// TODO: Move Account creation to Geotweeter.java
 		
 		autoCompletionContent = Collections.synchronizedSet(new HashSet<String>());

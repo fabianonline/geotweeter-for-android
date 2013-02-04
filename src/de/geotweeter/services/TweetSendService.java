@@ -18,6 +18,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import de.geotweeter.Configuration;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
@@ -82,33 +83,36 @@ public class TweetSendService extends Service {
 			new Thread(tweetSenderThread, "TweetSenderThread").start();
 		}
 	}
-	
+
 	private void updateNotification() {
 		updateNotification(null, null, null);
 	}
-	
+
 	private void updateNotification(String header, String text) {
 		updateNotification(header, text, null);
 	}
 
 	@SuppressWarnings("deprecation")
-	private void updateNotification(String header, String text, PendingIntent pendingIntent) {
+	private void updateNotification(String header, String text,
+			PendingIntent pendingIntent) {
 		if (notification == null) {
 			notification = new Notification();
 		}
 		notification.icon = R.drawable.ic_launcher;
-		if (header==null) {
+		if (header == null) {
 			notification.tickerText = Utils.formatString(
-				R.string.tweetsendservice_summary, i + 1, tweets.size());
+					R.string.tweetsendservice_summary, i + 1, tweets.size());
 		} else {
 			notification.tickerText = header;
 		}
 		notification.when = System.currentTimeMillis();
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		notification.flags |= Notification.FLAG_NO_CLEAR;
-		notification.setLatestEventInfo(getApplicationContext(),
+		notification.setLatestEventInfo(
+				getApplicationContext(),
 				notification.tickerText,
-				text!=null?text:Utils.getString(R.string.tweetsendservice_activity), null);
+				text != null ? text : Utils
+						.getString(R.string.tweetsendservice_activity), null);
 		if (pendingIntent != null) {
 			notification.contentIntent = pendingIntent;
 		} else {
@@ -160,7 +164,9 @@ public class TweetSendService extends Service {
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
-							updateNotification("Temporärer Fehler", Utils.getString(R.string.tweetsendservice_temporary_exception));
+							updateNotification(
+									"Temporärer Fehler",
+									Utils.getString(R.string.tweetsendservice_temporary_exception));
 						}
 					});
 					try {
@@ -175,14 +181,21 @@ public class TweetSendService extends Service {
 							"PermanentTweetException (or another exception) fired. Stopping. Message: "
 									+ e.getMessage(), e);
 					final SendableTweet sendableTweet = tweet;
-					
+
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
-							Intent intent = new Intent(getApplicationContext(), NewTweetActivity.class);
-							intent.putExtra("de.geotweeter.sendable_tweet", sendableTweet);
-							PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-							updateNotification("Permanenter Fehler", Utils.getString(R.string.tweetsendservice_permanent_exception), pi);
+							Intent intent = new Intent(getApplicationContext(),
+									NewTweetActivity.class);
+							intent.putExtra("de.geotweeter.sendable_tweet",
+									sendableTweet);
+							PendingIntent pi = PendingIntent.getActivity(
+									getApplicationContext(), 0, intent,
+									PendingIntent.FLAG_UPDATE_CURRENT);
+							updateNotification(
+									"Permanenter Fehler",
+									Utils.getString(R.string.tweetsendservice_permanent_exception),
+									pi);
 						}
 					});
 					break;
@@ -207,7 +220,7 @@ public class TweetSendService extends Service {
 		long imageSize = tweet.imageSize;
 		if (imageHoster.equals("twitter")) {
 			if (imageSize < 0) {
-				imageSize = Constants.PIC_SIZE_TWITTER;
+				imageSize = Configuration.twitter.photo_size_limit;
 			}
 
 			ContentBody picture = null;

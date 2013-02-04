@@ -57,7 +57,8 @@ public class Utils {
 			 * Original-Link-Länge abziehen und die gekürzten-20-Zeichen
 			 * hinzuaddieren.
 			 */
-			length = length - m.group(1).length() + 20;
+			length = length - m.group(1).length()
+					+ Configuration.twitter.short_url_length;
 			/*
 			 * War es ein https-Link, packen wir noch ein Zeichen für den
 			 * gekürzten https-Link dazu.
@@ -88,16 +89,16 @@ public class Utils {
 		if (obj.containsKey("text") && obj.containsKey("recipient")) {
 			return JSON.parseObject(json, DirectMessage.class);
 		}
-		
+
 		if (obj.containsKey("direct_message")) {
 			return JSON.parseObject(obj.getJSONObject("direct_message")
 					.toJSONString(), DirectMessage.class);
 		}
-		
+
 		if (obj.containsKey("text")) {
 			return JSON.parseObject(json, Tweet.class);
 		}
-		
+
 		if (obj.containsKey("event")) {
 			String event_type = obj.getString("event");
 			if (event_type.equals("follow")) {
@@ -117,11 +118,11 @@ public class Utils {
 				return JSON.parseObject(json, NotShownEvent.class);
 			}
 		}
-		
+
 		if (obj.containsKey("delete")) {
 			return JSON.parseObject(json, StreamDeleteRequest.class);
 		}
-		
+
 		throw new UnknownJSONObjectException();
 	}
 
@@ -363,6 +364,5 @@ public class Utils {
 			}
 		};
 	}
-
 
 }

@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -46,6 +47,7 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import de.geotweeter.Account;
+import de.geotweeter.Configuration;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
 import de.geotweeter.Conversation;
@@ -60,6 +62,7 @@ import de.geotweeter.apiconn.twitter.Media;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.Url;
 import de.geotweeter.apiconn.twitter.User;
+import de.geotweeter.exceptions.APIRequestException;
 import de.geotweeter.exceptions.BadConnectionException;
 import de.geotweeter.exceptions.DestroyException;
 import de.geotweeter.exceptions.FavException;
@@ -504,7 +507,8 @@ public class TimelineActivity extends MapActivity {
 						});
 
 					}
-					Log.d("TimlineActivity", switcherGroup.toString()); //Aus Gründen!
+					Log.d("TimlineActivity", switcherGroup.toString()); // Aus
+																		// Gründen!
 				}
 
 				for (User u : authenticatedUsers) {
@@ -513,6 +517,18 @@ public class TimelineActivity extends MapActivity {
 			}
 
 			if (current_account != null) {
+				if (!DateUtils.isToday(Configuration.twitterTimestamp)) {
+					try {
+						Configuration.twitter = current_account.getApi()
+								.getConfiguration();
+					} catch (APIRequestException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (BadConnectionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				runOnUiThread(new Runnable() {
 					public void run() {
 						timelineListView.setAdapter(current_account
@@ -554,10 +570,11 @@ public class TimelineActivity extends MapActivity {
 					account.addObserver(switcherButton);
 					if (account == current_account) {
 						runOnUiThread(new Runnable() {
-							
+
 							@Override
 							public void run() {
-								switcherButton.setChecked(true);							}
+								switcherButton.setChecked(true);
+							}
 						});
 					}
 				}
@@ -960,7 +977,8 @@ public class TimelineActivity extends MapActivity {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										} catch (BadConnectionException e) {
-											Toast.makeText(TimelineActivity.this,
+											Toast.makeText(
+													TimelineActivity.this,
 													R.string.error_connection_action,
 													Toast.LENGTH_SHORT).show();
 											return;
@@ -1113,7 +1131,8 @@ public class TimelineActivity extends MapActivity {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										} catch (BadConnectionException e) {
-											Toast.makeText(TimelineActivity.this,
+											Toast.makeText(
+													TimelineActivity.this,
 													R.string.error_connection_action,
 													Toast.LENGTH_SHORT).show();
 											return;

@@ -64,6 +64,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.geotweeter.Account;
+import de.geotweeter.Configuration;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
 import de.geotweeter.Geotweeter;
@@ -105,6 +106,7 @@ public class NewTweetActivity extends Activity {
 	private ProtectedPlaceholderEditText editTweetText;
 	private boolean useTwitpic;
 	private Uri cameraFileUri;
+	public boolean twitterImageIncluded;
 
 	public void onCreate(Bundle savedInstanceState) {
 		useTwitpic = getSharedPreferences(Constants.PREFS_APP, 0).getString(
@@ -510,6 +512,7 @@ public class NewTweetActivity extends Activity {
 			if (image_hoster.equals("twitter")) {
 				// TODO Warnung, dass Bild ausgetauscht wird.
 				imageAdapter.clear();
+				twitterImageIncluded = true;
 			}
 
 			int image_index = imageAdapter.add(picturePath);
@@ -628,6 +631,7 @@ public class NewTweetActivity extends Activity {
 											.setImageResource(R.drawable.picture);
 								} else if (imageAdapter.getCount() == 0) {
 									btnImageManager.setVisibility(View.GONE);
+									twitterImageIncluded = false;
 								}
 							}
 						}).setOnCancelListener(new OnCancelListener() {
@@ -716,6 +720,10 @@ public class NewTweetActivity extends Activity {
 				TextView t = (TextView) NewTweetActivity.this
 						.findViewById(R.id.textCharsRemaining);
 				int remaining = 140 - Utils.countChars(s.toString());
+				if (twitterImageIncluded) {
+					remaining = remaining
+							- Configuration.twitter.characters_reserved_per_media;
+				}
 				t.setText(String.valueOf(remaining));
 				if (remaining < 0) {
 					t.setTextColor(0xFFFF0000);

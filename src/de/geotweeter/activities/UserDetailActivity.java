@@ -32,6 +32,7 @@ import android.widget.TextView;
 import de.geotweeter.AsyncImageView;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
+import de.geotweeter.Constants.RequestType;
 import de.geotweeter.Constants.TimelineType;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
@@ -41,13 +42,8 @@ import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.apiconn.twitter.Users;
+import de.geotweeter.exceptions.APIRequestException;
 import de.geotweeter.exceptions.BadConnectionException;
-import de.geotweeter.exceptions.BadConnectionException.RequestType;
-import de.geotweeter.exceptions.BlockException;
-import de.geotweeter.exceptions.FollowException;
-import de.geotweeter.exceptions.RelationshipException;
-import de.geotweeter.exceptions.SpamException;
-import de.geotweeter.exceptions.UserException;
 import de.geotweeter.timelineelements.ProtectedAccount;
 import de.geotweeter.timelineelements.SilentAccount;
 import de.geotweeter.timelineelements.TimelineElement;
@@ -333,7 +329,7 @@ public class UserDetailActivity extends Activity {
 						(Long) params[0]);
 			} catch (BadConnectionException e) {
 				return e;
-			} catch (SpamException e) {
+			} catch (APIRequestException e) {
 				return e;
 			}
 			return null;
@@ -389,7 +385,7 @@ public class UserDetailActivity extends Activity {
 			try {
 				TimelineActivity.current_account.getApi().unblock(
 						(Long) params[0]);
-			} catch (BlockException e) {
+			} catch (APIRequestException e) {
 				return e;
 			} catch (BadConnectionException e) {
 				return e;
@@ -448,7 +444,7 @@ public class UserDetailActivity extends Activity {
 			try {
 				TimelineActivity.current_account.getApi().block(
 						(Long) params[0]);
-			} catch (BlockException e) {
+			} catch (APIRequestException e) {
 				return e;
 			} catch (BadConnectionException e) {
 				return e;
@@ -520,7 +516,7 @@ public class UserDetailActivity extends Activity {
 			try {
 				TimelineActivity.current_account.getApi().follow(
 						(Long) params[0]);
-			} catch (FollowException e) {
+			} catch (APIRequestException e) {
 				return e;
 			} catch (BadConnectionException e) {
 				return e;
@@ -579,7 +575,7 @@ public class UserDetailActivity extends Activity {
 			try {
 				TimelineActivity.current_account.getApi().unfollow(
 						(Long) params[0]);
-			} catch (FollowException e) {
+			} catch (APIRequestException e) {
 				return e;
 			} catch (BadConnectionException e) {
 				return e;
@@ -650,7 +646,7 @@ public class UserDetailActivity extends Activity {
 
 	public class GetUserDetailsTask extends AsyncTask<Void, Boolean, User> {
 
-		UserException ue = null;
+		APIRequestException re = null;
 
 		protected void onPreExecute() {
 			tasksRunning++;
@@ -666,8 +662,8 @@ public class UserDetailActivity extends Activity {
 			try {
 				user = TimelineActivity.current_account.getApi().getUser(
 						userName);
-			} catch (UserException e) {
-				ue = e;
+			} catch (APIRequestException e) {
+				re = e;
 			} catch (BadConnectionException e) {
 				bce = e;
 			}
@@ -682,8 +678,8 @@ public class UserDetailActivity extends Activity {
 					showBadConnectionDlg();
 					return;
 				}
-				if (ue != null) {
-					showAccessExceptionDlg(ue.type, ue.httpCode);
+				if (re != null) {
+					showAccessExceptionDlg(re.getType(), re.getHttpCode());
 				}
 			}
 			UserDetailActivity.user = result;
@@ -696,7 +692,7 @@ public class UserDetailActivity extends Activity {
 	public class GetUserRelationshipTask extends
 			AsyncTask<Void, Boolean, Relationship> {
 
-		RelationshipException re = null;
+		APIRequestException re = null;
 
 		protected void onPreExecute() {
 			tasksRunning++;
@@ -715,7 +711,7 @@ public class UserDetailActivity extends Activity {
 						.getRelationship(
 								TimelineActivity.current_account.getUser().screen_name,
 								userName);
-			} catch (RelationshipException e) {
+			} catch (APIRequestException e) {
 				re = e;
 			} catch (BadConnectionException e) {
 				bce = e;
@@ -732,7 +728,7 @@ public class UserDetailActivity extends Activity {
 					return;
 				}
 				if (re != null) {
-					showAccessExceptionDlg(re.type, re.httpCode);
+					showAccessExceptionDlg(re.getType(), re.getHttpCode());
 				}
 			}
 			showActionButtons(relationship);
@@ -838,7 +834,7 @@ public class UserDetailActivity extends Activity {
 				return e;
 			} catch (BadConnectionException e) {
 				return e;
-			} catch (RelationshipException e) {
+			} catch (APIRequestException e) {
 				return e;
 			}
 			return null;
@@ -868,8 +864,8 @@ public class UserDetailActivity extends Activity {
 					showBadConnectionDlg(message, new GetTimelineTask(), params);
 				} else {
 					int httpCode = -1;
-					if (e instanceof RelationshipException) {
-						httpCode = ((RelationshipException) e).httpCode;
+					if (e instanceof APIRequestException) {
+						httpCode = ((APIRequestException) e).getHttpCode();
 					}
 					ACRA.getErrorReporter().putCustomData("Error location",
 							"Get user detail timelines");
