@@ -115,6 +115,8 @@ public class TweetSendService extends Service {
 						.getString(R.string.tweetsendservice_activity), null);
 		if (pendingIntent != null) {
 			notification.contentIntent = pendingIntent;
+			notification.flags |= Notification.FLAG_AUTO_CANCEL;
+			notification.flags -= Notification.FLAG_NO_CLEAR;
 		} else {
 			notification.contentIntent = PendingIntent.getActivity(
 					getApplicationContext(), 0, new Intent(),
