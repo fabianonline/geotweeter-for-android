@@ -1131,7 +1131,7 @@ public class UserDetailActivity extends Activity {
 			userLayout.setOrientation(LinearLayout.VERTICAL);
 			LinearLayout userDetail = (LinearLayout) findViewById(R.id.user_detail_root);
 			LayoutParams params = (LayoutParams) userDetail.getLayoutParams();
-			params.height = Utils.convertDipToPixel(150);
+			params.height = Utils.convertDipToPixel(200);
 			params.width = LayoutParams.MATCH_PARENT;
 			params.weight = 0;
 			userDetail.setLayoutParams(params);
