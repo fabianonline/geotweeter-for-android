@@ -90,6 +90,7 @@ public class Constants extends Application {
 	public static final String ICON_DM = "✉";
 	public static final String ICON_BLOCK = "👎";
 	public static final String ICON_UNBLOCK = "👍";
+	public static final String ICON_PROTECTED = "";
 
 	public static enum TLEType {
 		READ, UNREAD, MENTION, OWN, DM, EVENT, DELETE

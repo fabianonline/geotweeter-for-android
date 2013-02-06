@@ -57,7 +57,8 @@ public class UserDetailActivity extends Activity {
 
 	private String url = "";
 	private LayoutInflater inflater;
-	private Typeface tf;
+	private Typeface tfEntypo;
+	private Typeface tfAwesome;
 	private int tasksRunning = 0;
 	private ProgressDialog progressDialog;
 	private AlertDialog connectionDlg;
@@ -85,7 +86,10 @@ public class UserDetailActivity extends Activity {
 
 		inflater = (LayoutInflater) this
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		tf = Typeface.createFromAsset(this.getAssets(), "fonts/Entypo.otf");
+		tfEntypo = Typeface.createFromAsset(this.getAssets(),
+				"fonts/Entypo.otf");
+		tfAwesome = Typeface.createFromAsset(this.getAssets(),
+				"fonts/FontAwesome.otf");
 
 		if (Geotweeter.getInstance().useDarkTheme()) {
 			activeTimelineButtonColor = getResources().getColor(
@@ -249,7 +253,7 @@ public class UserDetailActivity extends Activity {
 		LinearLayout button = (LinearLayout) inflater.inflate(
 				R.layout.action_button, null);
 		TextView iconView = (TextView) button.findViewById(R.id.action_icon);
-		iconView.setTypeface(tf);
+		iconView.setTypeface(tfEntypo);
 		iconView.setText(icon);
 		TextView description = (TextView) button
 				.findViewById(R.id.action_description);
@@ -835,7 +839,22 @@ public class UserDetailActivity extends Activity {
 			} catch (BadConnectionException e) {
 				return e;
 			} catch (APIRequestException e) {
-				return e;
+				if (e.getHttpCode() == 401) {
+					/* Protected account */
+					runOnUiThread(new Runnable() {
+						public void run() {
+							TextView tv = (TextView) findViewById(R.id.protected_icon);
+							tv.setTypeface(tfAwesome);
+							tv.setText(Constants.ICON_PROTECTED);
+							tv.setVisibility(View.VISIBLE);
+							LinearLayout ll = (LinearLayout) findViewById(R.id.user_timeline_root);
+							ll.setVisibility(View.GONE);
+						}
+					});
+					return null;
+				} else {
+					return e;
+				}
 			}
 			return null;
 		}
@@ -892,7 +911,7 @@ public class UserDetailActivity extends Activity {
 		TextView urlIcon = (TextView) findViewById(R.id.user_url_icon);
 		TextView urlView = (TextView) findViewById(R.id.user_url);
 		if (user.url != null) {
-			urlIcon.setTypeface(tf);
+			urlIcon.setTypeface(tfEntypo);
 			urlIcon.setText(Constants.ICON_URL);
 			urlView.setText(user.url);
 			urlIcon.setVisibility(View.VISIBLE);
@@ -909,7 +928,7 @@ public class UserDetailActivity extends Activity {
 		TextView locationIcon = (TextView) findViewById(R.id.user_location_icon);
 		TextView location = (TextView) findViewById(R.id.user_location);
 		if (!user.location.equals("")) {
-			locationIcon.setTypeface(tf);
+			locationIcon.setTypeface(tfEntypo);
 			locationIcon.setText(Constants.ICON_LOCATION);
 			location.setText(user.location);
 			locationIcon.setVisibility(View.VISIBLE);
@@ -918,7 +937,7 @@ public class UserDetailActivity extends Activity {
 		TextView descriptionIcon = (TextView) findViewById(R.id.user_bio_icon);
 		TextView description = (TextView) findViewById(R.id.user_bio);
 		if (!user.description.equals("")) {
-			descriptionIcon.setTypeface(tf);
+			descriptionIcon.setTypeface(tfEntypo);
 			descriptionIcon.setText(Constants.ICON_BIO);
 			description.setText(user.description);
 			descriptionIcon.setVisibility(View.VISIBLE);

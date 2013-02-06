@@ -31,8 +31,9 @@
                     android:src="@drawable/loading_image" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="vertical" >
 
                     <TextView
@@ -97,6 +98,14 @@
                             android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/protected_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="@dimen/icon" />
+
             </LinearLayout>
 
             <LinearLayout
