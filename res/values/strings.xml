@@ -178,6 +178,10 @@
     <string name="dialog_delete_positive">Löschen</string>
     <string name="dialog_spam_message">Account wirklich als Spam melden?</string>
     <string name="dialog_spam_positive">Spam!</string>
+    <string name="dialog_follow_protected">Da dieser Account geschützt ist, ist die Verfolgung erst nach einer Freischaltung seitens %1$s möglich.</string>
+    <string name="dialog_follow_protected_yes">Kein Problem, ich warte</string>
+    <string name="dialog_follow_protected_no">Dann lieber nicht</string>
+    
     <string name="user_details">Benutzerdetails</string>
     <string name="user_protected">Dieser Account ist geschützt</string>
     <string name="user_silent">Dieser Account hat noch nichts getwittert</string>

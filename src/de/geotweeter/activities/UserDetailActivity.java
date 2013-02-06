@@ -286,7 +286,28 @@ public class UserDetailActivity extends Activity {
 	protected void actionClick(ActionType type) {
 		switch (type) {
 		case FOLLOW:
-			executeTask(new FollowUserTask(), user.id);
+			if (user._protected) {
+				new AlertDialog.Builder(UserDetailActivity.this)
+						.setMessage(
+								Utils.formatString(
+										R.string.dialog_follow_protected,
+										user.screen_name))
+						.setPositiveButton(
+								R.string.dialog_follow_protected_yes,
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface arg0,
+											int arg1) {
+										new FollowUserTask().execute(user.id);
+									}
+								})
+						.setNegativeButton(R.string.dialog_follow_protected_no,
+								null).show();
+
+			} else {
+				executeTask(new FollowUserTask(), user.id);
+			}
 			break;
 		case UNFOLLOW:
 			executeTask(new UnfollowUserTask(), user.id);
