@@ -79,7 +79,6 @@ public class UserDetailActivity extends Activity {
 		Log.d(LOG, "Create user details");
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.user_info);
 
 		userName = (String) getIntent().getSerializableExtra("user");
@@ -1119,18 +1118,28 @@ public class UserDetailActivity extends Activity {
 			LayoutParams params = (LayoutParams) userDetail.getLayoutParams();
 			params.width = 0;
 			params.height = LayoutParams.MATCH_PARENT;
+			params.weight = 1;
 			userDetail.setLayoutParams(params);
 			LinearLayout userTimeline = (LinearLayout) findViewById(R.id.user_timeline_root);
+			params = (LayoutParams) userTimeline.getLayoutParams();
+			params.width = 0;
+			params.height = LayoutParams.MATCH_PARENT;
+			params.weight = 1;
 			userTimeline.setLayoutParams(params);
 		} else {
 			LinearLayout userLayout = (LinearLayout) findViewById(R.id.user_layout);
 			userLayout.setOrientation(LinearLayout.VERTICAL);
 			LinearLayout userDetail = (LinearLayout) findViewById(R.id.user_detail_root);
 			LayoutParams params = (LayoutParams) userDetail.getLayoutParams();
-			params.height = 0;
+			params.height = Utils.convertDipToPixel(150);
 			params.width = LayoutParams.MATCH_PARENT;
+			params.weight = 0;
 			userDetail.setLayoutParams(params);
 			LinearLayout userTimeline = (LinearLayout) findViewById(R.id.user_timeline_root);
+			params = (LayoutParams) userTimeline.getLayoutParams();
+			params.height = 0;
+			params.width = LayoutParams.MATCH_PARENT;
+			params.weight = 1;
 			userTimeline.setLayoutParams(params);
 		}
 		super.onConfigurationChanged(newConfig);

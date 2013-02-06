@@ -141,6 +141,7 @@
         android:id="@+id/user_action_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_gap"
         android:visibility="visible" >
 
     </LinearLayout>
