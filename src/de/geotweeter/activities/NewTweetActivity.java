@@ -240,6 +240,7 @@ public class NewTweetActivity extends Activity {
 					editTweetText.setText("");
 
 				} else if (elm instanceof Tweet) {
+					Log.d("NewTweetActivity", "Element is Tweet");
 					reply_to_id = elm.getID();
 					if (TimelineActivity.current_account == null) {
 						Log.d("NewTweetActivity",
