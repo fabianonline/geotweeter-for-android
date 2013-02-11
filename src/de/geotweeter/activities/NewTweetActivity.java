@@ -242,16 +242,23 @@ public class NewTweetActivity extends Activity {
 				} else if (elm instanceof Tweet) {
 					reply_to_id = elm.getID();
 					if (TimelineActivity.current_account == null) {
+						Log.d("NewTweetActivity",
+								"TimelineActivity not running");
 						Tweet tweet = (Tweet) elm;
 						if (tweet.entities.user_mentions != null) {
 							List<User> auth_users = getAuthUsers();
 							if (auth_users != null) {
 								for (User u : auth_users) {
+									Log.d("NewTweetAcitivity",
+											"Creating account "
+													+ u.screen_name);
 									Account acct = createAccount(u,
 											new Handler());
 									for (UserMention um : tweet.entities.user_mentions) {
+										Log.d("NewTweetActivity", "Checking against " + um.screen_name);
 										if (um.id == acct.getUser().id) {
 											TimelineActivity.current_account = acct;
+											Log.d("NewTweetActivity", "Check successful");
 											break;
 										}
 									}
@@ -260,6 +267,9 @@ public class NewTweetActivity extends Activity {
 								throw new NullPointerException(
 										"auth_users is null");
 							}
+						} else {
+							throw new NullPointerException(
+									"Tweet lacks a user mention");
 						}
 					}
 					if (TimelineActivity.current_account == null) {
