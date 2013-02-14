@@ -154,6 +154,8 @@ public class StreamRequest {
 						}
 					} catch (IOException e) {
 						Log.d(LOG, "Corrupt data. Restarting Stream.");
+					} catch (IllegalStateException e) {
+						Log.d(LOG, "Corrupt data. Restarting Stream.");
 					}
 					Log.d(LOG, "Stream beendet");
 				}
