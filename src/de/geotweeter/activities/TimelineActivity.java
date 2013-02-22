@@ -147,7 +147,9 @@ public class TimelineActivity extends MapActivity {
 				replaceAdapter(acct);
 				acct.start(true);
 			}
-			timelineListView.setAdapter(current_account.getElements());
+			if (current_account != null) {
+				timelineListView.setAdapter(current_account.getElements());
+			}
 		}
 
 		isRunning = true;
