@@ -12,8 +12,10 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.widget.EditText;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
 import de.geotweeter.R;
@@ -53,46 +55,60 @@ public class AccountPrefsActivity extends PreferenceActivity {
 			return false;
 		};
     };
+    
+    private OnPreferenceClickListener preferenceClickListener = new OnPreferenceClickListener() {
+		
+		@Override
+		public boolean onPreferenceClick(Preference preference) {
+			EditText edit = ((EditTextPreference) preference).getEditText();
+			edit.setText(preference.getSummary());
+			edit.setSelection(0, edit.getText().length());
+			return false;
+		}
+	};
 
 	@SuppressWarnings("deprecation")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
 		Utils.setDesign(this);
-        super.onCreate(savedInstanceState);
-        
-        account = (Account) getIntent().getSerializableExtra("account");
-        account.setAppContext(getApplicationContext());
-        
-        user = new User(account.getUser());
-        
-        addPreferencesFromResource(R.xml.account_settings);
-        
-        prefName = (EditTextPreference) findPreference("pref_name");
-        prefUrl = (EditTextPreference) findPreference("pref_url");
-        prefLoc = (EditTextPreference) findPreference("pref_loc");
-        prefDesc = (EditTextPreference) findPreference("pref_desc");
-        
-        prefName.getEditText().setText(user.name);
-        prefUrl.getEditText().setText(user.url);
-        prefLoc.getEditText().setText(user.location);
-        prefDesc.getEditText().setText(user.description);
+		super.onCreate(savedInstanceState);
 
-        prefName.setDefaultValue(user.name);
-        prefUrl.setDefaultValue(user.url);
-        prefLoc.setDefaultValue(user.location);
-        prefDesc.setDefaultValue(user.description);
+		account = (Account) getIntent().getSerializableExtra("account");
+		account.setAppContext(getApplicationContext());
 
-        prefName.setSummary(user.name);
-        prefUrl.setSummary(user.url);
-        prefLoc.setSummary(user.location);
-        prefDesc.setSummary(user.description);
-        
-        prefName.setOnPreferenceChangeListener(preferenceChangeListener);
-        prefUrl.setOnPreferenceChangeListener(preferenceChangeListener);
-        prefLoc.setOnPreferenceChangeListener(preferenceChangeListener);
-        prefDesc.setOnPreferenceChangeListener(preferenceChangeListener);
-            
-        
+		user = new User(account.getUser());
+
+		addPreferencesFromResource(R.xml.account_settings);
+
+		prefName = (EditTextPreference) findPreference("pref_name");
+		prefUrl = (EditTextPreference) findPreference("pref_url");
+		prefLoc = (EditTextPreference) findPreference("pref_loc");
+		prefDesc = (EditTextPreference) findPreference("pref_desc");
+
+		prefName.getEditText().setText(user.name);
+		prefUrl.getEditText().setText(user.url);
+		prefLoc.getEditText().setText(user.location);
+		prefDesc.getEditText().setText(user.description);
+
+		prefName.setDefaultValue(user.name);
+		prefUrl.setDefaultValue(user.url);
+		prefLoc.setDefaultValue(user.location);
+		prefDesc.setDefaultValue(user.description);
+
+		prefName.setSummary(user.name);
+		prefUrl.setSummary(user.url);
+		prefLoc.setSummary(user.location);
+		prefDesc.setSummary(user.description);
+
+		prefName.setOnPreferenceChangeListener(preferenceChangeListener);
+		prefUrl.setOnPreferenceChangeListener(preferenceChangeListener);
+		prefLoc.setOnPreferenceChangeListener(preferenceChangeListener);
+		prefDesc.setOnPreferenceChangeListener(preferenceChangeListener);
+
+		prefName.setOnPreferenceClickListener(preferenceClickListener);
+		prefUrl.setOnPreferenceClickListener(preferenceClickListener);
+		prefLoc.setOnPreferenceClickListener(preferenceClickListener);
+		prefDesc.setOnPreferenceClickListener(preferenceClickListener);
     }
 
 	@Override
