@@ -329,7 +329,7 @@ public class NewTweetActivity extends Activity {
 		});
 
 		/* Accountauswahl */
-		List<Account> accounts = Account.all_accounts;
+		List<Account> accounts = Geotweeter.getInstance().getAccountManager().getAllAccounts();
 		LinearLayout lin = (LinearLayout) findViewById(R.id.linLayAccounts);
 
 		currentAccount = TimelineActivity.current_account;

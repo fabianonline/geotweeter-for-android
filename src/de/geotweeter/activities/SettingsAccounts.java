@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import de.geotweeter.Account;
 import de.geotweeter.AccountListElementAdapter;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 
@@ -37,10 +38,10 @@ public class SettingsAccounts extends Activity {
 	public void onResume() {
 		super.onResume();
 		
-		if (!Account.all_accounts.isEmpty()) {
+		if (!Geotweeter.getInstance().getAccountManager().getAllAccounts().isEmpty()) {
 			
 			ListView lv = (ListView)findViewById(R.id.lvAccounts);
-			AccountListElementAdapter adapter = new AccountListElementAdapter(this, R.layout.account_list_element, Account.all_accounts);
+			AccountListElementAdapter adapter = new AccountListElementAdapter(this, R.layout.account_list_element, Geotweeter.getInstance().getAccountManager().getAllAccounts());
 			lv.setAdapter(adapter);
 			lv.setOnItemClickListener(new OnItemClickListener() {
 

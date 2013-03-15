@@ -50,6 +50,7 @@ public class Geotweeter extends Application {
 	public List<Pair<TimelineElement, String>> notifiedElements = new ArrayList<Pair<TimelineElement, String>>();
 	private boolean darkTheme;
 	private BackgroundImageLoader backgroundImageLoader;
+	private AccountManager accountManager;
 
 	private Set<String> autoCompletionContent;
 
@@ -66,7 +67,9 @@ public class Geotweeter extends Application {
 
 		backgroundImageLoader = new BackgroundImageLoader(
 				getApplicationContext());
+		
 		// TODO: Move Account creation to Geotweeter.java
+		accountManager = new AccountManager();
 
 		autoCompletionContent = Collections
 				.synchronizedSet(new HashSet<String>());
@@ -122,6 +125,15 @@ public class Geotweeter extends Application {
 	 */
 	public BackgroundImageLoader getBackgroundImageLoader() {
 		return backgroundImageLoader;
+	}
+	
+	/**
+	 * Returns the AccountManager of the App
+	 * 
+	 * @return AccountManager accountmanager
+	 */
+	public AccountManager getAccountManager() {
+		return accountManager;
 	}
 
 	public void updateNotification(boolean vibrateAndPlaySoundAndStuff) {

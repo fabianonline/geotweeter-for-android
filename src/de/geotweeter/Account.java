@@ -65,7 +65,6 @@ public class Account extends Observable implements Serializable {
 	protected final static Object lock_object = new Object();
 	protected final String LOG = "Account";
 
-	public static List<Account> all_accounts = new ArrayList<Account>();
 	private transient int tasksRunning = 0;
 
 	protected transient ArrayList<TimelineElement> mainTimeline;
@@ -130,7 +129,7 @@ public class Account extends Observable implements Serializable {
 		stream_request = new StreamRequest(this, handler);
 		dm_conversations = new MessageHashMap(user.id);
 
-		all_accounts.add(this);
+		Geotweeter.getInstance().getAccountManager().getAllAccounts().add(this);
 
 		timeline_stack = new Stack<TimelineElementAdapter>();
 		timeline_stack.push(elements);
@@ -907,7 +906,7 @@ public class Account extends Observable implements Serializable {
 	 * @return The according account object if available, null otherwise
 	 */
 	public static Account getAccount(User u) {
-		for (Account a : all_accounts) {
+		for (Account a : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 			if (a.getUser().id == u.id) {
 				return a;
 			}

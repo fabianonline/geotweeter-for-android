@@ -143,7 +143,7 @@ public class TimelineActivity extends MapActivity {
 			if (Debug.LOG_TIMELINE_ACTIVITY) {
 				Log.d(LOG, "Refreshing timelines");
 			}
-			for (Account acct : Account.all_accounts) {
+			for (Account acct : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 				replaceAdapter(acct);
 				acct.start(true);
 			}
@@ -448,7 +448,7 @@ public class TimelineActivity extends MapActivity {
 		Log.d(LOG, "Start onDestroy");
 		super.onDestroy();
 		if (instance == this) {
-			for (Account acct : Account.all_accounts) {
+			for (Account acct : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 				try {
 					acct.stopStream();
 				} catch (Exception e) {
@@ -474,7 +474,7 @@ public class TimelineActivity extends MapActivity {
 		protected Void doInBackground(Context... params) {
 			Utils.writeObjectToFile(getApplicationContext(), Geotweeter.config,
 					Constants.PREFS_CONFIG);
-			for (Account acct : Account.all_accounts) {
+			for (Account acct : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 				acct.persistTweets(params[0]);
 			}
 			return null;
@@ -547,7 +547,7 @@ public class TimelineActivity extends MapActivity {
 					GCMRegistrar.register(TimelineActivity.this,
 							Utils.getProperty("google.gcm.sender.id"));
 				} else {
-					for (Account acct : Account.all_accounts) {
+					for (Account acct : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 						acct.registerForGCMMessages();
 					}
 				}
@@ -566,7 +566,7 @@ public class TimelineActivity extends MapActivity {
 			}
 
 			if (authenticatedUsers.size() > 1) {
-				for (Account account : Account.all_accounts) {
+				for (Account account : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 					final AccountSwitcherRadioButton switcherButton = switcherGroup
 							.get(account.getUser().id);
 					switcherButton
@@ -872,7 +872,7 @@ public class TimelineActivity extends MapActivity {
 	 * @param v
 	 */
 	public void refreshTimelineClickHandler(View v) {
-		for (Account acct : Account.all_accounts) {
+		for (Account acct : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 			acct.stopStream();
 			acct.start(false);
 		}

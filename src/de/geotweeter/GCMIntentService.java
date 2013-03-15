@@ -122,7 +122,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	protected void onRegistered(Context context, String reg_id) {
 		Log.d(LOG, "onRegistered - " + reg_id);
 		TimelineActivity.reg_id = reg_id;
-		for (Account a : Account.all_accounts) {
+		for (Account a : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
 			a.registerForGCMMessages();
 		}
 	}
