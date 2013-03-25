@@ -153,6 +153,7 @@ public class AuthenticateAccountActivity extends Activity {
 		@Override
 		protected void onPostExecute(User u) {
 			if (u != null) {
+				/* TODO: getInstance() kann null zurückliefern, da gehört noch Arbeit hin! */ 
 				TimelineActivity.getInstance().createAccount(u, new Handler());
 			}
 			self.finish();
