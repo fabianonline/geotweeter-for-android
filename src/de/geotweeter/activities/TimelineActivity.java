@@ -486,7 +486,7 @@ public class TimelineActivity extends MapActivity {
 
 		@Override
 		protected Void doInBackground(Handler... params) {
-			List<User> authenticatedUsers = getAuthUsers();
+			List<User> authenticatedUsers = Geotweeter.getInstance().getAuthUsers();
 			Map<Long, AccountSwitcherRadioButton> switcherGroup = new HashMap<Long, AccountSwitcherRadioButton>();
 			if (authenticatedUsers != null) {
 				if (authenticatedUsers.size() > 1) {

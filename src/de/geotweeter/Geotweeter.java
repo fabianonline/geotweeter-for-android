@@ -28,6 +28,7 @@ import de.geotweeter.activities.NewTweetActivity;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.twitter.DirectMessage;
 import de.geotweeter.apiconn.twitter.Tweet;
+import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.services.NotificationDeleteReceiver;
 import de.geotweeter.timelineelements.TimelineElement;
 
@@ -134,6 +135,25 @@ public class Geotweeter extends Application {
 	 */
 	public AccountManager getAccountManager() {
 		return accountManager;
+	}
+
+	/**
+	 * Returns a list of all authorized user accounts
+	 * 
+	 * @return The list of all authorized user accounts
+	 */
+	public List<User> getAuthUsers() {
+		List<User> result = null;
+
+		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
+		String accountString = sp.getString("accounts", null);
+
+		if (accountString != null) {
+			String[] accounts = accountString.split(" ");
+			result = User.getPersistentData(getApplicationContext(), accounts);
+		}
+
+		return result;
 	}
 
 	public void updateNotification(boolean vibrateAndPlaySoundAndStuff) {
