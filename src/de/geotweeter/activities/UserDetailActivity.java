@@ -37,6 +37,7 @@ import de.geotweeter.Constants.TimelineType;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
+import de.geotweeter.TimelineElementList;
 import de.geotweeter.Utils;
 import de.geotweeter.apiconn.twitter.Relationship;
 import de.geotweeter.apiconn.twitter.Tweet;
@@ -189,7 +190,7 @@ public class UserDetailActivity extends Activity {
 
 	protected void timelineClick(TimelineType type) {
 		tea = new TimelineElementAdapter(this, R.layout.timeline_element,
-				new ArrayList<TimelineElement>());
+				new TimelineElementList());
 		tea.addAllAsFirst(timelines.get(type), false);
 		ListView timeline = (ListView) findViewById(R.id.user_timeline);
 		timeline.setAdapter(tea);
@@ -838,7 +839,7 @@ public class UserDetailActivity extends Activity {
 				if (type == TimelineType.USER_TWEETS) {
 					tea = new TimelineElementAdapter(UserDetailActivity.this,
 							R.layout.timeline_element,
-							new ArrayList<TimelineElement>());
+							new TimelineElementList());
 					tea.addAllAsFirst(tles, false);
 					final ListView timeline = (ListView) findViewById(R.id.user_timeline);
 					runOnUiThread(new Runnable() {

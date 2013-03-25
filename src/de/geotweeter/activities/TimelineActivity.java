@@ -1,7 +1,6 @@
 package de.geotweeter.activities;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +54,7 @@ import de.geotweeter.Geotweeter;
 import de.geotweeter.MapOverlay;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
+import de.geotweeter.TimelineElementList;
 import de.geotweeter.Utils;
 import de.geotweeter.apiconn.twitter.DirectMessage;
 import de.geotweeter.apiconn.twitter.Media;
@@ -95,7 +95,7 @@ public class TimelineActivity extends MapActivity {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(LOG, "Start onCreate");
+		Log.d("start", "TimelineActivity.onCreate running");
 		Geotweeter.getInstance().refreshTheme();
 		Utils.setDesign(this);
 		if (availableTweets == null) {
@@ -153,6 +153,7 @@ public class TimelineActivity extends MapActivity {
 		}
 
 		isRunning = true;
+		Log.d("start", "TimelineActivity.onCreate finished");
 	}
 
 	/**
@@ -659,25 +660,6 @@ public class TimelineActivity extends MapActivity {
 	}
 
 	/**
-	 * Returns a list of all authorized user accounts
-	 * 
-	 * @return The list of all authorized user accounts
-	 */
-	private List<User> getAuthUsers() {
-		List<User> result = null;
-
-		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
-		String accountString = sp.getString("accounts", null);
-
-		if (accountString != null) {
-			String[] accounts = accountString.split(" ");
-			result = User.getPersistentData(getApplicationContext(), accounts);
-		}
-
-		return result;
-	}
-
-	/**
 	 * Creates an account object for a given user object which starts the
 	 * twitter API access
 	 * 
@@ -687,7 +669,7 @@ public class TimelineActivity extends MapActivity {
 	 */
 	public void createAccount(User u, Handler handler) {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new ArrayList<TimelineElement>());
+				R.layout.timeline_element, new TimelineElementList());
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
 			acc = new Account(ta, getUserToken(u), u, getApplicationContext(),
@@ -712,7 +694,7 @@ public class TimelineActivity extends MapActivity {
 	 */
 	public void replaceAdapter(Account account) {
 		TimelineElementAdapter tea = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new ArrayList<TimelineElement>());
+				R.layout.timeline_element, new TimelineElementList());
 		account.setElements(tea);
 	}
 
@@ -724,7 +706,7 @@ public class TimelineActivity extends MapActivity {
 	 */
 	public void showConversation(TimelineElement te) {
 		TimelineElementAdapter tea = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new ArrayList<TimelineElement>());
+				R.layout.timeline_element, new TimelineElementList());
 		tea.add(te);
 		new Conversation(tea, current_account, false, true);
 		ListView l = (ListView) findViewById(R.id.timeline);

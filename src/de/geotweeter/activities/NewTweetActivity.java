@@ -72,6 +72,7 @@ import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
 import de.geotweeter.SpaceTokenizer;
 import de.geotweeter.TimelineElementAdapter;
+import de.geotweeter.TimelineElementList;
 import de.geotweeter.Utils;
 import de.geotweeter.apiconn.TwitpicApiAccess;
 import de.geotweeter.apiconn.twitter.DirectMessage;
@@ -300,7 +301,7 @@ public class NewTweetActivity extends Activity {
 				ListView l = (ListView) findViewById(R.id.timeline);
 				TimelineElementAdapter tea = new TimelineElementAdapter(this,
 						R.layout.timeline_element,
-						new ArrayList<TimelineElement>());
+						new TimelineElementList());
 				if (elm != null) {
 					tea.add(elm);
 					if (elm.getClass() != DirectMessage.class
@@ -926,7 +927,7 @@ public class NewTweetActivity extends Activity {
 
 	public Account createAccount(User u, Handler handler) {
 		TimelineElementAdapter ta = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new ArrayList<TimelineElement>());
+				R.layout.timeline_element, new TimelineElementList());
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
 			acc = new Account(ta, getUserToken(u), u, getApplicationContext(),

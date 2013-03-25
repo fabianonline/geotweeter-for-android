@@ -2,8 +2,9 @@ package de.geotweeter;
 
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -26,25 +27,16 @@ import de.geotweeter.Constants.ActionType;
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.twitter.DirectMessage;
-import de.geotweeter.apiconn.twitter.Hashtag;
 import de.geotweeter.apiconn.twitter.Tweet;
-import de.geotweeter.timelineelements.ProtectedAccount;
-import de.geotweeter.timelineelements.SilentAccount;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
-import de.geotweeter.timelineelements.UserMention;
 
-public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
-	private List<TimelineElement> items;
+public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implements Observer {
+	private TimelineElementList items;
 	private final Context context;
-	private HashMap<Long, TimelineElement> available = new HashMap<Long, TimelineElement>();
 	private Typeface tf;
 	private LayoutInflater inflater;
 	private final Animation ani;
-
-	private enum TLEHandlingType {
-		SPECIAL, KNOWN, NORMAL
-	}
 
 	/**
 	 * Constructor
@@ -58,100 +50,42 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	 *            The objects to be represented
 	 */
 	public TimelineElementAdapter(Context context, int textViewResourceId,
-			List<TimelineElement> objects) {
-		super(context, textViewResourceId, objects);
+			TimelineElementList objects) {
+		super(context, textViewResourceId, objects.getList());
 		ani = AnimationUtils.loadAnimation(context, R.animator.image_click);
 		if (objects != null) {
-			Collections.sort(objects, new TLEComparator());
+			Collections.sort(objects.getList(), new TLEComparator());
 		}
 		this.items = objects;
 		this.context = context;
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/Entypo.otf");
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		items.addObserver(this);
 	}
 
 	/**
+	 * @deprecated Use {@link TimelineElementList#addAsFirst(TimelineElement)} instead
 	 * Adds a timeline element to the adapter
 	 * 
 	 * @param t
 	 *            The element to be added
 	 */
+	// TODO delete
 	public void addAsFirst(TimelineElement t) {
-		if (!available.containsKey(t.getID())) {
-			if (!items.isEmpty()) {
-				if (t.olderThan(items.get(0))) {
-					items.add(0, t);
-					Collections.sort(items, new TLEComparator());
-				} else {
-					items.add(0, t);
-				}
-			} else {
-				items.add(0, t);
-			}
-			processNewTLE(t);
-			this.notifyDataSetChanged();
-		}
+		items.addAsFirst(t);
 	}
 
 	/**
+	 * @deprecated Use {@link TimelineElementList#addAllAsFirst(List, boolean)} instead
 	 * Adds timeline elements to the adapter
 	 * 
 	 * @param elements
 	 *            The list of elements to be added
 	 */
+	// TODO delete
 	public void addAllAsFirst(List<TimelineElement> elements, boolean sort) {
-		for (TimelineElement t : elements) {
-			
-			TLEHandlingType type = TLEHandlingType.NORMAL;
-			if (t instanceof SilentAccount || t instanceof ProtectedAccount) {
-				type = TLEHandlingType.SPECIAL;
-			} else if (available.containsKey(t.getID())) {
-				type = TLEHandlingType.KNOWN;
-			}
-
-			switch (type) {
-			case NORMAL:
-				processNewTLE(t);
-			case SPECIAL:
-				items.add(t);
-				if (sort) {
-					Collections.sort(items, new TLEComparator());
-				}
-				this.notifyDataSetChanged();
-			}
-		}
-	}
-
-	/**
-	 * Processes a TimelineElement
-	 * 
-	 * @param tle
-	 *            The TimelineElement to be processed
-	 */
-	private void processNewTLE(TimelineElement tle) {
-		available.put(tle.getID(), tle);
-		TimelineActivity.addToAvailableTLE(tle);
-		if (tle instanceof Tweet) {
-			try {
-				for (Hashtag ht : ((Tweet) tle).entities.hashtags) {
-					Geotweeter.getInstance().getAutoCompletionContent()
-							.add("#" + ht.text);
-				}
-			} catch (NullPointerException e) {
-				// just continue
-			}
-			Geotweeter.getInstance().getAutoCompletionContent()
-					.add("@" + tle.getSenderScreenName());
-			try {
-				for (UserMention mention : ((Tweet) tle).entities.user_mentions) {
-					Geotweeter.getInstance().getAutoCompletionContent()
-							.add("@" + mention.screen_name);
-				}
-			} catch (NullPointerException e) {
-				// Just continue
-			}
-		}
+		items.addAllAsFirst(elements, sort);
 	}
 
 	/**
@@ -159,7 +93,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-		TimelineElement tle = (TimelineElement) items.get(position);
+		TimelineElement tle = (TimelineElement) items.getList().get(position);
 		boolean is_retweet = false;
 		String retweeter = "";
 
@@ -434,20 +368,27 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> {
 	 * @return The adapter's item list
 	 */
 	public List<TimelineElement> getItems() {
-		return items;
+		return items.getList();
 	}
 
 	/**
+	 * @deprecated Use {@link TimelineElementList#replace(TimelineElement, TimelineElement)} instead
 	 * Replaces an element in the timeline element list
 	 * 
 	 * @param oldTle
 	 * @param newTle
 	 */
+	// TODO delete
 	public void replace(TimelineElement oldTle, TimelineElement newTle) {
-		if (Collections.replaceAll(items, oldTle, newTle)) {
-			TimelineActivity.addToAvailableTLE(newTle);
-			this.notifyDataSetChanged();
-		}
+		items.replace(oldTle, newTle);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	@Override
+	public void update(Observable observable, Object data) {
+		notifyDataSetChanged();
 	}
 
 }
