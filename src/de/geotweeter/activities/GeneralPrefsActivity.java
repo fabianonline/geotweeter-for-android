@@ -18,6 +18,7 @@ import android.widget.Toast;
 import de.geotweeter.Constants;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
+import de.geotweeter.TimelineElementAdapter;
 import de.geotweeter.Utils;
 import de.geotweeter.timelineelements.TimelineElement;
 
@@ -45,7 +46,9 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 				ListPreference tweetTime = (ListPreference) findPreference("pref_tweet_time_style");
 				preference.setSummary(tweetTime.getEntries()[tweetTime.findIndexOfValue(newValue.toString())]);
 				TimelineElement.tweetTimeStyle = newValue.toString();
-				TimelineActivity.current_account.getElements().notifyDataSetChanged();
+				// TODO Refresh ListView on TimeStyle change (Rimgar)
+//				TimelineActivity.current_account.getElements().notifyDataSetChanged();
+				((TimelineElementAdapter) TimelineActivity.getTimelineListView().getAdapter()).notifyDataSetChanged();
 				return true;
 			}
 		});

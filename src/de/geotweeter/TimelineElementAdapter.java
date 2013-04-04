@@ -74,6 +74,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implem
 	// TODO delete
 	public void addAsFirst(TimelineElement t) {
 		items.addAsFirst(t);
+		notifyDataSetChanged();
 	}
 
 	/**
@@ -86,6 +87,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implem
 	// TODO delete
 	public void addAllAsFirst(List<TimelineElement> elements, boolean sort) {
 		items.addAllAsFirst(elements, sort);
+		notifyDataSetChanged();
 	}
 
 	/**
@@ -381,6 +383,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implem
 	// TODO delete
 	public void replace(TimelineElement oldTle, TimelineElement newTle) {
 		items.replace(oldTle, newTle);
+		notifyDataSetChanged();
 	}
 
 	/* (non-Javadoc)

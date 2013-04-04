@@ -90,6 +90,15 @@ public class TimelineElementList extends Observable {
 	}
 
 	/**
+	 * @param elm
+	 */
+	public void add(TimelineElement elm) {
+		items.add(elm);
+		setChanged();
+		notifyObservers();
+	}
+
+	/**
 	 * Processes a TimelineElement
 	 * 
 	 * @param tle
@@ -120,6 +129,13 @@ public class TimelineElementList extends Observable {
 		}
 	}
 	
+	public void remove(TimelineElement object) {
+		if (items.remove(object)) {
+			setChanged();
+			notifyObservers();
+		}
+	}
+	
 	/**
 	 * Replaces an element in the timeline element list
 	 * 
@@ -136,5 +152,20 @@ public class TimelineElementList extends Observable {
 
 	public List<TimelineElement> getList() {
 		return items;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isEmpty() {
+		return items.isEmpty();
+	}
+
+	/**
+	 * 
+	 */
+	public void notifyObserversFromOutside() {
+		setChanged();
+		super.notifyObservers();
 	}
 }

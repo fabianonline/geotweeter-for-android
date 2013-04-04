@@ -148,7 +148,9 @@ public class TimelineActivity extends MapActivity {
 				acct.start(true);
 			}
 			if (current_account != null) {
-				timelineListView.setAdapter(current_account.getElements());
+				TimelineElementAdapter tleAdapter = new TimelineElementAdapter(TimelineActivity.this,
+						R.layout.timeline_element, current_account.getElements());
+				timelineListView.setAdapter(tleAdapter);
 			}
 		}
 
@@ -179,9 +181,9 @@ public class TimelineActivity extends MapActivity {
 		}
 		ListView l = (ListView) findViewById(R.id.timeline);
 		if (current_account != null) {
-			TimelineElementAdapter tea = current_account.getPrevTimeline();
-			if (tea != null) {
-				l.setAdapter(tea);
+			TimelineElementList tleList = current_account.getPrevTimeline();
+			if (tleList != null) {
+				l.setAdapter(new TimelineElementAdapter(this, R.layout.timeline_element, tleList));
 			} else {
 				super.onBackPressed();
 			}
@@ -537,8 +539,9 @@ public class TimelineActivity extends MapActivity {
 				}
 				runOnUiThread(new Runnable() {
 					public void run() {
-						timelineListView.setAdapter(current_account
-								.getElements());
+						TimelineElementAdapter tleAdapter = new TimelineElementAdapter(TimelineActivity.this,
+									R.layout.timeline_element, current_account.getElements());
+						timelineListView.setAdapter(tleAdapter);
 					}
 				});
 				GCMRegistrar.checkDevice(TimelineActivity.this);
@@ -639,7 +642,8 @@ public class TimelineActivity extends MapActivity {
 		if (current_account != account) {
 			current_account = account;
 			ListView l = (ListView) findViewById(R.id.timeline);
-			l.setAdapter(current_account.activeTimeline());
+			l.setAdapter(new TimelineElementAdapter(TimelineActivity.this,
+					R.layout.timeline_element, current_account.activeTimeline()));
 			Log.d(LOG, "Changed Account: "
 					+ current_account.getUser().screen_name);
 		}
@@ -668,11 +672,10 @@ public class TimelineActivity extends MapActivity {
 	 * @param handler
 	 */
 	public void createAccount(User u, Handler handler) {
-		TimelineElementAdapter ta = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new TimelineElementList());
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
-			acc = new Account(ta, getUserToken(u), u, getApplicationContext(),
+			TimelineElementList tleList = new TimelineElementList();
+			acc = new Account(tleList, getUserToken(u), u, getApplicationContext(),
 					true, handler);
 		} else {
 			acc.start(true);
@@ -693,9 +696,7 @@ public class TimelineActivity extends MapActivity {
 	 * built one
 	 */
 	public void replaceAdapter(Account account) {
-		TimelineElementAdapter tea = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new TimelineElementList());
-		account.setElements(tea);
+		account.setElements(new TimelineElementList());
 	}
 
 	/**
@@ -705,12 +706,12 @@ public class TimelineActivity extends MapActivity {
 	 *            The conversation endpoint
 	 */
 	public void showConversation(TimelineElement te) {
-		TimelineElementAdapter tea = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new TimelineElementList());
-		tea.add(te);
-		new Conversation(tea, current_account, false, true);
+		TimelineElementList tleList = new TimelineElementList();
+		tleList.add(te);
+		new Conversation(tleList, current_account, false, true);
 		ListView l = (ListView) findViewById(R.id.timeline);
-		l.setAdapter(tea);
+		l.setAdapter(new TimelineElementAdapter(this,
+				R.layout.timeline_element, tleList));
 	}
 
 	/**
@@ -725,7 +726,7 @@ public class TimelineActivity extends MapActivity {
 		}
 
 		if (timelineListView.getAdapter() == null) {
-			timelineListView.setAdapter(acc.getElements());
+			timelineListView.setAdapter(new TimelineElementAdapter(this, R.layout.timeline_element, acc.getElements()));
 		}
 	}
 
@@ -1140,6 +1141,10 @@ public class TimelineActivity extends MapActivity {
 		userDetails.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 		userDetails.putExtra("user", screenName);
 		startActivity(userDetails);
+	}
+
+	public static ListView getTimelineListView() {
+		return timelineListView;
 	}
 
 }

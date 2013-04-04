@@ -299,18 +299,18 @@ public class NewTweetActivity extends Activity {
 				}
 
 				ListView l = (ListView) findViewById(R.id.timeline);
-				TimelineElementAdapter tea = new TimelineElementAdapter(this,
-						R.layout.timeline_element,
-						new TimelineElementList());
+				TimelineElementList tleList = new TimelineElementList();
 				if (elm != null) {
-					tea.add(elm);
+					tleList.add(elm);
 					if (elm.getClass() != DirectMessage.class
 							|| TimelineActivity.getInstance() != null) {
-						new Conversation(tea, TimelineActivity.current_account,
+						new Conversation(tleList, TimelineActivity.current_account,
 								true, false);
 					}
 				}
-				l.setAdapter(tea);
+				l.setAdapter(new TimelineElementAdapter(this,
+						R.layout.timeline_element,
+						tleList));
 			}
 		}
 
@@ -926,11 +926,10 @@ public class NewTweetActivity extends Activity {
 	}
 
 	public Account createAccount(User u, Handler handler) {
-		TimelineElementAdapter ta = new TimelineElementAdapter(this,
-				R.layout.timeline_element, new TimelineElementList());
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
-			acc = new Account(ta, getUserToken(u), u, getApplicationContext(),
+			TimelineElementList tleList = new TimelineElementList();
+			acc = new Account(tleList, getUserToken(u), u, getApplicationContext(),
 					false, handler);
 		}
 		return acc;

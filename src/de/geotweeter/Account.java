@@ -80,11 +80,11 @@ public class Account extends Observable implements Serializable {
 	private long max_known_dm_id = 0;
 	private long min_known_dm_id = Long.MAX_VALUE;
 	private User user;
-	private transient TimelineElementAdapter elements;
+	private transient TimelineElementList elements;
 	private long max_read_mention_id = 0;
 	private transient Context appContext;
 	private transient TwitterApiAccess api;
-	private transient Stack<TimelineElementAdapter> timeline_stack;
+	private transient Stack<TimelineElementList> timeline_stack;
 	private MessageHashMap dm_conversations;
 	private Map<AccessType, Boolean> accessSuccessful = new HashMap<AccessType, Boolean>();
 
@@ -109,7 +109,7 @@ public class Account extends Observable implements Serializable {
 	 * @param fetchTimeLine
 	 *            If the account's timeline should be fetched
 	 */
-	public Account(TimelineElementAdapter elements, Token token, User user,
+	public Account(TimelineElementList elements, Token token, User user,
 			Context applicationContext, boolean fetchTimeLine, Handler handler) {
 		mainTimeline = new ArrayList<TimelineElement>();
 		apiResponses = new ArrayList<ArrayList<TimelineElement>>(4);
@@ -131,7 +131,7 @@ public class Account extends Observable implements Serializable {
 
 		Geotweeter.getInstance().getAccountManager().getAllAccounts().add(this);
 
-		timeline_stack = new Stack<TimelineElementAdapter>();
+		timeline_stack = new Stack<TimelineElementList>();
 		timeline_stack.push(elements);
 
 		if (fetchTimeLine) {
@@ -601,7 +601,8 @@ public class Account extends Observable implements Serializable {
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
-							elements.notifyDataSetChanged();
+							// TODO Good practice? (Rimgar)
+							elements.notifyObserversFromOutside();
 							setChanged();
 							notifyObservers(new AccountSwitcherMessage(
 									AccountSwitcherRadioButton.Message.UNREAD,
@@ -704,7 +705,8 @@ public class Account extends Observable implements Serializable {
 		elementsToDelete.clear();
 		((Geotweeter) appContext).updateNotification(false);
 
-		elements.notifyDataSetChanged();
+		// TODO Good practice? (Rimgar)
+		elements.notifyObserversFromOutside();
 		setChanged();
 		notifyObservers(new AccountSwitcherMessage(
 				AccountSwitcherRadioButton.Message.UNREAD,
@@ -721,11 +723,11 @@ public class Account extends Observable implements Serializable {
 	}
 
 	/**
-	 * Returns the account's TimelineElementAdapter
+	 * Returns the account's TimelineElementList
 	 * 
 	 * @return
 	 */
-	public TimelineElementAdapter getElements() {
+	public TimelineElementList getElements() {
 		return elements;
 	}
 
@@ -774,11 +776,11 @@ public class Account extends Observable implements Serializable {
 		}
 
 		List<TimelineElement> last_tweets = new ArrayList<TimelineElement>(50);
-		for (int i = 0; i < elements.getCount(); i++) {
+		for (int i = 0; i < elements.getList().size(); i++) {
 			if (i >= 100) {
 				break;
 			}
-			last_tweets.add(elements.getItem(i));
+			last_tweets.add(elements.getList().get(i));
 		}
 
 		try {
@@ -856,10 +858,10 @@ public class Account extends Observable implements Serializable {
 	/**
 	 * Pushes the given timeline to the last visible timelines stack
 	 * 
-	 * @param tea
+	 * @param tleList
 	 */
-	public void pushTimeline(TimelineElementAdapter tea) {
-		timeline_stack.push(tea);
+	public void pushTimeline(TimelineElementList tleList) {
+		timeline_stack.push(tleList);
 	}
 
 	/**
@@ -868,7 +870,7 @@ public class Account extends Observable implements Serializable {
 	 * 
 	 * @return
 	 */
-	public TimelineElementAdapter getPrevTimeline() {
+	public TimelineElementList getPrevTimeline() {
 		try {
 			timeline_stack.pop();
 			return timeline_stack.peek();
@@ -882,12 +884,12 @@ public class Account extends Observable implements Serializable {
 	 * 
 	 * @return
 	 */
-	public TimelineElementAdapter activeTimeline() {
+	public TimelineElementList activeTimeline() {
 		return timeline_stack.peek();
 	}
 
 	public int getUnreadTweetsSize() {
-		List<TimelineElement> tweets = elements.getItems();
+		List<TimelineElement> tweets = elements.getList();
 		if (tweets == null) {
 			return -1;
 		}
@@ -915,11 +917,11 @@ public class Account extends Observable implements Serializable {
 	}
 
 	/**
-	 * Sets a new TimelineElementAdapter
+	 * Sets a new TimelineElementList
 	 * 
 	 * @param elements
 	 */
-	public void setElements(TimelineElementAdapter elements) {
+	public void setElements(TimelineElementList elements) {
 		this.elements = elements;
 	}
 

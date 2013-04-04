@@ -20,7 +20,7 @@ import de.geotweeter.timelineelements.TimelineElement;
  */
 public class Conversation {
 
-	private TimelineElementAdapter tea;
+	private TimelineElementList tea;
 	private TwitterApiAccess api;
 	private boolean backwards;
 	private MessageHashMap dm_conversations;
@@ -33,7 +33,7 @@ public class Conversation {
 	 * @param backwards If true the conversation is shown beginning at its end point
 	 * @param onStack If true the timeline is put on the shown timeline stack
 	 */
-	public Conversation(TimelineElementAdapter tea, Account current_account, boolean backwards, boolean onStack) {
+	public Conversation(TimelineElementList tea, Account current_account, boolean backwards, boolean onStack) {
 		this.tea = tea;
 		this.backwards = backwards;
 		api = current_account.getApi();
@@ -42,7 +42,7 @@ public class Conversation {
 			current_account.pushTimeline(tea);
 		}
 		if (!tea.isEmpty()) {
-			new LoadConversationTask().execute(tea.getItem(0));
+			new LoadConversationTask().execute(tea.getList().get(0));
 		}
 	}
 	
@@ -130,7 +130,7 @@ public class Conversation {
 			if (params[0] == null) {
 				return;
 			}
-			if (tea.getItem(0).getID() == params[0].getID()) {
+			if (tea.getList().get(0).getID() == params[0].getID()) {
 				return;
 			}
 			if (backwards) {
