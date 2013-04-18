@@ -66,6 +66,7 @@ import android.widget.ToggleButton;
 import de.geotweeter.Account;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
+import de.geotweeter.GTALocation;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.ImageBaseAdapter;
 import de.geotweeter.R;
@@ -856,7 +857,7 @@ public class NewTweetActivity extends Activity {
 			// tweet.imagePath = imageAdapter.getItem(0);
 			tweet.images = imageAdapter.getItems();
 			tweet.remainingImages = imageAdapter.getCount();
-			tweet.location = location;
+			tweet.location = new GTALocation(location);
 			tweet.reply_to_status_id = reply_to_id;
 			tweet.dmRecipient = dmRecipient;
 			tweet.imageHoster = getSharedPreferences(Constants.PREFS_APP, 0)
