@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.twitter.Hashtag;
@@ -167,5 +168,11 @@ public class TimelineElementList extends Observable {
 	public void notifyObserversFromOutside() {
 		setChanged();
 		super.notifyObservers();
+	}
+
+	@Override
+	public void addObserver(Observer observer) {
+		deleteObservers();
+		super.addObserver(observer);
 	}
 }
