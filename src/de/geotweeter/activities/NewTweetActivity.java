@@ -64,6 +64,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.geotweeter.Account;
+import de.geotweeter.AccountManager;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
 import de.geotweeter.GTALocation;
@@ -223,14 +224,14 @@ public class NewTweetActivity extends Activity {
 
 				if (elm instanceof DirectMessage) {
 
-					if (TimelineActivity.current_account == null) {
+					if (AccountManager.current_account == null) {
 						DirectMessage dm = (DirectMessage) elm;
 						List<User> auth_users = getAuthUsers();
 						if (auth_users != null) {
 							for (User u : auth_users) {
 								Account acct = createAccount(u, new Handler());
 								if (dm.recipient.id == acct.getUser().id) {
-									TimelineActivity.current_account = acct;
+									AccountManager.current_account = acct;
 								}
 							}
 						} else {
@@ -244,7 +245,7 @@ public class NewTweetActivity extends Activity {
 				} else if (elm instanceof Tweet) {
 					Log.d("NewTweetActivity", "Element is Tweet");
 					reply_to_id = elm.getID();
-					if (TimelineActivity.current_account == null) {
+					if (AccountManager.current_account == null) {
 						Log.d("NewTweetActivity",
 								"TimelineActivity not running");
 						Tweet tweet = (Tweet) elm;
@@ -260,7 +261,7 @@ public class NewTweetActivity extends Activity {
 									for (UserMention um : tweet.entities.user_mentions) {
 										Log.d("NewTweetActivity", "Checking against " + um.screen_name);
 										if (um.id == acct.getUser().id) {
-											TimelineActivity.current_account = acct;
+											AccountManager.current_account = acct;
 											Log.d("NewTweetActivity", "Check successful");
 											break;
 										}
@@ -275,7 +276,7 @@ public class NewTweetActivity extends Activity {
 									"Tweet lacks a user mention");
 						}
 					}
-					if (TimelineActivity.current_account == null) {
+					if (AccountManager.current_account == null) {
 						throw new NullPointerException(
 								"There's something rotten in the state of current_account");
 					}
@@ -284,7 +285,7 @@ public class NewTweetActivity extends Activity {
 					int replyStringSelectionStart = reply_string.length();
 					for (UserMention userMention : ((Tweet) elm).entities.user_mentions) {
 						if (!(userMention.screen_name
-								.equalsIgnoreCase(TimelineActivity.current_account
+								.equalsIgnoreCase(AccountManager.current_account
 										.getUser().getScreenName()) || userMention.screen_name
 								.equalsIgnoreCase(elm.getSenderScreenName()))) {
 							reply_string += "@" + userMention.screen_name + " ";
@@ -305,7 +306,7 @@ public class NewTweetActivity extends Activity {
 					tleList.add(elm);
 					if (elm.getClass() != DirectMessage.class
 							|| TimelineActivity.getInstance() != null) {
-						new Conversation(tleList, TimelineActivity.current_account,
+						new Conversation(tleList, AccountManager.current_account,
 								true, false);
 					}
 				}
@@ -334,7 +335,7 @@ public class NewTweetActivity extends Activity {
 		List<Account> accounts = Geotweeter.getInstance().getAccountManager().getAllAccounts();
 		LinearLayout lin = (LinearLayout) findViewById(R.id.linLayAccounts);
 
-		currentAccount = TimelineActivity.current_account;
+		currentAccount = AccountManager.current_account;
 
 		int size = Utils.convertDipToPixel(40);
 		int padding = Utils.convertDipToPixel(4);
@@ -857,7 +858,9 @@ public class NewTweetActivity extends Activity {
 			// tweet.imagePath = imageAdapter.getItem(0);
 			tweet.images = imageAdapter.getItems();
 			tweet.remainingImages = imageAdapter.getCount();
-			tweet.location = new GTALocation(location);
+			if (location != null) {
+				tweet.location = new GTALocation(location);
+			}
 			tweet.reply_to_status_id = reply_to_id;
 			tweet.dmRecipient = dmRecipient;
 			tweet.imageHoster = getSharedPreferences(Constants.PREFS_APP, 0)

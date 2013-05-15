@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
+import de.geotweeter.AccountManager;
 import de.geotweeter.AsyncImageView;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
@@ -350,7 +351,7 @@ public class UserDetailActivity extends Activity {
 		protected Exception doInBackground(Object... params) {
 			this.params = params;
 			try {
-				TimelineActivity.current_account.getApi().reportSpam(
+				AccountManager.current_account.getApi().reportSpam(
 						(Long) params[0]);
 			} catch (BadConnectionException e) {
 				return e;
@@ -408,7 +409,7 @@ public class UserDetailActivity extends Activity {
 		protected Exception doInBackground(Object... params) {
 			this.params = params;
 			try {
-				TimelineActivity.current_account.getApi().unblock(
+				AccountManager.current_account.getApi().unblock(
 						(Long) params[0]);
 			} catch (APIRequestException e) {
 				return e;
@@ -467,7 +468,7 @@ public class UserDetailActivity extends Activity {
 		protected Exception doInBackground(Object... params) {
 			this.params = params;
 			try {
-				TimelineActivity.current_account.getApi().block(
+				AccountManager.current_account.getApi().block(
 						(Long) params[0]);
 			} catch (APIRequestException e) {
 				return e;
@@ -539,7 +540,7 @@ public class UserDetailActivity extends Activity {
 		protected Exception doInBackground(Object... params) {
 			this.params = params;
 			try {
-				TimelineActivity.current_account.getApi().follow(
+				AccountManager.current_account.getApi().follow(
 						(Long) params[0]);
 			} catch (APIRequestException e) {
 				return e;
@@ -598,7 +599,7 @@ public class UserDetailActivity extends Activity {
 		protected Exception doInBackground(Object... params) {
 			this.params = params;
 			try {
-				TimelineActivity.current_account.getApi().unfollow(
+				AccountManager.current_account.getApi().unfollow(
 						(Long) params[0]);
 			} catch (APIRequestException e) {
 				return e;
@@ -685,7 +686,7 @@ public class UserDetailActivity extends Activity {
 		protected User doInBackground(Void... params) {
 			User user = null;
 			try {
-				user = TimelineActivity.current_account.getApi().getUser(
+				user = AccountManager.current_account.getApi().getUser(
 						userName);
 			} catch (APIRequestException e) {
 				re = e;
@@ -731,10 +732,10 @@ public class UserDetailActivity extends Activity {
 		protected Relationship doInBackground(Void... params) {
 			Relationship relationship = null;
 			try {
-				relationship = TimelineActivity.current_account
+				relationship = AccountManager.current_account
 						.getApi()
 						.getRelationship(
-								TimelineActivity.current_account.getUser().screen_name,
+								AccountManager.current_account.getUser().screen_name,
 								userName);
 			} catch (APIRequestException e) {
 				re = e;
@@ -776,15 +777,15 @@ public class UserDetailActivity extends Activity {
 			try {
 				switch (type) {
 				case USER_TWEETS:
-					tles = TimelineActivity.current_account.getApi()
+					tles = AccountManager.current_account.getApi()
 							.getUserTimeline(userName);
 					break;
 				case FRIENDS:
-					userlist = TimelineActivity.current_account.getApi()
+					userlist = AccountManager.current_account.getApi()
 							.getFollowing(userName);
 					break;
 				case FOLLOWER:
-					userlist = TimelineActivity.current_account.getApi()
+					userlist = AccountManager.current_account.getApi()
 							.getFollowers(userName);
 					break;
 				}

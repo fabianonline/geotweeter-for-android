@@ -9,12 +9,12 @@ import java.util.regex.Matcher;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
+import de.geotweeter.AccountManager;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 import de.geotweeter.Utils.PictureService;
-import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.ImglyApiAccess;
 import de.geotweeter.apiconn.ImgurApiAccess;
 import de.geotweeter.apiconn.InstagramApiAccess;
@@ -189,14 +189,14 @@ public class Tweet extends TimelineElement {
 	@Override
 	public TLEType getType() {
 		try {
-			User current_user = TimelineActivity.current_account.getUser();
+			User current_user = AccountManager.current_account.getUser();
 			if (this.user.id == current_user.id) {
 				return TLEType.OWN;
 			}
 			if (this.mentionsUser(current_user)) {
 				return TLEType.MENTION;
 			}
-			if (this.id > TimelineActivity.current_account.getMaxReadTweetID()) {
+			if (this.id > AccountManager.current_account.getMaxReadTweetID()) {
 				return TLEType.UNREAD;
 			}
 		} catch (NullPointerException e) {
@@ -354,7 +354,7 @@ public class Tweet extends TimelineElement {
 	@Override
 	public boolean isOwnMessage() {
 		try {
-			return (this.user.id == TimelineActivity.current_account.getUser().id);
+			return (this.user.id == AccountManager.current_account.getUser().id);
 		} catch (Exception e) {
 			return false;
 		}

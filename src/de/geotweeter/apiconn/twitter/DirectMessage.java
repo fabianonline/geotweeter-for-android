@@ -1,9 +1,9 @@
 package de.geotweeter.apiconn.twitter;
 
+import de.geotweeter.AccountManager;
 import de.geotweeter.Constants.TLEType;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
-import de.geotweeter.activities.TimelineActivity;
 
 public class DirectMessage extends Tweet {
 	/**
@@ -72,7 +72,7 @@ public class DirectMessage extends Tweet {
 	
 	@Override
 	public String getSenderName() {
-		if (sender.id == TimelineActivity.current_account.getUser().id) {
+		if (sender.id == AccountManager.current_account.getUser().id) {
 			return Utils.formatString(R.string.direct_message_to_someone, recipient.getScreenName());
 		} else {
 			return Utils.formatString(R.string.direct_message_from_someone, sender.getScreenName());
@@ -86,7 +86,7 @@ public class DirectMessage extends Tweet {
 	
 	@Override
 	public boolean isOwnMessage() {
-		return (sender.id == TimelineActivity.current_account.getUser().id);
+		return (sender.id == AccountManager.current_account.getUser().id);
 	}
 	
 	@Override

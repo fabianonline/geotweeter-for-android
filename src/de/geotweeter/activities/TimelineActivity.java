@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.scribe.exceptions.OAuthException;
-import org.scribe.model.Token;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -46,6 +45,7 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import de.geotweeter.Account;
+import de.geotweeter.AccountManager;
 import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
 import de.geotweeter.Conversation;
@@ -74,7 +74,6 @@ import de.geotweeter.widgets.AccountSwitcherRadioButton;
 public class TimelineActivity extends MapActivity {
 
 	private final String LOG = "TimelineActivity";
-	public static Account current_account = null;
 	public static String reg_id = "";
 	private MapView map;
 	private LinearLayout actionButtons;
@@ -132,6 +131,7 @@ public class TimelineActivity extends MapActivity {
 			}
 		});
 
+		// TODO: Move to AccountManager
 		if (!isRunning) {
 			if (Debug.LOG_TIMELINE_ACTIVITY) {
 				Log.d(LOG, "Create accounts");
@@ -147,9 +147,9 @@ public class TimelineActivity extends MapActivity {
 				replaceAdapter(acct);
 				acct.start(true);
 			}
-			if (current_account != null) {
+			if (AccountManager.current_account != null) {
 				TimelineElementAdapter tleAdapter = new TimelineElementAdapter(TimelineActivity.this,
-						R.layout.timeline_element, current_account.getElements());
+						R.layout.timeline_element, AccountManager.current_account.getElements());
 				timelineListView.setAdapter(tleAdapter);
 			}
 		}
@@ -180,8 +180,8 @@ public class TimelineActivity extends MapActivity {
 			return;
 		}
 		ListView l = (ListView) findViewById(R.id.timeline);
-		if (current_account != null) {
-			TimelineElementList tleList = current_account.getPrevTimeline();
+		if (AccountManager.current_account != null) {
+			TimelineElementList tleList = AccountManager.current_account.getPrevTimeline();
 			if (tleList != null) {
 				l.setAdapter(new TimelineElementAdapter(this, R.layout.timeline_element, tleList));
 			} else {
@@ -492,6 +492,8 @@ public class TimelineActivity extends MapActivity {
 			List<User> authenticatedUsers = Geotweeter.getInstance().getAuthUsers();
 			Map<Long, AccountSwitcherRadioButton> switcherGroup = new HashMap<Long, AccountSwitcherRadioButton>();
 			if (authenticatedUsers != null) {
+				
+				// for accountSwitcher
 				if (authenticatedUsers.size() > 1) {
 					final RadioGroup accountSwitcher = (RadioGroup) findViewById(R.id.rdGrpAccount);
 
@@ -516,16 +518,16 @@ public class TimelineActivity extends MapActivity {
 					Log.d("TimlineActivity", switcherGroup.toString()); // Aus
 																		// Gründen!
 				}
-
-				for (User u : authenticatedUsers) {
-					createAccount(u, params[0]);
-				}
+			}
+			
+			for (Account account : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
+				account.start(true);
 			}
 
-			if (current_account != null) {
+			if (AccountManager.current_account != null) {
 				if (!DateUtils.isToday(Geotweeter.config.twitterTimestamp)) {
 					try {
-						Geotweeter.config.twitter = current_account.getApi()
+						Geotweeter.config.twitter = AccountManager.current_account.getApi()
 								.getConfiguration();
 						Geotweeter.config.twitterTimestamp = System
 								.currentTimeMillis();
@@ -540,7 +542,7 @@ public class TimelineActivity extends MapActivity {
 				runOnUiThread(new Runnable() {
 					public void run() {
 						TimelineElementAdapter tleAdapter = new TimelineElementAdapter(TimelineActivity.this,
-									R.layout.timeline_element, current_account.getElements());
+									R.layout.timeline_element, AccountManager.current_account.getElements());
 						timelineListView.setAdapter(tleAdapter);
 					}
 				});
@@ -577,7 +579,7 @@ public class TimelineActivity extends MapActivity {
 							.setOnClickListener(new AccountSwitcherOnClickListener(
 									account));
 					account.addObserver(switcherButton);
-					if (account == current_account) {
+					if (account == AccountManager.current_account) {
 						runOnUiThread(new Runnable() {
 
 							@Override
@@ -639,56 +641,14 @@ public class TimelineActivity extends MapActivity {
 	 *            The account to be set
 	 */
 	public void setCurrentAccount(Account account) {
-		if (current_account != account) {
-			current_account = account;
+		if (AccountManager.current_account != account) {
+			AccountManager.current_account = account;
 			ListView l = (ListView) findViewById(R.id.timeline);
 			l.setAdapter(new TimelineElementAdapter(TimelineActivity.this,
-					R.layout.timeline_element, current_account.activeTimeline()));
+					R.layout.timeline_element, AccountManager.current_account.activeTimeline()));
 			Log.d(LOG, "Changed Account: "
-					+ current_account.getUser().screen_name);
+					+ AccountManager.current_account.getUser().screen_name);
 		}
-	}
-
-	/**
-	 * Gets the twitter access token for a given user
-	 * 
-	 * @param u
-	 *            The user object whose token is needed
-	 * @return The access token
-	 */
-	private Token getUserToken(User u) {
-		SharedPreferences sp = getSharedPreferences(Constants.PREFS_APP, 0);
-		return new Token(sp.getString("access_token." + String.valueOf(u.id),
-				null), sp.getString("access_secret." + String.valueOf(u.id),
-				null));
-	}
-
-	/**
-	 * Creates an account object for a given user object which starts the
-	 * twitter API access
-	 * 
-	 * @param u
-	 *            The user object whose account object should be created
-	 * @param handler
-	 */
-	public void createAccount(User u, Handler handler) {
-		Account acc = Account.getAccount(u);
-		if (acc == null) {
-			TimelineElementList tleList = new TimelineElementList();
-			acc = new Account(tleList, getUserToken(u), u, getApplicationContext(),
-					true, handler);
-		} else {
-			acc.start(true);
-		}
-		if (current_account == null) {
-			current_account = acc;
-		}
-		final Account finalAcc = acc;
-		runOnUiThread(new Runnable() {
-			public void run() {
-				addAccount(finalAcc);
-			}
-		});
 	}
 
 	/**
@@ -708,7 +668,7 @@ public class TimelineActivity extends MapActivity {
 	public void showConversation(TimelineElement te) {
 		TimelineElementList tleList = new TimelineElementList();
 		tleList.add(te);
-		new Conversation(tleList, current_account, false, true);
+		new Conversation(tleList, AccountManager.current_account, false, true);
 		ListView l = (ListView) findViewById(R.id.timeline);
 		l.setAdapter(new TimelineElementAdapter(this,
 				R.layout.timeline_element, tleList));
@@ -764,7 +724,7 @@ public class TimelineActivity extends MapActivity {
 				}
 			} else if (current instanceof Tweet) {
 				if (new_max_read_mention_id == 0
-						&& ((Tweet) current).mentionsUser(current_account
+						&& ((Tweet) current).mentionsUser(AccountManager.current_account
 								.getUser())) {
 					new_max_read_mention_id = current.getID();
 				}
@@ -778,7 +738,7 @@ public class TimelineActivity extends MapActivity {
 			}
 			pos++;
 		}
-		current_account.setMaxReadIDs(new_max_read_tweet_id,
+		AccountManager.current_account.setMaxReadIDs(new_max_read_tweet_id,
 				new_max_read_mention_id, new_max_read_dm_id);
 	}
 
@@ -790,7 +750,7 @@ public class TimelineActivity extends MapActivity {
 		while (pos < elements.getCount()) {
 			TimelineElement element = elements.getItem(pos);
 			if (element instanceof Tweet && !(element instanceof DirectMessage)) {
-				if (element.getID() < current_account.getMaxReadTweetID()) {
+				if (element.getID() < AccountManager.current_account.getMaxReadTweetID()) {
 					break;
 				}
 			}
@@ -947,11 +907,11 @@ public class TimelineActivity extends MapActivity {
 										try {
 
 											if (tle.getClass() == DirectMessage.class) {
-												current_account.getApi()
+												AccountManager.current_account.getApi()
 														.destroyMessage(
 																tle.getID());
 											} else {
-												current_account.getApi()
+												AccountManager.current_account.getApi()
 														.destroyTweet(
 																tle.getID());
 											}
@@ -977,7 +937,7 @@ public class TimelineActivity extends MapActivity {
 											public void run() {
 												availableTweets.remove(tle
 														.getID());
-												current_account.remove(tle);
+												AccountManager.current_account.remove(tle);
 											}
 										});
 									}
@@ -998,7 +958,7 @@ public class TimelineActivity extends MapActivity {
 			public void run() {
 				TimelineElement favedTle = null;
 				try {
-					current_account.getApi().fav(tle.getID());
+					AccountManager.current_account.getApi().fav(tle.getID());
 				} catch (FavException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1012,7 +972,7 @@ public class TimelineActivity extends MapActivity {
 					return;
 				}
 				try {
-					favedTle = current_account.getApi().getTweet(tle.getID());
+					favedTle = AccountManager.current_account.getApi().getTweet(tle.getID());
 				} catch (OAuthException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1029,7 +989,7 @@ public class TimelineActivity extends MapActivity {
 					@Override
 					public void run() {
 						availableTweets.remove(tle.getID());
-						current_account.refresh(tle, newTle);
+						AccountManager.current_account.refresh(tle, newTle);
 					}
 				});
 			}
@@ -1050,7 +1010,7 @@ public class TimelineActivity extends MapActivity {
 
 				TimelineElement defavedTle = null;
 				try {
-					current_account.getApi().defav(tle.getID());
+					AccountManager.current_account.getApi().defav(tle.getID());
 				} catch (FavException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1064,7 +1024,7 @@ public class TimelineActivity extends MapActivity {
 					return;
 				}
 				try {
-					defavedTle = current_account.getApi().getTweet(tle.getID());
+					defavedTle = AccountManager.current_account.getApi().getTweet(tle.getID());
 				} catch (OAuthException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1081,7 +1041,7 @@ public class TimelineActivity extends MapActivity {
 					@Override
 					public void run() {
 						availableTweets.remove(tle.getID());
-						current_account.refresh(tle, newTle);
+						AccountManager.current_account.refresh(tle, newTle);
 					}
 				});
 
@@ -1110,7 +1070,7 @@ public class TimelineActivity extends MapActivity {
 
 									public void run() {
 										try {
-											current_account.getApi().retweet(
+											AccountManager.current_account.getApi().retweet(
 													te.getID());
 										} catch (OAuthException e) {
 											// TODO Auto-generated catch block

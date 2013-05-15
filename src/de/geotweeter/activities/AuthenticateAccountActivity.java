@@ -25,6 +25,7 @@ import android.webkit.WebViewClient;
 import com.alibaba.fastjson.JSON;
 
 import de.geotweeter.Constants;
+import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.Utils;
 import de.geotweeter.apiconn.twitter.User;
@@ -154,7 +155,7 @@ public class AuthenticateAccountActivity extends Activity {
 		protected void onPostExecute(User u) {
 			if (u != null) {
 				/* TODO: getInstance() kann null zurückliefern, da gehört noch Arbeit hin! */ 
-				TimelineActivity.getInstance().createAccount(u, new Handler());
+				Geotweeter.getInstance().getAccountManager().createAccount(u, new Handler());
 			}
 			self.finish();
 		}

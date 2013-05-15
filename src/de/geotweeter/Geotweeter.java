@@ -69,11 +69,12 @@ public class Geotweeter extends Application {
 		backgroundImageLoader = new BackgroundImageLoader(
 				getApplicationContext());
 		
-		// TODO: Move Account creation to Geotweeter.java
-		accountManager = new AccountManager();
-
 		autoCompletionContent = Collections
 				.synchronizedSet(new HashSet<String>());
+		
+		// TODO: Move Account creation to Geotweeter.java
+		accountManager = new AccountManager();
+		accountManager.init();
 
 		config = (Configuration) Utils.readObjectFromFile(
 				getApplicationContext(), Constants.PREFS_CONFIG);
