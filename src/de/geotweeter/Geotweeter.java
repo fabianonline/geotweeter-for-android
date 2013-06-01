@@ -10,6 +10,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConfiguration;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 
 import android.annotation.TargetApi;
 import android.app.Application;
@@ -60,6 +61,7 @@ public class Geotweeter extends Application {
 		Log.d(LOG, "onCreate is running");
 		instance = this;
 		refreshTheme();
+		SSLSocketFactory.getSocketFactory().setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 		ACRAConfiguration acraConfig = ACRA.getNewDefaultConfig(this);
 		acraConfig.setFormUri(Utils.getProperty("crashreport.server.url")
 				+ "/send");

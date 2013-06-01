@@ -634,7 +634,7 @@ public class Account extends Observable implements Serializable {
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
-					e.printStackTrace();
+					Log.e(LOG, "Tweetmarker", e);
 				}
 			}
 		}, "GetMaxReadIDs").start();
