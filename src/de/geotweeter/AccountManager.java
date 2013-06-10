@@ -15,7 +15,7 @@ import de.geotweeter.apiconn.twitter.User;
 
 /**
  * @author Julian Kuerby
- *
+ * 
  */
 public class AccountManager {
 
@@ -25,14 +25,16 @@ public class AccountManager {
 	public List<Account> getAllAccounts() {
 		return allAccounts;
 	}
-	
+
 	public void init() {
 		List<User> authenticatedUsers = Geotweeter.getInstance().getAuthUsers();
-		for (User u : authenticatedUsers) {
-			createAccount(u, new Handler());
+		if (authenticatedUsers != null) {
+			for (User u : authenticatedUsers) {
+				createAccount(u, new Handler());
+			}
 		}
 	}
-	
+
 	/**
 	 * Creates an account object for a given user object which starts the
 	 * twitter API access
@@ -45,8 +47,8 @@ public class AccountManager {
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
 			TimelineElementList tleList = new TimelineElementList();
-			acc = new Account(tleList, getUserToken(u), u, Geotweeter.getInstance().getApplicationContext(),
-					false, handler);
+			acc = new Account(tleList, getUserToken(u), u, Geotweeter
+					.getInstance().getApplicationContext(), false, handler);
 		}
 		if (current_account == null) {
 			current_account = acc;
@@ -62,7 +64,8 @@ public class AccountManager {
 	 * @return The access token
 	 */
 	private Token getUserToken(User u) {
-		SharedPreferences sp = Geotweeter.getInstance().getSharedPreferences(Constants.PREFS_APP, 0);
+		SharedPreferences sp = Geotweeter.getInstance().getSharedPreferences(
+				Constants.PREFS_APP, 0);
 		return new Token(sp.getString("access_token." + String.valueOf(u.id),
 				null), sp.getString("access_secret." + String.valueOf(u.id),
 				null));
