@@ -33,12 +33,17 @@ public class Debug {
 	public static final boolean LOG_ACCOUNT = false;
 
 	/**
-	 * @param log
+	 * Wrapper for Log.d, which will be removed in release chain
+	 * 
+	 * @param tag
+	 *            Used to identify the source of a log message. It usually
+	 *            identifies the class or activity where the log call occurs.
 	 * @param msg
+	 *            The message you would like logged.
 	 */
-	public static void log(String log, String msg) {
+	public static void log(String tag, String msg) {
 		if (!RELEASE) {
-			Log.d(log, msg);
+			Log.d(tag, msg);
 		}
 	}
 
