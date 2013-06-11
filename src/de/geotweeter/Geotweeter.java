@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.util.Pair;
 import android.widget.RemoteViews;
 import de.geotweeter.activities.NewTweetActivity;

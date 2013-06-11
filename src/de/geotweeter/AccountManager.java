@@ -10,7 +10,6 @@ import org.scribe.model.Token;
 
 import android.content.SharedPreferences;
 import android.os.Handler;
-
 import de.geotweeter.apiconn.twitter.User;
 
 /**

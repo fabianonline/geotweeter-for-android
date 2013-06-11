@@ -13,7 +13,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.util.Log;
 import android.widget.Toast;
 import de.geotweeter.Constants;
 import de.geotweeter.Debug;

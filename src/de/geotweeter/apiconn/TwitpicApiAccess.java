@@ -19,7 +19,6 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 
-import android.util.Log;
 import android.util.Pair;
 
 import com.alibaba.fastjson.JSON;
