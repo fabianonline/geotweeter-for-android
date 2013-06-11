@@ -85,7 +85,8 @@ public class StreamRequest {
 				@Override
 				public void run() {
 					if (Debug.LOG_STREAM_CHECKS) {
-						Debug.log("StreamCheckNewlineTimeoutTask",
+						Debug.log(
+								"StreamCheckNewlineTimeoutTask",
 								"Running. "
 										+ (System.currentTimeMillis() - lastNewlineReceivedAt));
 					}
@@ -105,7 +106,8 @@ public class StreamRequest {
 				@Override
 				public void run() {
 					if (Debug.LOG_STREAM_CHECKS) {
-						Debug.log("StreamCheckDataTimeoutTask",
+						Debug.log(
+								"StreamCheckDataTimeoutTask",
 								"Running. "
 										+ (System.currentTimeMillis() - lastDataReceivedAt));
 					}

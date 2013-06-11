@@ -545,13 +545,13 @@ public class NewTweetActivity extends Activity {
 				Toast.makeText(this, R.string.too_much_images,
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Debug.log(LOG, picturePath + ": " + new File(picturePath).length());
+				Debug.log(LOG,
+						picturePath + ": " + new File(picturePath).length());
 
 				if (image_hoster.equals("twitpic")) {
 					String editText = editTweetText.getText().toString();
-					Debug.log(LOG,
-							"String: " + editText + " Length: "
-									+ editText.length());
+					Debug.log(LOG, "String: " + editText + " Length: "
+							+ editText.length());
 					String prefix = " ";
 					if (editText.length() == 0 || editText.matches(".*\\s")) {
 						prefix = "";

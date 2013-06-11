@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class Debug {
 	public static final boolean RELEASE = false;
-	
+
 	public static final boolean ENABLED = false;
 	public static final boolean SKIP_START_STREAM = true;
 	public static final boolean SKIP_FILL_TIMELINE = true;
@@ -31,9 +31,7 @@ public class Debug {
 	public static final boolean LOG_STREAM_CHECKS = false;
 	public static final boolean LOG_TIMELINE_ACTIVITY = true;
 	public static final boolean LOG_ACCOUNT = false;
-	
-	
-	
+
 	/**
 	 * @param log
 	 * @param msg
@@ -44,5 +42,4 @@ public class Debug {
 		}
 	}
 
-	
 }

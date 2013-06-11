@@ -523,7 +523,7 @@ public class TimelineActivity extends MapActivity {
 
 					}
 					Debug.log("TimlineActivity", switcherGroup.toString()); // Aus
-																		// Gründen!
+					// Gründen!
 				}
 			}
 
@@ -659,7 +659,8 @@ public class TimelineActivity extends MapActivity {
 			l.setAdapter(new TimelineElementAdapter(TimelineActivity.this,
 					R.layout.timeline_element, AccountManager.current_account
 							.activeTimeline()));
-			Debug.log(LOG,
+			Debug.log(
+					LOG,
 					"Changed Account: "
 							+ AccountManager.current_account.getUser().screen_name);
 		}

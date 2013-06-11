@@ -136,7 +136,8 @@ public class Account extends Observable implements Serializable {
 
 		if (fetchTimeLine) {
 			if (Debug.LOG_ACCOUNT) {
-				Debug.log(LOG, "Fetch timelines from API for " + user.screen_name);
+				Debug.log(LOG, "Fetch timelines from API for "
+						+ user.screen_name);
 			}
 			start(true);
 		}
@@ -325,8 +326,9 @@ public class Account extends Observable implements Serializable {
 					}, 10000);
 					return;
 				} else {
-					Debug.log(LOG, "Recurring error in " + accessType.toString()
-							+ " access. Not Retrying");
+					Debug.log(LOG,
+							"Recurring error in " + accessType.toString()
+									+ " access. Not Retrying");
 					Toast.makeText(appContext,
 							R.string.error_api_access_recurring,
 							Toast.LENGTH_SHORT).show();
@@ -336,9 +338,13 @@ public class Account extends Observable implements Serializable {
 
 			accessSuccessful.put(accessType, true);
 
-			Debug.log(LOG, "Get " + accessType.toString() + " finished. Runtime: "
-					+ String.valueOf(System.currentTimeMillis() - startTime)
-					+ "ms");
+			Debug.log(
+					LOG,
+					"Get "
+							+ accessType.toString()
+							+ " finished. Runtime: "
+							+ String.valueOf(System.currentTimeMillis()
+									- startTime) + "ms");
 
 			if (accessType == AccessType.TIMELINE) {
 				mainTimeline.addAll(result.elements);
