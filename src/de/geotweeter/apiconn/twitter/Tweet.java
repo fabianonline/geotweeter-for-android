@@ -56,7 +56,7 @@ public class Tweet extends TimelineElement {
 		this();
 		this.user = user;
 	}
-	
+
 	/**
 	 * Returns the tweet id
 	 * 

@@ -18,53 +18,59 @@ import de.geotweeter.Utils;
 public class SettingsAccounts extends Activity {
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pref_accounts);
-				
-		Button btnAddAccount = (Button)findViewById(R.id.btnAddAccount);
+
+		Button btnAddAccount = (Button) findViewById(R.id.btnAddAccount);
 		btnAddAccount.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				addAccount();
 			}
 		});
-		
+
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		
-		if (!Geotweeter.getInstance().getAccountManager().getAllAccounts().isEmpty()) {
-			
-			ListView lv = (ListView)findViewById(R.id.lvAccounts);
-			AccountListElementAdapter adapter = new AccountListElementAdapter(this, R.layout.account_list_element, Geotweeter.getInstance().getAccountManager().getAllAccounts());
+
+		if (!Geotweeter.getInstance().getAccountManager().getAllAccounts()
+				.isEmpty()) {
+
+			ListView lv = (ListView) findViewById(R.id.lvAccounts);
+			AccountListElementAdapter adapter = new AccountListElementAdapter(
+					this, R.layout.account_list_element, Geotweeter
+							.getInstance().getAccountManager().getAllAccounts());
 			lv.setAdapter(adapter);
 			lv.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					Account account = (Account)parent.getItemAtPosition(position);
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					Account account = (Account) parent
+							.getItemAtPosition(position);
 					editUserSettings(account);
 				}
 			});
 
 		}
-				
+
 	}
-	
+
 	protected void editUserSettings(Account account) {
 		Intent accountPrefs = new Intent(this, AccountPrefsActivity.class);
 		accountPrefs.putExtra("account", account);
 		startActivity(accountPrefs);
-		
+
 	}
 
 	protected void addAccount() {
-		Intent intent = new Intent().setClass(this, AuthenticateAccountActivity.class);
+		Intent intent = new Intent().setClass(this,
+				AuthenticateAccountActivity.class);
 		startActivity(intent);
 	}
 

@@ -18,30 +18,33 @@ public class ProtectedPlaceholderEditText extends MultiAutoCompleteTextView {
 	public ProtectedPlaceholderEditText(Context context) {
 		this(context, (Pattern) null);
 	}
-	
+
 	public ProtectedPlaceholderEditText(Context context, AttributeSet attrs) {
 		this(context, attrs, (Pattern) null);
 	}
-	
-	public ProtectedPlaceholderEditText(Context context, AttributeSet attrs, int defStyle) {
+
+	public ProtectedPlaceholderEditText(Context context, AttributeSet attrs,
+			int defStyle) {
 		this(context, attrs, defStyle, (Pattern) null);
 	}
-		
+
 	public ProtectedPlaceholderEditText(Context context, Pattern placeholder) {
 		super(context);
 		this.placeholder = placeholder;
 	}
-	
-	public ProtectedPlaceholderEditText(Context context, AttributeSet attrs, Pattern placeholder) {
+
+	public ProtectedPlaceholderEditText(Context context, AttributeSet attrs,
+			Pattern placeholder) {
 		super(context, attrs);
 		this.placeholder = placeholder;
 	}
-	
-	public ProtectedPlaceholderEditText(Context context, AttributeSet attrs, int defStyle, Pattern placeholder) {
+
+	public ProtectedPlaceholderEditText(Context context, AttributeSet attrs,
+			int defStyle, Pattern placeholder) {
 		super(context, attrs, defStyle);
 		this.placeholder = placeholder;
 	}
-	
+
 	@Override
 	protected void onSelectionChanged(int selStart, int selEnd) {
 		if ((placeholder_selected && dpad_action) || placeholder == null) {
@@ -52,7 +55,7 @@ public class ProtectedPlaceholderEditText extends MultiAutoCompleteTextView {
 		}
 		placeholder_selected = false;
 		if (own_call) {
-			own_call  = false;
+			own_call = false;
 			return;
 		}
 		Matcher matcher = placeholder.matcher(getText());
@@ -69,7 +72,8 @@ public class ProtectedPlaceholderEditText extends MultiAutoCompleteTextView {
 				continue;
 			}
 			own_call = true;
-			setSelection(Math.min(selStart, pattern_start), Math.max(selEnd, pattern_end));
+			setSelection(Math.min(selStart, pattern_start),
+					Math.max(selEnd, pattern_end));
 			placeholder_selected = true;
 			return;
 		}

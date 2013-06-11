@@ -10,5 +10,5 @@ public class Users implements Serializable {
 	public long previous_cursor;
 	public long next_cursor;
 	public List<User> users = new ArrayList<User>();
-	
+
 }

@@ -9,5 +9,5 @@ public class Sizes implements Serializable {
 	public Size large;
 	public Size medium;
 	public Size small;
-	
+
 }

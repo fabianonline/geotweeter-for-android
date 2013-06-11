@@ -878,7 +878,7 @@ public class TwitterApiAccess {
 			throw new APIRequestException(RequestType.CONFIG,
 					response.getCode(), response.getBody());
 		}
-		
+
 		return result;
 	}
 

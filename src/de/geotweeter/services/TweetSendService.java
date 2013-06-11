@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import de.geotweeter.Constants;
+import de.geotweeter.Debug;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.SendableTweet;
@@ -50,18 +51,18 @@ public class TweetSendService extends Service {
 	@Override
 	public void onCreate() {
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		Log.d(LOG, "Started.");
+		Debug.log(LOG, "Started.");
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startID) {
-		Log.d(LOG, "Received startID " + startID + ": " + intent);
+		Debug.log(LOG, "Received startID " + startID + ": " + intent);
 		return START_STICKY;
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.d(LOG, "Destroyed.");
+		Debug.log(LOG, "Destroyed.");
 	}
 
 	public IBinder onBind(Intent intent) {
@@ -127,7 +128,7 @@ public class TweetSendService extends Service {
 	}
 
 	private void removeNotification() {
-		Log.d(LOG, "Removing notification.");
+		Debug.log(LOG, "Removing notification.");
 		if (notification == null) {
 			notification = new Notification();
 		}
@@ -258,13 +259,13 @@ public class TweetSendService extends Service {
 					tweet.remainingImages--;
 					tweet.text = TwitpicApiAccess.replacePlaceholder(
 							tweet.text, twitpicUrl, i);
-					Log.d(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
+					Debug.log(LOG, "Added twitpic-URL to Tweet, Twitpic " + i);
 
 				}
 			}
-			Log.d(LOG, "Send Twitpic-Tweet");
+			Debug.log(LOG, "Send Twitpic-Tweet");
 			tweet.account.getApi().sendTweet(tweet);
-			Log.d(LOG, "Finished: Send Twitpic-Tweet");
+			Debug.log(LOG, "Finished: Send Twitpic-Tweet");
 		}
 	}
 

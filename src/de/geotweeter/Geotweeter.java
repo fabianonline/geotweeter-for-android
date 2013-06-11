@@ -33,17 +33,9 @@ import de.geotweeter.apiconn.twitter.User;
 import de.geotweeter.services.NotificationDeleteReceiver;
 import de.geotweeter.timelineelements.TimelineElement;
 
-@ReportsCrashes(formKey = "", 
-				formUri = "", 
-				mode = ReportingInteractionMode.DIALOG, 
-				resToastText = R.string.crash_toast_text, 
-				resDialogText = R.string.crash_dialog_text, 
-				resDialogCommentPrompt = R.string.crash_dialog_comment_prompt, 
-				resDialogOkToast = R.string.crash_dialog_ok_toast, 
-				logcatArguments = { "-t", "200", "-v", "threadtime", "dalvikvm:s" }, 
-				sharedPreferencesName = Constants.PREFS_APP, 
-				additionalSharedPreferences = { Constants.PREFS_APP, Constants.PREFS_ACCOUNTS }, 
-				excludeMatchingSharedPreferencesKeys = { "^access_" } )
+@ReportsCrashes(formKey = "", formUri = "", mode = ReportingInteractionMode.DIALOG, resToastText = R.string.crash_toast_text, resDialogText = R.string.crash_dialog_text, resDialogCommentPrompt = R.string.crash_dialog_comment_prompt, resDialogOkToast = R.string.crash_dialog_ok_toast, logcatArguments = {
+		"-t", "200", "-v", "threadtime", "dalvikvm:s" }, sharedPreferencesName = Constants.PREFS_APP, additionalSharedPreferences = {
+		Constants.PREFS_APP, Constants.PREFS_ACCOUNTS }, excludeMatchingSharedPreferencesKeys = { "^access_" })
 public class Geotweeter extends Application {
 	private static final String LOG = "Geotweeter";
 	private static Geotweeter instance;
@@ -58,10 +50,11 @@ public class Geotweeter extends Application {
 
 	@Override
 	public void onCreate() {
-		Log.d(LOG, "onCreate is running");
+		Debug.log(LOG, "onCreate is running");
 		instance = this;
 		refreshTheme();
-		SSLSocketFactory.getSocketFactory().setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		SSLSocketFactory.getSocketFactory().setHostnameVerifier(
+				SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 		ACRAConfiguration acraConfig = ACRA.getNewDefaultConfig(this);
 		acraConfig.setFormUri(Utils.getProperty("crashreport.server.url")
 				+ "/send");
@@ -70,10 +63,10 @@ public class Geotweeter extends Application {
 
 		backgroundImageLoader = new BackgroundImageLoader(
 				getApplicationContext());
-		
+
 		autoCompletionContent = Collections
 				.synchronizedSet(new HashSet<String>());
-		
+
 		// TODO: Move Account creation to Geotweeter.java
 		accountManager = new AccountManager();
 		accountManager.init();
@@ -130,7 +123,7 @@ public class Geotweeter extends Application {
 	public BackgroundImageLoader getBackgroundImageLoader() {
 		return backgroundImageLoader;
 	}
-	
+
 	/**
 	 * Returns the AccountManager of the App
 	 * 

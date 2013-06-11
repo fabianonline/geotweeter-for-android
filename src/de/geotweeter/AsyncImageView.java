@@ -7,11 +7,11 @@ import android.widget.ImageView;
 public class AsyncImageView extends ImageView {
 
 	private String url;
-	
+
 	public AsyncImageView(Context context) {
 		super(context);
 	}
-	
+
 	public AsyncImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}

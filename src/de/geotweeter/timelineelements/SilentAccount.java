@@ -16,11 +16,11 @@ public class SilentAccount extends Tweet {
 	 * 
 	 */
 	private static final long serialVersionUID = 5763816499571748587L;
-	
+
 	public SilentAccount(User user) {
 		this.user = user;
 	}
-	
+
 	public int getBackgroundDrawableID(boolean getDarkVersion) {
 		return getDarkVersion ? R.drawable.listelement_background_dark_unread
 				: R.drawable.listelement_background_light_unread;
@@ -29,11 +29,11 @@ public class SilentAccount extends Tweet {
 	public String getSenderName() {
 		return user.getScreenName();
 	}
-	
+
 	public String getSenderScreenName() {
 		return user.getScreenName();
 	}
-	
+
 	public String getDateString() {
 		return "";
 	}
@@ -49,7 +49,7 @@ public class SilentAccount extends Tweet {
 	public String getAvatarSource() {
 		return user.getAvatarSource();
 	}
-	
+
 	public List<Pair<URL, URL>> getMediaList() {
 		return new LinkedList<Pair<URL, URL>>();
 	}
@@ -58,5 +58,4 @@ public class SilentAccount extends Tweet {
 		return Geotweeter.getInstance().getString(R.string.user_silent);
 	}
 
-	
 }

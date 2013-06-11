@@ -24,24 +24,25 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 	@Override
 	protected void onError(Context context, String error_id) {
-		Log.d(LOG, "onError - " + error_id);
+		Debug.log(LOG, "onError - " + error_id);
 	}
 
 	@Override
 	protected void onMessage(Context context, Intent intent) {
-		Log.d(LOG, "onMessage");
-		
+		Debug.log(LOG, "onMessage");
+
 		/* Run checks to see if the user will want to see this notification. */
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_APP, 0);
 		if (!pref.getBoolean("pref_notifications_enabled", true)) {
 			return;
 		}
-		
+
 		if (pref.getBoolean("pref_notifications_silent_time_enabled", false)) {
-			long start = pref.getLong("pref_notifications_silent_time_start", -1);
-			long end   = pref.getLong("pref_notifications_silent_time_end",   -1);
-			long now   = System.currentTimeMillis() % (24*60*60*1000);
-			Log.d(LOG, "" + start + " " + end + " " + now);
+			long start = pref.getLong("pref_notifications_silent_time_start",
+					-1);
+			long end = pref.getLong("pref_notifications_silent_time_end", -1);
+			long now = System.currentTimeMillis() % (24 * 60 * 60 * 1000);
+			Debug.log(LOG, "" + start + " " + end + " " + now);
 			if (start >= 0 && end >= 0) {
 				if (start > end) {
 					/* Start ist vor Mitternach, Ende danach. */
@@ -56,15 +57,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 				}
 			}
 		}
-		
+
 		String data = intent.getExtras().getString("data");
 		String version = intent.getExtras().getString("version");
-		
+
 		if ("1".equals(version)) {
 			byte[] bytes = Base64.decode(data, Base64.DEFAULT);
 			StringBuilder string = new StringBuilder();
 			try {
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(
+						bytes);
 				InputStream in = new InflaterInputStream(byteStream);
 				byte[] buffer = new byte[128];
 				int len;
@@ -72,17 +74,17 @@ public class GCMIntentService extends GCMBaseIntentService {
 					string.append(new String(buffer, 0, len));
 				}
 			} catch (Exception ex) {
-				Log.d(LOG, "Exception! " + ex.toString());
+				Debug.log(LOG, "Exception! " + ex.toString());
 				return;
 			}
 			data = string.toString();
-		} else if ("0".equals(version) || version==null) {
+		} else if ("0".equals(version) || version == null) {
 			// do nothing - data is already in the correct format
 		} else {
 			Log.e(LOG, "Too new version from GCM: " + version);
 			return;
 		}
-		
+
 		TimelineElement t;
 		try {
 			t = Utils.jsonToNativeObject(data);
@@ -91,45 +93,48 @@ public class GCMIntentService extends GCMBaseIntentService {
 		} catch (UnknownJSONObjectException e) {
 			return;
 		}
-		
+
 		if (!t.showNotification()) {
 			return;
 		}
 
 		String type = intent.getExtras().getString("type");
-		
-		if ("mention".equals(type) && !pref.getBoolean("pref_notifications_types_mentions", true)) {
+
+		if ("mention".equals(type)
+				&& !pref.getBoolean("pref_notifications_types_mentions", true)) {
 			return;
-		} else if ("dm".equals(type) && !pref.getBoolean("pref_notifications_types_direct_messages", true)) {
+		} else if ("dm".equals(type)
+				&& !pref.getBoolean("pref_notifications_types_direct_messages",
+						true)) {
 			return;
-		} else if ("favorite".equals(type) && !pref.getBoolean("pref_notifications_types_favorites", false)) {
+		} else if ("favorite".equals(type)
+				&& !pref.getBoolean("pref_notifications_types_favorites", false)) {
 			return;
-		} else if ("retweet".equals(type) && !pref.getBoolean("pref_notifications_types_retweets", false)) {
+		} else if ("retweet".equals(type)
+				&& !pref.getBoolean("pref_notifications_types_retweets", false)) {
 			return;
 		}
-		
-		
+
 		/* Add the tweet to the notifications list. */
 		List<Pair<TimelineElement, String>> allNotifications = ((Geotweeter) getApplication()).notifiedElements;
 		allNotifications.add(0, new Pair<TimelineElement, String>(t, type));
-		
+
 		((Geotweeter) getApplication()).updateNotification(true);
 	}
 
-	
-
 	@Override
 	protected void onRegistered(Context context, String reg_id) {
-		Log.d(LOG, "onRegistered - " + reg_id);
+		Debug.log(LOG, "onRegistered - " + reg_id);
 		TimelineActivity.reg_id = reg_id;
-		for (Account a : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
+		for (Account a : Geotweeter.getInstance().getAccountManager()
+				.getAllAccounts()) {
 			a.registerForGCMMessages();
 		}
 	}
 
 	@Override
 	protected void onUnregistered(Context context, String reg_id) {
-		Log.d(LOG, "onUnregistered - " + reg_id);
+		Debug.log(LOG, "onUnregistered - " + reg_id);
 	}
 
 }

@@ -19,5 +19,5 @@ public class Media implements Serializable {
 	public String source_status_id_str;
 	public String type;
 	public String url;
-	
+
 }

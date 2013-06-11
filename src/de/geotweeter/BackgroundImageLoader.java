@@ -52,7 +52,7 @@ public class BackgroundImageLoader {
 		Bitmap bitmap = bitmap_cache.get(url);
 
 		if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-			Log.d(LOG, "View: " + image_view.toString() + " url: " + url);
+			Debug.log(LOG, "View: " + image_view.toString() + " url: " + url);
 		}
 
 		if (bitmap != null) {
@@ -77,7 +77,7 @@ public class BackgroundImageLoader {
 		Bitmap bitmap = bitmap_cache.get(url);
 
 		if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-			Log.d(LOG, "View: " + image_view.toString() + " url: " + url);
+			Debug.log(LOG, "View: " + image_view.toString() + " url: " + url);
 		}
 
 		if (bitmap != null) {
@@ -122,7 +122,7 @@ public class BackgroundImageLoader {
 				// if (imageViewReused(url, image_view)) return;
 				final Bitmap bmp = loadBitmap(url, store_persistent);
 				if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-					Log.d(LOG, "Finished loading " + url);
+					Debug.log(LOG, "Finished loading " + url);
 				}
 
 				// if (imageViewReused(url, image_view)) return;
@@ -153,7 +153,7 @@ public class BackgroundImageLoader {
 				// if (imageViewReused(url, image_view)) return;
 				final Bitmap bmp = loadBitmap(url, store_persistent);
 				if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-					Log.d(LOG, "Finished loading " + url);
+					Debug.log(LOG, "Finished loading " + url);
 				}
 
 				// if (imageViewReused(url, image_view)) return;
@@ -215,7 +215,7 @@ public class BackgroundImageLoader {
 			}
 			final Bitmap bmp = loadBitmap(url, store_persistent);
 			if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-				Log.d(LOG, "Finished loading " + url);
+				Debug.log(LOG, "Finished loading " + url);
 			}
 
 			((Activity) radioButton.getContext()).runOnUiThread(new Runnable() {
@@ -245,7 +245,7 @@ public class BackgroundImageLoader {
 		File cache_file = file_cache.getFile(url);
 		if (cache_file.exists()) {
 			if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-				Log.d(LOG, "Loading " + url + " from cache.");
+				Debug.log(LOG, "Loading " + url + " from cache.");
 			}
 			try {
 				bitmap = new BitmapDrawable(application_context.getResources(),
@@ -258,7 +258,7 @@ public class BackgroundImageLoader {
 		}
 
 		if (Debug.LOG_BACKGROUND_IMAGE_LOADER) {
-			Log.d(LOG, "Loading " + url + " from web");
+			Debug.log(LOG, "Loading " + url + " from web");
 		}
 
 		try {

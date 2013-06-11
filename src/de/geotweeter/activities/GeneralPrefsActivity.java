@@ -16,6 +16,7 @@ import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.widget.Toast;
 import de.geotweeter.Constants;
+import de.geotweeter.Debug;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
@@ -109,7 +110,7 @@ public class GeneralPrefsActivity extends PreferenceActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		if (themeChanged) {
-			Log.d("Prefs", "themeChanged");
+			Debug.log("Prefs", "themeChanged");
 			new AlertDialog.Builder(TimelineActivity.getInstance())
 					.setTitle(R.string.pref_theme_changed_title)
 					.setMessage(R.string.pref_theme_changed_message)

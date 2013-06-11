@@ -16,7 +16,7 @@ import de.geotweeter.timelineelements.TimelineElement;
  * Retrieves a conversation based on a given endpoint
  * 
  * @author Lutz Krumme (@el_emka)
- *
+ * 
  */
 public class Conversation {
 
@@ -24,16 +24,22 @@ public class Conversation {
 	private TwitterApiAccess api;
 	private boolean backwards;
 	private MessageHashMap dm_conversations;
-	
+
 	/**
 	 * Creates the conversation object and starts the retrieval task
 	 * 
-	 * @param tea The timeline containing the conversation endpoint as the only element
-	 * @param current_account The timeline owning account
-	 * @param backwards If true the conversation is shown beginning at its end point
-	 * @param onStack If true the timeline is put on the shown timeline stack
+	 * @param tea
+	 *            The timeline containing the conversation endpoint as the only
+	 *            element
+	 * @param current_account
+	 *            The timeline owning account
+	 * @param backwards
+	 *            If true the conversation is shown beginning at its end point
+	 * @param onStack
+	 *            If true the timeline is put on the shown timeline stack
 	 */
-	public Conversation(TimelineElementList tea, Account current_account, boolean backwards, boolean onStack) {
+	public Conversation(TimelineElementList tea, Account current_account,
+			boolean backwards, boolean onStack) {
 		this.tea = tea;
 		this.backwards = backwards;
 		api = current_account.getApi();
@@ -45,11 +51,12 @@ public class Conversation {
 			new LoadConversationTask().execute(tea.getList().get(0));
 		}
 	}
-	
+
 	/**
 	 * Loads the actual conversation
 	 */
-	private class LoadConversationTask extends AsyncTask<TimelineElement, TimelineElement, Void> {
+	private class LoadConversationTask extends
+			AsyncTask<TimelineElement, TimelineElement, Void> {
 
 		@Override
 		/**
@@ -60,14 +67,17 @@ public class Conversation {
 		 */
 		protected Void doInBackground(TimelineElement... params) {
 			if (params == null) {
-				throw new NullPointerException("Conversation Task parameters are null");
+				throw new NullPointerException(
+						"Conversation Task parameters are null");
 			}
 			if (params[0] == null) {
-				throw new NullPointerException("Conversation Task parameter is null");
+				throw new NullPointerException(
+						"Conversation Task parameter is null");
 			}
 			TimelineElement current_element = params[0];
 			if (current_element.getClass() != Tweet.class) {
-				List<DirectMessage> messages = dm_conversations.getConversation(getRespondent(current_element));
+				List<DirectMessage> messages = dm_conversations
+						.getConversation(getRespondent(current_element));
 				if (messages != null) {
 					for (DirectMessage msg : messages) {
 						publishProgress(msg);
@@ -79,7 +89,8 @@ public class Conversation {
 			while (current.in_reply_to_status_id != 0) {
 				long predecessor_id = current.in_reply_to_status_id;
 				try {
-					current = (Tweet) TimelineActivity.availableTweets.get(predecessor_id);
+					current = (Tweet) TimelineActivity.availableTweets
+							.get(predecessor_id);
 				} catch (NullPointerException e) {
 					current = null;
 				}
@@ -87,18 +98,21 @@ public class Conversation {
 					try {
 						current = api.getTweet(predecessor_id);
 					} catch (TweetAccessException e) {
-						publishProgress(new ErrorMessageDisguisedAsTweet(R.string.error_tweet_protected));
+						publishProgress(new ErrorMessageDisguisedAsTweet(
+								R.string.error_tweet_protected));
 						break;
 					} catch (Exception e) {
 						e.printStackTrace();
-						publishProgress(new ErrorMessageDisguisedAsTweet(R.string.error_tweet_loading_failed));
+						publishProgress(new ErrorMessageDisguisedAsTweet(
+								R.string.error_tweet_loading_failed));
 						break;
 					}
 					if (current == null) {
-						publishProgress(new ErrorMessageDisguisedAsTweet(R.string.error_tweet_loading_failed));
+						publishProgress(new ErrorMessageDisguisedAsTweet(
+								R.string.error_tweet_loading_failed));
 						break;
 					}
-				}				
+				}
 				publishProgress(current);
 			}
 			return null;
@@ -107,7 +121,8 @@ public class Conversation {
 		/**
 		 * Gets the respondent of a direct message conversation
 		 * 
-		 * @param current_element Element of the conversation
+		 * @param current_element
+		 *            Element of the conversation
 		 * @return Twitter id of the respondent
 		 */
 		private long getRespondent(TimelineElement current_element) {
@@ -115,11 +130,13 @@ public class Conversation {
 			DirectMessage current_msg = (DirectMessage) current_element;
 			if (current_msg.sender.id == dm_conversations.getOwnerId()) {
 				return current_msg.recipient.id;
-			} else if (current_msg.recipient.id == dm_conversations.getOwnerId()) {
+			} else if (current_msg.recipient.id == dm_conversations
+					.getOwnerId()) {
 				return current_msg.sender.id;
 			} else {
-				/* Shouldn't actually happen */ 
-				throw new AccessControlException("Message does not belong to given user's timeline");
+				/* Shouldn't actually happen */
+				throw new AccessControlException(
+						"Message does not belong to given user's timeline");
 			}
 		}
 
@@ -139,7 +156,7 @@ public class Conversation {
 				tea.addAsFirst(params[0]);
 			}
 		}
-		
+
 	}
-	
+
 }

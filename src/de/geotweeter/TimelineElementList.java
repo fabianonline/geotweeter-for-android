@@ -21,7 +21,7 @@ import de.geotweeter.timelineelements.UserMention;
 
 /**
  * @author Julian Kuerby
- *
+ * 
  */
 public class TimelineElementList extends Observable {
 
@@ -129,14 +129,14 @@ public class TimelineElementList extends Observable {
 			}
 		}
 	}
-	
+
 	public void remove(TimelineElement object) {
 		if (items.remove(object)) {
 			setChanged();
 			notifyObservers();
 		}
 	}
-	
+
 	/**
 	 * Replaces an element in the timeline element list
 	 * 

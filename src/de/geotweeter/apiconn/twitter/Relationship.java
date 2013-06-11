@@ -8,6 +8,5 @@ public class Relationship implements Serializable {
 
 	public Target target;
 	public Source source;
-	
-	
+
 }

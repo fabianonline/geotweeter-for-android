@@ -9,5 +9,5 @@ public class Configuration implements Serializable {
 	private static final long serialVersionUID = -8516507797544584891L;
 	public TwitterConfig twitter;
 	public long twitterTimestamp;
-		
+
 }

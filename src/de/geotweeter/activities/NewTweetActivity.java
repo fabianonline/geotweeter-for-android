@@ -67,6 +67,7 @@ import de.geotweeter.Account;
 import de.geotweeter.AccountManager;
 import de.geotweeter.Constants;
 import de.geotweeter.Conversation;
+import de.geotweeter.Debug;
 import de.geotweeter.GTALocation;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.ImageBaseAdapter;
@@ -243,26 +244,28 @@ public class NewTweetActivity extends Activity {
 					editTweetText.setText("");
 
 				} else if (elm instanceof Tweet) {
-					Log.d("NewTweetActivity", "Element is Tweet");
+					Debug.log("NewTweetActivity", "Element is Tweet");
 					reply_to_id = elm.getID();
 					if (AccountManager.current_account == null) {
-						Log.d("NewTweetActivity",
+						Debug.log("NewTweetActivity",
 								"TimelineActivity not running");
 						Tweet tweet = (Tweet) elm;
 						if (tweet.entities.user_mentions != null) {
 							List<User> auth_users = getAuthUsers();
 							if (auth_users != null) {
 								for (User u : auth_users) {
-									Log.d("NewTweetAcitivity",
-											"Creating account "
-													+ u.screen_name);
+									Debug.log("NewTweetAcitivity",
+											"Creating account " + u.screen_name);
 									Account acct = createAccount(u,
 											new Handler());
 									for (UserMention um : tweet.entities.user_mentions) {
-										Log.d("NewTweetActivity", "Checking against " + um.screen_name);
+										Debug.log("NewTweetActivity",
+												"Checking against "
+														+ um.screen_name);
 										if (um.id == acct.getUser().id) {
 											AccountManager.current_account = acct;
-											Log.d("NewTweetActivity", "Check successful");
+											Debug.log("NewTweetActivity",
+													"Check successful");
 											break;
 										}
 									}
@@ -306,13 +309,12 @@ public class NewTweetActivity extends Activity {
 					tleList.add(elm);
 					if (elm.getClass() != DirectMessage.class
 							|| TimelineActivity.getInstance() != null) {
-						new Conversation(tleList, AccountManager.current_account,
-								true, false);
+						new Conversation(tleList,
+								AccountManager.current_account, true, false);
 					}
 				}
 				l.setAdapter(new TimelineElementAdapter(this,
-						R.layout.timeline_element,
-						tleList));
+						R.layout.timeline_element, tleList));
 			}
 		}
 
@@ -332,7 +334,8 @@ public class NewTweetActivity extends Activity {
 		});
 
 		/* Accountauswahl */
-		List<Account> accounts = Geotweeter.getInstance().getAccountManager().getAllAccounts();
+		List<Account> accounts = Geotweeter.getInstance().getAccountManager()
+				.getAllAccounts();
 		LinearLayout lin = (LinearLayout) findViewById(R.id.linLayAccounts);
 
 		currentAccount = AccountManager.current_account;
@@ -542,11 +545,11 @@ public class NewTweetActivity extends Activity {
 				Toast.makeText(this, R.string.too_much_images,
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Log.d(LOG, picturePath + ": " + new File(picturePath).length());
+				Debug.log(LOG, picturePath + ": " + new File(picturePath).length());
 
 				if (image_hoster.equals("twitpic")) {
 					String editText = editTweetText.getText().toString();
-					Log.d(LOG,
+					Debug.log(LOG,
 							"String: " + editText + " Length: "
 									+ editText.length());
 					String prefix = " ";
@@ -591,7 +594,7 @@ public class NewTweetActivity extends Activity {
 
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
-				Log.d("MyCameraApp", "failed to create directory");
+				Debug.log("MyCameraApp", "failed to create directory");
 				return null;
 			}
 		}
@@ -788,7 +791,7 @@ public class NewTweetActivity extends Activity {
 							0, 0, gpslistener);
 				}
 			} else {
-				Log.d(LOG, "Lösche Koordinaten.");
+				Debug.log(LOG, "Lösche Koordinaten.");
 				location = null;
 				lm.removeUpdates(gpslistener);
 				gpslistener = null;
@@ -882,13 +885,13 @@ public class NewTweetActivity extends Activity {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
 			service = ((TweetSendService.TweetSendBinder) binder).getService();
-			Log.d(LOG, "Got service connection.");
+			Debug.log(LOG, "Got service connection.");
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			service = null;
-			Log.d(LOG, "Service disconnected.");
+			Debug.log(LOG, "Service disconnected.");
 		}
 
 	};
@@ -933,8 +936,8 @@ public class NewTweetActivity extends Activity {
 		Account acc = Account.getAccount(u);
 		if (acc == null) {
 			TimelineElementList tleList = new TimelineElementList();
-			acc = new Account(tleList, getUserToken(u), u, getApplicationContext(),
-					false, handler);
+			acc = new Account(tleList, getUserToken(u), u,
+					getApplicationContext(), false, handler);
 		}
 		return acc;
 	}

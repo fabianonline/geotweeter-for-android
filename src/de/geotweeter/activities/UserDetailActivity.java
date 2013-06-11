@@ -35,6 +35,7 @@ import de.geotweeter.Constants;
 import de.geotweeter.Constants.ActionType;
 import de.geotweeter.Constants.RequestType;
 import de.geotweeter.Constants.TimelineType;
+import de.geotweeter.Debug;
 import de.geotweeter.Geotweeter;
 import de.geotweeter.R;
 import de.geotweeter.TimelineElementAdapter;
@@ -78,7 +79,7 @@ public class UserDetailActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(LOG, "Create user details");
+		Debug.log(LOG, "Create user details");
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.user_info);
@@ -468,8 +469,7 @@ public class UserDetailActivity extends Activity {
 		protected Exception doInBackground(Object... params) {
 			this.params = params;
 			try {
-				AccountManager.current_account.getApi().block(
-						(Long) params[0]);
+				AccountManager.current_account.getApi().block((Long) params[0]);
 			} catch (APIRequestException e) {
 				return e;
 			} catch (BadConnectionException e) {
@@ -540,8 +540,8 @@ public class UserDetailActivity extends Activity {
 		protected Exception doInBackground(Object... params) {
 			this.params = params;
 			try {
-				AccountManager.current_account.getApi().follow(
-						(Long) params[0]);
+				AccountManager.current_account.getApi()
+						.follow((Long) params[0]);
 			} catch (APIRequestException e) {
 				return e;
 			} catch (BadConnectionException e) {
@@ -686,8 +686,8 @@ public class UserDetailActivity extends Activity {
 		protected User doInBackground(Void... params) {
 			User user = null;
 			try {
-				user = AccountManager.current_account.getApi().getUser(
-						userName);
+				user = AccountManager.current_account.getApi()
+						.getUser(userName);
 			} catch (APIRequestException e) {
 				re = e;
 			} catch (BadConnectionException e) {

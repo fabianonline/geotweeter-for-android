@@ -28,36 +28,36 @@ public class AccountPrefsActivity extends PreferenceActivity {
 	private EditTextPreference prefUrl;
 	private EditTextPreference prefLoc;
 	private EditTextPreference prefDesc;
-	
-    private User user;
-    private Account account;
-    private OnPreferenceChangeListener preferenceChangeListener = new OnPreferenceChangeListener() {
-		
+
+	private User user;
+	private Account account;
+	private OnPreferenceChangeListener preferenceChangeListener = new OnPreferenceChangeListener() {
+
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object newValue) {
 			if (preference.getKey().equals("pref_name")) {
-				user.name = (String)newValue;
-				preference.setSummary((String)newValue);
+				user.name = (String) newValue;
+				preference.setSummary((String) newValue);
 			}
 			if (preference.getKey().equals("pref_url")) {
-				user.url = (String)newValue;
-				preference.setSummary((String)newValue);
+				user.url = (String) newValue;
+				preference.setSummary((String) newValue);
 			}
 			if (preference.getKey().equals("pref_loc")) {
-				user.location = (String)newValue;
-				preference.setSummary((String)newValue);
+				user.location = (String) newValue;
+				preference.setSummary((String) newValue);
 			}
 			if (preference.getKey().equals("pref_desc")) {
-				user.description = (String)newValue;
-				preference.setSummary((String)newValue);
+				user.description = (String) newValue;
+				preference.setSummary((String) newValue);
 			}
-			
+
 			return false;
 		};
-    };
-    
-    private OnPreferenceClickListener preferenceClickListener = new OnPreferenceClickListener() {
-		
+	};
+
+	private OnPreferenceClickListener preferenceClickListener = new OnPreferenceClickListener() {
+
 		@Override
 		public boolean onPreferenceClick(Preference preference) {
 			EditText edit = ((EditTextPreference) preference).getEditText();
@@ -69,7 +69,7 @@ public class AccountPrefsActivity extends PreferenceActivity {
 
 	@SuppressWarnings("deprecation")
 	@Override
-    protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		Utils.setDesign(this);
 		super.onCreate(savedInstanceState);
 
@@ -109,29 +109,29 @@ public class AccountPrefsActivity extends PreferenceActivity {
 		prefUrl.setOnPreferenceClickListener(preferenceClickListener);
 		prefLoc.setOnPreferenceClickListener(preferenceClickListener);
 		prefDesc.setOnPreferenceClickListener(preferenceClickListener);
-    }
+	}
 
 	@Override
 	public void onBackPressed() {
 		UpdateProfileTask submitTask = new UpdateProfileTask();
 		submitTask.execute(user);
-		
+
 		super.onBackPressed();
 	}
-    
+
 	private class UpdateProfileTask extends AsyncTask<User, Void, Boolean> {
 
 		@Override
 		protected Boolean doInBackground(User... arg0) {
 			User user = arg0[0];
 			OAuthService service = new ServiceBuilder()
-				.provider(TwitterApi.class)
-				.apiKey(Utils.getProperty("twitter.consumer.key"))
-				.apiSecret(Utils.getProperty("twitter.consumer.secret"))
-				.debug()
-				.build();
+					.provider(TwitterApi.class)
+					.apiKey(Utils.getProperty("twitter.consumer.key"))
+					.apiSecret(Utils.getProperty("twitter.consumer.secret"))
+					.debug().build();
 
-			OAuthRequest request = new OAuthRequest(Verb.POST, Constants.URI_UPDATE_PROFILE);
+			OAuthRequest request = new OAuthRequest(Verb.POST,
+					Constants.URI_UPDATE_PROFILE);
 			if (user.name != null) {
 				request.addBodyParameter("name", user.name);
 			}
@@ -146,19 +146,18 @@ public class AccountPrefsActivity extends PreferenceActivity {
 			}
 			request.addBodyParameter("skip_status", "true");
 			service.signRequest(account.getToken(), request);
-			
+
 			Response response = request.send();
-			
+
 			if (response.isSuccessful()) {
 				account.setUser(user);
 			} else {
 				Log.e("AccountPrefsActivity", "update_profile gone wrong");
 			}
 
-			
 			return null;
 		}
-		
+
 	}
-	
+
 }

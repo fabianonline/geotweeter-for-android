@@ -8,5 +8,5 @@ public class Size implements Serializable {
 	public int h;
 	public String resize;
 	public int w;
-	
+
 }

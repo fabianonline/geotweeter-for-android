@@ -22,10 +22,10 @@ import de.geotweeter.apiconn.TwitpicApiAccess;
 
 /**
  * @author Julian Kuerby
- *
+ * 
  */
 public class ImageBaseAdapter extends BaseAdapter {
-	
+
 	private static final String LOG = "ImageBaseAdapter";
 	private static final int SIZE = 7;
 	private String[] items;
@@ -33,7 +33,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 	private Map<String, Drawable> bitmaps;
 	private boolean[] markedForDelete;
 	private int size;
-	
+
 	public ImageBaseAdapter(Context context) {
 		this.context = context;
 		items = new String[SIZE];
@@ -41,14 +41,16 @@ public class ImageBaseAdapter extends BaseAdapter {
 		bitmaps = new HashMap<String, Drawable>();
 		size = 0;
 	}
-	
+
 	/**
 	 * Add an image to the adapter, when it is not full.
-	 * @param path The path to the image
+	 * 
+	 * @param path
+	 *            The path to the image
 	 * @return The index, where the path was added. -1, if adapter was full
 	 */
 	public int add(String path) {
-		if(size == SIZE) {
+		if (size == SIZE) {
 			return -1;
 		}
 		int i = 0;
@@ -59,7 +61,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 		new ImageResizeTask().execute(path);
 		return i;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -67,7 +69,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 	public int getCount() {
 		return size;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -78,7 +80,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -86,34 +88,38 @@ public class ImageBaseAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position;
 	}
-	
+
 	/**
 	 * Mars an image for deletion
-	 * @param position The position of the item within the adapter's data set that we want to mark.
+	 * 
+	 * @param position
+	 *            The position of the item within the adapter's data set that we
+	 *            want to mark.
 	 */
 	public void markForDelete(int position) {
 		markedForDelete[getIndex(position)] = true;
 	}
-	
 
-	
 	/**
 	 * Unmark an image for deletion
-	 * @param position The position of the item within the adapter's data set that we want to unmark.
+	 * 
+	 * @param position
+	 *            The position of the item within the adapter's data set that we
+	 *            want to unmark.
 	 */
 	public void unmarkForDelete(int position) {
 		markedForDelete[getIndex(position)] = false;
 	}
-	
+
 	/**
 	 * Unmark all images
 	 */
 	public void unmarkAll() {
-		for(int i = 0; i < markedForDelete.length; i++) {
+		for (int i = 0; i < markedForDelete.length; i++) {
 			markedForDelete[i] = false;
 		}
 	}
-	
+
 	/**
 	 * Delete all marked images
 	 */
@@ -123,35 +129,41 @@ public class ImageBaseAdapter extends BaseAdapter {
 				deleteIndex(i);
 			}
 		}
-//		notifyDataSetChanged();
+		// notifyDataSetChanged();
 	}
-	
+
 	/**
 	 * Delete the image on the specific position
-	 * @param position The position of the item we want to delete within the adapter's data set.
+	 * 
+	 * @param position
+	 *            The position of the item we want to delete within the
+	 *            adapter's data set.
 	 */
 	public void delete(int position) {
 		try {
 			int index = getIndex(position);
 			deleteIndex(index);
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 		}
 	}
-	
+
 	/**
 	 * Delete the item at the specific index
-	 * @param index The index of the item we want to delete
+	 * 
+	 * @param index
+	 *            The index of the item we want to delete
 	 */
 	public void deleteIndex(int index) {
 		items[index] = null;
 		markedForDelete[index] = false;
 		size--;
 	}
-	
+
 	/**
 	 * Delete the placeholders whose images are marked
 	 * 
-	 * @param text The text in which the placeholders should be deleted
+	 * @param text
+	 *            The text in which the placeholders should be deleted
 	 * @return The text without the deleted placeholders
 	 */
 	public String deleteAllMarkedPlaceholder(String text) {
@@ -163,7 +175,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 		}
 		return text;
 	}
-	
+
 	@Override
 	/**
 	 * {@inheritDoc}
@@ -171,21 +183,24 @@ public class ImageBaseAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ImageView imageView;
 		if (convertView == null) {
-			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.image_list_element, null);
 			int width = parent.getWidth() / 3;
-			Log.d(LOG, "width: " + width);
+			Debug.log(LOG, "width: " + width);
 			convertView.setLayoutParams(new GridView.LayoutParams(140, 140));
 		}
-		imageView = (ImageView) convertView.findViewById(R.id.img_view_image_list_element);
-		
+		imageView = (ImageView) convertView
+				.findViewById(R.id.img_view_image_list_element);
+
 		int index = getIndex(position);
 		String path = items[index];
 		imageView.setImageDrawable(bitmaps.get(path));
-		convertView.findViewById(R.id.cross).setVisibility(markedForDelete[index]? View.VISIBLE: View.INVISIBLE);
+		convertView.findViewById(R.id.cross).setVisibility(
+				markedForDelete[index] ? View.VISIBLE : View.INVISIBLE);
 		return convertView;
 	}
-	
+
 	/**
 	 * Returns the adapter's item list
 	 * 
@@ -194,7 +209,7 @@ public class ImageBaseAdapter extends BaseAdapter {
 	public String[] getItems() {
 		return items;
 	}
-	
+
 	/**
 	 * Clear the whole adapter
 	 */
@@ -203,21 +218,22 @@ public class ImageBaseAdapter extends BaseAdapter {
 			items[i] = null;
 		}
 		size = 0;
-//		notifyDataSetChanged();
+		// notifyDataSetChanged();
 	}
-	
+
 	/**
 	 * Compute the index of the item on the specific position
 	 * 
-	 * @param position The position of the item, whose index we want get
+	 * @param position
+	 *            The position of the item, whose index we want get
 	 * @return The index of the item on the specific position
 	 * @throws IllegalArgumentException
 	 */
 	private int getIndex(int position) throws IllegalArgumentException {
 		if (0 <= position && position < getCount()) {
 			for (int i = 0; i < items.length; i++) {
-				if(items[i] != null) {
-					if(position == 0) {
+				if (items[i] != null) {
+					if (position == 0) {
 						return i;
 					}
 					position--;
@@ -226,16 +242,20 @@ public class ImageBaseAdapter extends BaseAdapter {
 		}
 		throw new IllegalArgumentException("Position: " + position);
 	}
-	
+
 	private class ImageResizeTask extends AsyncTask<String, Void, Boolean> {
-		
+
 		@Override
 		protected Boolean doInBackground(String... params) {
 			String path = params[0];
-			if(! bitmaps.containsKey(path)) {
-				bitmaps.put(path, context.getResources().getDrawable(R.drawable.loading_image));
+			if (!bitmaps.containsKey(path)) {
+				bitmaps.put(
+						path,
+						context.getResources().getDrawable(
+								R.drawable.loading_image));
 				Bitmap bmp = Utils.resizeBitmap(path, 300);
-				bitmaps.put(path, new BitmapDrawable(context.getResources(), bmp));
+				bitmaps.put(path, new BitmapDrawable(context.getResources(),
+						bmp));
 				return true;
 			}
 			return false;
@@ -247,6 +267,6 @@ public class ImageBaseAdapter extends BaseAdapter {
 				notifyDataSetChanged();
 			}
 		}
-		
+
 	}
 }

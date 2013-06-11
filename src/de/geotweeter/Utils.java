@@ -225,10 +225,10 @@ public class Utils {
 
 	public static byte[] reduceImageSize(File file, long imageSize)
 			throws IOException {
-		Log.d(LOG, "Before resizeFile: " + file.length());
+		Debug.log(LOG, "Before resizeFile: " + file.length());
 		int scale = (int) (file.length() / imageSize);
 		// scale = 2 * Integer.highestOneBit(scale);
-		Log.d(LOG, "scale: " + scale);
+		Debug.log(LOG, "scale: " + scale);
 		BitmapFactory.Options opt = new BitmapFactory.Options();
 		opt.inSampleSize = scale;
 		Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file),
@@ -242,7 +242,7 @@ public class Utils {
 		}
 
 		byte[] bytes = out.toByteArray();
-		Log.d(LOG, "After resizeFile: " + bytes.length);
+		Debug.log(LOG, "After resizeFile: " + bytes.length);
 		return bytes;
 	}
 

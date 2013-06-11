@@ -29,5 +29,5 @@ public class VimeoVideoInfo implements Serializable {
 	public int height;
 	public String tags;
 	public String embed_privacy;
-	
+
 }

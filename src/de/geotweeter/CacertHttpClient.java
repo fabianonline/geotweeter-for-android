@@ -17,44 +17,49 @@ import android.content.Context;
  * Customized http client with support for own CACert certificates
  * 
  * @author Lutz Krumme (@el_emka)
- *
+ * 
  */
 public class CacertHttpClient extends DefaultHttpClient {
 
 	final Context context;
-	
+
 	/**
 	 * Creates a new http client
 	 * 
-	 * @param context Application context
+	 * @param context
+	 *            Application context
 	 */
 	public CacertHttpClient(Context context) {
 		this.context = context;
 	}
-	
+
 	@Override
 	/**
 	 * {@inheritDoc}
 	 */
 	protected ClientConnectionManager createClientConnectionManager() {
 		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(
-			new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+		registry.register(new Scheme("http", PlainSocketFactory
+				.getSocketFactory(), 80));
 		registry.register(new Scheme("https", newSslSocketFactory(), 443));
 		return new SingleClientConnManager(getParams(), registry);
 	}
-	
+
 	/**
-	 * Creates a SSL socket factory with support for our local cacert certificate
+	 * Creates a SSL socket factory with support for our local cacert
+	 * certificate
 	 * 
 	 * @return The generated SSLSocketFactory
 	 */
 	private SSLSocketFactory newSslSocketFactory() {
 		try {
 			KeyStore trusted = KeyStore.getInstance("BKS");
-			InputStream in = context.getResources().openRawResource(R.raw.cacert);
+			InputStream in = context.getResources().openRawResource(
+					R.raw.cacert);
 			try {
-				trusted.load(in, Utils.getProperty("cacert.keystore.passphrase").toCharArray());
+				trusted.load(in, Utils
+						.getProperty("cacert.keystore.passphrase")
+						.toCharArray());
 			} finally {
 				in.close();
 			}
@@ -63,6 +68,5 @@ public class CacertHttpClient extends DefaultHttpClient {
 			throw new AssertionError(e);
 		}
 	}
-	
-	
+
 }

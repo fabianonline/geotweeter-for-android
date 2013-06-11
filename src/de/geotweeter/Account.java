@@ -136,7 +136,7 @@ public class Account extends Observable implements Serializable {
 
 		if (fetchTimeLine) {
 			if (Debug.LOG_ACCOUNT) {
-				Log.d(LOG, "Fetch timelines from API for " + user.screen_name);
+				Debug.log(LOG, "Fetch timelines from API for " + user.screen_name);
 			}
 			start(true);
 		}
@@ -177,7 +177,7 @@ public class Account extends Observable implements Serializable {
 	 * @param loadPersistedTweets true if the timeline should be pre filled with stored timeline elements
 	 */
 	public void start(boolean loadPersistedTweets) {
-		Log.d(LOG, "In start()");
+		Debug.log(LOG, "In start()");
 		if (stream_request != null) {
 			stream_request.stop(true);
 		}
@@ -185,7 +185,7 @@ public class Account extends Observable implements Serializable {
 			loadPersistedTweets(appContext);
 		}
 		if (Debug.ENABLED && Debug.SKIP_FILL_TIMELINE) {
-			Log.d(LOG,
+			Debug.log(LOG,
 					"TimelineRefreshThread skipped. (Debug.SKIP_FILL_TIMELINE)");
 		} else {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -272,20 +272,20 @@ public class Account extends Observable implements Serializable {
 			try {
 				switch (accessType) {
 				case TIMELINE:
-					Log.d(LOG, "Get home timeline");
+					Debug.log(LOG, "Get home timeline");
 					result.elements = api
 							.getHomeTimeline(max_known_tweet_id, 0);
 					return result;
 				case MENTIONS:
-					Log.d(LOG, "Get mentions");
+					Debug.log(LOG, "Get mentions");
 					result.elements = api.getMentions(max_known_tweet_id, 0);
 					return result;
 				case DM_RCVD:
-					Log.d(LOG, "Get received dm");
+					Debug.log(LOG, "Get received dm");
 					result.elements = api.getReceivedDMs(max_known_dm_id, 0);
 					return result;
 				case DM_SENT:
-					Log.d(LOG, "Get sent dm");
+					Debug.log(LOG, "Get sent dm");
 					result.elements = api.getSentDMs(max_known_dm_id, 0);
 					return result;
 				}
@@ -310,7 +310,7 @@ public class Account extends Observable implements Serializable {
 
 			if (result.e != null) {
 				if (accessSuccessful.get(accessType)) {
-					Log.d(LOG, "Get " + accessType.toString()
+					Debug.log(LOG, "Get " + accessType.toString()
 							+ " failed. Retrying in 10 seconds");
 					Toast.makeText(appContext, R.string.error_api_access_retry,
 							Toast.LENGTH_SHORT).show();
@@ -325,7 +325,7 @@ public class Account extends Observable implements Serializable {
 					}, 10000);
 					return;
 				} else {
-					Log.d(LOG, "Recurring error in " + accessType.toString()
+					Debug.log(LOG, "Recurring error in " + accessType.toString()
 							+ " access. Not Retrying");
 					Toast.makeText(appContext,
 							R.string.error_api_access_recurring,
@@ -336,7 +336,7 @@ public class Account extends Observable implements Serializable {
 
 			accessSuccessful.put(accessType, true);
 
-			Log.d(LOG, "Get " + accessType.toString() + " finished. Runtime: "
+			Debug.log(LOG, "Get " + accessType.toString() + " finished. Runtime: "
 					+ String.valueOf(System.currentTimeMillis() - startTime)
 					+ "ms");
 
@@ -361,7 +361,7 @@ public class Account extends Observable implements Serializable {
 				parseData(apiResponses, false);
 
 				if (Debug.ENABLED && Debug.SKIP_START_STREAM) {
-					Log.d(LOG,
+					Debug.log(LOG,
 							"Not starting stream - Debug.SKIP_START_STREAM is true.");
 				} else {
 					stream_request.start();
@@ -387,7 +387,7 @@ public class Account extends Observable implements Serializable {
 	protected void parseData(List<ArrayList<TimelineElement>> apiResponses2,
 			boolean do_clip) {
 		final long old_max_known_dm_id = max_known_dm_id;
-		Log.d(LOG, "parseData started.");
+		Debug.log(LOG, "parseData started.");
 		final List<TimelineElement> all_elements = new ArrayList<TimelineElement>();
 
 		for (ArrayList<TimelineElement> list : apiResponses2) {
@@ -440,7 +440,7 @@ public class Account extends Observable implements Serializable {
 		}
 		Collections.sort(all_elements, new TLEComparator());
 
-		Log.d(LOG, "parseData is almost done. " + all_elements.size()
+		Debug.log(LOG, "parseData is almost done. " + all_elements.size()
 				+ " elements.");
 		handler.post(new Runnable() {
 			@Override
@@ -461,7 +461,7 @@ public class Account extends Observable implements Serializable {
 	 *            Timeline element to be added
 	 */
 	public void addTweet(final TimelineElement elm) {
-		Log.d(LOG, "Adding Tweet.");
+		Debug.log(LOG, "Adding Tweet.");
 		if (elm instanceof DirectMessage) {
 			dm_conversations.addMessage((DirectMessage) elm);
 		}
@@ -486,7 +486,7 @@ public class Account extends Observable implements Serializable {
 	 * @param tle
 	 */
 	public void remove(final TimelineElement tle) {
-		Log.d(LOG, "Removing Tweet.");
+		Debug.log(LOG, "Removing Tweet.");
 		handler.post(new Runnable() {
 
 			@Override
@@ -502,7 +502,7 @@ public class Account extends Observable implements Serializable {
 	}
 
 	public void refresh(final TimelineElement tle, final TimelineElement newTle) {
-		Log.d(LOG, "Refreshing Tweet.");
+		Debug.log(LOG, "Refreshing Tweet.");
 		handler.post(new Runnable() {
 
 			@Override
@@ -522,7 +522,7 @@ public class Account extends Observable implements Serializable {
 	 * Registers with push service
 	 */
 	public void registerForGCMMessages() {
-		Log.d(LOG, "Registering...");
+		Debug.log(LOG, "Registering...");
 		new Thread(new Runnable() {
 			public void run() {
 				HttpClient http_client = new CacertHttpClient(appContext);
@@ -540,8 +540,8 @@ public class Account extends Observable implements Serializable {
 							getToken().getSecret()));
 					name_value_pair.add(new BasicNameValuePair("screen_name",
 							getUser().getScreenName()));
-					name_value_pair.add(new BasicNameValuePair(
-							"version", String.valueOf(Constants.GCM_VERSION)));
+					name_value_pair.add(new BasicNameValuePair("version",
+							String.valueOf(Constants.GCM_VERSION)));
 					http_post.setEntity(new UrlEncodedFormEntity(
 							name_value_pair));
 					http_client.execute(http_post);
@@ -908,7 +908,8 @@ public class Account extends Observable implements Serializable {
 	 * @return The according account object if available, null otherwise
 	 */
 	public static Account getAccount(User u) {
-		for (Account a : Geotweeter.getInstance().getAccountManager().getAllAccounts()) {
+		for (Account a : Geotweeter.getInstance().getAccountManager()
+				.getAllAccounts()) {
 			if (a.getUser().id == u.id) {
 				return a;
 			}

@@ -14,7 +14,8 @@ desc "Build de.geotweeter with release keys."
 task :full do
 	$target_package = "de.geotweeter"
 	$key_to_use = :release
-	$replacements << ["Log.d(", "// Log.d("]
+#	$replacements << ["Log.d(", "// Log.d("]
+	$replacements << ["public static final boolean RELEASE = false;", "public static final boolean RELEASE = true;"]
     $replacements << ['Utils.getProperty("google.maps.key.development")', 'Utils.getProperty("google.maps.key.release")']
 	Rake::Task['copy_and_modify_files'].invoke
 end
@@ -35,7 +36,8 @@ task :lite do
 	$app_name = "Geotweeter Lite"
 	$key_to_use = :release
 	$replacements << [$default_package, $target_package]
-	$replacements << ["Log.d(", "// Log.d("]
+#	$replacements << ["Log.d(", "// Log.d("]
+	$replacements << ["public static final boolean RELEASE = false;", "public static final boolean RELEASE = true;"]
     $replacements << ['Utils.getProperty("google.maps.key.development")', 'Utils.getProperty("google.maps.key.release")']
 	Rake::Task['copy_and_modify_files'].invoke
 end

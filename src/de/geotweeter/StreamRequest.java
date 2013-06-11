@@ -44,7 +44,7 @@ public class StreamRequest {
 			keepRunning = true;
 			new Thread(thread, "StreamRequestThread").start();
 		} else {
-			Log.d(LOG, "start() called but doRestart is false.");
+			Debug.log(LOG, "start() called but doRestart is false.");
 		}
 	}
 
@@ -85,7 +85,7 @@ public class StreamRequest {
 				@Override
 				public void run() {
 					if (Debug.LOG_STREAM_CHECKS) {
-						Log.d("StreamCheckNewlineTimeoutTask",
+						Debug.log("StreamCheckNewlineTimeoutTask",
 								"Running. "
 										+ (System.currentTimeMillis() - lastNewlineReceivedAt));
 					}
@@ -105,7 +105,7 @@ public class StreamRequest {
 				@Override
 				public void run() {
 					if (Debug.LOG_STREAM_CHECKS) {
-						Log.d("StreamCheckDataTimeoutTask",
+						Debug.log("StreamCheckDataTimeoutTask",
 								"Running. "
 										+ (System.currentTimeMillis() - lastDataReceivedAt));
 					}
@@ -125,7 +125,7 @@ public class StreamRequest {
 		}
 
 		public void startRequest() {
-			Log.d(LOG, "Starting Stream.");
+			Debug.log(LOG, "Starting Stream.");
 			buffer = "";
 			char ch[] = new char[1];
 			OAuthRequest request = new OAuthRequest(Verb.GET,
@@ -136,10 +136,10 @@ public class StreamRequest {
 				Response response = request.send();
 				stream = response.getStream();
 				if (stream == null) {
-					Log.d(LOG, "stream is null. Delaying.");
+					Debug.log(LOG, "stream is null. Delaying.");
 				} else {
 					InputStreamReader reader = new InputStreamReader(stream);
-					Log.d(LOG, "Waiting for first data.");
+					Debug.log(LOG, "Waiting for first data.");
 					try {
 						while (reader.read(ch) > 0) {
 							reconnectDelay = 10000;
@@ -153,11 +153,11 @@ public class StreamRequest {
 							}
 						}
 					} catch (IOException e) {
-						Log.d(LOG, "Corrupt data. Restarting Stream.");
+						Debug.log(LOG, "Corrupt data. Restarting Stream.");
 					} catch (IllegalStateException e) {
-						Log.d(LOG, "Corrupt data. Restarting Stream.");
+						Debug.log(LOG, "Corrupt data. Restarting Stream.");
 					}
-					Log.d(LOG, "Stream beendet");
+					Debug.log(LOG, "Stream beendet");
 				}
 			} catch (OAuthException e) {
 				Log.d(LOG,
@@ -166,7 +166,7 @@ public class StreamRequest {
 			}
 			lastDataReceivedAt = 0;
 			lastNewlineReceivedAt = 0;
-			Log.d(LOG, "Delaying stream reconnection by " + reconnectDelay
+			Debug.log(LOG, "Delaying stream reconnection by " + reconnectDelay
 					+ "ms...");
 			try {
 				Thread.sleep(reconnectDelay);
@@ -186,7 +186,8 @@ public class StreamRequest {
 		/**
 		 * Processes the stream's buffer (as in
 		 * "looks for seperate JSON objects and parses them").
-		 * @throws IOException 
+		 * 
+		 * @throws IOException
 		 */
 		public void processBuffer() throws IOException {
 			Matcher m;

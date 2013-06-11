@@ -17,16 +17,17 @@ import com.google.android.maps.OverlayItem;
  * Provides the location marker for geotagged tweets
  * 
  * @author Lutz Krumme (@el_emka)
- *
+ * 
  */
 public class MapOverlay extends ItemizedOverlay<OverlayItem> {
 
 	private List<OverlayItem> overlays = new ArrayList<OverlayItem>();
-	
+
 	/**
 	 * Constructs the object
 	 * 
-	 * @param drawable The location marker to be shown on the map 
+	 * @param drawable
+	 *            The location marker to be shown on the map
 	 */
 	public MapOverlay(Drawable drawable) {
 		super(boundCenterBottom(drawable));
@@ -35,20 +36,22 @@ public class MapOverlay extends ItemizedOverlay<OverlayItem> {
 	/**
 	 * Creates the location marker
 	 * 
-	 * @param bitmap The avatar to be included in the marker
+	 * @param bitmap
+	 *            The avatar to be included in the marker
 	 * @return The complete marker
 	 */
 	@SuppressWarnings("deprecation")
 	public static Drawable getLocationMarker(Bitmap bitmap) {
-		PathShape locationFrameShape = new PathShape(Constants.LOCATION_MARKER, 50, 55);
+		PathShape locationFrameShape = new PathShape(Constants.LOCATION_MARKER,
+				50, 55);
 		ShapeDrawable locationShape = new ShapeDrawable(locationFrameShape);
-		Drawable[] layers = {locationShape, new BitmapDrawable(bitmap)};
+		Drawable[] layers = { locationShape, new BitmapDrawable(bitmap) };
 		LayerDrawable locationMarker = new LayerDrawable(layers);
 		locationMarker.setLayerInset(1, 1, 1, 1, 6);
-		
+
 		return locationMarker;
 	}
-	
+
 	@Override
 	protected OverlayItem createItem(int i) {
 		return overlays.get(i);
@@ -65,8 +68,8 @@ public class MapOverlay extends ItemizedOverlay<OverlayItem> {
 	 * @param overlay
 	 */
 	public void addOverlay(OverlayItem overlay) {
-	    overlays.add(overlay);
-	    populate();
+		overlays.add(overlay);
+		populate();
 	}
-	
+
 }

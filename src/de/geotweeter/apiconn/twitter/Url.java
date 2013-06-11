@@ -11,5 +11,5 @@ public class Url implements Serializable {
 	public String url;
 	public List<Integer> indices = new ArrayList<Integer>();
 	public String display_url;
-	
+
 }

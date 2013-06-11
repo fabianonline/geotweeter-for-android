@@ -31,7 +31,8 @@ import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.timelineelements.TLEComparator;
 import de.geotweeter.timelineelements.TimelineElement;
 
-public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implements Observer {
+public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>
+		implements Observer {
 	private TimelineElementList items;
 	private final Context context;
 	private Typeface tf;
@@ -65,8 +66,8 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implem
 	}
 
 	/**
-	 * @deprecated Use {@link TimelineElementList#addAsFirst(TimelineElement)} instead
-	 * Adds a timeline element to the adapter
+	 * @deprecated Use {@link TimelineElementList#addAsFirst(TimelineElement)}
+	 *             instead Adds a timeline element to the adapter
 	 * 
 	 * @param t
 	 *            The element to be added
@@ -78,8 +79,8 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implem
 	}
 
 	/**
-	 * @deprecated Use {@link TimelineElementList#addAllAsFirst(List, boolean)} instead
-	 * Adds timeline elements to the adapter
+	 * @deprecated Use {@link TimelineElementList#addAllAsFirst(List, boolean)}
+	 *             instead Adds timeline elements to the adapter
 	 * 
 	 * @param elements
 	 *            The list of elements to be added
@@ -374,8 +375,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implem
 	}
 
 	/**
-	 * @deprecated Use {@link TimelineElementList#replace(TimelineElement, TimelineElement)} instead
-	 * Replaces an element in the timeline element list
+	 * @deprecated Use
+	 *             {@link TimelineElementList#replace(TimelineElement, TimelineElement)}
+	 *             instead Replaces an element in the timeline element list
 	 * 
 	 * @param oldTle
 	 * @param newTle
@@ -386,7 +388,9 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement> implem
 		notifyDataSetChanged();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
 	@Override
