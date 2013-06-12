@@ -18,8 +18,6 @@ public class Constants extends Application {
 
 	public static final String OAUTH_CALLBACK = "oauth://twitter";
 
-	public static final String URI_VERIFY_CREDENTIALS_1 = "https://api.twitter.com/1/account/verify_credentials.json"; // API
-																														// benötigt
 	public static final String URI_VERIFY_CREDENTIALS = "https://api.twitter.com/1.1/account/verify_credentials.json";
 	public static final String URI_UPDATE_PROFILE = "https://api.twitter.com/1.1/account/update_profile.json";
 	public static final String URI_USER_STREAM = "https://userstream.twitter.com/1.1/user.json";

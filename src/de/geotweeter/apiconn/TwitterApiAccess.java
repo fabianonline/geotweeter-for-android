@@ -70,7 +70,7 @@ public class TwitterApiAccess {
 
 	public OAuthRequest getVerifiedCredentials() {
 		OAuthRequest req = new OAuthRequest(Verb.GET,
-				Constants.URI_VERIFY_CREDENTIALS_1);
+				Constants.URI_VERIFY_CREDENTIALS);
 		service.signRequest(token, req);
 		return req;
 	}

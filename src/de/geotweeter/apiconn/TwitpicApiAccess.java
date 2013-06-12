@@ -100,7 +100,7 @@ public class TwitpicApiAccess {
 				.getVerifiedCredentials();
 
 		request.addHeader("X-Auth-Service-Provider",
-				Constants.URI_VERIFY_CREDENTIALS_1);
+				Constants.URI_VERIFY_CREDENTIALS);
 		request.addHeader("X-Verify-Credentials-Authorization",
 				verified_credentials.getHeaders().get("Authorization"));
 
