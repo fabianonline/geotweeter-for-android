@@ -587,54 +587,59 @@ public class Account extends Observable implements Serializable {
 					if (response.getEntity() == null) {
 						return;
 					}
-					String[] parts = EntityUtils.toString(response.getEntity())
-							.split(",");
 					try {
-						max_read_tweet_id = Long.parseLong(parts[0]);
-					} catch (NumberFormatException ex) {
-					}
-					try {
-						max_read_mention_id = Long.parseLong(parts[1]);
-					} catch (NumberFormatException ex) {
-					}
-					try {
-						max_read_dm_id = Long.parseLong(parts[2]);
-						if (max_known_dm_id == 0) {
-							max_known_dm_id = max_read_dm_id;
+						String[] parts = EntityUtils.toString(
+								response.getEntity()).split(",");
+						try {
+							max_read_tweet_id = Long.parseLong(parts[0]);
+						} catch (NumberFormatException ex) {
 						}
-					} catch (NumberFormatException ex) {
-					}
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							// TODO Good practice? (Rimgar)
-							elements.notifyObserversFromOutside();
-							setChanged();
-							notifyObservers(new AccountSwitcherMessage(
-									AccountSwitcherRadioButton.Message.UNREAD,
-									getUnreadTweetsSize()));
+						try {
+							max_read_mention_id = Long.parseLong(parts[1]);
+						} catch (NumberFormatException ex) {
+						}
+						try {
+							max_read_dm_id = Long.parseLong(parts[2]);
+							if (max_known_dm_id == 0) {
+								max_known_dm_id = max_read_dm_id;
+							}
+						} catch (NumberFormatException ex) {
+						}
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								// TODO Good practice? (Rimgar)
+								elements.notifyObserversFromOutside();
+								setChanged();
+								notifyObservers(new AccountSwitcherMessage(
+										AccountSwitcherRadioButton.Message.UNREAD,
+										getUnreadTweetsSize()));
 
-							LinkedList<Pair<TimelineElement, String>> elementsToDelete = new LinkedList<Pair<TimelineElement, String>>();
-							for (Pair<TimelineElement, String> pair : ((Geotweeter) appContext).notifiedElements) {
-								if (pair.first instanceof DirectMessage) {
-									if (pair.first.getID() <= max_read_dm_id)
+								LinkedList<Pair<TimelineElement, String>> elementsToDelete = new LinkedList<Pair<TimelineElement, String>>();
+								for (Pair<TimelineElement, String> pair : ((Geotweeter) appContext).notifiedElements) {
+									if (pair.first instanceof DirectMessage) {
+										if (pair.first.getID() <= max_read_dm_id)
+											elementsToDelete.add(pair);
+									} else if (pair.first instanceof Tweet) {
+										if (pair.first.getID() <= max_read_tweet_id)
+											elementsToDelete.add(pair);
+									} else {
 										elementsToDelete.add(pair);
-								} else if (pair.first instanceof Tweet) {
-									if (pair.first.getID() <= max_read_tweet_id)
-										elementsToDelete.add(pair);
-								} else {
-									elementsToDelete.add(pair);
+									}
 								}
-							}
 
-							for (Pair<TimelineElement, String> pair : elementsToDelete) {
-								((Geotweeter) appContext).notifiedElements
-										.remove(pair);
+								for (Pair<TimelineElement, String> pair : elementsToDelete) {
+									((Geotweeter) appContext).notifiedElements
+											.remove(pair);
+								}
+								elementsToDelete.clear();
+								((Geotweeter) appContext)
+										.updateNotification(false);
 							}
-							elementsToDelete.clear();
-							((Geotweeter) appContext).updateNotification(false);
-						}
-					});
+						});
+					} catch (ArrayIndexOutOfBoundsException e) {
+						return;
+					}
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (ClientProtocolException e) {
@@ -642,6 +647,7 @@ public class Account extends Observable implements Serializable {
 				} catch (IOException e) {
 					Log.e(LOG, "Tweetmarker", e);
 				}
+
 			}
 		}, "GetMaxReadIDs").start();
 	}
