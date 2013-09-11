@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -899,15 +900,28 @@ public class Account extends Observable implements Serializable {
 	public TimelineElementList activeTimeline() {
 		return timeline_stack.peek();
 	}
-
+	
+	/**
+	 * Returns the number of unread Tweets and DMs. Events will be ignored.
+	 * 
+	 * @return number of unread Tweets
+	 */
 	public int getUnreadTweetsSize() {
 		List<TimelineElement> tweets = elements.getList();
 		if (tweets == null) {
 			return -1;
 		}
 		int size = 0;
-		for (; size < tweets.size()
-				&& tweets.get(size).getID() > max_read_tweet_id; size++) {
+		Iterator<TimelineElement> it = tweets.iterator();
+		while (it.hasNext()) {
+			TimelineElement tle = it.next();
+			if (tle instanceof Tweet) {
+				if (tle.getID() > max_read_tweet_id) {
+					size++;
+				} else {
+					break;
+				}
+			}
 		}
 		return size;
 	}
