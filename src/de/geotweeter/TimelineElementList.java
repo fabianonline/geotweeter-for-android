@@ -11,6 +11,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import de.geotweeter.activities.TimelineActivity;
+import de.geotweeter.apiconn.twitter.Event;
 import de.geotweeter.apiconn.twitter.Hashtag;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.timelineelements.ProtectedAccount;
@@ -43,7 +44,8 @@ public class TimelineElementList extends Observable {
 	 *            The element to be added
 	 */
 	public void addAsFirst(TimelineElement t) {
-		if (!available.containsKey(t.getID())) {
+		// TODO: Do we want all Events to show?
+		if (!available.containsKey(t.getID()) || t instanceof Event) {
 			if (!items.isEmpty()) {
 				if (t.olderThan(items.get(0))) {
 					items.add(0, t);
