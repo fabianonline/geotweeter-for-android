@@ -192,5 +192,8 @@
     <string name="tweets">Tweets</string>
     <string name="follower">Follower</string>
     <string name="friends">Freunde</string>
+    
+    <string name="event_favorite_text">%s hat einen Tweet von dir favorisiert.</string>
+    <string name="event_favorite_text2">Favorisiert von %s</string>
 
 </resources>

@@ -19,7 +19,7 @@ public abstract class Event extends TimelineElement {
 
 	@Override
 	public String getAvatarSource() {
-		return null;
+		return source.getAvatarSource();
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public abstract class Event extends TimelineElement {
 	}
 
 	public String getSenderScreenName() {
-		return null;
+		return source.getScreenName();
 	}
 
 	public void setSource(User u) {
