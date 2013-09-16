@@ -24,6 +24,6 @@ public class FavoriteEvent extends Event {
 	
 	@Override
 	public String getTitleForDisplay() {
-		return Utils.formatString(R.string.event_favorite_text2, source.getScreenName());
+		return Utils.formatString(R.string.event_favorite_title, source.getScreenName());
 	}
 }
