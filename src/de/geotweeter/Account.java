@@ -50,6 +50,9 @@ import android.widget.Toast;
 import de.geotweeter.activities.TimelineActivity;
 import de.geotweeter.apiconn.TwitterApiAccess;
 import de.geotweeter.apiconn.twitter.DirectMessage;
+import de.geotweeter.apiconn.twitter.Event;
+import de.geotweeter.apiconn.twitter.FavoriteEvent;
+import de.geotweeter.apiconn.twitter.FollowEvent;
 import de.geotweeter.apiconn.twitter.StreamDeleteRequest;
 import de.geotweeter.apiconn.twitter.Tweet;
 import de.geotweeter.apiconn.twitter.User;
@@ -475,6 +478,11 @@ public class Account extends Observable implements Serializable {
 		if (elm instanceof StreamDeleteRequest) {
 			remove(TimelineActivity.availableTweets.get(elm.getID()));
 			return;
+		}
+		if (elm instanceof Event) {
+			if ((!(elm instanceof FavoriteEvent || elm instanceof FollowEvent)) || ((Event) elm).source.id == getUser().id) {
+				return;
+			}
 		}
 		handler.post(new Runnable() {
 			public void run() {
