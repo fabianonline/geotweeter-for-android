@@ -68,4 +68,9 @@ public abstract class Event extends TimelineElement {
 	public TLEType getType() {
 		return TLEType.EVENT;
 	}
+
+	@Override
+	public String getTitleForDisplay() {
+		return null;
+	}
 }

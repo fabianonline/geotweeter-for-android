@@ -98,6 +98,11 @@ public class Tweet extends TimelineElement {
 		return textForDisplay;
 	}
 
+	@Override
+	public String getTitleForDisplay() {
+		return getSenderScreenName();
+	}
+
 	public void setUser(User u) {
 		if (User.all_users.containsKey(u.id)) {
 			user = User.all_users.get(u.id);

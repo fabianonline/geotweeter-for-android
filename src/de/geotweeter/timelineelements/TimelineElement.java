@@ -31,6 +31,8 @@ public abstract class TimelineElement implements Serializable {
 
 	abstract public String getTextForDisplay();
 
+	abstract public String getTitleForDisplay();
+
 	abstract public String getSourceText();
 
 	abstract public String getAvatarSource();

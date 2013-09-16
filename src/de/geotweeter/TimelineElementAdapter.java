@@ -175,7 +175,7 @@ public class TimelineElementAdapter extends ArrayAdapter<TimelineElement>
 
 			txtView = (TextView) v.findViewById(R.id.txtSender);
 			if (txtView != null) {
-				txtView.setText(tle.getSenderScreenName());
+				txtView.setText(tle.getTitleForDisplay());
 			}
 
 			txtView = (TextView) v.findViewById(R.id.txtTimestamp);

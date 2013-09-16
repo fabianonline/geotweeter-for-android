@@ -57,4 +57,13 @@ public class StreamDeleteRequest extends TimelineElement implements
 		return TLEType.DELETE;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.geotweeter.timelineelements.TimelineElement#getTitleForDisplay()
+	 */
+	@Override
+	public String getTitleForDisplay() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
