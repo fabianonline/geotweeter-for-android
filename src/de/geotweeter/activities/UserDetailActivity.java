@@ -366,7 +366,7 @@ public class UserDetailActivity extends Activity {
 				UserDetailActivity.this.finish();
 			} else {
 				if (result instanceof BadConnectionException) {
-					showBadConnectionDlg(new FollowUserTask(), params);
+					showBadConnectionDlg(new ReportSpamTask(), params);
 					int buttonIndex = buttons.indexOfChild(spinner);
 					buttons.removeViewAt(buttonIndex);
 					createActionButton(buttons, ActionType.REPORT_SPAM,
