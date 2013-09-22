@@ -485,17 +485,21 @@ public class UserDetailActivity extends Activity {
 
 				LinearLayout unfollowButton = actionButtons
 						.get(ActionType.UNFOLLOW);
-				buttonIndex = buttons.indexOfChild(unfollowButton);
+				if (unfollowButton != null) {
+					buttonIndex = buttons.indexOfChild(unfollowButton);
 
-				buttons.removeViewAt(buttonIndex);
-				actionButtons.remove(ActionType.UNFOLLOW);
-				createActionButton(buttons, ActionType.FOLLOW, buttonIndex);
+					buttons.removeViewAt(buttonIndex);
+					actionButtons.remove(ActionType.UNFOLLOW);
+					createActionButton(buttons, ActionType.FOLLOW, buttonIndex);
+				}
 
 				LinearLayout messageButton = actionButtons
 						.get(ActionType.SEND_DM);
-				buttonIndex = buttons.indexOfChild(messageButton);
-				buttons.removeViewAt(buttonIndex);
-				actionButtons.remove(ActionType.SEND_DM);
+				if (messageButton != null) {
+					buttonIndex = buttons.indexOfChild(messageButton);
+					buttons.removeViewAt(buttonIndex);
+					actionButtons.remove(ActionType.SEND_DM);
+				}
 			} else {
 				if (result instanceof BadConnectionException) {
 					showBadConnectionDlg(new FollowUserTask(), params);
