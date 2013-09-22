@@ -426,7 +426,7 @@ public class UserDetailActivity extends Activity {
 				createActionButton(buttons, ActionType.BLOCK, buttonIndex);
 			} else {
 				if (result instanceof BadConnectionException) {
-					showBadConnectionDlg(new FollowUserTask(), params);
+					showBadConnectionDlg(new UnblockTask(), params);
 					int buttonIndex = buttons.indexOfChild(spinner);
 					buttons.removeViewAt(buttonIndex);
 					createActionButton(buttons, ActionType.UNBLOCK, buttonIndex);
@@ -502,7 +502,7 @@ public class UserDetailActivity extends Activity {
 				}
 			} else {
 				if (result instanceof BadConnectionException) {
-					showBadConnectionDlg(new FollowUserTask(), params);
+					showBadConnectionDlg(new BlockTask(), params);
 					int buttonIndex = buttons.indexOfChild(spinner);
 					buttons.removeViewAt(buttonIndex);
 					createActionButton(buttons, ActionType.BLOCK, buttonIndex);
