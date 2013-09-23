@@ -6,7 +6,6 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -87,7 +86,8 @@
         android:id="@+id/action_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:orientation="horizontal" >
     </LinearLayout>
 
     <RelativeLayout
@@ -124,7 +124,6 @@
         </LinearLayout>
 
         <FrameLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/map_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
