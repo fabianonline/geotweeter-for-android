@@ -30,6 +30,7 @@ public class BackgroundImageLoader {
 			.synchronizedMap(new WeakHashMap<String, Bitmap>());
 	static ExecutorService executor_service = null;
 	final int loading_image_id = R.drawable.loading_image;
+	final int loading_avatar_id = R.drawable.loading_avatar;
 	private static final String LOG = "BackgroundImageLoader";
 
 	public BackgroundImageLoader(Context applicationContext) {
@@ -43,7 +44,7 @@ public class BackgroundImageLoader {
 	}
 
 	public void displayImage(String url, AsyncImageView image_view,
-			boolean store_persistent) {
+			boolean isAvatar) {
 		if (url == null) {
 			return;
 		}
@@ -58,17 +59,17 @@ public class BackgroundImageLoader {
 			image_view.setUrl(url);
 			image_view.setImageBitmap(bitmap);
 		} else {
-			image_view.setImageResource(loading_image_id);
+			image_view.setImageResource(isAvatar? loading_avatar_id: loading_image_id);
 			image_view.setUrl(url);
-			/* Queue Image to download */
+			/* Queue Image to download. store persistent, when avatar-image */
 			executor_service.submit(new ImageLoader(url, image_view,
-					store_persistent, true));
+					isAvatar, true));
 		}
 
 	}
 
 	public void displayImage(String url, ImageView image_view,
-			boolean store_persistent) {
+			boolean isAvatar) {
 		if (url == null) {
 			return;
 		}
@@ -82,10 +83,10 @@ public class BackgroundImageLoader {
 		if (bitmap != null) {
 			image_view.setImageBitmap(bitmap);
 		} else {
-			image_view.setImageResource(loading_image_id);
-			/* Queue Image to download */
+			image_view.setImageResource(isAvatar? loading_avatar_id: loading_image_id);
+			/* Queue Image to download. store persistent, when avatar-image */
 			executor_service.submit(new ImageLoader(url, image_view,
-					store_persistent, false));
+					isAvatar, false));
 		}
 	}
 
@@ -179,7 +180,7 @@ public class BackgroundImageLoader {
 		if (bitmap != null) {
 			radioButton.setButtonBitmap(bitmap_cache.get(url));
 		} else {
-			radioButton.setButtonDrawable(loading_image_id);
+			radioButton.setButtonDrawable(loading_avatar_id);
 			/* Queue Image to download */
 			executor_service.submit(new AccountSwitcherRadioButtonImageLoader(
 					url, radioButton, store_persistent));
