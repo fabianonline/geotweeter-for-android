@@ -95,7 +95,9 @@ public class StreamRequest {
 						// We should get a newline every 30 seconds. If that
 						// didn't happen -> reconnect.
 						try {
-							stream.close();
+							if (stream != null) {
+								stream.close();
+							}
 						} catch (IOException e) {
 						}
 					}
@@ -116,7 +118,9 @@ public class StreamRequest {
 						// We didn't get anything for more than 10 minutes ->
 						// reconnect.
 						try {
-							stream.close();
+							if (stream != null) {
+								stream.close();
+							}
 						} catch (IOException e) {
 						}
 					}
