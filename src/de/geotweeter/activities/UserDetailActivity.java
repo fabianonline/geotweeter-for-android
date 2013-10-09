@@ -923,6 +923,10 @@ public class UserDetailActivity extends Activity {
 	}
 
 	public void showUserDetails(User user) {
+		if (user == null) {
+			return;
+		}
+		
 		AsyncImageView img = (AsyncImageView) findViewById(R.id.user_avatar);
 		Geotweeter.getInstance().getBackgroundImageLoader()
 				.displayImage(user.getAvatarSource(), img, true);
