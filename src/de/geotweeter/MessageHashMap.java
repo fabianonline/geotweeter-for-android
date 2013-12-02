@@ -52,7 +52,7 @@ public class MessageHashMap implements Serializable {
 	 *            Direct message to be added
 	 */
 	public void addMessage(DirectMessage msg) {
-		if (msg == null) {
+		if (msg == null || msg.sender == null) {
 			return;
 		}
 		long respondent_id;
