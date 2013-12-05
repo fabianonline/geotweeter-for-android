@@ -975,6 +975,9 @@ public class UserDetailActivity extends Activity {
 	}
 
 	public void fillTimelineButtons(User user) {
+		if (user == null) {
+			return;
+		}
 		LinearLayout timelineButtons = (LinearLayout) findViewById(R.id.user_timeline_buttons);
 		timelineButtons.setVisibility(View.VISIBLE);
 
