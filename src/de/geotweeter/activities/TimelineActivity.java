@@ -762,6 +762,9 @@ public class TimelineActivity extends MapActivity {
 		ListView lvList = (ListView) findViewById(R.id.timeline);
 		TimelineElementAdapter elements = (TimelineElementAdapter) lvList
 				.getAdapter();
+		if (elements == null) {
+			return;
+		}
 		int pos = 0;
 		while (pos < elements.getCount()) {
 			TimelineElement element = elements.getItem(pos);
